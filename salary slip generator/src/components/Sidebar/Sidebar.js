@@ -17,7 +17,9 @@ const NewSidebar = ({ routes }) => {
               <React.Fragment key={index}>
                 <div className="sidebar-section-title">{category.toUpperCase()}</div>
                 {Array.isArray(routes[category])
-                  ? routes[category].map((route, key) => (
+                  ? routes[category]
+                    .filter(route => route.showInSidebar !== false) // Filter hidden routes
+                    .map((route, key) => (
                       <NavItem key={key}>
                         <NavLink
                           to={route.layout + route.path}
@@ -30,19 +32,7 @@ const NewSidebar = ({ routes }) => {
                         </NavLink>
                       </NavItem>
                     ))
-                  : routes[category] && (
-                      <NavItem>
-                        <NavLink
-                          to={routes[category].layout + routes[category].path}
-                          tag={RouterNavLink}
-                          className="sidebar-link"
-                          activeClassName="active"
-                        >
-                          <i className={`${routes[category].icon} me-2`} />
-                          {routes[category].name}
-                        </NavLink>
-                      </NavItem>
-                    )}
+                  : null}
               </React.Fragment>
             ))}
         </Nav>

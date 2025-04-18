@@ -8,6 +8,7 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 
 import routes from "routes.js";
+import SystemSettingsPage from "./setting";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -20,7 +21,8 @@ const Admin = (props) => {
   }, [location]);
 
   const getRoutes = (routes) => {
-    return Object.values(routes).flat().map((prop, key) => {
+    const filteredRoutes = Object.values(routes).flat();
+    return filteredRoutes.map((prop, key) => {
       if (prop.layout === "/admin") {
         return (
           <Route path={prop.path} element={<prop.component />} key={key} />
@@ -45,6 +47,7 @@ const Admin = (props) => {
   return (
     <>
       <Sidebar
+
         {...props}
         routes={routes}
         logo={{

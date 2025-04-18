@@ -14,6 +14,11 @@ import {
     Card,
     CardHeader,
     CardBody,
+    Modal,
+    Form,
+    FormGroup,
+    Input,
+    Label,
 } from "reactstrap";
 
 const users = [
@@ -70,6 +75,7 @@ const statusChipColor = (status) => {
 export default function UserTable() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
+    const [formOpen, setFormOpen] = React.useState(false);
 
     const handleMenuClick = (event, index) => {
         setAnchorEl(event.currentTarget);
@@ -81,15 +87,49 @@ export default function UserTable() {
         setMenuUserIndex(null);
     };
 
+    const toggleModal = (e) => {
+        // e.preventDefault();
+        setFormOpen(!formOpen);
+        if (e === "defaultModal") {
+            setFormOpen(!formOpen);
+        }
+    }
+
+    const [formData, setFormData] = React.useState({
+        username: '',
+        password: '',
+        email: '',
+        institute: 'NIOH',
+        role: 'Admin',
+        status: 'Active',
+    });
+
+    const roles = ['Admin', 'Accounts Officer', 'Coordinator(NIOH)', 'Coordinator(ROHC)', 'Pensioner Operator', 'End User'];
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(formData);
+        // send formData to backend API
+    };
+
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
             <div className="mt--7 container-fluid">
                 <Card className="card-stats mb-4 mb-lg-0" >
                     <CardHeader>
-                    <div class="d-flex justify-content-between align-items-center">
-                    <TextField  placeholder="Search user..." />
-                            <Button color="primary" size="lg" type="button">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <TextField placeholder="Search user..." />
+                            <Button
+                                className="mb-3"
+                                color="primary"
+                                type="button"
+                                onClick={() => toggleModal()}
+                            >
                                 + Add User
                             </Button>
                         </div>
@@ -165,6 +205,102 @@ export default function UserTable() {
                         </TableContainer>
                     </CardBody>
                 </Card>
+                <Modal
+                    className="modal-dialog-centered"
+                    isOpen={formOpen}
+                    toggle={() => toggleModal("defaultModal")}
+                >
+                    <div className='pt-4 pb-4 px-4'>
+                        <Form onSubmit={handleSubmit} >
+                            <h4 className="mb-4">Create User</h4>
+
+                            {/* Username */}
+                            <FormGroup>
+                                <Label for="username">Username</Label>
+                                <Input
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </FormGroup>
+
+                            {/* Password */}
+                            <FormGroup>
+                                <Label for="password">Password</Label>
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </FormGroup>
+
+                            {/* Email */}
+                            <FormGroup>
+                                <Label for="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </FormGroup>
+
+                            {/* Institute */}
+                            <FormGroup>
+                                <Label for="institute">Institute</Label>
+                                <Input
+                                    id="institute"
+                                    type="select"
+                                    name="institute"
+                                    onChange={handleChange}
+                                >
+                                    <option value="NIOH">NIOH</option>
+                                    <option value="ROHC">ROHC</option>
+                                </Input>
+                            </FormGroup>
+
+                            {/* Role */}
+                            <FormGroup>
+                                <Label for="role">Role</Label>
+                                <Input
+                                    id="role"
+                                    type="select"
+                                    name="role"
+                                    onChange={handleChange}
+                                >
+                                    {roles.map((role) => (
+                                        <option key={role} value={role}>
+                                            {role}
+                                        </option>
+                                    ))}
+                                </Input>
+                            </FormGroup>
+
+                            {/* Status */}
+                            <FormGroup>
+                                <Label for="status">Status</Label>
+                                <Input
+                                    id="status"
+                                    type="select"
+                                    name="status"
+                                    onChange={handleChange}
+                                >
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </Input>
+                            </FormGroup>
+
+                            <Button color="primary" type="submit">
+                                Create User
+                            </Button>
+                        </Form>
+                    </div>
+                </Modal>
             </div>
         </>
     );

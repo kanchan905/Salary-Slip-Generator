@@ -7,6 +7,7 @@ import "assets/scss/argon-dashboard-react.scss";
 import './assets/css/custom.css';
 import AdminLayout from "layouts/Admin.js";
 
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(

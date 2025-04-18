@@ -1,5 +1,5 @@
 import Index from "views/Index.js";
-import Register from "views/examples/Register.js";
+import SignOutPage from "views/examples/Register";
 import Login from "views/examples/Login.js";
 import UserTable from "pages/Users/UsersManagement";
 import EmployeeTable from "pages/employee/EmployeeManagement";
@@ -8,6 +8,9 @@ import PensionerManagement from "pages/pensioner/Pensioner";
 import SalaryProcessing from "pages/processing/SalaryProcessing";
 import PensionProcessing from "pages/processing/PentionProcessing";
 import ReportsDashboard from "pages/report/reports";
+import Profile from "pages/Users/Profile";
+import SystemSettingsPage from "layouts/setting";
+
 
 var routes = {
   dashboard: [
@@ -60,6 +63,7 @@ var routes = {
       icon: "ni ni-settings-gear-65 text-info",
       component: SalaryProcessing,
       layout: "/admin",
+      showInSidebar: true,
     },
     {
       path: "/pension",
@@ -67,6 +71,7 @@ var routes = {
       icon: "ni ni-diamond text-pink",
       component: PensionProcessing,
       layout: "/admin",
+      showInSidebar: true,
     },
   ],
   report: [
@@ -76,23 +81,42 @@ var routes = {
       icon: "ni ni-paper-diploma text-purple",
       component: ReportsDashboard,
       layout: "/admin",
+      showInSidebar: true,
     },
   ],
   account: [
     {
       path: "/login",
       name: "login",
-      icon: "ni ni-paper-diploma text-purple",
+      icon: "ni ni-key-25 text-info",
       component: Login,
       layout: "/admin",
+      showInSidebar: true,
     },
     {
       path: "/sign-up",
       name: "Sign Up",
-      icon: "ni ni-paper-diploma text-purple",
-      component: Register,
+      icon: "ni ni-circle-08 text-pink",
+      component: SignOutPage,
       layout: "/admin",
+      showInSidebar: true,
     },
+    {
+      path: "/user-profile",
+      name: "Profile",
+      icon: "ni ni-circle-08 text-pink",
+      component: Profile,
+      layout: "/admin",
+      showInSidebar: false, // Add this property
+    },
+    {
+      path: "/setting",
+      name: "Settings",
+      icon: "ni ni-settings-gear-65 text-info",
+      component: SystemSettingsPage,
+      layout: "/admin",
+      showInSidebar: false, // Add this property
+    }
   ],
 };
 export default routes;
