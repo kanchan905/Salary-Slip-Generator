@@ -8,7 +8,6 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {
     Button,
     Card,
@@ -21,48 +20,7 @@ import {
     Label,
 } from "reactstrap";
 
-const users = [
-    {
-        name: "Adam Trantow",
-        company: "Mohr, Langworth and Hills",
-        role: "UI Designer",
-        verified: true,
-        status: "Active",
-        avatar: "https://i.pravatar.cc/150?img=1"
-    },
-    {
-        name: "Angel Rolfson-Kulas",
-        company: "Koch and Sons",
-        role: "UI Designer",
-        verified: true,
-        status: "Active",
-        avatar: "https://i.pravatar.cc/150?img=2"
-    },
-    {
-        name: "Betty Hammes",
-        company: "Waelchi – VonRueden",
-        role: "UI Designer",
-        verified: true,
-        status: "Active",
-        avatar: "https://i.pravatar.cc/150?img=3"
-    },
-    {
-        name: "Billy Braun",
-        company: "White, Cassin and Goldner",
-        role: "UI Designer",
-        verified: false,
-        status: "Banned",
-        avatar: "https://i.pravatar.cc/150?img=4"
-    },
-    {
-        name: "Billy Stoltenberg",
-        company: "Medhurst, Moore and Franey",
-        role: "Leader",
-        verified: true,
-        status: "Banned",
-        avatar: "https://i.pravatar.cc/150?img=5"
-    }
-];
+
 
 const statusChipColor = (status) => {
     switch (status) {
@@ -70,12 +28,98 @@ const statusChipColor = (status) => {
         case "Banned": return "error";
         default: return "default";
     }
+
 };
 
 export default function UserTable() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
     const [formOpen, setFormOpen] = React.useState(false);
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const [users, setUsers] = React.useState([
+        {
+            name: "John Doe",
+            company: "NIOH",
+            role: "Admin",
+            verified: true,
+            status: "Active",
+            avatar: "https://i.pravatar.cc/150?img=10",
+        },
+        {
+            name: "Jane Smith",
+            company: "ROHC",
+            role: "Accounts Officer",
+            verified: false,
+            status: "Inactive",
+            avatar: "https://i.pravatar.cc/150?img=20",
+        },
+        {
+            name: "Michael Johnson",
+            company: "NIOH",
+            role: "Coordinator(NIOH)",
+            verified: true,
+            status: "Active",
+            avatar: "https://i.pravatar.cc/150?img=30",
+        },
+        {
+            name: "Emily Davis",
+            company: "ROHC",
+            role: "Pensioner Operator",
+            verified: false,
+            status: "Banned",
+            avatar: "https://i.pravatar.cc/150?img=40",
+        },
+        {
+            name: "Chris Brown",
+            company: "NIOH",
+            role: "End User",
+            verified: true,
+            status: "Active",
+            avatar: "https://i.pravatar.cc/150?img=50",
+        },
+    ]);
+    const [selectedIndexes, setSelectedIndexes] = React.useState([]);
+    
+
+
+    // Filter users based on search query
+    const filteredUsers = users.filter((user) =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedIndexes(paginatedUsers.map((user) => user.name));
+        } else {
+            setSelectedIndexes([]);
+        }
+    };
+    const handleRowSelect = (userName) => {
+        setSelectedIndexes((prevSelected) =>
+            prevSelected.includes(userName)
+                ? prevSelected.filter((name) => name !== userName) // Deselect
+                : [...prevSelected, userName] // Select
+        );
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value); // Update search query
+        setPage(0); // Reset to the first page when searching
+    };
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+
 
     const handleMenuClick = (event, index) => {
         setAnchorEl(event.currentTarget);
@@ -88,6 +132,17 @@ export default function UserTable() {
     };
 
     const toggleModal = (e) => {
+        if (e === "create") {
+            // Reset formData to default values for creating a new user
+            setFormData({
+                username: '',
+                password: '',
+                email: '',
+                institute: 'NIOH',
+                role: 'Admin',
+                status: 'Active',
+            });
+        }
         // e.preventDefault();
         setFormOpen(!formOpen);
         if (e === "defaultModal") {
@@ -114,7 +169,53 @@ export default function UserTable() {
         e.preventDefault();
         console.log(formData);
         // send formData to backend API
+        // Create a new user object from formData
+        const newUser = {
+            name: formData.username,
+            company: formData.institute,
+            role: formData.role,
+            verified: false, // Default to false for new users
+            status: formData.status,
+            avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70) + 1}` // Random avatar
+        };
+        // Add the new user to the users array
+        setUsers((prevUsers) => [...prevUsers, newUser]);
+        // Reset the form and close the modal
+        setFormData({
+            username: '',
+            password: '',
+            email: '',
+            institute: 'NIOH',
+            role: 'Admin',
+            status: 'Active',
+        });
+        setFormOpen(false);
     };
+
+    
+    const handleDeleteSelected = () => {
+        const filtered = users.filter((user) => !selectedIndexes.includes(user.name));
+        setUsers(filtered);
+        setSelectedIndexes([]);
+    };
+
+    const handleDeleteUser = (name) => {
+        setUsers((prevUsers) => prevUsers.filter((user) => user.name !== name));
+        handleClose(); // Close the menu after deletion
+    };
+    
+    const handleEdit = (user) => {
+        setFormData({
+            username: user.name || '',
+            password: '', 
+            email: '', 
+            institute: user.institute || 'NIOH',
+            role: user.role || 'Admin',
+            status: user.status || 'Active',
+        });
+        // setEditingId(emp.id);
+        setFormOpen(true);
+      };
 
     return (
         <>
@@ -122,13 +223,21 @@ export default function UserTable() {
             <div className="mt--7 container-fluid">
                 <Card className="card-stats mb-4 mb-lg-0" >
                     <CardHeader>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <TextField placeholder="Search user..." />
+                        <div className="d-flex justify-content-between align-items-center">
+                            <TextField placeholder="Search user..." onChange={handleSearchChange} />
+                            <button
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={handleDeleteSelected}
+                                disabled={selectedIndexes.length === 0}
+                            >
+                                <i className="bi bi-trash-fill me-1"></i>
+                                Delete Selected ({selectedIndexes.length})
+                            </button>
                             <Button
                                 className="mb-3"
                                 color="primary"
                                 type="button"
-                                onClick={() => toggleModal()}
+                                onClick={() => toggleModal("create")}
                             >
                                 + Add User
                             </Button>
@@ -139,9 +248,14 @@ export default function UserTable() {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell><Checkbox /></TableCell>
+                                        <TableCell><Checkbox
+                                            onChange={handleSelectAll}
+                                            checked={
+                                                selectedIndexes.length === paginatedUsers.length &&
+                                                paginatedUsers.length > 0
+                                            } /></TableCell>
                                         <TableCell>Name</TableCell>
-                                        <TableCell>Company</TableCell>
+                                        <TableCell>Institute</TableCell>
                                         <TableCell>Role</TableCell>
                                         <TableCell>Verified</TableCell>
                                         <TableCell>Status</TableCell>
@@ -149,9 +263,11 @@ export default function UserTable() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {users.map((user, idx) => (
+                                    {paginatedUsers.map((user, idx) => (
                                         <TableRow key={idx}>
-                                            <TableCell><Checkbox /></TableCell>
+                                            <TableCell><Checkbox checked={selectedIndexes.includes(user.name)}
+                                                onChange={() => handleRowSelect(user.name)}
+                                                /></TableCell>
                                             <TableCell>
                                                 <div className="d-flex align-items-center">
                                                     <Avatar src={user.avatar} className="me-2" />
@@ -183,23 +299,22 @@ export default function UserTable() {
                                                     onClose={handleClose}
                                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                 >
-                                                    <MenuItem onClick={handleClose}><EditIcon fontSize="small" /> Edit</MenuItem>
-                                                    <MenuItem onClick={handleClose}><DeleteIcon fontSize="small" color="error" /> Delete</MenuItem>
+                                                    <MenuItem onClick={()=> handleEdit(user)}><EditIcon fontSize="small" /> Edit</MenuItem>
+                                                    <MenuItem onClick={()=> handleDeleteUser(user.name)}><DeleteIcon fontSize="small" color="error" /> Delete</MenuItem>
                                                 </Menu>
                                             </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
-                            <div className="d-flex justify-content-between align-items-center p-2">
-                                <span>Rows per page:</span>
+                            <div className="d-flex justify-content-end align-items-center p-2">
                                 <TablePagination
                                     component="div"
-                                    count={24}
-                                    page={0}
-                                    onPageChange={() => { }}
-                                    rowsPerPage={5}
-                                    onRowsPerPageChange={() => { }}
+                                    count={filteredUsers.length}
+                                    page={page}
+                                    onPageChange={handlePageChange}
+                                    rowsPerPage={rowsPerPage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
                                 />
                             </div>
                         </TableContainer>
@@ -209,10 +324,11 @@ export default function UserTable() {
                     className="modal-dialog-centered"
                     isOpen={formOpen}
                     toggle={() => toggleModal("defaultModal")}
+                    scrollable={true} // Add this prop
                 >
                     <div className='pt-4 pb-4 px-4'>
                         <Form onSubmit={handleSubmit} >
-                            <h4 className="mb-4">Create User</h4>
+                        <h4 className="mb-4">{formData.username ? "Edit User" : "Create User"}</h4>
 
                             {/* Username */}
                             <FormGroup>
@@ -221,6 +337,7 @@ export default function UserTable() {
                                     id="username"
                                     name="username"
                                     type="text"
+                                    value={formData.username}
                                     onChange={handleChange}
                                     required
                                 />
@@ -233,6 +350,7 @@ export default function UserTable() {
                                     id="password"
                                     name="password"
                                     type="password"
+                                    value={formData.password}
                                     onChange={handleChange}
                                     required
                                 />
@@ -245,6 +363,7 @@ export default function UserTable() {
                                     id="email"
                                     name="email"
                                     type="email"
+                                    value={formData.email} 
                                     onChange={handleChange}
                                     required
                                 />
@@ -257,6 +376,7 @@ export default function UserTable() {
                                     id="institute"
                                     type="select"
                                     name="institute"
+                                    value={formData.institute}
                                     onChange={handleChange}
                                 >
                                     <option value="NIOH">NIOH</option>
@@ -271,6 +391,7 @@ export default function UserTable() {
                                     id="role"
                                     type="select"
                                     name="role"
+                                    value={formData.role}
                                     onChange={handleChange}
                                 >
                                     {roles.map((role) => (
@@ -288,6 +409,7 @@ export default function UserTable() {
                                     id="status"
                                     type="select"
                                     name="status"
+                                    value={formData.status}
                                     onChange={handleChange}
                                 >
                                     <option value="Active">Active</option>
@@ -296,7 +418,7 @@ export default function UserTable() {
                             </FormGroup>
 
                             <Button color="primary" type="submit">
-                                Create User
+                            {formData.username ? "Update User" : "Create User"}
                             </Button>
                         </Form>
                     </div>

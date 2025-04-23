@@ -15,6 +15,7 @@ import {
   Nav,
   Container,
   Media,
+  Badge,
 } from "reactstrap";
 
 
@@ -59,7 +60,8 @@ const AdminNavbar = (props) => {
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
                   <span className="avatar avatar-sm rounded-circle bg-gradient-primary">
-                    <i className="ni ni-bell-55"></i>
+                  <i className="ni ni-bell-55"></i>
+                  {notifications.length}
                   </span>
                 </Media>
               </DropdownToggle>

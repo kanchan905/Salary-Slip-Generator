@@ -58,3 +58,6 @@ h1{
   .form-control:focus {
     background-color: transparent !important;
   }
+  body{
+    padding-right: 0px !important;
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import {
   FormGroup,
   Form,
@@ -7,20 +7,34 @@ import {
   Col
 } from "reactstrap";
 import { Button } from "reactstrap";
+import { useDispatch } from "react-redux";
+import { addLevel } from "../../redux/slices/levelSlice";
 
-class PayLevel extends React.Component {
-  render() {
+function PayLevel(){
+  const [form, setForm] = useState({ levelName: "", description: "" });
+  const dispatch = useDispatch();
+  const handleLevelChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+   };
+
+   const handleAddLevel = (e) => {
+    e.preventDefault();
+    dispatch(addLevel({ id: Date.now(), levelName:`${form.levelName}`, description: `${form.description}` }));
+    console.log('Level added:', form.levelName, form.description);
+    setForm({ levelName: "", description: "" });
+  }; 
+
     return (
       <>
-        <Form>
+        <Form onSubmit={handleAddLevel} >
           <Row>
             <Col>
               <FormGroup>
                 <Input
-                  name="FirstName"
+                  name="levelName"
                   placeholder="Level Name"
-                //   value={form.levelName}
-                //   onChange={handleLevelChange}
+                  value={form.levelName}
+                  onChange={handleLevelChange}
                   className="w-full border rounded p-2"
                   required
                 />
@@ -31,10 +45,10 @@ class PayLevel extends React.Component {
             <Col>
             <FormGroup>
                 <Input
-                  name="Description"
+                  name="description"
                   placeholder="Description"
-                //   value={form.levelName}
-                //   onChange={handleLevelChange}
+                  value={form.description}
+                  onChange={handleLevelChange}
                   className="w-full border rounded p-2"
                   required
                 />
@@ -44,7 +58,7 @@ class PayLevel extends React.Component {
           <Row>
             <Col>
              <FormGroup>
-             <Button color="primary" outline type="button">Add Level</Button>
+             <Button color="primary" outline typeof="submit">Add Level</Button>
              </FormGroup>
             </Col>
           </Row>
@@ -52,6 +66,6 @@ class PayLevel extends React.Component {
       </>
     );
   }
-}
+
 
 export default PayLevel;
