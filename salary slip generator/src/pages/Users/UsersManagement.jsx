@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, Paper, Avatar, IconButton,
+    TableHead, TableRow, Paper, IconButton,
     Menu, MenuItem, TextField, Chip, Checkbox,
     TablePagination
 } from '@mui/material';
@@ -18,6 +18,8 @@ import {
     FormGroup,
     Input,
     Label,
+    Row,
+    Col,
 } from "reactstrap";
 
 
@@ -81,7 +83,7 @@ export default function UserTable() {
         },
     ]);
     const [selectedIndexes, setSelectedIndexes] = React.useState([]);
-    
+
 
 
     // Filter users based on search query
@@ -90,7 +92,7 @@ export default function UserTable() {
     );
 
     const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
+    const [formMode, setFormMode] = React.useState('create');
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             setSelectedIndexes(paginatedUsers.map((user) => user.name));
@@ -131,9 +133,8 @@ export default function UserTable() {
         setMenuUserIndex(null);
     };
 
-    const toggleModal = (e) => {
-        if (e === "create") {
-            // Reset formData to default values for creating a new user
+    const toggleModal = (mode) => {
+        if (mode === "create") {
             setFormData({
                 username: '',
                 password: '',
@@ -142,12 +143,13 @@ export default function UserTable() {
                 role: 'Admin',
                 status: 'Active',
             });
+            setFormMode('create');
         }
         // e.preventDefault();
         setFormOpen(!formOpen);
-        if (e === "defaultModal") {
-            setFormOpen(!formOpen);
-        }
+        // if (e === "defaultModal") {
+        //     setFormOpen(!formOpen);
+        // }
     }
 
     const [formData, setFormData] = React.useState({
@@ -167,7 +169,6 @@ export default function UserTable() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(formData);
         // send formData to backend API
         // Create a new user object from formData
         const newUser = {
@@ -192,7 +193,7 @@ export default function UserTable() {
         setFormOpen(false);
     };
 
-    
+
     const handleDeleteSelected = () => {
         const filtered = users.filter((user) => !selectedIndexes.includes(user.name));
         setUsers(filtered);
@@ -203,24 +204,36 @@ export default function UserTable() {
         setUsers((prevUsers) => prevUsers.filter((user) => user.name !== name));
         handleClose(); // Close the menu after deletion
     };
-    
+
     const handleEdit = (user) => {
+        handleClose();
         setFormData({
             username: user.name || '',
-            password: '', 
-            email: '', 
+            password: '',
+            email: '',
             institute: user.institute || 'NIOH',
             role: user.role || 'Admin',
             status: user.status || 'Active',
         });
+        setFormMode('edit');
         // setEditingId(emp.id);
         setFormOpen(true);
-      };
+    };
+
+    const handleToggleStatus = (userName) => {
+        setUsers((prevUsers) =>
+            prevUsers.map((user) =>
+                user.name === userName
+                    ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
+                    : user
+            )
+        );
+    };
 
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
-            <div className="mt--7 container-fluid">
+            <div className="mt--7 mb-7 container-fluid">
                 <Card className="card-stats mb-4 mb-lg-0" >
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
@@ -234,7 +247,7 @@ export default function UserTable() {
                                 Delete Selected ({selectedIndexes.length})
                             </button>
                             <Button
-                                className="mb-3"
+                                // className="mb-3"
                                 color="primary"
                                 type="button"
                                 onClick={() => toggleModal("create")}
@@ -244,7 +257,7 @@ export default function UserTable() {
                         </div>
                     </CardHeader>
                     <CardBody>
-                        <TableContainer component={Paper}>
+                        <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                             <Table>
                                 <TableHead>
                                     <TableRow>
@@ -267,10 +280,9 @@ export default function UserTable() {
                                         <TableRow key={idx}>
                                             <TableCell><Checkbox checked={selectedIndexes.includes(user.name)}
                                                 onChange={() => handleRowSelect(user.name)}
-                                                /></TableCell>
+                                            /></TableCell>
                                             <TableCell>
                                                 <div className="d-flex align-items-center">
-                                                    <Avatar src={user.avatar} className="me-2" />
                                                     {user.name}
                                                 </div>
                                             </TableCell>
@@ -287,6 +299,8 @@ export default function UserTable() {
                                                     color={statusChipColor(user.status)}
                                                     variant="outlined"
                                                     size="small"
+                                                    onClick={() => handleToggleStatus(user.name)}
+                                                    style={{ cursor: 'pointer' }}
                                                 />
                                             </TableCell>
                                             <TableCell align="right">
@@ -299,8 +313,8 @@ export default function UserTable() {
                                                     onClose={handleClose}
                                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                 >
-                                                    <MenuItem onClick={()=> handleEdit(user)}><EditIcon fontSize="small" /> Edit</MenuItem>
-                                                    <MenuItem onClick={()=> handleDeleteUser(user.name)}><DeleteIcon fontSize="small" color="error" /> Delete</MenuItem>
+                                                    <MenuItem onClick={() => handleEdit(user)}><EditIcon fontSize="small" /> Edit</MenuItem>
+                                                    <MenuItem onClick={() => handleDeleteUser(user.name)}><DeleteIcon fontSize="small" color="error" /> Delete</MenuItem>
                                                 </Menu>
                                             </TableCell>
                                         </TableRow>
@@ -324,101 +338,122 @@ export default function UserTable() {
                     className="modal-dialog-centered"
                     isOpen={formOpen}
                     toggle={() => toggleModal("defaultModal")}
-                    scrollable={true} // Add this prop
+                    scrollable={true} 
                 >
                     <div className='pt-4 pb-4 px-4'>
-                        <Form onSubmit={handleSubmit} >
-                        <h4 className="mb-4">{formData.username ? "Edit User" : "Create User"}</h4>
+                        <Form onSubmit={handleSubmit}>
+                            <h4 className="mb-4">{formMode === 'edit' ? "Edit User" : "Create User"}</h4>
 
-                            {/* Username */}
-                            <FormGroup>
-                                <Label for="username">Username</Label>
-                                <Input
-                                    id="username"
-                                    name="username"
-                                    type="text"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </FormGroup>
+                            <Row>
+                                {/* Username */}
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="username">Username</Label>
+                                        <Input
+                                            id="username"
+                                            name="username"
+                                            type="text"
+                                            value={formData.username}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </FormGroup>
+                                </Col>
 
-                            {/* Password */}
-                            <FormGroup>
-                                <Label for="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </FormGroup>
+                                {/* Password */}
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="password">Password</Label>
+                                        <Input
+                                            id="password"
+                                            name="password"
+                                            type="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
 
-                            {/* Email */}
-                            <FormGroup>
-                                <Label for="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    value={formData.email} 
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </FormGroup>
+                            <Row>
+                                {/* Email */}
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="email">Email</Label>
+                                        <Input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </FormGroup>
+                                </Col>
 
-                            {/* Institute */}
-                            <FormGroup>
-                                <Label for="institute">Institute</Label>
-                                <Input
-                                    id="institute"
-                                    type="select"
-                                    name="institute"
-                                    value={formData.institute}
-                                    onChange={handleChange}
-                                >
-                                    <option value="NIOH">NIOH</option>
-                                    <option value="ROHC">ROHC</option>
-                                </Input>
-                            </FormGroup>
+                                {/* Institute */}
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="institute">Institute</Label>
+                                        <Input
+                                            id="institute"
+                                            type="select"
+                                            name="institute"
+                                            value={formData.institute}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="NIOH">NIOH</option>
+                                            <option value="ROHC">ROHC</option>
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
 
-                            {/* Role */}
-                            <FormGroup>
-                                <Label for="role">Role</Label>
-                                <Input
-                                    id="role"
-                                    type="select"
-                                    name="role"
-                                    value={formData.role}
-                                    onChange={handleChange}
-                                >
-                                    {roles.map((role) => (
-                                        <option key={role} value={role}>
-                                            {role}
-                                        </option>
-                                    ))}
-                                </Input>
-                            </FormGroup>
+                            <Row>
+                                {/* Role */}
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="role">Role</Label>
+                                        <Input
+                                            id="role"
+                                            type="select"
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleChange}
+                                        >
+                                            {roles.map((role) => (
+                                                <option key={role} value={role}>
+                                                    {role}
+                                                </option>
+                                            ))}
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
 
-                            {/* Status */}
-                            <FormGroup>
-                                <Label for="status">Status</Label>
-                                <Input
-                                    id="status"
-                                    type="select"
-                                    name="status"
-                                    value={formData.status}
-                                    onChange={handleChange}
-                                >
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </Input>
-                            </FormGroup>
+                                {/* Status */}
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="status">Status</Label>
+                                        <Input
+                                            id="status"
+                                            type="select"
+                                            name="status"
+                                            value={formData.status}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="Active">Active</option>
+                                            <option value="Inactive">Inactive</option>
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
 
-                            <Button color="primary" type="submit">
-                            {formData.username ? "Update User" : "Create User"}
+                            <Button color="primary" type="submit" className='mt-2'>
+                              Save
+                            </Button>
+                            <Button color="secondary" className='mt-2' onClick={()=>setFormOpen(false)}>
+                              cancel
                             </Button>
                         </Form>
                     </div>

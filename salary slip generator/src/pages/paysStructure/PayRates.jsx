@@ -24,7 +24,6 @@ const AllowanceRates = () => {
   const levels = useSelector((state) => state.levels.levels);
 
   const [selectedLevelId, setSelectedLevelId] = useState('');
-  const selectedLevel = levels.find((lvl) => lvl.id === selectedLevelId);
 
   const [localRates, setLocalRates] = useState({});
 

@@ -58,7 +58,7 @@ const SystemSettingsPage = () => {
           Global Parameters
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{xs:12,md:6}}>
             <TextField
               label="Application Name"
               name="appName"
@@ -67,7 +67,7 @@ const SystemSettingsPage = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{xs:12,md:6}}>
             <TextField
               label="Timezone"
               name="timezone"
@@ -135,7 +135,7 @@ const SystemSettingsPage = () => {
         <Typography variant="h6" gutterBottom>
           Backup & Restore
         </Typography>
-        <Box className="d-flex gap-3 mb-3">
+        <Box className="d-flex mb-3" style={{gap:'10px'}}>
           <Button variant="outlined" color="primary" onClick={handleBackup}>
             Backup Settings
           </Button>

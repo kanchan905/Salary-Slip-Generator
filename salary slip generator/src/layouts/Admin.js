@@ -1,18 +1,19 @@
 import React from "react";
-import { useLocation, Route, Routes, Navigate } from "react-router-dom";
-// reactstrap components
+import { useLocation, Route, Routes} from "react-router-dom";
 import { Container } from "reactstrap";
-// core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
+import adminRoutes from "routes/adminRoutes";
+import { accountOfficerRoutes } from "routes/accountOfficerRoutes";
 
-import routes from "routes.js";
-import SystemSettingsPage from "./setting";
 
-const Admin = (props) => {
+const AdminLayout = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
+  const userRole = JSON.parse(localStorage.getItem('userData'))?.role
+  let roleRoutes;
+
 
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -20,25 +21,39 @@ const Admin = (props) => {
     mainContent.current.scrollTop = 0;
   }, [location]);
 
+  // Select routes based on the user's role
+  switch (userRole) {
+    case "Admin":
+      roleRoutes = adminRoutes;
+      break;
+    case "Accounts Officer":
+      roleRoutes = accountOfficerRoutes;
+      break;
+    case "finance":
+      roleRoutes = accountOfficerRoutes;
+      break;
+    default:
+      roleRoutes = accountOfficerRoutes; 
+  }
+
+
   const getRoutes = (routes) => {
     const filteredRoutes = Object.values(routes).flat();
     return filteredRoutes.map((prop, key) => {
-      if (prop.layout === "/admin") {
         return (
           <Route path={prop.path} element={<prop.component />} key={key} />
         );
       }
-      return null;
-    });
+    );
   };
 
   const getBrandText = (path) => {
-    for (let i = 0; i < routes.length; i++) {
+    for (let i = 0; i < roleRoutes.length; i++) {
       if (
-        props?.location?.pathname.indexOf(routes[i].layout + routes[i].path) !==
+        props?.location?.pathname.indexOf(roleRoutes[i].layout + roleRoutes[i].path) !==
         -1
       ) {
-        return routes[i].name;
+        return roleRoutes[i].name;
       }
     }
     return "Brand";
@@ -49,23 +64,22 @@ const Admin = (props) => {
       <Sidebar
 
         {...props}
-        routes={routes}
+        routes={roleRoutes}
         logo={{
           innerLink: "/admin/index",
-          imgSrc: require("../assets/img/brand/argon-react.png"),
+          // imgSrc: require("#"),
           imgAlt: "...",
         }}
       />
-      <div className="main-content" ref={mainContent}>
+      <div className="main-content" style={{height:'100vh'}} ref={mainContent}>
         <AdminNavbar
           {...props}
           brandText={getBrandText(props?.location?.pathname)}
         />
         <Routes>
-          {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/admin/index" replace />} />
+          {getRoutes(roleRoutes)}
         </Routes>
-        <Container fluid>
+        <Container style={{padding:'0px'}}>
           <AdminFooter />
         </Container>
       </div>
@@ -73,4 +87,4 @@ const Admin = (props) => {
   );
 };
 
-export default Admin;
+export default AdminLayout;

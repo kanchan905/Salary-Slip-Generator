@@ -9,11 +9,11 @@ import BugReportIcon from '@mui/icons-material/BugReport';
 import DownloadIcon from '@mui/icons-material/Download';
 
 const reportOptions = [
-    { title: 'Institute-wise Salary Reports', icon: <SummarizeIcon />, color: '#1976d2' },
-    { title: 'Institute-wise Pension Reports', icon: <ReceiptLongIcon />, color: '#2e7d32' },
-    { title: 'Deduction Reports', icon: <TableViewIcon />, color: '#f57c00' },
-    { title: 'Allowance Reports', icon: <TableViewIcon />, color: '#6a1b9a' },
-    { title: 'Audit Logs', icon: <BugReportIcon />, color: '#d32f2f' },
+    { title: 'Institute-wise Salary Reports', icon: <SummarizeIcon />, color: '#3498db' },
+    { title: 'Institute-wise Pension Reports', icon: <ReceiptLongIcon />, color: '#16a085' },
+    { title: 'Deduction Reports', icon: <TableViewIcon />, color: '#e67e22' },
+    { title: 'Allowance Reports', icon: <TableViewIcon />, color: '#cb4335' },
+    { title: 'Audit Logs', icon: <BugReportIcon />, color: '#9b59b6' },
 ];
 
 const ReportsDashboard = () => {
@@ -35,9 +35,9 @@ const ReportsDashboard = () => {
                             <Card sx={{ backgroundColor: report.color, color: '#fff', borderRadius: '16px' }}>
                                 <CardContent>
                                     <Grid container spacing={2} alignItems="center">
-                                        <Grid item>{report.icon}</Grid>
-                                        <Grid item>
-                                            <Typography variant="h6">{report.title}</Typography>
+                                        <Grid >{report.icon}</Grid>
+                                        <Grid >
+                                            <Typography variant="h6" sx={{color:'#fff'}}>{report.title}</Typography>
                                         </Grid>
                                     </Grid>
                                     <Button

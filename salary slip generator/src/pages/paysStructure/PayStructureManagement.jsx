@@ -11,7 +11,8 @@ import {
 } from "reactstrap";
 import PayLevel from "./PayLevel";
 import PayMatrixCell from "./PayCell";
-import AllowanceRates from "./PayRates";
+// import AllowanceRates from "./PayRates";
+import EmployeePayStructures from "./EmployeePayStructure";
 
 class PaysStructure extends React.Component {
   state = {
@@ -75,7 +76,7 @@ class PaysStructure extends React.Component {
                 role="tab"
               >
                 <i className="ni ni-calendar-grid-58 mr-2" />
-                Allowance Rates
+                Employee Pay Structure
               </NavLink>
             </NavItem>
           </Nav>
@@ -92,7 +93,7 @@ class PaysStructure extends React.Component {
                 <PayMatrixCell/>
               </TabPane>
               <TabPane tabId="tabs3">
-                <AllowanceRates/>
+                <EmployeePayStructures/>
               </TabPane>
             </TabContent>
           </CardBody>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, Paper, Avatar, IconButton,
+    TableHead, TableRow, Paper, IconButton,
     Menu, MenuItem, Chip, Checkbox,
     TablePagination,
     TextField
@@ -19,6 +19,8 @@ import {
     FormGroup,
     Input,
     Label,
+    Col,
+    Row,
 } from "reactstrap";
 
 const statusChipColor = (status) => {
@@ -289,6 +291,7 @@ export default function EmployeeManagement() {
     };
 
     const handleEdit = (emp) => {
+        handleClose();
         setFormData(emp);
         setEditingId(emp.id);
         setFormOpen(true);
@@ -310,17 +313,25 @@ export default function EmployeeManagement() {
     const handleRowSelect = (id) => {
         setSelectedIndexes((prevSelected) =>
             prevSelected.includes(id)
-                ? prevSelected.filter((id) => id !== id) // Deselect
+                ? prevSelected.filter((selectedId) => selectedId !== id) // Deselect
                 : [...prevSelected, id] // Select
         );
     };
 
-
+    const handleToggleStatus = (id) => {
+        setEmployees((prevEmployees) =>
+            prevEmployees.map((employee) =>
+                employee.id === id
+                    ? { ...employee, status: employee.status === "Active" ? "Inactive" : "Active" }
+                    : employee
+            )
+        );
+    };
 
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
-            <div className="mt--7 container-fluid">
+            <div className="mt--7 mb-7 container-fluid">
                 <Card className="shadow border-0">
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
@@ -334,7 +345,7 @@ export default function EmployeeManagement() {
                                 Delete Selected ({selectedIndexes.length})
                             </button>
                             <Button
-                                className="mb-3"
+                                // className="mb-3"
                                 color="primary"
                                 type="button"
                                 onClick={() => toggleModal("create")}
@@ -344,16 +355,16 @@ export default function EmployeeManagement() {
                         </div>
                     </CardHeader>
                     <CardBody>
-                        <TableContainer component={Paper}>
+                        <TableContainer component={Paper} style={{ boxShadow: 'none' }}>
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell><Checkbox 
-                                         onChange={handleSelectAll}
-                                         checked={
-                                             selectedIndexes.length === paginatedEmployees.length &&
-                                             paginatedEmployees.length > 0
-                                         }
+                                        <TableCell><Checkbox
+                                            onChange={handleSelectAll}
+                                            checked={
+                                                selectedIndexes.length === paginatedEmployees.length &&
+                                                paginatedEmployees.length > 0
+                                            }
                                         /></TableCell>
                                         <TableCell>Name</TableCell>
                                         <TableCell>Designation</TableCell>
@@ -377,6 +388,8 @@ export default function EmployeeManagement() {
                                                     color={statusChipColor(emp.status)}
                                                     variant="outlined"
                                                     size="small"
+                                                    onClick={() => handleToggleStatus(emp.id)}
+                                                    style={{ cursor: 'pointer' }}
                                                 />
                                             </TableCell>
                                             <TableCell>{emp.quarter}</TableCell>
@@ -424,117 +437,147 @@ export default function EmployeeManagement() {
                         <Form onSubmit={handleSubmit}>
                             <h4 className="mb-4">{formData.name ? 'Edit Employee' : 'Create Employee'}</h4>
                             {/* Form Fields */}
-                            <FormGroup>
-                                <Label for="name">Full Name</Label>
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="designation">Designation</Label>
-                                <Input
-                                    id="designation"
-                                    name="designation"
-                                    type="text"
-                                    value={formData.designation}
-                                    onChange={handleChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="department">Department</Label>
-                                <Input
-                                    id="department"
-                                    name="department"
-                                    type="text"
-                                    value={formData.department}
-                                    onChange={handleChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="institute">Institute</Label>
-                                <Input
-                                    id="institute"
-                                    name="institute"
-                                    type="select"
-                                    value={formData.institute}
-                                    onChange={handleChange}
-                                >
-                                    <option value="NIOH">NIOH</option>
-                                    <option value="ROHC">ROHC</option>
-                                </Input>
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="doj">Date of Joining</Label>
-                                <Input
-                                    id="doj"
-                                    name="doj"
-                                    type="date"
-                                    value={formData.doj}
-                                    onChange={handleChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="bankAccount">Bank Account Number</Label>
-                                <Input
-                                    id="bankAccount"
-                                    name="bankAccount"
-                                    type="text"
-                                    value={formData.bankAccount}
-                                    onChange={handleChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="ifsc">IFSC Code</Label>
-                                <Input
-                                    id="ifsc"
-                                    name="ifsc"
-                                    type="text"
-                                    value={formData.ifsc}
-                                    onChange={handleChange}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="quarter">Quarter Allotted</Label>
-                                <Input
-                                    id="quarter"
-                                    name="quarter"
-                                    type="select"
-                                    value={formData.quarter}
-                                    onChange={handleChange}
-                                >
-                                    <option value="No">No</option>
-                                    <option value="Yes">Yes</option>
-                                </Input>
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="status">Status</Label>
-                                <Input
-                                    id="status"
-                                    name="status"
-                                    type="select"
-                                    value={formData.status}
-                                    onChange={handleChange}
-                                >
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </Input>
-                            </FormGroup>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="name">Full Name</Label>
+                                        <Input
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="email">Email</Label>
+                                        <Input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="designation">Designation</Label>
+                                        <Input
+                                            id="designation"
+                                            name="designation"
+                                            type="text"
+                                            value={formData.designation}
+                                            onChange={handleChange}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="department">Department</Label>
+                                        <Input
+                                            id="department"
+                                            name="department"
+                                            type="text"
+                                            value={formData.department}
+                                            onChange={handleChange}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="institute">Institute</Label>
+                                        <Input
+                                            id="institute"
+                                            name="institute"
+                                            type="select"
+                                            value={formData.institute}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="NIOH">NIOH</option>
+                                            <option value="ROHC">ROHC</option>
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="doj">Date of Joining</Label>
+                                        <Input
+                                            id="doj"
+                                            name="doj"
+                                            type="date"
+                                            value={formData.doj}
+                                            onChange={handleChange}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="bankAccount">Bank Account Number</Label>
+                                        <Input
+                                            id="bankAccount"
+                                            name="bankAccount"
+                                            type="text"
+                                            value={formData.bankAccount}
+                                            onChange={handleChange}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="ifsc">IFSC Code</Label>
+                                        <Input
+                                            id="ifsc"
+                                            name="ifsc"
+                                            type="text"
+                                            value={formData.ifsc}
+                                            onChange={handleChange}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="quarter">Quarter Allotted</Label>
+                                        <Input
+                                            id="quarter"
+                                            name="quarter"
+                                            type="select"
+                                            value={formData.quarter}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="No">No</option>
+                                            <option value="Yes">Yes</option>
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for="status">Status</Label>
+                                        <Input
+                                            id="status"
+                                            name="status"
+                                            type="select"
+                                            value={formData.status}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="Active">Active</option>
+                                            <option value="Inactive">Inactive</option>
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
                             <FormGroup>
                                 <Label for="document">Upload Document</Label>
                                 <Input
@@ -544,8 +587,11 @@ export default function EmployeeManagement() {
                                     onChange={handleChange}
                                 />
                             </FormGroup>
-                            <Button color="primary" type="submit">
+                            <Button color="primary" type="submit" className='mt-2'>
                                 Save
+                            </Button>
+                            <Button color="secondary" className='mt-2' onClick={() => setFormOpen(false)}>
+                                cancel
                             </Button>
                         </Form>
                     </div>

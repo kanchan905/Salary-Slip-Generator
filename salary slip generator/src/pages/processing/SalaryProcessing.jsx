@@ -35,7 +35,7 @@ const SalaryProcessing = () => {
     const dispatch = useDispatch();
     const { activeStep, formData } = useSelector((state) => state.salary);
     const [errorMsg, setErrorMsg] = React.useState('');
-    const [isready, setIsReady] = React.useState(false);
+    const [, setIsReady] = React.useState(false);
     const {hra,da,npa,otherAllowances,pf,tax} = useSelector((state) => state.salary.formData);
 
 
@@ -53,8 +53,7 @@ const SalaryProcessing = () => {
         }
     },[slipRef]);
 
-    console.log("IsReady:", isready); // <- check this!
-    console.log("SlipRef:", slipRef.current); // <- check this!
+    
 
     const handlePrint = useReactToPrint({
         contentRef: slipRef,
@@ -69,7 +68,7 @@ const SalaryProcessing = () => {
             case 0:
                 return (
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={{xs:12}}>
                             <FormControl fullWidth>
                                 <InputLabel>Mode</InputLabel>
                                 <Select name="mode" value={formData.mode} onChange={handleChange}>
@@ -81,15 +80,15 @@ const SalaryProcessing = () => {
 
                         {formData.mode === 'bulk' ? (
                             <>
-                                <Grid item xs={6}>
-                                    <TextField required name="month" label="Month" fullWidth onChange={handleChange} />
+                                <Grid size={{xs:12}} >
+                                    <TextField required name="month" label="Month" value={new Date().getMonth()} fullWidth onChange={handleChange} />
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <TextField name="year" label="Year" fullWidth onChange={handleChange} />
+                                <Grid size={{xs:12}}>
+                                    <TextField name="year" label="Year" value={new Date().getFullYear()} fullWidth onChange={handleChange} />
                                 </Grid>
                             </>
                         ) : (
-                            <Grid item xs={12}>
+                            <Grid size={{xs:12}}>
                                 <TextField
                                     name="employeeId"
                                     label="Employee ID"
@@ -104,19 +103,19 @@ const SalaryProcessing = () => {
             case 1:
                 return (
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:6}}>
                             <TextField name="basic" label="Basic Pay" fullWidth onChange={handleChange} />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:6}}>
                             <TextField name="hra" label="HRA" fullWidth onChange={handleChange} value={hra} />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:6}}>
                             <TextField name="da" label="DA" fullWidth onChange={handleChange} value={da} />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:6}}>
                             <TextField name="npa" label="NPA" fullWidth onChange={handleChange} value={npa}/>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:6}}>
                             <TextField name="otherAllowances" label="Other Allowances" fullWidth onChange={handleChange} value={otherAllowances} />
                         </Grid>
                     </Grid>
@@ -125,10 +124,10 @@ const SalaryProcessing = () => {
             case 2:
                 return (
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:6}}>
                             <TextField name="pf" label="Provident Fund" fullWidth onChange={handleChange} value={pf} />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:6}}>
                             <TextField name="tax" label="Tax" fullWidth onChange={handleChange} value={tax}/>
                         </Grid>
                     </Grid>
@@ -152,13 +151,13 @@ const SalaryProcessing = () => {
                                 </Typography>
 
                                 <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                                    <Grid item>Employee: {formData.employeeId || 'N/A'}</Grid>
-                                    <Grid item>Generated On: {new Date().toLocaleDateString()}</Grid>
+                                    <Grid >Employee: {formData.employeeId || 'N/A'}</Grid>
+                                    <Grid >Generated On: {new Date().toLocaleDateString()}</Grid>
                                 </Grid>
                                 <Typography>Month: {formData.month}</Typography>
 
                                 <Grid container spacing={3} mt={2}>
-                                    <Grid item xs={6}>
+                                    <Grid  xs={6}>
                                         <Typography fontWeight="bold">Earnings</Typography>
                                         <div>Basic: ₹{formData.basic || 0}</div>
                                         <div>Da: ₹{formData.da || 0}</div>
@@ -168,7 +167,7 @@ const SalaryProcessing = () => {
                                         <div style={{ marginTop: 5 }}>Gross Salary: ₹{grossSalary}</div>
                                     </Grid>
 
-                                    <Grid item xs={6}>
+                                    <Grid  xs={6}>
                                         <Typography fontWeight="bold">Deductions</Typography>
                                         <div>Gpf: ₹0</div>
                                         <div>Nps: ₹0</div>
@@ -217,11 +216,12 @@ const SalaryProcessing = () => {
 
             case 1: 
                 if (basic <= 0) return { valid: false, message: 'Basic salary must be greater than 0.' };
-                if (hra < 0 || da < 0 || npa> 0 || otherAllowances > 0) return { valid: false, message: 'HRA and DA cannot be negative.' };
+                // if (hra > 0 || da > 0 || npa> 0 || otherAllowances > 0) return { valid: false, message: 'HRA and DA cannot be negative.' };
                 return { valid: true };
 
             case 3: 
                 if(pf <0 || tax < 0) return { valid: false, message: 'Deductions cannot be negative.' };
+                break;
 
             case 4: 
                 return { valid: true };

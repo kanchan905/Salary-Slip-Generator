@@ -79,7 +79,7 @@ const PensionProcessing = () => {
             case 0:
                 return (
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={{xs:12}}>
                             <FormControl fullWidth>
                                 <InputLabel>Mode</InputLabel>
                                 <Select name="mode" value={formData.mode} onChange={handleChange}>
@@ -91,15 +91,15 @@ const PensionProcessing = () => {
 
                         {formData.mode === 'bulk' ? (
                             <>
-                                <Grid item xs={6}>
-                                    <TextField name="month" label="Month" fullWidth onChange={handleChange} />
+                                <Grid size={{xs:6}}>
+                                    <TextField name="month" label="Month" value={new Date().getMonth()} fullWidth onChange={handleChange} />
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <TextField name="year" label="Year" fullWidth onChange={handleChange} />
+                                <Grid size={{xs:6}}>
+                                    <TextField name="year" label="Year" value={new Date().getFullYear()} fullWidth onChange={handleChange} />
                                 </Grid>
                             </>
                         ) : (
-                            <Grid item xs={12}>
+                            <Grid size={{xs:6}}>
                                 <TextField
                                     name="pensionerId"
                                     label="Pensioner ID"
@@ -114,13 +114,13 @@ const PensionProcessing = () => {
             case 1:
                 return (
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:12}}>
                             <TextField name="basicPension" label="Basic Pension" fullWidth onChange={handleChange} />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:12}}>
                             <TextField name="dr" label="DR (Dearness Relief)" fullWidth onChange={handleChange} />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={{xs:12}}>
                             <TextField name="otherAllowances" label="Other Allowances" fullWidth onChange={handleChange} />
                         </Grid>
                     </Grid>
@@ -154,13 +154,13 @@ const PensionProcessing = () => {
                             </Typography>
 
                             <Grid container justifyContent="space-between" sx={{ mb: 1 }}>
-                                <Grid item>Pensioner: {formData.pensionerId || 'N/A'}</Grid>
-                                <Grid item>Generated On: {new Date().toLocaleDateString()}</Grid>
+                                <Grid>Pensioner: {formData.pensionerId || 'N/A'}</Grid>
+                                <Grid>Generated On: {new Date().toLocaleDateString()}</Grid>
                             </Grid>
                             <Typography>Month: {formData.month}</Typography>
 
                             <Grid container spacing={3} mt={2}>
-                                <Grid item xs={6}>
+                                <Grid size={{xs:6}}>
                                     <Typography fontWeight="bold">Earnings</Typography>
                                     <div>Basic Pension: ₹{formData.basicPension}</div>
                                     <div>DR: ₹{formData.dr}</div>
@@ -168,7 +168,7 @@ const PensionProcessing = () => {
                                     <div style={{ marginTop: 5 }}>Gross Pension: ₹{grossPension}</div>
                                 </Grid>
 
-                                <Grid item xs={6}>
+                                <Grid size={{xs:6}}>
                                     <Typography fontWeight="bold">Deductions</Typography>
                                     <div>Total Deductions: ₹{formData.deductions}</div>
                                 </Grid>

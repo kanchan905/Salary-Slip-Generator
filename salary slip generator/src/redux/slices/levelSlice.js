@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   levels: [],
+  employeePayStructures: []
 };
 
 const levelSlice = createSlice({
@@ -9,14 +10,7 @@ const levelSlice = createSlice({
   initialState,
   reducers: {
     addLevel: (state, action) => {
-      const { id, levelName, description } = action.payload;
-      state.levels.push({
-        id,
-        levelName,
-        description,
-        cells: [],
-        allowances: {}, // <- Add this
-      });
+      state.levels.push(action.payload);
     },
 
     updateLevel: (state, action) => {
@@ -79,6 +73,20 @@ const levelSlice = createSlice({
         delete level.allowances[key];
       }
     },
+    addEmployeePayStructure: (state, action) => {
+      state.employeePayStructures.push(action.payload);
+    },
+    updateEmployeePayStructure: (state, action) => {
+      const { id, updatedData } = action.payload;
+      const index = state.employeePayStructures.findIndex(ep => ep.id === id);
+      if (index !== -1) {
+        state.employeePayStructures[index] = { ...state.employeePayStructures[index], ...updatedData };
+      }
+    },
+    deleteEmployeePayStructure: (state, action) => {
+      const { id } = action.payload;
+      state.employeePayStructures = state.employeePayStructures.filter(ep => ep.id !== id);
+    }
   },
 });
 
@@ -91,6 +99,9 @@ export const {
   deleteCellFromLevel,
   setAllowanceRate,
   deleteAllowanceRate,
+  addEmployeePayStructure,
+  updateEmployeePayStructure,
+  deleteEmployeePayStructure
 } = levelSlice.actions;
 
 export default levelSlice.reducer;

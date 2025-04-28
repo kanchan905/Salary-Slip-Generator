@@ -1,6 +1,6 @@
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 import React,{useState, useEffect} from 'react'
-import CustomSnackbar from "../../components/include/CustomSnackbar";
+// import CustomSnackbar from "../../components/include/CustomSnackbar";
 
 
 const Header = () => {
@@ -153,12 +153,12 @@ const Header = () => {
           </div>
         </Container>
 
-        <CustomSnackbar
+        {/* <CustomSnackbar
         open={open}
         handleClose={() => setOpen(false)}
         message={`You have ${stats.pendingTasks} pending tasks`}
         severity="warning"
-      />
+      /> */}
 
       </div>
     </>
