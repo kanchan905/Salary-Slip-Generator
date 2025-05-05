@@ -56,11 +56,11 @@ const AdminDashboard = () => {
       <Container className="mt--7 mb-7" fluid>
         <Row>
           <Col className="mb-5 mb-xl-0" xl="8">
-            <Card className="bg-gradient-default shadow">
+            <Card className="bg-gradient-default shadow trend">
               <CardHeader className="bg-transparent">
                 <Row className="align-items-center">
                   <div className="col d-flex justify-content-center">
-                    <h6 className="text-uppercase text-light ls-1 mb-1">
+                    <h6 className="text-uppercase ls-1 mb-1" style={{color:'#002a5a'}}>
                       Disbursement Trends
                     </h6>
                   </div>
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
                     <div className="position-relative d-inline-block">
                       <button
                         type="button"
-                        className="btn btn-outline-primary dropdown-toggle d-flex align-items-center justify-between"
+                        className="btn trend-btn dropdown-toggle d-flex align-items-center justify-between"
                         onClick={() => setOpen(!open)}
                       >
                         {selected}

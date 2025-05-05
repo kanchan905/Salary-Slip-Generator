@@ -6,12 +6,16 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import adminRoutes from "routes/adminRoutes";
 import { accountOfficerRoutes } from "routes/accountOfficerRoutes";
+import { useSelector } from "react-redux";
+import { getCookie } from "cookies-next";
 
 
 const AdminLayout = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
-  const userRole = JSON.parse(localStorage.getItem('userData'))?.role
+  const user = useSelector((state) => state.auth.user) ||  getCookie('user');
+  // console.log(user)
+  const userRole = user?.user_name || 'Admin';
   let roleRoutes;
 
 

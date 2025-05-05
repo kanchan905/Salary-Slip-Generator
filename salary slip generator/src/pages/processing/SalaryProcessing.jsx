@@ -234,7 +234,7 @@ const SalaryProcessing = () => {
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
+            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
             <Box sx={{ width: '80%', margin: 'auto', mt: 8, mb: 8 }}>
                 <Typography variant="h5" gutterBottom fontWeight="bold">💼 Salary Processing</Typography>
 

@@ -27,7 +27,7 @@ class PaysStructure extends React.Component {
   render() {
     return (
       <>
-       <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
+       <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
        <div className="mt--7 container-fluid">
        <Card style={{ backgroundColor: 'transparent' }} className="shadow border-0 p-0">
         <div className="nav-wrapper p-0">

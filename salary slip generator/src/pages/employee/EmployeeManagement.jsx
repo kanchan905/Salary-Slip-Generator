@@ -14,14 +14,12 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Modal,
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Col,
-    Row,
 } from "reactstrap";
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { deleteEmployee, deleteMultipleEmployees, toggleStatus } from '../../redux/slices/employeeSlice';
+import { useNavigate } from 'react-router-dom';
 
 const statusChipColor = (status) => {
     switch (status) {
@@ -34,157 +32,14 @@ const statusChipColor = (status) => {
 export default function EmployeeManagement() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
-    const [formOpen, setFormOpen] = React.useState(false);
-    const [editingId, setEditingId] = useState(null);
-    const [employees, setEmployees] = useState([
-        {
-            id: 1,
-            name: 'Anita Sharma',
-            email: 'anita@example.com',
-            designation: 'Clerk',
-            department: 'Finance',
-            status: 'Active',
-            institute: 'NIOH',
-            doj: '2022-04-15',
-            bankAccount: '1234567890',
-            ifsc: 'SBIN0001234',
-            quarter: 'No',
-        },
-        {
-            id: 2,
-            name: 'Ravi Verma',
-            email: 'ravi@example.com',
-            designation: 'Officer',
-            department: 'HR',
-            status: 'Inactive',
-            institute: 'ROHC',
-            doj: '2021-08-10',
-            bankAccount: '9876543210',
-            ifsc: 'ICIC0005678',
-            quarter: 'Yes',
-        },
-        {
-            id: 3,
-            name: 'Priya Singh',
-            email: 'priya@example.com',
-            designation: 'Manager',
-            department: 'IT',
-            status: 'Active',
-            institute: 'NIOH',
-            doj: '2020-01-20',
-            bankAccount: '1122334455',
-            ifsc: 'HDFC0001234',
-            quarter: 'Yes',
-        },
-        {
-            id: 4,
-            name: 'Amit Kumar',
-            email: 'amit@example.com',
-            designation: 'Analyst',
-            department: 'Finance',
-            status: 'Active',
-            institute: 'ROHC',
-            doj: '2019-11-05',
-            bankAccount: '5566778899',
-            ifsc: 'AXIS0005678',
-            quarter: 'No',
-        },
-        {
-            id: 5,
-            name: 'Neha Gupta',
-            email: 'neha@example.com',
-            designation: 'Executive',
-            department: 'Marketing',
-            status: 'Inactive',
-            institute: 'NIOH',
-            doj: '2023-03-15',
-            bankAccount: '9988776655',
-            ifsc: 'PNB0001234',
-            quarter: 'No',
-        },
-        {
-            id: 6,
-            name: 'Vikram Mehta',
-            email: 'vikram@example.com',
-            designation: 'Supervisor',
-            department: 'Operations',
-            status: 'Active',
-            institute: 'ROHC',
-            doj: '2022-07-25',
-            bankAccount: '6677889900',
-            ifsc: 'BOB0005678',
-            quarter: 'Yes',
-        },
-        {
-            id: 7,
-            name: 'Kavita Joshi',
-            email: 'kavita@example.com',
-            designation: 'Consultant',
-            department: 'Legal',
-            status: 'Active',
-            institute: 'NIOH',
-            doj: '2021-05-10',
-            bankAccount: '3344556677',
-            ifsc: 'UBIN0001234',
-            quarter: 'No',
-        },
-        {
-            id: 8,
-            name: 'Rahul Tiwari',
-            email: 'rahul@example.com',
-            designation: 'Engineer',
-            department: 'IT',
-            status: 'Inactive',
-            institute: 'ROHC',
-            doj: '2020-09-30',
-            bankAccount: '2233445566',
-            ifsc: 'YESB0005678',
-            quarter: 'Yes',
-        },
-        {
-            id: 9,
-            name: 'Sneha Roy',
-            email: 'sneha@example.com',
-            designation: 'Specialist',
-            department: 'HR',
-            status: 'Active',
-            institute: 'NIOH',
-            doj: '2023-01-15',
-            bankAccount: '7788990011',
-            ifsc: 'IND0001234',
-            quarter: 'No',
-        },
-        {
-            id: 10,
-            name: 'Arjun Das',
-            email: 'arjun@example.com',
-            designation: 'Technician',
-            department: 'Maintenance',
-            status: 'Inactive',
-            institute: 'ROHC',
-            doj: '2018-12-20',
-            bankAccount: '4455667788',
-            ifsc: 'CANB0005678',
-            quarter: 'Yes',
-        },
-        {
-            id: 11,
-            name: 'Meera Nair',
-            email: 'meera@example.com',
-            designation: 'HR Specialist',
-            department: 'HR',
-            status: 'Active',
-            institute: 'NIOH',
-            doj: '2024-02-10',
-            bankAccount: '5566778890',
-            ifsc: 'SBIN0009876',
-            quarter: 'No',
-        },
-    ]);
+    // const [ , setEditingId] = useState(null);
+    const employees = useSelector((state)=> state.employee)
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [searchQuery, setSearchQuery] = React.useState("");
     const [selectedIndexes, setSelectedIndexes] = React.useState([]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     // Filter users based on search query
     const filteredEmployees = employees.filter((user) =>
@@ -192,22 +47,6 @@ export default function EmployeeManagement() {
     );
 
     const paginatedEmployees = filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-    const initialFormState = {
-        name: '',
-        email: '',
-        designation: '',
-        department: '',
-        institute: 'NIOH',
-        doj: '',
-        bankAccount: '',
-        ifsc: '',
-        quarter: 'No',
-        status: 'Active',
-        document: null,
-    };
-
-    const [formData, setFormData] = useState(initialFormState);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -224,8 +63,7 @@ export default function EmployeeManagement() {
     };
 
     const handleDeleteSelected = () => {
-        const filtered = employees.filter((employee) => !selectedIndexes.includes(employee.id));
-        setEmployees(filtered);
+        dispatch(deleteMultipleEmployees(selectedIndexes))
         setSelectedIndexes([]);
     };
 
@@ -240,71 +78,19 @@ export default function EmployeeManagement() {
         setMenuUserIndex(null);
     };
 
-    const toggleModal = (e) => {
-        if (e === "create") {
-            setFormData({
-                name: '',
-                email: '',
-                designation: '',
-                department: '',
-                institute: 'NIOH',
-                doj: '',
-                bankAccount: '',
-                ifsc: '',
-                quarter: 'No',
-                status: 'Active',
-                document: null,
-            });
-        }
-        setFormOpen(!formOpen);
-        if (e === "defaultModal") {
-            setFormOpen(!formOpen);
-        }
-    };
-
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData({ ...formData, [name]: files ? files[0] : value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (editingId) {
-            // Update existing employee
-            setEmployees((prev) =>
-                prev.map((emp) =>
-                    emp.id === editingId ? { ...emp, ...formData, id: editingId } : emp
-                )
-            );
-        } else {
-            // Add new employee
-            const newEmployee = {
-                ...formData,
-                id: Date.now(),
-            };
-            setEmployees([...employees, newEmployee]);
-        }
-
-        setFormOpen(false);
-        setEditingId(null);
-        setFormData(initialFormState);
-    };
-
     const handleEdit = (emp) => {
         handleClose();
-        setFormData(emp);
-        setEditingId(emp.id);
-        setFormOpen(true);
+        navigate(`/admin/employee/edit/${emp.id}`);
     };
 
     const handleDelete = (id) => {
-        setEmployees((prevEmployee) => prevEmployee.filter((employee) => employee.id !== id));
-        handleClose(); // Close the menu after deletion
+        dispatch(deleteEmployee(id))
+        handleClose(); 
     };
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
-            setSelectedIndexes(paginatedEmployees.map((user) => user.id)); // Use `id` instead of `name`
+            setSelectedIndexes(paginatedEmployees.map((user) => user.id)); 
         } else {
             setSelectedIndexes([]);
         }
@@ -319,18 +105,12 @@ export default function EmployeeManagement() {
     };
 
     const handleToggleStatus = (id) => {
-        setEmployees((prevEmployees) =>
-            prevEmployees.map((employee) =>
-                employee.id === id
-                    ? { ...employee, status: employee.status === "Active" ? "Inactive" : "Active" }
-                    : employee
-            )
-        );
+        dispatch(toggleStatus(id));
     };
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
+            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
             <div className="mt--7 mb-7 container-fluid">
                 <Card className="shadow border-0">
                     <CardHeader>
@@ -344,14 +124,15 @@ export default function EmployeeManagement() {
                                 <i className="bi bi-trash-fill me-1"></i>
                                 Delete Selected ({selectedIndexes.length})
                             </button>
+                            <NavLink to='/admin/employee/add'>
                             <Button
                                 // className="mb-3"
                                 color="primary"
                                 type="button"
-                                onClick={() => toggleModal("create")}
                             >
                                 + Add Employee
                             </Button>
+                            </NavLink>
                         </div>
                     </CardHeader>
                     <CardBody>
@@ -428,174 +209,7 @@ export default function EmployeeManagement() {
                         </TableContainer>
                     </CardBody>
                 </Card>
-                <Modal
-                    className="modal-dialog-centered"
-                    isOpen={formOpen}
-                    toggle={toggleModal}
-                >
-                    <div className='pt-4 pb-4 px-4'>
-                        <Form onSubmit={handleSubmit}>
-                            <h4 className="mb-4">{formData.name ? 'Edit Employee' : 'Create Employee'}</h4>
-                            {/* Form Fields */}
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="name">Full Name</Label>
-                                        <Input
-                                            id="name"
-                                            name="name"
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="email">Email</Label>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="designation">Designation</Label>
-                                        <Input
-                                            id="designation"
-                                            name="designation"
-                                            type="text"
-                                            value={formData.designation}
-                                            onChange={handleChange}
-                                        />
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="department">Department</Label>
-                                        <Input
-                                            id="department"
-                                            name="department"
-                                            type="text"
-                                            value={formData.department}
-                                            onChange={handleChange}
-                                        />
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="institute">Institute</Label>
-                                        <Input
-                                            id="institute"
-                                            name="institute"
-                                            type="select"
-                                            value={formData.institute}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="NIOH">NIOH</option>
-                                            <option value="ROHC">ROHC</option>
-                                        </Input>
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="doj">Date of Joining</Label>
-                                        <Input
-                                            id="doj"
-                                            name="doj"
-                                            type="date"
-                                            value={formData.doj}
-                                            onChange={handleChange}
-                                        />
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="bankAccount">Bank Account Number</Label>
-                                        <Input
-                                            id="bankAccount"
-                                            name="bankAccount"
-                                            type="text"
-                                            value={formData.bankAccount}
-                                            onChange={handleChange}
-                                        />
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="ifsc">IFSC Code</Label>
-                                        <Input
-                                            id="ifsc"
-                                            name="ifsc"
-                                            type="text"
-                                            value={formData.ifsc}
-                                            onChange={handleChange}
-                                        />
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="quarter">Quarter Allotted</Label>
-                                        <Input
-                                            id="quarter"
-                                            name="quarter"
-                                            type="select"
-                                            value={formData.quarter}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="No">No</option>
-                                            <option value="Yes">Yes</option>
-                                        </Input>
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for="status">Status</Label>
-                                        <Input
-                                            id="status"
-                                            name="status"
-                                            type="select"
-                                            value={formData.status}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                        </Input>
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <FormGroup>
-                                <Label for="document">Upload Document</Label>
-                                <Input
-                                    id="document"
-                                    name="document"
-                                    type="file"
-                                    onChange={handleChange}
-                                />
-                            </FormGroup>
-                            <Button color="primary" type="submit" className='mt-2'>
-                                Save
-                            </Button>
-                            <Button color="secondary" className='mt-2' onClick={() => setFormOpen(false)}>
-                                cancel
-                            </Button>
-                        </Form>
-                    </div>
-                </Modal>
+               
             </div>
         </>
     );

@@ -45,10 +45,14 @@
     "@reduxjs/toolkit": "^2.7.0",
     "@toolpad/core": "^0.14.0",
     "ajv": "^8.16.0",
+    "axios": "^1.9.0",
     "bootstrap": "^4.6.2",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "2.9.4",
     "classnames": "2.3.2",
+    "cookies-next": "^5.1.0",
+    "dotenv": "^16.5.0",
+    "formik": "^2.4.6",
     "install": "^0.13.0",
     "moment": "2.29.4",
     "nouislider": "15.4.0",
@@ -64,7 +68,9 @@
     "react-scripts": "5.0.1",
     "react-to-print": "^3.0.6",
     "reactstrap": "^8.10.0",
-    "sass": "1.69.5"
+    "sass": "1.69.5",
+    "sweetalert2": "^11.19.1",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

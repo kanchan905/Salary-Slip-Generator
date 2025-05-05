@@ -24,7 +24,7 @@ const ReportsDashboard = () => {
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
+            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
             <Container className="mt-5 mb-5">
                 <Typography variant="h4" fontWeight="bold" gutterBottom>
                     📊 Reports

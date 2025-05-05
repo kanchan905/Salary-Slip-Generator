@@ -1,150 +1,168 @@
 import React from 'react';
 import '../../assets/css/custom.css';
-import { useDispatch } from 'react-redux';
-import { setUserData } from '../../redux/slices/userSlice';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, Link } from 'react-router-dom';
 import logoNioh from '../../assets/img/images/nioh_logo_white.png';
 import logoRohc from '../../assets/img/images/rohc-logo.jpg';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../redux/slices/authSlice'
+
 
 const Login = () => {
-  const [formData, setFormData] = React.useState({
-    username: '',
-    password: '',
-    email: '',
-    institute: '',
-    role: 'Admin',
-    status: 'Active',
-  });
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading } = useSelector(state => state.auth);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const initialValues = {
+    email: 'admin@gmail.com',
+    password: '123456',
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(setUserData(formData));
-    localStorage.setItem('userData', JSON.stringify(formData));
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
+    password: Yup.string()
+      .required('Password is required')
+  });
 
-    setTimeout(() => {
-      switch (formData?.role) {
-        case 'Admin':
-          navigate('/admin/index');
-          break;
-        case 'Accounts Officer':
-          navigate('/accounts/dashboard');
-          break;
-        case 'Coordinator(NIOH)':
-          navigate('/nioh/dashboard');
-          break;
-        case 'Coordinator(ROHC)':
-          navigate('/rohc/dashboard');
-          break;
-        case 'Pensioner Operator':
-          navigate('/pensioner/dashboard');
-          break;
-        case 'End User':
-          navigate('/user/dashboard');
-          break;
-        default:
-          navigate('/login');
-      }
-    }, 1500);
-  };
+  // const onSubmit = async (values, { setSubmitting }) => {
+  //   try {
+  //     // const response = await dispatch(loginUser(values)).unwrap();
+  //     navigate('/admin/index')
+  //     // console.log(response)
+  //     // if (response) {
+  //     //   navigate('/admin/index')
+  //     //   console.log('login sucessfull')
+  //     // }
+  //   } catch (error) {
+  //     // showError("Login failed! Please try again.");
+  //     console.log("Login failed! Please try again.")
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
+
+
+  const onSubmit = ()=>{
+    navigate('/admin/index');
+  }
 
   return (
     <div className='login-main'>
-    <div className="login-page">
-      <div className="bg-slideshow">
-        <div className="bg-slide" style={{ backgroundImage: "url('/placeholder-bg1.jpg')" }}></div>
-        <div className="bg-slide" style={{ backgroundImage: "url('/placeholder-bg2.jpg')" }}></div>
-        <div className="bg-slide" style={{ backgroundImage: "url('/placeholder-bg3.jpg')" }}></div>
-      </div>
+      <div className="login-page">
+        <div className="custom-container d-flex" style={{ padding: '0px', width:'70vw', boxShadow: '0 15px 40px rgba(0, 0, 0, 0.2)' , overflow: 'hidden',borderRadius:'20px'}}>
+          <div className="left-panel">
+            <div className="slideshow">
+              <div className="slide" style={{ backgroundImage: "url('/placeholder-panel1.jpg')" }}></div>
+              <div className="slide" style={{ backgroundImage: "url('/placeholder-panel2.jpg')" }}></div>
+              <div className="slide" style={{ backgroundImage: "url('/placeholder-panel3.jpg')" }}></div>
+            </div>
 
-      <div className="custom-container d-flex" style={{ padding: '0px' }}>
-        <div className="left-panel">
-          <div className="slideshow">
-            <div className="slide" style={{ backgroundImage: "url('/placeholder-panel1.jpg')" }}></div>
-            <div className="slide" style={{ backgroundImage: "url('/placeholder-panel2.jpg')" }}></div>
-            <div className="slide" style={{ backgroundImage: "url('/placeholder-panel3.jpg')" }}></div>
-          </div>
-
-          <div className="content-wrapper">
-            <div className="logos-container">
-              <div className="main-logo logo">
-                <img src={logoNioh} alt="ICMR Logo" />
-              </div>
-              <div className="secondary-logos">
-                <div className="logo">
-                  <img src={logoNioh} alt="NIOH Logo" />
+            <div className="content-wrapper">
+              <div className="logos-container">
+                <div className="main-logo logo">
+                  <img src={logoNioh} alt="ICMR Logo" />
                 </div>
-                <div className="logo">
-                  <img src={logoRohc} alt="ROHC Logo" />
+                <div className="secondary-logos">
+                  {/* <div className="logo">
+                    <img src={logoNioh} alt="NIOH Logo" />
+                  </div> */}
+                  <div className="logo">
+                    <img src={logoRohc} alt="ROHC Logo" />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="header-content">
-              <h1 style={{ color: '#fff' }}>Salary Portal</h1>
-              <h2 style={{ color: '#fff' }}>ICMR-NIOH Ahmedabad & ROHC Bangalore</h2>
-              <p>Access and download your salary slips securely from anywhere, anytime.</p>
-            </div>
+              <div className="header-content">
+                <h1 style={{ color: '#fff' }}>Salary Portal</h1>
+                <h2 style={{ color: '#fff' }}>ICMR-NIOH Ahmedabad & ROHC Bangalore</h2>
+                <p>Access and download your salary slips securely from anywhere, anytime.</p>
+              </div>
 
-            <div className="institute-info">
-              ICMR-National Institute of Occupational Health (NIOH), Ahmedabad &<br />
-              Regional Occupational Health Centre (ROHC), Bangalore
+              <div className="institute-info">
+                ICMR-National Institute of Occupational Health (NIOH), Ahmedabad &<br />
+                Regional Occupational Health Centre (ROHC), Bangalore
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="right-panel">
-          <form className="login-form" onSubmit={handleSubmit}>
-            <h3>Employee Login</h3>
+          <div className="right-panel">
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={onSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form className="space-y-6 login-form">
+                  <h3 className="text-2xl font-semibold text-center text-gray-800">Employee Login</h3>
 
-            <div className="input-group">
-              <label htmlFor="employee-id">Employee ID</label>
-              <input
-                type="text"
-                id="employee-id"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Enter your employee ID"
-                required
-              />
-              <div className="input-icon">👤</div>
-            </div>
+                  {/* Employee ID */}
+                  <div className='mt-2 mb-2'>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                      Employee ID
+                    </label>
+                    <div className="relative">
+                      <Field
+                        name="email"
+                        type="text"
+                        placeholder="Enter your employee ID"
+                        style={{width:'100%'}}
+                        className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      {/* <span className="absolute left-3 top-2.5 text-gray-500 input-icon">👤</span> */}
+                    </div>
+                    <ErrorMessage name="email" component="p" className="text-red-600 text-sm mt-1" />
+                  </div>
 
-            <div className="input-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                required
-              />
-              <div className="input-icon">🔒</div>
-            </div>
+                  {/* Password */}
+                  <div className='mt-2 mb-2'>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Field
+                        name="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        style={{width:'100%'}}
+                        className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      {/* <span className="absolute left-3 top-2.5 text-gray-500 input-icon">🔒</span> */}
+                    </div>
+                    <ErrorMessage name="password" component="p" className="text-red-600 text-sm mt-1" />
+                  </div>
 
-            <div className="forgot-password">
-              <a href="/forgot-password">Forgot Password?</a>
-            </div>
+                  {/* Forgot Password */}
+                  <div className="text-right forgot-password mt-4">
+                    <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+                      Forgot Password?
+                    </Link>
+                  </div>
 
-            <button type="submit" className="login-btn">Sign In</button>
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || loading}
+                    className="login-btn w-full py-2 bg-gradient-to-r from-blue-700 to-blue-900 text-white font-semibold rounded-md hover:opacity-90"
+                  >
+                    {loading ? 'Logging in...' : 'Sign In'}
+                  </button>
 
-            <div className="help-text">
-              Having trouble logging in? <a href="/contact-support">Contact Support</a>
-            </div>
-          </form>
+                  {/* Help Text */}
+                  <p className="text-center text-sm text-gray-600 help-text">
+                    Having trouble logging in?{' '}
+                    <Link href="/contact-support" className="text-blue-600 hover:underline">
+                      Contact Support
+                    </Link>
+                  </p>
+                </Form>
+              )}
+            </Formik>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -1,16 +1,17 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { getCookie } from 'cookies-next';
 
 const PrivateRoute = ({ children }) => {
-    // Check if user exists in Redux state or localStorage
-    const user = useSelector((state) => state.user) || JSON.parse(localStorage.getItem("userData"));
+    const { token } = useSelector((state) => state.auth);
+    const cookieToken = getCookie("token");
+    // console.log(token)
 
 
-    if (!user) {
-        // Redirect to login if the user is not logged in
-        return <Navigate to="/login" />;
-    }
+    // if (!token && !cookieToken) {
+    //     return <Navigate to="/login" />;
+    // }
 
     return children;
 };

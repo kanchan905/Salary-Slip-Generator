@@ -143,9 +143,8 @@ export default function AllowanceForm() {
 
     return (
         <>
-          <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
-          <Box sx={{ width: '100%', bgcolor: 'background.paper', p: 3, pt:8, pb:8, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            <Box sx={{ maxWidth: { xs: '80%', sm: '90%' }, mb: 5 }}>
+          <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'>
+          <Box sx={{ maxWidth: { xs: '80%', sm: '90%' }, margin:'auto'}}>
               <Tabs
                 value={value}
                 onChange={handleTabChange}
@@ -155,11 +154,14 @@ export default function AllowanceForm() {
                 TabIndicatorProps={{ sx: { height: 3 } }}
               >
                 {ALLOWANCE_TYPES.map((label, index) => (
-                  <Tab key={index} label={label} sx={{ flex: '0 0 33.33%' }} />
+                  <Tab key={index} label={label} sx={{ flex: '0 0 33.33%', color:'white' }} />
                 ))}
               </Tabs>
             </Box>
       
+          </div>
+          <Box sx={{ width: '100%', bgcolor: 'background.paper', p: 3, pt:8, pb:8, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        
             <Paper sx={{ p: 3, width: '100%', maxWidth:{xs: '80%', sm: '90%'  }}}>
               <Grid container spacing={2}>
                 {renderFields()}

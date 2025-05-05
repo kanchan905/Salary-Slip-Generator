@@ -76,7 +76,7 @@ const PensionerManagement = () => {
 
   return (
     <>
-      <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
+      <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
 
       <div className='container mt--7 bg-white card'>
         <h2 className="mb-3 mt-4 p-4">Pensioner Management</h2>

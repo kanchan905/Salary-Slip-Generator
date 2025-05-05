@@ -6,24 +6,25 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "assets/scss/argon-dashboard-react.scss";
 import './assets/css/custom.css';
 import AdminLayout from "layouts/Admin";
-import { Provider } from "react-redux";
+import { Provider,useSelector } from "react-redux";
 import store from "./redux/store";
 import Login from "views/examples/Login";
 import SignUpPage from "views/examples/Register";
 import PrivateRoute from "clientLayout";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-const user = JSON.parse(localStorage.getItem("userData")) || null;
 
-root.render(
-  <Provider store={store}>
+const App = () => {
+  const user = useSelector((state) => state.auth.user) || null; 
+
+
+  return (
     <BrowserRouter>
-      <Routes>
+      {/* <Routes>
         {!user ? (
-           <>
-           <Route path="/login" element={<Login />} />
-           <Route path="*" element={<Navigate to="/login" replace />} />
-           </>
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
         ) : (
           <>
             <Route path="/login" element={<Login />} />
@@ -36,18 +37,36 @@ root.render(
                 </PrivateRoute>
               }
             />
-            <Route
+            {/* <Route
               path="/accounts/*"
               element={
                 <PrivateRoute>
                   <AdminLayout />
                 </PrivateRoute>
               }
+            /> */}
+            {/* <Route path="*" element={<Navigate to='/admin/index' replace />} /> */}
+          {/* </> */}
+        {/* )} */}
+      {/* </Routes> */}
+      <Routes>
+        <Route path="/login" element={<Login/>}></Route>
+      <Route
+              path="/admin/*"
+              element={
+                  <AdminLayout />
+              }
             />
-            <Route path="*" element={<Navigate to={`/${user.role.toLowerCase()}/index`} replace />} />
-          </>
-        )}
+            <Route path="*" element={<Navigate to='/admin/index' replace />} />
       </Routes>
     </BrowserRouter>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+root.render(
+  <Provider store={store}>
+    <App />
   </Provider>
 );

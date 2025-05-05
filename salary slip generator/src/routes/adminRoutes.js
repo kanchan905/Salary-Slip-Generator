@@ -11,6 +11,7 @@ import ReportsDashboard from "pages/report/reports";
 import Profile from "pages/Users/Profile";
 import SystemSettingsPage from "layouts/setting";
 import AllowanceForm from "pages/paysStructure/AllowanceForm";
+import EmployeeForm from "pages/employee/EmployeeForm";
 
 var adminRoutes = {
   dashboard: [
@@ -25,18 +26,32 @@ var adminRoutes = {
   management: [
     {
       path: "/user-management",
-      name: "User Management",
+      name: "User",
       icon: "ni ni-single-02 text-yellow",
       component: UserTable,
       layout: "/admin",
     },
     {
       path: "/employee-management",
-      name: "Employee Management",
+      name: "Employee",
       icon: "ni ni-single-02 text-blue",
       component: EmployeeTable,
       layout: "/admin",
     },
+    {
+      path:'/employee/add',
+      name:"Add-Employee",
+      component: EmployeeForm,
+      layout:"/admin",
+      showInSidebar: false,
+    },
+    {
+      path:'/employee/edit/:id',
+      name:"Add-Employee",
+      component: EmployeeForm,
+      layout:"/admin",
+      showInSidebar: false,
+    }
   ],
   masters: [
     {

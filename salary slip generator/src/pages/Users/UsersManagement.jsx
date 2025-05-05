@@ -161,7 +161,7 @@ export default function UserTable() {
         status: 'Active',
     });
 
-    const roles = ['Admin', 'Accounts Officer', 'Coordinator(NIOH)', 'Coordinator(ROHC)', 'Pensioner Operator', 'End User'];
+    const roles = ['IT Admin', 'Administrative Officer', 'Accounts Officer', 'Salary Coordinator - NIOH', 'Salary Coordinator - ROHC', 'Pension Coordinator','End Users'];
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -232,7 +232,7 @@ export default function UserTable() {
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8'></div>
+            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
             <div className="mt--7 mb-7 container-fluid">
                 <Card className="card-stats mb-4 mb-lg-0" >
                     <CardHeader>

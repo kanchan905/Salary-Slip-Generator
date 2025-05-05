@@ -14,6 +14,7 @@ import {
   Nav,
   Container,
   Media,
+  CardTitle,
 } from "reactstrap";
 import logo from '../../assets/img/images/nioh_logo_white.png'
 
@@ -32,12 +33,12 @@ const AdminNavbar = (props) => {
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
         <Container fluid>
-          <Link
-            className="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block w-25"
-            to="/"
+          <CardTitle
+            tag="h5"
+            className="text-uppercase text-white mb-0"
           >
-            <img src={logo} alt="not-found" className="w-75" />
-          </Link>
+            Welcome to Salary & Pension Portal of NIOH
+          </CardTitle>
           {/* <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
             <FormGroup className="mb-0">
               <InputGroup className="input-group-alternative" style={{marginBottom: '0px'}}>
@@ -86,12 +87,12 @@ const AdminNavbar = (props) => {
                     <span className="avatar avatar-sm rounded-circle">
                       <img
                         alt="..."
-                        src={require("../../assets/img/theme/team-4-800x800.jpg")}
+                        src={require("../../assets/img/theme/image.png")}
                       />
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
-                      <span className="mb-0 text-sm font-weight-bold">
-                        Jessica Jones
+                      <span className="mb-0 text-sm font-weight-bold text-white">
+                        Admin
                       </span>
                     </Media>
                   </Media>
@@ -102,7 +103,7 @@ const AdminNavbar = (props) => {
                   </DropdownItem>
                   <DropdownItem to="/admin/user-profile" tag={Link}>
                     <i className="ni ni-single-02" />
-                    <span>profile</span>
+                    <span>Profile</span>
                   </DropdownItem>
                   <DropdownItem to="/admin/user-profile" tag={Link}>
                     <i className="ni ni-calendar-grid-58" />
