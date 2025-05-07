@@ -35,7 +35,6 @@ The **Salary Slip Generator** is a simple tool designed to automate the creation
 ## Technologies Used
 - **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Node.js
-- **PDF Generation**: [PDFKit](https://pdfkit.org/)
 
 ## Contributing
 Contributions are welcome! Please follow these steps:
@@ -58,4 +57,4 @@ Contributions are welcome! Please follow these steps:
 This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
-For any questions or feedback, feel free to reach out at [your-email@example.com].
+For any questions or feedback, feel free to reach out at [kanchanbaghel89@gmail.com].
