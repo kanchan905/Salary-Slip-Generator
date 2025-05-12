@@ -1,27 +1,64 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from 'global/AxiosSetting';
 
+// THUNKS
+export const fetchPayLevel = createAsyncThunk(
+  "levels/fetchPayLevel",
+  async (credentials, { rejectWithValue }) => {
+    const { page, limit } = credentials;
+    try {
+      const response = await axiosInstance.get(`pay-matrix-levels?page=${page}&limit=${limit}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch levels");
+    }
+  }
+);
+
+
+export const addLevelToAPI = createAsyncThunk(
+  "levels/addLevelToAPI",
+  async (newLevel, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/pay-matrix-levels", {
+        name: newLevel.levelName,
+        description: newLevel.description
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to add level");
+    }
+  }
+);
+
+export const updateLevelToAPI = createAsyncThunk(
+  "levels/updateLevelToAPI",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put(`/pay-matrix-levels/${data.id}`, {
+        name: data.levelName,
+        description: data.description
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update level");
+    }
+  }
+);
+
+// INITIAL STATE
 const initialState = {
   levels: [],
-  employeePayStructures: []
+  employeePayStructures: [],
+  loading: false,
+  error: null
 };
 
+// SLICE
 const levelSlice = createSlice({
   name: 'levels',
   initialState,
   reducers: {
-    addLevel: (state, action) => {
-      state.levels.push(action.payload);
-    },
-
-    updateLevel: (state, action) => {
-      const { id, levelName, description } = action.payload;
-      const level = state.levels.find((lvl) => lvl.id === id);
-      if (level) {
-        level.levelName = levelName;
-        level.description = description;
-      }
-    },
-
     deleteLevel: (state, action) => {
       const { id } = action.payload;
       state.levels = state.levels.filter((lvl) => lvl.id !== id);
@@ -31,6 +68,7 @@ const levelSlice = createSlice({
       const { levelId, cell } = action.payload;
       const level = state.levels.find((lvl) => lvl.id === levelId);
       if (level) {
+        level.cells = level.cells || [];
         level.cells.push(cell);
       }
     },
@@ -38,7 +76,7 @@ const levelSlice = createSlice({
     updateCellInLevel: (state, action) => {
       const { levelId, cellId, updatedCell } = action.payload;
       const level = state.levels.find((lvl) => lvl.id === levelId);
-      if (level) {
+      if (level && level.cells) {
         const cellIndex = level.cells.findIndex((cell) => cell.id === cellId);
         if (cellIndex !== -1) {
           level.cells[cellIndex] = { ...level.cells[cellIndex], ...updatedCell };
@@ -49,12 +87,11 @@ const levelSlice = createSlice({
     deleteCellFromLevel: (state, action) => {
       const { levelId, cellId } = action.payload;
       const level = state.levels.find((lvl) => lvl.id === levelId);
-      if (level) {
+      if (level && level.cells) {
         level.cells = level.cells.filter((cell) => cell.id !== cellId);
       }
     },
 
-    // ALLOWANCE RATE ACTIONS
     setAllowanceRate: (state, action) => {
       const { levelId, key, value } = action.payload;
       const level = state.levels.find((lvl) => lvl.id === levelId);
@@ -73,26 +110,75 @@ const levelSlice = createSlice({
         delete level.allowances[key];
       }
     },
+
     addEmployeePayStructure: (state, action) => {
       state.employeePayStructures.push(action.payload);
     },
+
     updateEmployeePayStructure: (state, action) => {
       const { id, updatedData } = action.payload;
       const index = state.employeePayStructures.findIndex(ep => ep.id === id);
       if (index !== -1) {
-        state.employeePayStructures[index] = { ...state.employeePayStructures[index], ...updatedData };
+        state.employeePayStructures[index] = {
+          ...state.employeePayStructures[index],
+          ...updatedData
+        };
       }
     },
+
     deleteEmployeePayStructure: (state, action) => {
       const { id } = action.payload;
       state.employeePayStructures = state.employeePayStructures.filter(ep => ep.id !== id);
     }
   },
+  extraReducers: (builder) => {
+    builder
+      // Fetch Levels
+      .addCase(fetchPayLevel.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPayLevel.fulfilled, (state, action) => {
+        state.loading = false;
+        state.levels = action.payload?.data || [];
+      })
+      .addCase(fetchPayLevel.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Add Level
+      .addCase(addLevelToAPI.fulfilled, (state, action) => {
+        state.levels.push({
+          id: action.payload.id,
+          levelName: action.payload.name,
+          description: action.payload.description,
+          cells: [],
+          allowances: {}
+        });
+      })
+      .addCase(addLevelToAPI.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      // Update Level
+      .addCase(updateLevelToAPI.fulfilled, (state, action) => {
+        const index = state.levels.findIndex(lvl => lvl.id === action.payload.id);
+        if (index !== -1) {
+          state.levels[index] = {
+            ...state.levels[index],
+            levelName: action.payload.name,
+            description: action.payload.description
+          };
+        }
+      })
+      .addCase(updateLevelToAPI.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+  }
 });
 
 export const {
-  addLevel,
-  updateLevel,
   deleteLevel,
   addCellToLevel,
   updateCellInLevel,

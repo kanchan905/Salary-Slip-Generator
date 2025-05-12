@@ -52,6 +52,7 @@ const EmployeePayStructures = () => {
 
   return (
     <>
+    <Typography variant="h6" mb={2}>Employee Pay Structure</Typography>
     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, boxShadow: 'none' }}>
       <form onSubmit={handleAddPayStructure}>
         <Grid container spacing={2}>

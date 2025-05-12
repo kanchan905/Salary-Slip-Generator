@@ -15,20 +15,12 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Async thunk to fetch current logged-in user
 export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const token = getCookie("token");
-
-      if (!token) {
-        throw new Error("Token is missing");
-      }
-
-      const response = await axiosInstance.get("/user", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
+      const response = await axiosInstance.get("/user");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch user data");
@@ -42,6 +34,7 @@ export const fetchCurrentUser = createAsyncThunk(
 const getInitialState = () => {
   // let token = localStorage.getItem('token');
   let token = getCookie('token');
+  if (token) updateToken(token);
   let user = null;
 
   try {
@@ -65,6 +58,7 @@ const getInitialState = () => {
   };
 };
 
+
 const authSlice = createSlice({
   name: "auth",
   initialState: getInitialState(),
@@ -72,21 +66,32 @@ const authSlice = createSlice({
     login: (state, action) => {
       state.isLoggedIn = true;
       state.token = action.payload.token;
+      updateToken(action.payload.token);
+      setCookie('token', action.payload.token, { path: '/', maxAge: 60 * 60 * 24 });
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.error = null;
       state.isLoggedIn = false;
-      // Set cookies to expire immediately
-      setCookie('token', '', { path: '/', maxAge: -1 });
-      setCookie('user', '', { path: '/', maxAge: -1 });
 
-      console.log("Cookies deleted:", getCookie('token'), getCookie('user'));
+      deleteCookie('token');
+      deleteCookie('user');
+      updateToken('');
+    },
+    clearAuth: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isLoggedIn = false;
+
+      deleteCookie('token');
+      deleteCookie('user');
+      updateToken('');
     },
   },
   extraReducers: (builder) => {
     builder
+      // loginUser
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -95,13 +100,16 @@ const authSlice = createSlice({
         state.loading = false;
         state.token = action.payload.token;
         state.isLoggedIn = true;
-        setCookie('token', action.payload.token, { path: '/', maxAge: 60 * 60 * 24 }); // 1 day expiration
-        fetchCurrentUser();
+
+        setCookie('token', action.payload.token, { path: '/', maxAge: 60 * 60 * 24 });
+        updateToken(action.payload.token); // Update Axios token globally
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
+      // fetchCurrentUser
       .addCase(fetchCurrentUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -109,6 +117,7 @@ const authSlice = createSlice({
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.data;
+
         setCookie('user', JSON.stringify(action.payload.data), { path: '/', maxAge: 60 * 60 * 24 });
       })
       .addCase(fetchCurrentUser.rejected, (state, action) => {
@@ -118,6 +127,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout } = authSlice.actions;
-
+export const { login, logout, clearAuth } = authSlice.actions;
 export default authSlice.reducer;

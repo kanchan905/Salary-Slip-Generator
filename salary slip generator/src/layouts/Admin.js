@@ -8,6 +8,7 @@ import { accountOfficerRoutes } from "routes/accountOfficerRoutes";
 import { useSelector } from "react-redux";
 import { getCookie } from "cookies-next";
 import  getAdminRoutes  from "../routes/adminRoutes";
+import { Bounce, ToastContainer } from "react-toastify";
 
 
 const AdminLayout = (props) => {
@@ -84,6 +85,19 @@ const AdminLayout = (props) => {
         <Container style={{padding:'0px'}}>
           <AdminFooter />
         </Container>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}
+        />
       </div>
     </>
   );
