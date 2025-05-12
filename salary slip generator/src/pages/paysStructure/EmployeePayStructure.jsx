@@ -123,6 +123,7 @@ const EmployeePayStructures = () => {
         </Grid>
           <Grid container spacing={2} mt={4} mb={4}>
             <Button
+             style={{background:"#004080"}}
               variant="contained"
               type="submit"
               endIcon={<SendIcon />}

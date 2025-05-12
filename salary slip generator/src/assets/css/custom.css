@@ -1,5 +1,8 @@
 .nav-wrapper .navactive {
-  color: blue !important;
+  color: #004080 !important;
+}
+.nav-wrapper .nav-link{
+  color: #004080 !important;
 }
 
 h6 {
@@ -475,4 +478,31 @@ body {
 }
 .MuiTabs-scrollButtons{
   color: white !important;
+}
+.dropdown-item:active{
+  background-color: #004080 !important;
+}
+/*cardprofile scrollbar*/
+.custom-scrollbar {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #004080 #e3f2fd; /* Thumb and track colors */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Scrollbar width */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #e3f2fd; /* Light blue track color */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #004080; /* Dark blue thumb color */
+  border-radius: 10px;
+  border: 2px solid #e3f2fd; /* Adds padding around the thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #002a5a; /* Darker blue thumb hover color */
 }

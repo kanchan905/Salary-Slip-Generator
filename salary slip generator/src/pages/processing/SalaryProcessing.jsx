@@ -254,7 +254,8 @@ const SalaryProcessing = () => {
                     </Button>
                     {activeStep < steps.length - 1 ? (
                         <Button
-                            variant="contained"
+                        className='btn text-white'
+                            style={{background:'#004080'}}
                             onClick={() => {
                                 const { valid, message } = validateStep();
                                 if (valid) {

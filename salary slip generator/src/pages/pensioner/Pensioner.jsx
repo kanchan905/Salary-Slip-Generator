@@ -100,7 +100,10 @@ const PensionerManagement = () => {
             <label className="form-label">Upload Documents</label>
             <input type="file" className="form-control" name="file" onChange={handleChange} />
           </div>
-          <button className="btn btn-primary" onClick={handleAddOrUpdate}>
+          <button
+          className="btn text-white"
+           style={{background:'#004080'}}
+            onClick={handleAddOrUpdate}>
             {editIndex !== null ? 'Update' : 'Add'}
           </button>
         </div>

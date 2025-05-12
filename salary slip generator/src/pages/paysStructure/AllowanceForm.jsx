@@ -196,7 +196,12 @@ export default function AllowanceForm() {
               </Grid>
               <Row className='m-0 mt-4'>
               <Grid item xs={12}>
-                  <Button variant="contained" color="primary" fullWidth>
+                  <Button
+                  className='text-white pt-2 pb-2 pl-4 pr-4'
+                  style={{background:'#004080'}}
+                //    variant="contained"
+                //     color="primary"
+                     fullWidth>
                     Submit
                   </Button>
                 </Grid>

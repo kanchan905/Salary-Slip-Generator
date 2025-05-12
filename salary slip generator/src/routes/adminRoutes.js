@@ -1,6 +1,6 @@
 import AdminDashboard from "Dashboard/Admin";
-import SignOutPage from "views/examples/Register";
-import Login from "views/examples/Login.js";
+import SignOutPage from "views/Register";
+import Login from "views/Login.js";
 import UserTable from "pages/Users/UsersManagement";
 import EmployeeTable from "pages/employee/EmployeeManagement";
 import PaysStructure from "pages/paysStructure/PayStructureManagement";
@@ -12,15 +12,20 @@ import Profile from "pages/Users/Profile";
 import SystemSettingsPage from "layouts/setting";
 import AllowanceForm from "pages/paysStructure/AllowanceForm";
 import EmployeeForm from "pages/employee/EmployeeForm";
+import EmployeeDetail from "pages/employee/EmployeeDetail";
 
-var adminRoutes = {
+
+
+
+const getAdminRoutes = (role) => (
+   {
   dashboard: [
     {
       path: "/index",
       name: "Dashboard",
       icon: "ni ni-tv-2 text-primary",
       component: AdminDashboard,
-      layout: "/admin",
+      layout: role,
     },
   ],
   management: [
@@ -29,27 +34,35 @@ var adminRoutes = {
       name: "User",
       icon: "ni ni-single-02 text-yellow",
       component: UserTable,
-      layout: "/admin",
+      layout: role,
     },
     {
       path: "/employee-management",
       name: "Employee",
       icon: "ni ni-single-02 text-blue",
       component: EmployeeTable,
-      layout: "/admin",
+      layout: role,
+    },
+    {
+      path: "/employee/:id",
+      name: "Employee",
+      icon: "ni ni-single-02 text-blue",
+      component: EmployeeDetail,
+      layout: role,
+      showInSidebar: false,
     },
     {
       path:'/employee/add',
       name:"Add-Employee",
       component: EmployeeForm,
-      layout:"/admin",
+      layout: role,
       showInSidebar: false,
     },
     {
       path:'/employee/edit/:id',
       name:"Add-Employee",
       component: EmployeeForm,
-      layout:"/admin",
+      layout: role,
       showInSidebar: false,
     }
   ],
@@ -59,14 +72,14 @@ var adminRoutes = {
       name: "Pay Structure",
       icon: "ni ni-settings-gear-65 text-orange",
       component: PaysStructure,
-      layout: "/admin",
+      layout: role,
     },
     {
       path: "/allowance-rates",
       name: "Allowance Rates",
       icon: "ni ni-money-coins text-orange",
       component: AllowanceForm,
-      layout: "/admin",
+      layout: role,
     },
   ],
   pentioner: [
@@ -75,7 +88,7 @@ var adminRoutes = {
       name: "Pensioners",
       icon: "ni ni-circle-08 text-red",
       component: PensionerManagement,
-      layout: "/admin",
+      layout: role,
     },
   ],
   processing: [
@@ -84,7 +97,7 @@ var adminRoutes = {
       name: "Salary Processing",
       icon: "ni ni-settings-gear-65 text-info",
       component: SalaryProcessing,
-      layout: "/admin",
+      layout: role,
       showInSidebar: true,
     },
     {
@@ -92,7 +105,7 @@ var adminRoutes = {
       name: "Pension Processing",
       icon: "ni ni-sound-wave text-pink",
       component: PensionProcessing,
-      layout: "/admin",
+      layout: role,
       showInSidebar: true,
     },
   ],
@@ -102,7 +115,7 @@ var adminRoutes = {
       name: "Reports",
       icon: "ni ni-paper-diploma text-purple",
       component: ReportsDashboard,
-      layout: "/admin",
+      layout: role,
       showInSidebar: true,
     },
   ],
@@ -119,7 +132,7 @@ var adminRoutes = {
       name: "Sign Up",
       icon: "ni ni-circle-08 text-pink",
       component: SignOutPage,
-      layout: "/admin",
+      layout: role,
       showInSidebar: false,
     },
     {
@@ -127,7 +140,7 @@ var adminRoutes = {
       name: "Profile",
       icon: "ni ni-circle-08 text-pink",
       component: Profile,
-      layout: "/admin",
+      layout: role,
       showInSidebar: false, // Add this property
     },
     {
@@ -135,8 +148,8 @@ var adminRoutes = {
       name: "Settings",
       icon: "ni ni-settings-gear-65 text-info",
       component: SystemSettingsPage,
-      layout: "/admin",
+      layout: role,
     }
   ],
-};
-export default adminRoutes;
+});
+export default getAdminRoutes;

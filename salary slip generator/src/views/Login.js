@@ -1,12 +1,14 @@
-import React from 'react';
-import '../../assets/css/custom.css';
+import React, { useState } from 'react';
+import '../assets/css/custom.css';
 import { useNavigate, Link } from 'react-router-dom';
-import logoNioh from '../../assets/img/images/nioh_logo_white.png';
-import logoRohc from '../../assets/img/images/rohc-logo.jpg';
+import logoNioh from '../assets/img/images/nioh_logo_white.png';
+import logoRohc from '../assets/img/images/rohc-logo.jpg';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../redux/slices/authSlice'
+import { loginUser } from '../redux/slices/authSlice'
+import { fetchCurrentUser } from '../redux/slices/authSlice';
+import CustomSnackbar from 'components/include/CustomSnackbar';
 
 
 const Login = () => {
@@ -14,40 +16,59 @@ const Login = () => {
   const navigate = useNavigate();
   const { loading } = useSelector(state => state.auth);
 
+  // Snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success', 
+  });
+
   const initialValues = {
-    email: 'admin@gmail.com',
-    password: '123456',
+    username: '',
+    password: '',
   };
 
   const validationSchema = Yup.object({
-    email: Yup.string()
-      .email('Invalid email address')
-      .required('Email is required'),
+    username: Yup.string()
+      .required('Username is required'),
     password: Yup.string()
       .required('Password is required')
   });
 
-  // const onSubmit = async (values, { setSubmitting }) => {
-  //   try {
-  //     // const response = await dispatch(loginUser(values)).unwrap();
-  //     navigate('/admin/index')
-  //     // console.log(response)
-  //     // if (response) {
-  //     //   navigate('/admin/index')
-  //     //   console.log('login sucessfull')
-  //     // }
-  //   } catch (error) {
-  //     // showError("Login failed! Please try again.");
-  //     console.log("Login failed! Please try again.")
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
+  const onSubmit = async (values, { setSubmitting }) => {
+    try {
+      const response = await dispatch(loginUser(values)).unwrap();
 
+      if (response && response.token) {
 
-  const onSubmit = ()=>{
-    navigate('/admin/index');
-  }
+        setSnackbar({
+          open: true,
+          message: 'Login successful!',
+          severity: 'success',
+        });
+
+        const {data} = await dispatch(fetchCurrentUser()).unwrap(); 
+        const role = data.role.name.toLowerCase();
+        
+        setTimeout(() => {
+          navigate(`/${role}/index`);
+        }, 100);
+
+        console.log('Login successful');
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Login failed! Please try again.',
+        severity: 'error',
+      });
+
+      console.log("Login failed! Please try again.")
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
 
   return (
     <div className='login-main'>
@@ -100,12 +121,12 @@ const Login = () => {
 
                   {/* Employee ID */}
                   <div className='mt-2 mb-2'>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
                       Employee ID
                     </label>
                     <div className="relative">
                       <Field
-                        name="email"
+                        name="username"
                         type="text"
                         placeholder="Enter your employee ID"
                         style={{width:'100%'}}
@@ -113,7 +134,7 @@ const Login = () => {
                       />
                       {/* <span className="absolute left-3 top-2.5 text-gray-500 input-icon">👤</span> */}
                     </div>
-                    <ErrorMessage name="email" component="p" className="text-red-600 text-sm mt-1" />
+                    <ErrorMessage name="username" component="p" className="text-red-600 text-sm mt-1" />
                   </div>
 
                   {/* Password */}
@@ -163,6 +184,14 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      <CustomSnackbar
+        open={snackbar.open}
+        handleClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+        severity={snackbar.severity}
+      />
+      
     </div>
   );
 };

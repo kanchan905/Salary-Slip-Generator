@@ -1,25 +1,27 @@
-import { Link, Navigate } from "react-router-dom";
+import { use } from "react";
+import { useSelector } from "react-redux";
+import { Link} from "react-router-dom";
 import {
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
-  Form,
-  FormGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  InputGroup,
   Navbar,
   Nav,
   Container,
   Media,
   CardTitle,
 } from "reactstrap";
-import logo from '../../assets/img/images/nioh_logo_white.png'
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 
 const AdminNavbar = (props) => {
+
+  const dispatch = useDispatch();
+  const {name} = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
   const notifications = [
     { id: 1, message: "New salary slip available" },
@@ -27,7 +29,10 @@ const AdminNavbar = (props) => {
     { id: 3, message: "Reminder: Fill appraisal form" },
   ];
 
-
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  }
 
   return (
     <>
@@ -39,18 +44,6 @@ const AdminNavbar = (props) => {
           >
             Welcome to Salary & Pension Portal of NIOH
           </CardTitle>
-          {/* <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-            <FormGroup className="mb-0">
-              <InputGroup className="input-group-alternative" style={{marginBottom: '0px'}}>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fas fa-search" />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input placeholder="Search" type="text" />
-              </InputGroup>
-            </FormGroup>
-          </Form> */}
           <div className="mr-3 d-none d-md-flex ml-lg-auto">
             <Nav className="align-items-center d-none d-md-flex" navbar>
               <UncontrolledDropdown nav>
@@ -92,7 +85,7 @@ const AdminNavbar = (props) => {
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold text-white">
-                        Admin
+                        {name}
                       </span>
                     </Media>
                   </Media>
@@ -110,7 +103,7 @@ const AdminNavbar = (props) => {
                     <span>Change password</span>
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href="/login">
+                  <DropdownItem onClick={handleLogout}>
                     <i className="ni ni-user-run" />
                     <span>Logout</span>
                   </DropdownItem>

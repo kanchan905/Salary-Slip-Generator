@@ -58,7 +58,11 @@ function PayLevel(){
           <Row>
             <Col>
              <FormGroup>
-             <Button color="primary" outline typeof="submit">Add Level</Button>
+             <Button 
+             style={{background:"#004080" , color:'#fff'}}
+            //  color="primary"
+              outline 
+              typeof="submit">Add Level</Button>
              </FormGroup>
             </Col>
           </Row>

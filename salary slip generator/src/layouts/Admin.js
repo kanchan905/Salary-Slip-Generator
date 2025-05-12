@@ -4,19 +4,17 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import adminRoutes from "routes/adminRoutes";
 import { accountOfficerRoutes } from "routes/accountOfficerRoutes";
 import { useSelector } from "react-redux";
 import { getCookie } from "cookies-next";
+import  getAdminRoutes  from "../routes/adminRoutes";
 
 
 const AdminLayout = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
-  const user = useSelector((state) => state.auth.user) ||  getCookie('user');
-  // console.log(user)
-  const userRole = user?.user_name || 'Admin';
-  let roleRoutes;
+  const { role } = useSelector((state) => state.auth.user) ||  getCookie('user');
+  let roleRoutes = [];
 
 
   React.useEffect(() => {
@@ -26,9 +24,9 @@ const AdminLayout = (props) => {
   }, [location]);
 
   // Select routes based on the user's role
-  switch (userRole) {
+  switch (role?.name) {
     case "Admin":
-      roleRoutes = adminRoutes;
+      roleRoutes = getAdminRoutes(role?.name.toLowerCase());
       break;
     case "Accounts Officer":
       roleRoutes = accountOfficerRoutes;
@@ -37,7 +35,7 @@ const AdminLayout = (props) => {
       roleRoutes = accountOfficerRoutes;
       break;
     default:
-      roleRoutes = accountOfficerRoutes; 
+      roleRoutes = [];
   }
 
 
@@ -45,7 +43,7 @@ const AdminLayout = (props) => {
     const filteredRoutes = Object.values(routes).flat();
     return filteredRoutes.map((prop, key) => {
         return (
-          <Route path={prop.path} element={<prop.component />} key={key} />
+          <Route path={prop.layout + prop.path} element={<prop.component />} key={key} />
         );
       }
     );

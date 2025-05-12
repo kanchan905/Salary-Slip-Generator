@@ -222,7 +222,10 @@ const PensionProcessing = () => {
                         Back
                     </Button>
                     {activeStep < steps.length - 1 ? (
-                        <Button variant="contained" onClick={handleNext}>
+                        <Button
+                        className='btn text-white'
+                        style={{background:'#004080'}}
+                         onClick={handleNext}>
                             Next
                         </Button>
                     ) : (

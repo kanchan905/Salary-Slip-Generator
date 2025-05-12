@@ -9,9 +9,9 @@ const PrivateRoute = ({ children }) => {
     // console.log(token)
 
 
-    // if (!token && !cookieToken) {
-    //     return <Navigate to="/login" />;
-    // }
+    if (!token && !cookieToken) {
+        return <Navigate to="/login" />;
+    }
 
     return children;
 };

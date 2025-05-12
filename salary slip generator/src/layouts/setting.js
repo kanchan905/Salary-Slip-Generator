@@ -136,17 +136,27 @@ const SystemSettingsPage = () => {
           Backup & Restore
         </Typography>
         <Box className="d-flex mb-3" style={{gap:'10px'}}>
-          <Button variant="outlined" color="primary" onClick={handleBackup}>
+          <Button
+          style={{border:"1px solid #004080", color:'#004080'}}
+          //  variant="outlined" 
+          //  color="primary" 
+           onClick={handleBackup}>
             Backup Settings
           </Button>
-          <Button variant="outlined" color="secondary" onClick={handleRestore}>
+          <Button
+            style={{border:"1px solid #004080", color:'#004080'}}
+          //  variant="outlined"
+          //   color="secondary"
+             onClick={handleRestore}>
             Restore Settings
           </Button>
         </Box>
 
         {/* Save Button */}
         <Divider className="my-4" />
-        <Button variant="contained" color="success" onClick={handleSave}>
+        <Button 
+        style={{background:'#004080', color:'#fff'}}
+        onClick={handleSave}>
           Save All Settings
         </Button>
       </Box>

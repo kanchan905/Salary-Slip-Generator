@@ -1,8 +1,8 @@
 import React from 'react';
-import '../../assets/css/custom.css';
-import logo from '../../assets/img/images/logo.png'
+import '../assets/css/custom.css';
+import logo from '../assets/img/images/logo.png'
 import { useDispatch } from 'react-redux';
-import { setUserData } from '../../redux/slices/userSlice';
+import { setUserData } from '../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {

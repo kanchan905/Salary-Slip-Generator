@@ -110,7 +110,8 @@ const PayMatrixCell = () => {
               <Button
                 fullWidth
                 variant="contained"
-                color="success"
+                style={{background:"#004080"}}
+                // color="success"
                 sx={{ height: '100%' }}
                 onClick={handleAddCell}
               >

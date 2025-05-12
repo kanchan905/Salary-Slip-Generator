@@ -247,8 +247,7 @@ export default function UserTable() {
                                 Delete Selected ({selectedIndexes.length})
                             </button>
                             <Button
-                                // className="mb-3"
-                                color="primary"
+                                style={{background:"#004080"}}
                                 type="button"
                                 onClick={() => toggleModal("create")}
                             >
