@@ -13,8 +13,8 @@ import SystemSettingsPage from "layouts/setting";
 import AllowanceForm from "pages/paysStructure/AllowanceForm";
 import EmployeeForm from "pages/employee/EmployeeForm";
 import EmployeeDetail from "pages/employee/EmployeeDetail";
-
-
+import EmployeeEditForm from 'pages/employee/EmployeeEditForm'
+import EmployeeQuarter from 'pages/employee/EmployeeQuarter'
 
 
 const getAdminRoutes = (role) => (
@@ -60,8 +60,15 @@ const getAdminRoutes = (role) => (
     },
     {
       path:'/employee/edit/:id',
-      name:"Add-Employee",
-      component: EmployeeForm,
+      name:"Edit-Employee",
+      component: EmployeeEditForm,
+      layout: role,
+      showInSidebar: false,
+    },
+    {
+      path:'/employee/:id/quarter',
+      name:"Quarter-Employee",
+      component: EmployeeQuarter,
       layout: role,
       showInSidebar: false,
     }

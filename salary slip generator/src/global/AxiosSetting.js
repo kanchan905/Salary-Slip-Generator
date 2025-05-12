@@ -1,26 +1,31 @@
 import axios from 'axios';
 import { API_URL } from './Global';
+import { getCookie } from "cookies-next";
 
-
-let authToken = "";
+// let authToken = "";
 
 export function updateToken(token) {
   // console.log({authToken, token})
   // console.log("axioss", {authToken, token})
-  authToken = token;
+  console.log("updateToken", token);
+  // authToken = token;
+  token = token;
 }
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     Accept: 'application/json',
-    Authorization: 'Bearer ' + authToken,
+    // Authorization: 'Bearer ' + token,
   },
 });
 
 axiosInstance.interceptors.request.use(function (config) {
-  if (authToken) {
-    config.headers['Authorization'] = `Bearer ${authToken}`
+  const token = getCookie("token");
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete config.headers['Authorization'];
   }
 
   return config;
@@ -38,7 +43,7 @@ axiosInstance.interceptors.response.use(
   async function (error) {
     // console.log("RESPONSE_ERR: ", error);
     if (error.status === 401) {
-      (async function() {
+      (async function () {
         const { clearAuth } = await import('../redux/slices/authSlice');
         const { store } = await import('../redux/store');
         store?.dispatch(clearAuth());

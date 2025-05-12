@@ -7,11 +7,8 @@ export const fetchEmployees = createAsyncThunk(
     "employee/fetchEmployees",
     async (credentials, { rejectWithValue }) => {
         const { page, limit, search } = credentials;
-        const token = getCookie("token");
         try {
-            const response = await axiosInstance.get(`/employees?search=${search}&page=${page}&limit=${limit}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.get(`/employees?search=${search}&page=${page}&limit=${limit}`);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch employees");
@@ -22,12 +19,8 @@ export const fetchEmployees = createAsyncThunk(
 export const fetchEmployeeById = createAsyncThunk(
     "employee/fetchEmployeeById",
     async (id, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            const response = await axiosInstance.get(`/employees/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            // console.log(response.data.data);
+            const response = await axiosInstance.get(`/employees/${id}`);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch employee details");
@@ -38,12 +31,8 @@ export const fetchEmployeeById = createAsyncThunk(
 export const storeEmployee = createAsyncThunk(
     "employee/addEmployee",
     async (employeeData, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            // console.log(employeeData);
-            const response = await axiosInstance.post("/employees", employeeData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.post("/employees", employeeData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to add employee");
@@ -55,12 +44,8 @@ export const storeEmployee = createAsyncThunk(
 export const updateEmployeeStatus = createAsyncThunk(
     "employee/updateEmployeeStatus",
     async ({ employeeId, statusData }, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            const response = await axiosInstance.post(`/employee-status/${employeeId}?_method=PUT`, statusData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            console.log(response.data.data);
+            const response = await axiosInstance.post(`/employee-status/${employeeId}?_method=PUT`, statusData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee status");
@@ -71,12 +56,8 @@ export const updateEmployeeStatus = createAsyncThunk(
 export const addEmploeeStatus = createAsyncThunk(
     "employee/addEmployeeStatus",
     async (statusData, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            console.log(statusData);
-            const response = await axiosInstance.post("/employee-status", statusData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.post("/employee-status", statusData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to add employee status");
@@ -87,11 +68,8 @@ export const addEmploeeStatus = createAsyncThunk(
 export const addBankdetails = createAsyncThunk(
     "employee/addBankdetails",
     async (bankData, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            const response = await axiosInstance.post("/employee-bank", bankData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.post("/employee-bank", bankData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to add employee bank details");
@@ -102,11 +80,8 @@ export const addBankdetails = createAsyncThunk(
 export const updateEmployeeBankdetail = createAsyncThunk(
     "employee/updateEmployeeBankdetail",
     async ({ employeeId, bankData }, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            const response = await axiosInstance.post(`/employee-bank/${employeeId}?_method=PUT`, bankData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.post(`/employee-bank/${employeeId}?_method=PUT`, bankData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee bank details");
@@ -117,11 +92,8 @@ export const updateEmployeeBankdetail = createAsyncThunk(
 export const addDesignation = createAsyncThunk(
     "employee/addDesignation",
     async (designationData, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            const response = await axiosInstance.post("/employee-designation", designationData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.post("/employee-designation", designationData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to add designation");
@@ -132,11 +104,8 @@ export const addDesignation = createAsyncThunk(
 export const updateDesignation = createAsyncThunk(
     "employee/updateDesignation",
     async ({ employeeId, designationData }, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
-            const response = await axiosInstance.post(`/employee-designation/${employeeId}?_method=PUT`, designationData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axiosInstance.post(`/employee-designation/${employeeId}?_method=PUT`, designationData);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update designation");
@@ -144,6 +113,17 @@ export const updateDesignation = createAsyncThunk(
     }
 );
 
+export const UpdateEmployee = createAsyncThunk(
+    "employee/updateEmployee",  
+    async ({ employeeId, employeeData }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`/employees/${employeeId}?_method=PUT`, employeeData);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
 
 const initialState = {
     employees: [],
@@ -334,6 +314,21 @@ const employeeSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(UpdateEmployee.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(UpdateEmployee.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.employees.findIndex(emp => emp.id === action.payload.id);
+                if (index !== -1) {
+                    state.employees[index] = action.payload;
+                }
+            })
+            .addCase(UpdateEmployee.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     },
 
 })

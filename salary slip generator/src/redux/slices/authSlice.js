@@ -19,15 +19,7 @@ export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const token = getCookie("token");
-
-      if (!token) {
-        throw new Error("Token is missing");
-      }
-
-      const response = await axiosInstance.get("/user", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axiosInstance.get("/user");
 
       return response.data;
     } catch (error) {
@@ -43,6 +35,7 @@ const getInitialState = () => {
   // let token = localStorage.getItem('token');
   let token = getCookie('token');
   let user = null;
+
 
   try {
     const encodedUser = getCookie('user'); // Get the raw cookie string
@@ -79,10 +72,9 @@ const authSlice = createSlice({
       state.error = null;
       state.isLoggedIn = false;
       // Set cookies to expire immediately
-      setCookie('token', '', { path: '/', maxAge: -1 });
-      setCookie('user', '', { path: '/', maxAge: -1 });
+      deleteCookie('token', '', { path: '/', maxAge: -1 });
+      deleteCookie('user', '', { path: '/', maxAge: -1 });
 
-      console.log("Cookies deleted:", getCookie('token'), getCookie('user'));
     },
   },
   extraReducers: (builder) => {
@@ -95,6 +87,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.token = action.payload.token;
         state.isLoggedIn = true;
+        updateToken(action.payload.token);
         setCookie('token', action.payload.token, { path: '/', maxAge: 60 * 60 * 24 }); // 1 day expiration
         fetchCurrentUser();
       })
