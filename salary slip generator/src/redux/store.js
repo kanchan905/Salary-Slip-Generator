@@ -5,8 +5,8 @@ import userReducer from './slices/userSlice';
 import authReducer from './slices/authSlice'
 import employeeReducer from './slices/employeeSlice'
 import levelCellSlice from './slices/levelCellSlice';
-import quarterReducer from './slices/quarterSlice'
-import roleReducer from './slices/roleSlice'
+import quarterReducer from './slices/quarterSlice';
+import payStructureSlice from './slices/payStructureSlice';
 
 const store = configureStore({
   reducer: {
@@ -17,7 +17,7 @@ const store = configureStore({
     employee:employeeReducer,
     levelCells: levelCellSlice,
     quarter:quarterReducer,
-    roles: roleReducer,
+    payStructure: payStructureSlice
   },
 });
 

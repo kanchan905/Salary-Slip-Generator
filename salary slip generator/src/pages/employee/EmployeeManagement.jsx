@@ -86,7 +86,6 @@ export default function EmployeeManagement() {
         navigate(`/${name.toLowerCase()}/employee/${id}/quarter`);
     }
 
-    console.log("Employee Management", employees);
 
     return (
         <>
