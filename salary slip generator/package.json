@@ -71,6 +71,7 @@
     "reactstrap": "^8.10.0",
     "sass": "1.69.5",
     "sweetalert2": "^11.19.1",
+    "toastify": "^2.0.1",
     "yup": "^1.6.1"
   },
   "devDependencies": {

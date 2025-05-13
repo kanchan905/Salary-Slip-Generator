@@ -1,27 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Paper, IconButton,
-    Menu, MenuItem, TextField, Chip, Checkbox,
-    TablePagination
+    Menu, MenuItem, TextField, Chip,
+    TablePagination,
+    Box
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
     Button,
     Card,
     CardHeader,
     CardBody,
-    Modal,
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Row,
-    Col,
 } from "reactstrap";
-
+import { useDispatch, useSelector } from 'react-redux';
+import { changeUserStatus, createUserData, fetchUserData, updateUserData } from '../../redux/slices/userSlice';
+import UserFormModal from "../../Modal/UserFormModal";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const statusChipColor = (status) => {
@@ -30,7 +26,6 @@ const statusChipColor = (status) => {
         case "Banned": return "error";
         default: return "default";
     }
-
 };
 
 export default function UserTable() {
@@ -40,88 +35,36 @@ export default function UserTable() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [searchQuery, setSearchQuery] = React.useState("");
-    const [users, setUsers] = React.useState([
-        {
-            name: "John Doe",
-            company: "NIOH",
-            role: "Admin",
-            verified: true,
-            status: "Active",
-            avatar: "https://i.pravatar.cc/150?img=10",
-        },
-        {
-            name: "Jane Smith",
-            company: "ROHC",
-            role: "Accounts Officer",
-            verified: false,
-            status: "Inactive",
-            avatar: "https://i.pravatar.cc/150?img=20",
-        },
-        {
-            name: "Michael Johnson",
-            company: "NIOH",
-            role: "Coordinator(NIOH)",
-            verified: true,
-            status: "Active",
-            avatar: "https://i.pravatar.cc/150?img=30",
-        },
-        {
-            name: "Emily Davis",
-            company: "ROHC",
-            role: "Pensioner Operator",
-            verified: false,
-            status: "Banned",
-            avatar: "https://i.pravatar.cc/150?img=40",
-        },
-        {
-            name: "Chris Brown",
-            company: "NIOH",
-            role: "End User",
-            verified: true,
-            status: "Active",
-            avatar: "https://i.pravatar.cc/150?img=50",
-        },
-    ]);
-    const [selectedIndexes, setSelectedIndexes] = React.useState([]);
+    const dispatch = useDispatch();
+    const users = useSelector((state) => state.user.users);
+    const loading = useSelector((state) => state.user.loading);
+    const [editId, setEditId] = React.useState(null);
 
-
+    useEffect(() => {
+        dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
+    }, [dispatch]);
 
     // Filter users based on search query
     const filteredUsers = users.filter((user) =>
-        user.name.toLowerCase().includes(searchQuery.toLowerCase())
+        user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     const [formMode, setFormMode] = React.useState('create');
-    const handleSelectAll = (e) => {
-        if (e.target.checked) {
-            setSelectedIndexes(paginatedUsers.map((user) => user.name));
-        } else {
-            setSelectedIndexes([]);
-        }
-    };
-    const handleRowSelect = (userName) => {
-        setSelectedIndexes((prevSelected) =>
-            prevSelected.includes(userName)
-                ? prevSelected.filter((name) => name !== userName) // Deselect
-                : [...prevSelected, userName] // Select
-        );
-    };
 
     const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value); // Update search query
-        setPage(0); // Reset to the first page when searching
+        setSearchQuery(event.target.value);
+        setPage(0);
     };
 
     const handlePageChange = (event, value) => {
         setPage(value);
     };
+
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
-
 
     const handleMenuClick = (event, index) => {
         setAnchorEl(event.currentTarget);
@@ -133,101 +76,73 @@ export default function UserTable() {
         setMenuUserIndex(null);
     };
 
+    const [formData, setFormData] = React.useState({
+        name: '',
+        password: '',
+        email: '',
+        institute: '',
+        role_id: '',
+    });
+
     const toggleModal = (mode) => {
         if (mode === "create") {
             setFormData({
-                username: '',
+                name: '',
                 password: '',
                 email: '',
-                institute: 'NIOH',
-                role: 'Admin',
-                status: 'Active',
+                institute: '',
+                role_id: '',
             });
             setFormMode('create');
         }
-        // e.preventDefault();
         setFormOpen(!formOpen);
-        // if (e === "defaultModal") {
-        //     setFormOpen(!formOpen);
-        // }
-    }
+    };
 
-    const [formData, setFormData] = React.useState({
-        username: '',
-        password: '',
-        email: '',
-        institute: 'NIOH',
-        role: 'Admin',
-        status: 'Active',
-    });
-
-    const roles = ['IT Admin', 'Administrative Officer', 'Accounts Officer', 'Salary Coordinator - NIOH', 'Salary Coordinator - ROHC', 'Pension Coordinator','End Users'];
+    const roles = [
+        { id: '1', label: 'IT Admin' },
+        { id: '2', label: 'Administrative Officer' },
+        { id: '3', label: 'Accounts Officer' },
+        { id: '4', label: 'Salary Coordinator - NIOH' },
+        { id: '5', label: 'Salary Coordinator - ROHC' },
+        { id: '6', label: 'Pension Coordinator' },
+        { id: '7', label: 'End Users' }
+    ];
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // send formData to backend API
-        // Create a new user object from formData
-        const newUser = {
-            name: formData.username,
-            company: formData.institute,
-            role: formData.role,
-            verified: false, // Default to false for new users
-            status: formData.status,
-            avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70) + 1}` // Random avatar
-        };
-        // Add the new user to the users array
-        setUsers((prevUsers) => [...prevUsers, newUser]);
-        // Reset the form and close the modal
-        setFormData({
-            username: '',
-            password: '',
-            email: '',
-            institute: 'NIOH',
-            role: 'Admin',
-            status: 'Active',
-        });
+    const handleSubmit = (values, { setSubmitting, resetForm }) => {
+        console.log("Edit User", values);
+        if (formMode === 'edit') {
+            const { password, ...rest } = values;
+            dispatch(updateUserData({ formData: rest, id: editId }));
+        } else {
+            dispatch(createUserData(values));
+        }
+        resetForm();
         setFormOpen(false);
-    };
-
-
-    const handleDeleteSelected = () => {
-        const filtered = users.filter((user) => !selectedIndexes.includes(user.name));
-        setUsers(filtered);
-        setSelectedIndexes([]);
-    };
-
-    const handleDeleteUser = (name) => {
-        setUsers((prevUsers) => prevUsers.filter((user) => user.name !== name));
-        handleClose(); // Close the menu after deletion
+        setEditId(null);
+        setSubmitting(false);
     };
 
     const handleEdit = (user) => {
+        setEditId(user.id);
         handleClose();
         setFormData({
-            username: user.name || '',
+            name: user.name || '',
             password: '',
-            email: '',
+            email: user.email || '',
             institute: user.institute || 'NIOH',
-            role: user.role || 'Admin',
-            status: user.status || 'Active',
+            role_id: user.role_id || '',
         });
         setFormMode('edit');
-        // setEditingId(emp.id);
         setFormOpen(true);
     };
 
-    const handleToggleStatus = (userName) => {
-        setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user.name === userName
-                    ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
-                    : user
-            )
-        );
+    const handleToggleStatus = async (user) => {
+        await dispatch(changeUserStatus({ id:user.id }));
+        dispatch(fetchUserData({ page, limit: rowsPerPage }));
     };
 
     return (
@@ -238,16 +153,8 @@ export default function UserTable() {
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
                             <TextField placeholder="Search user..." onChange={handleSearchChange} />
-                            <button
-                                className="btn btn-outline-danger btn-sm"
-                                onClick={handleDeleteSelected}
-                                disabled={selectedIndexes.length === 0}
-                            >
-                                <i className="bi bi-trash-fill me-1"></i>
-                                Delete Selected ({selectedIndexes.length})
-                            </button>
                             <Button
-                                style={{background:"#004080"}}
+                                style={{ background: "#004080" }}
                                 type="button"
                                 onClick={() => toggleModal("create")}
                             >
@@ -256,207 +163,82 @@ export default function UserTable() {
                         </div>
                     </CardHeader>
                     <CardBody>
-                        <TableContainer component={Paper} style={{ boxShadow: "none" }}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell><Checkbox
-                                            onChange={handleSelectAll}
-                                            checked={
-                                                selectedIndexes.length === paginatedUsers.length &&
-                                                paginatedUsers.length > 0
-                                            } /></TableCell>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Institute</TableCell>
-                                        <TableCell>Role</TableCell>
-                                        <TableCell>Verified</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {paginatedUsers.map((user, idx) => (
-                                        <TableRow key={idx}>
-                                            <TableCell><Checkbox checked={selectedIndexes.includes(user.name)}
-                                                onChange={() => handleRowSelect(user.name)}
-                                            /></TableCell>
-                                            <TableCell>
-                                                <div className="d-flex align-items-center">
-                                                    {user.name}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>{user.company}</TableCell>
-                                            <TableCell>{user.role}</TableCell>
-                                            <TableCell>
-                                                {user.verified ? (
-                                                    <Chip label="✔" color="success" size="small" />
-                                                ) : "-"}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Chip
-                                                    label={user.status}
-                                                    color={statusChipColor(user.status)}
-                                                    variant="outlined"
-                                                    size="small"
-                                                    onClick={() => handleToggleStatus(user.name)}
-                                                    style={{ cursor: 'pointer' }}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <IconButton onClick={(e) => handleMenuClick(e, idx)}>
-                                                    <MoreVertIcon />
-                                                </IconButton>
-                                                <Menu
-                                                    anchorEl={anchorEl}
-                                                    open={menuUserIndex === idx}
-                                                    onClose={handleClose}
-                                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                                >
-                                                    <MenuItem onClick={() => handleEdit(user)}><EditIcon fontSize="small" /> Edit</MenuItem>
-                                                    <MenuItem onClick={() => handleDeleteUser(user.name)}><DeleteIcon fontSize="small" color="error" /> Delete</MenuItem>
-                                                </Menu>
-                                            </TableCell>
+                        {loading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <TableContainer component={Paper} style={{ boxShadow: "none" }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Role ID</TableCell>
+                                            <TableCell>Name</TableCell>
+                                            <TableCell>Email</TableCell>
+                                            <TableCell>Institute</TableCell>
+                                            <TableCell>Status</TableCell>
+                                            <TableCell align="right">Actions</TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            <div className="d-flex justify-content-end align-items-center p-2">
-                                <TablePagination
-                                    component="div"
-                                    count={filteredUsers.length}
-                                    page={page}
-                                    onPageChange={handlePageChange}
-                                    rowsPerPage={rowsPerPage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                />
-                            </div>
-                        </TableContainer>
+                                    </TableHead>
+                                    <TableBody>
+                                        {paginatedUsers.map((user, idx) => (
+                                            <TableRow key={idx}>
+                                                <TableCell>{user.role_id}</TableCell>
+                                                <TableCell>{user.name}</TableCell>
+                                                <TableCell>{user.email}</TableCell>
+                                                <TableCell>{user.institute}</TableCell>
+                                                <TableCell>
+                                                    <Chip
+                                                        label={user.is_active ? 'Active' : 'Inactive'}
+                                                        color={statusChipColor(user.is_active ? "Active" : "Inactive")}
+                                                        variant="outlined"
+                                                        size="small"
+                                                        onClick={() => handleToggleStatus(user)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    />
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    <IconButton onClick={(e) => handleMenuClick(e, idx)}>
+                                                        <MoreVertIcon />
+                                                    </IconButton>
+                                                    <Menu
+                                                        anchorEl={anchorEl}
+                                                        open={menuUserIndex === idx}
+                                                        onClose={handleClose}
+                                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                                    >
+                                                        <MenuItem onClick={() => handleEdit(user)}><EditIcon fontSize="small" /> Edit</MenuItem>
+                                                    </Menu>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                <div className="d-flex justify-content-end align-items-center p-2">
+                                    <TablePagination
+                                        component="div"
+                                        count={filteredUsers.length}
+                                        page={page}
+                                        onPageChange={handlePageChange}
+                                        rowsPerPage={rowsPerPage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                    />
+                                </div>
+                            </TableContainer>
+                        )}
                     </CardBody>
                 </Card>
-                <Modal
-                    className="modal-dialog-centered"
-                    isOpen={formOpen}
-                    toggle={() => toggleModal("defaultModal")}
-                    scrollable={true} 
-                >
-                    <div className='pt-4 pb-4 px-4'>
-                        <Form onSubmit={handleSubmit}>
-                            <h4 className="mb-4">{formMode === 'edit' ? "Edit User" : "Create User"}</h4>
 
-                            <Row>
-                                {/* Username */}
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="username">Username</Label>
-                                        <Input
-                                            id="username"
-                                            name="username"
-                                            type="text"
-                                            value={formData.username}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </FormGroup>
-                                </Col>
-
-                                {/* Password */}
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="password">Password</Label>
-                                        <Input
-                                            id="password"
-                                            name="password"
-                                            type="password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-
-                            <Row>
-                                {/* Email */}
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="email">Email</Label>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </FormGroup>
-                                </Col>
-
-                                {/* Institute */}
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="institute">Institute</Label>
-                                        <Input
-                                            id="institute"
-                                            type="select"
-                                            name="institute"
-                                            value={formData.institute}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="NIOH">NIOH</option>
-                                            <option value="ROHC">ROHC</option>
-                                        </Input>
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-
-                            <Row>
-                                {/* Role */}
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="role">Role</Label>
-                                        <Input
-                                            id="role"
-                                            type="select"
-                                            name="role"
-                                            value={formData.role}
-                                            onChange={handleChange}
-                                        >
-                                            {roles.map((role) => (
-                                                <option key={role} value={role}>
-                                                    {role}
-                                                </option>
-                                            ))}
-                                        </Input>
-                                    </FormGroup>
-                                </Col>
-
-                                {/* Status */}
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="status">Status</Label>
-                                        <Input
-                                            id="status"
-                                            type="select"
-                                            name="status"
-                                            value={formData.status}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                        </Input>
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-
-                            <Button color="primary" type="submit" className='mt-2'>
-                              Save
-                            </Button>
-                            <Button color="secondary" className='mt-2' onClick={()=>setFormOpen(false)}>
-                              cancel
-                            </Button>
-                        </Form>
-                    </div>
-                </Modal>
+                <UserFormModal
+                    formOpen={formOpen}
+                    toggleModal={toggleModal}
+                    formMode={formMode}
+                    formData={formData}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                    setFormOpen={setFormOpen}
+                    roles={roles}
+                />
             </div>
         </>
     );

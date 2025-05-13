@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getCookie } from "cookies-next";
 import axiosInstance from "global/AxiosSetting";
 
 
@@ -139,30 +138,6 @@ const initialState = {
 const employeeSlice = createSlice({
     name: 'employee',
     initialState,
-    reducers: {
-        addEmployee: (state, action) => {
-            state.employees.push(action.payload);
-        },
-        deleteEmployee: (state, action) => {
-            state.employees = state.employees.filter(emp => emp.id !== action.payload);
-        },
-        deleteMultipleEmployees: (state, action) => {
-            state.employees = state.employees.filter(employee => !action.payload.includes(employee.id));
-        },
-        updateEmployee: (state, action) => {
-            const index = state.employees.findIndex(emp => emp.id === action.payload.id);
-            if (index !== -1) {
-                state.employees[index] = action.payload;
-            }
-        },
-        toggleStatus: (state, action) => {
-            state.employees = state.employees.map((employee) =>
-                employee.id === action.payload
-                    ? { ...employee, status: employee.status === "Active" ? "Inactive" : "Active" }
-                    : employee
-            );
-        },
-    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchEmployees.pending, (state) => {
@@ -337,5 +312,5 @@ const employeeSlice = createSlice({
 
 })
 
-export const { addEmployee, deleteEmployee, deleteMultipleEmployees, updateEmployee, toggleStatus } = employeeSlice.actions;
+
 export default employeeSlice.reducer;

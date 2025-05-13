@@ -6,6 +6,7 @@ import authReducer from './slices/authSlice'
 import employeeReducer from './slices/employeeSlice'
 import levelCellSlice from './slices/levelCellSlice';
 import quarterReducer from './slices/quarterSlice'
+import roleReducer from './slices/roleSlice'
 
 const store = configureStore({
   reducer: {
@@ -15,7 +16,8 @@ const store = configureStore({
     auth:authReducer,
     employee:employeeReducer,
     levelCells: levelCellSlice,
-    quarter:quarterReducer
+    quarter:quarterReducer,
+    roles: roleReducer,
   },
 });
 

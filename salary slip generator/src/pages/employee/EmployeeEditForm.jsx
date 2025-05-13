@@ -15,6 +15,7 @@ import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { fetchEmployeeById } from '../../redux/slices/employeeSlice';
+import { toast } from 'react-toastify';
 
 
 function EmployeeEditForm() {
@@ -22,6 +23,7 @@ function EmployeeEditForm() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const employeeDetail = useSelector((state) => state.employee.EmployeeDetail);
+    const error = useSelector((state) => state.employee.error);
 
     const [initialValues, setInitialValues] = useState({
         first_name: '',
@@ -123,29 +125,37 @@ function EmployeeEditForm() {
                 npa_eligibility: values.npa_eligibility ? 1 : 0,
             };
             const apiData = {
-            first_name: processedValues.first_name,
-            last_name: processedValues.last_name,
-            gender: processedValues.gender,
-            date_of_birth: processedValues.date_of_birth,
-            date_of_joining: processedValues.date_of_joining,
-            date_of_retirement: processedValues.date_of_retirement,
-            pwd_status: processedValues.pwd_status,
-            pension_scheme: processedValues.pension_scheme,
-            pension_number: processedValues.pension_number,
-            gis_eligibility: processedValues.gis_eligibility,
-            gis_no: processedValues.gis_no,
-            credit_society_member: processedValues.credit_society_member,
-            email: processedValues.email,
-            pancard: processedValues.pancard,
-            increment_month: processedValues.increment_month,
-            uniform_allowance_eligibility: processedValues.uniform_allowance_eligibility,
-            hra_eligibility: processedValues.hra_eligibility,
-            npa_eligibility: processedValues.npa_eligibility,
-        };
-            console.log("Processed Values:", apiData);
-            await dispatch(UpdateEmployee({ employeeId: id, employeeData: apiData })).unwrap();
-        } catch (error) {
-            console.error("Error submitting form:", error);
+                first_name: processedValues.first_name,
+                last_name: processedValues.last_name,
+                gender: processedValues.gender,
+                date_of_birth: processedValues.date_of_birth,
+                date_of_joining: processedValues.date_of_joining,
+                date_of_retirement: processedValues.date_of_retirement,
+                pwd_status: processedValues.pwd_status,
+                pension_scheme: processedValues.pension_scheme,
+                pension_number: processedValues.pension_number,
+                gis_eligibility: processedValues.gis_eligibility,
+                gis_no: processedValues.gis_no,
+                credit_society_member: processedValues.credit_society_member,
+                email: processedValues.email,
+                pancard: processedValues.pancard,
+                increment_month: processedValues.increment_month,
+                uniform_allowance_eligibility: processedValues.uniform_allowance_eligibility,
+                hra_eligibility: processedValues.hra_eligibility,
+                npa_eligibility: processedValues.npa_eligibility,
+            };
+            // console.log("Processed Values:", apiData);
+            await dispatch(UpdateEmployee({ employeeId: id, employeeData: apiData })).unwrap()
+                .then(() => {
+                    toast.success("Employee updated successfully");
+                })
+        } catch (err) {
+            const apiMsg =
+                err?.response?.data?.message ||
+                err?.message ||
+                err?.message ||
+                'Failed to update employee.';
+            toast.error(apiMsg);
         } finally {
             setSubmitting(false);
         }

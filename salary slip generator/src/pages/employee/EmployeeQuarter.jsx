@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createEmployeeQuarter, fetchEmployeeQuarterList, updateEmployeeQuarter } from '../../redux/slices/quarterSlice'
 import QuarterAllocateModal from 'Modal/QuarterAllocateModal';
 import { useParams } from 'react-router-dom';
-import Preloader from 'include/Preloader';
+import { toast } from 'react-toastify';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Box } from '@mui/material';
 
 const PAGE_SIZE = 10;
 
@@ -25,11 +27,10 @@ function EmployeeQuarter() {
     });
     const updateStatus = useSelector((state) => state.quarter.updateStatus);
     const loading = useSelector((state) => state.quarter.loading);
+    const error = useSelector((state) => state.quarter.error);
+
 
     useEffect(() => {
-        // if (updateStatus === 'succeeded') {
-        //     dispatch(fetchEmployeeQuarterList({ page: currentPage, limit: PAGE_SIZE }));
-        // }
         dispatch(fetchEmployeeQuarterList({ page: currentPage, limit: PAGE_SIZE }));
     }, [updateStatus, dispatch, currentPage,]);
 
@@ -73,43 +74,44 @@ function EmployeeQuarter() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    // const handleFormSubmit = (e) => {
-    //     e.preventDefault();
-    //     const data = {
-    //         employee_id: id,
-    //         ...form,
-    //         is_current: form.is_current ? 1 : 0,
-    //     };
-    //     if (editId) {
-    //         dispatch(updateEmployeeQuarter({ id: editId, data }));
-    //     } else {
-    //         dispatch(createEmployeeQuarter(data));
-    //     }
-    //     setModalOpen(false);
-    //     setForm({
-    //         quarter_id: '',
-    //         date_of_allotment: '',
-    //         date_of_occupation: '',
-    //         date_of_leaving: '',
-    //         is_current: false,
-    //     });
-    // };
-
-
-const handleFormSubmit = (values, { resetForm }) => {
-    const data = {
-        employee_id: id,
-        ...values,
-        is_current: values.is_current ? 1 : 0,
+    const handleFormSubmit = (values, { resetForm }) => {
+        const data = {
+            employee_id: id,
+            ...values,
+            is_current: values.is_current ? 1 : 0,
+        };
+        if (editId) {
+            dispatch(updateEmployeeQuarter({ id: editId, data }))
+                .unwrap()
+                .then(() => {
+                    toast.success('Quarter updated successfully!');
+                })
+                .catch((err) => {
+                    const apiMsg =
+                        err?.response?.data?.message ||
+                        err?.message ||
+                        err?.message ||
+                        'Failed to update quarter.';
+                    toast.error(apiMsg);
+                });
+        } else {
+            dispatch(createEmployeeQuarter(data))
+                .unwrap()
+                .then(() => {
+                    dispatch(fetchEmployeeQuarterList({ page: currentPage, limit: PAGE_SIZE }));
+                    toast.success('Quarter allocated successfully!');
+                }).catch((err) => {
+                    const apiMsg =
+                        err?.response?.data?.message ||
+                        err?.message ||
+                        err?.message ||
+                        'Failed to allocate quarter.';
+                    toast.error(apiMsg);
+                });
+        }
+        setModalOpen(false);
+        resetForm();
     };
-    if (editId) {
-        dispatch(updateEmployeeQuarter({ id: editId, data }));
-    } else {
-        dispatch(createEmployeeQuarter(data));
-    }
-    setModalOpen(false);
-    resetForm();
-};
 
     return (
         <>
@@ -128,7 +130,13 @@ const handleFormSubmit = (values, { resetForm }) => {
                         </div>
                     </CardHeader>
                     <CardBody>
-                         <table className="table table-bordered">
+                        {loading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <>
+                                <table className="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th>Quarter Number</th>
@@ -171,7 +179,6 @@ const handleFormSubmit = (values, { resetForm }) => {
                                 <div className="d-flex justify-content-between align-items-center mt-4">
                                     <button
                                         className="btn btn-light border border-secondary"
-                                        //  style={{background:"#004080"}}
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage((p) => p - 1)}
                                     >
@@ -188,6 +195,8 @@ const handleFormSubmit = (values, { resetForm }) => {
                                         Next
                                     </button>
                                 </div>
+                            </>
+                        )}
                     </CardBody>
                 </Card>
             </div>
@@ -197,7 +206,6 @@ const handleFormSubmit = (values, { resetForm }) => {
                 isOpen={modalOpen}
                 toggle={handleModalToggle}
                 form={form}
-                // onChange={handleFormChange}
                 onSubmit={handleFormSubmit}
             />
         </>

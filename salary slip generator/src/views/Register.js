@@ -2,7 +2,7 @@ import React from 'react';
 import '../assets/css/custom.css';
 import logo from '../assets/img/images/logo.png'
 import { useDispatch } from 'react-redux';
-import { setUserData } from '../redux/slices/userSlice';
+// import { setUserData } from '../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -27,7 +27,7 @@ const Login = () => {
         e.preventDefault();
         console.log(formData); 
         // Dispatch the user data to the Redux store
-        dispatch(setUserData(formData));
+        // dispatch(setUserData(formData));
          // Store the user data in localStorage
         localStorage.setItem("userData", JSON.stringify(formData));
         console.log("ROLE: ", formData.role);

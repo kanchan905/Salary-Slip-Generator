@@ -1,21 +1,119 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice,createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from 'global/AxiosSetting';
 
-const initialState = JSON.parse(localStorage.getItem('userData')) || null;
+export const fetchUserData = createAsyncThunk(
+    'user/fetchUserData',
+    async ({ page, limit }, { rejectWithValue }) => {
+        try {
+                const response = await axiosInstance.get(`/users?page=${page}&limit=${limit}`);
+                return response.data.data;
+            } catch (error) {
+                return rejectWithValue(error.response?.data || "Failed to update employee");
+            }
+    }
+);
+
+export const createUserData = createAsyncThunk(
+    'user/createUserData',
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post('/user', userData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to create user");
+        }
+    }
+);
+
+export const updateUserData = createAsyncThunk(
+    'user/updateUserData',
+    async ({formData,id}, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`/user/${id}`, formData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update user");
+        }
+    }
+);
+
+
+export const changeUserStatus = createAsyncThunk(
+    'user/changeUserStatus',
+    async ({ id}, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/user-status/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to change user status");
+        }
+    }
+);
+
+const initialState = {
+    users : [],
+    loading: false,
+    error: null,
+}
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {
-        setUserData: (state, action) => {
-            // const { username, email, role, institute, status } = action.payload;
-            state = action.payload;
-        },
-        clearUserData: (state) => {
-            state = null;
-        },
-    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchUserData.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchUserData.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users = action.payload;
+            })
+            .addCase(fetchUserData.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(createUserData.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createUserData.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users.push(action.payload);
+            })
+            .addCase(createUserData.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(updateUserData.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateUserData.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.users.findIndex(user => user.id === action.payload.id);
+                if (index !== -1) {
+                    state.users[index] = action.payload;
+                }
+            })
+            .addCase(updateUserData.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(changeUserStatus.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(changeUserStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.users.findIndex(user => user.id === action.payload.id);
+                if (index !== -1) {
+                    state.users[index] = action.payload;
+                }
+            })
+            .addCase(changeUserStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+    }
 });
 
-export const { setUserData, clearUserData } = userSlice.actions;
+
 
 export default userSlice.reducer;
