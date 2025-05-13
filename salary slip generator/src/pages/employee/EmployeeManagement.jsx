@@ -68,14 +68,14 @@ export default function EmployeeManagement() {
     };
 
     const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value); 
-        setPage(0); 
+        setSearchQuery(event.target.value); // Update search query
+        setPage(0); // Reset to the first page when searching
     };
 
-    // const handleDeleteSelected = () => {
-    //     dispatch(deleteMultipleEmployees(selectedIndexes))
-    //     setSelectedIndexes([]);
-    // };
+    const handleDeleteSelected = () => {
+        dispatch(deleteMultipleEmployees(selectedIndexes))
+        setSelectedIndexes([]);
+    };
 
 
     const handleMenuClick = (event, index) => {
@@ -123,7 +123,14 @@ export default function EmployeeManagement() {
         navigate(`/${name.toLowerCase()}/employee/${id}`);
     }
 
-   
+    const handleQuarter = (id) => {
+        handleClose();
+        navigate(`/${name.toLowerCase()}/employee/${id}/quarter`);
+    }
+
+    if(loading){
+        return <Preloader/>
+    }
 
     return (
         <>
@@ -173,42 +180,42 @@ export default function EmployeeManagement() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {
-                                        // loading ?  <Preloader/> :
-                                        paginatedEmployees.map((emp, idx) => (
-                                            <TableRow key={emp.id}>
-                                                <TableCell><Checkbox checked={selectedIndexes.includes(emp.id)}
-                                                    onChange={() => handleRowSelect(emp.id)} /></TableCell>
-                                                <TableCell>{emp.first_name + " " + emp.last_name}</TableCell>
-                                                <TableCell>{emp.gender}</TableCell>
-                                                <TableCell>{emp.date_of_birth}</TableCell>
-                                                <TableCell>{emp.date_of_joining}</TableCell>
-                                                <TableCell>{emp.email}</TableCell>
-                                                <TableCell>{emp.pancard}</TableCell>
-                                                <TableCell align="right">
-                                                    <IconButton onClick={(e) => handleMenuClick(e, idx)}>
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-                                                    <Menu
-                                                        anchorEl={anchorEl}
-                                                        open={menuUserIndex === idx}
-                                                        onClose={handleClose}
-                                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                                    >
-                                                        <MenuItem onClick={() => handleView(emp.id)}>
-                                                            <ViewIcon fontSize="small" /> View
-                                                        </MenuItem>
-                                                        <MenuItem onClick={() => handleEdit(emp)}>
-                                                            <EditIcon fontSize="small" /> Edit
-                                                        </MenuItem>
-                                                        <MenuItem onClick={() => handleDelete(emp.id)}>
-                                                            <DeleteIcon fontSize="small" color="error" /> Delete
-                                                        </MenuItem>
-                                                    </Menu>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    }
+                                    {paginatedEmployees.map((emp, idx) => (
+                                        <TableRow key={emp.id}>
+                                            {/* <TableCell><Checkbox checked={selectedIndexes.includes(emp.id)}
+                                                onChange={() => handleRowSelect(emp.id)} /></TableCell> */}
+                                            <TableCell>{emp.first_name + " " + emp.last_name}</TableCell>
+                                            <TableCell>{emp.gender}</TableCell>
+                                            <TableCell>{emp.date_of_birth}</TableCell>
+                                            <TableCell>{emp.date_of_joining}</TableCell>
+                                            <TableCell>{emp.email}</TableCell>
+                                            <TableCell>{emp.pancard}</TableCell>
+                                            <TableCell align="right">
+                                                <IconButton onClick={(e) => handleMenuClick(e, idx)}>
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={menuUserIndex === idx}
+                                                    onClose={handleClose}
+                                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                                >
+                                                     <MenuItem onClick={() => handleView(emp.id)}>
+                                                        <ViewIcon fontSize="small" /> View
+                                                    </MenuItem>
+                                                    <MenuItem onClick={() => handleEdit(emp)}>
+                                                        <EditIcon fontSize="small" /> Edit
+                                                    </MenuItem>
+                                                    {/* <MenuItem onClick={() => handleDelete(emp.id)}>
+                                                        <DeleteIcon fontSize="small" color="error" /> Delete
+                                                    </MenuItem> */}
+                                                    <MenuItem onClick={()=> handleQuarter(emp.id)}>
+                                                      <HomeIcon fontSize="small"/> Quarter
+                                                    </MenuItem>
+                                                </Menu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                             <div className="d-flex justify-content-end align-items-center p-2">

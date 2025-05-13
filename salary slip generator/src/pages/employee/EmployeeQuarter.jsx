@@ -73,30 +73,43 @@ function EmployeeQuarter() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
-        const data = {
-            employee_id: id,
-            ...form,
-            is_current: form.is_current ? 1 : 0,
-        };
-        if (editId) {
-            dispatch(updateEmployeeQuarter({ id: editId, data }));
-        } else {
-            dispatch(createEmployeeQuarter(data));
-        }
-        setModalOpen(false);
-        setForm({
-            quarter_id: '',
-            date_of_allotment: '',
-            date_of_occupation: '',
-            date_of_leaving: '',
-            is_current: false,
-        });
+    // const handleFormSubmit = (e) => {
+    //     e.preventDefault();
+    //     const data = {
+    //         employee_id: id,
+    //         ...form,
+    //         is_current: form.is_current ? 1 : 0,
+    //     };
+    //     if (editId) {
+    //         dispatch(updateEmployeeQuarter({ id: editId, data }));
+    //     } else {
+    //         dispatch(createEmployeeQuarter(data));
+    //     }
+    //     setModalOpen(false);
+    //     setForm({
+    //         quarter_id: '',
+    //         date_of_allotment: '',
+    //         date_of_occupation: '',
+    //         date_of_leaving: '',
+    //         is_current: false,
+    //     });
+    // };
+
+
+const handleFormSubmit = (values, { resetForm }) => {
+    const data = {
+        employee_id: id,
+        ...values,
+        is_current: values.is_current ? 1 : 0,
     };
-
-
-
+    if (editId) {
+        dispatch(updateEmployeeQuarter({ id: editId, data }));
+    } else {
+        dispatch(createEmployeeQuarter(data));
+    }
+    setModalOpen(false);
+    resetForm();
+};
 
     return (
         <>
@@ -184,7 +197,7 @@ function EmployeeQuarter() {
                 isOpen={modalOpen}
                 toggle={handleModalToggle}
                 form={form}
-                onChange={handleFormChange}
+                // onChange={handleFormChange}
                 onSubmit={handleFormSubmit}
             />
         </>

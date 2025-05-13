@@ -37,7 +37,6 @@ const getInitialState = () => {
   if (token) updateToken(token);
   let user = null;
 
-
   try {
     const encodedUser = getCookie('user'); // Get the raw cookie string
     if (encodedUser) {

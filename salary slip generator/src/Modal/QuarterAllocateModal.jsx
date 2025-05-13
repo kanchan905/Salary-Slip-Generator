@@ -1,72 +1,106 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
-const QuarterAllocateModal = ({ isOpen, toggle, form, onChange, onSubmit }) => (
+// Validation schema using Yup
+const validationSchema = Yup.object().shape({
+  quarter_id: Yup.string().required('Quarter ID is required'),
+  date_of_allotment: Yup.date().required('Date of Allotment is required'),
+  date_of_occupation: Yup.date().required('Date of Occupation is required'),
+  date_of_leaving: Yup.date().required('Date of Leaving is required'),
+  is_current: Yup.boolean(),
+});
+
+const QuarterAllocateModal = ({ isOpen, toggle, form, onSubmit }) => (
   <Modal isOpen={isOpen} toggle={toggle}>
     <ModalHeader toggle={toggle}>Allocate Quarter</ModalHeader>
-    <Form onSubmit={onSubmit}>
-      <ModalBody>
-        <FormGroup>
-          <Label for="quarter_id">Quarter ID</Label>
-          <Input
-            type="text"
-            name="quarter_id"
-            id="quarter_id"
-            value={form.quarter_id}
-            onChange={onChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label for="date_of_allotment">Date of Allotment</Label>
-          <Input
-            type="date"
-            name="date_of_allotment"
-            id="date_of_allotment"
-            value={form.date_of_allotment}
-            onChange={onChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label for="date_of_occupation">Date of Occupation</Label>
-          <Input
-            type="date"
-            name="date_of_occupation"
-            id="date_of_occupation"
-            value={form.date_of_occupation}
-            onChange={onChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label for="date_of_leaving">Date of Leaving</Label>
-          <Input
-            type="date"
-            name="date_of_leaving"
-            id="date_of_leaving"
-            value={form.date_of_leaving}
-            onChange={onChange}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label for="is_current">Is Current</Label>
-          <Input
-            type="checkbox"
-            name="is_current"
-            id="is_current"
-            checked={form.is_current}
-            onChange={onChange}
-          >
-          </Input>
-        </FormGroup>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={toggle}>Cancel</Button>
-        <Button color="primary" type="submit">Save</Button>
-      </ModalFooter>
-    </Form>
+    <Formik
+      initialValues={form}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+      enableReinitialize
+    >
+      {({ errors, touched, handleChange, handleBlur, values }) => (
+        <Form>
+          <ModalBody>
+            <FormGroup>
+              <Label for="quarter_id">Quarter ID</Label>
+              <Input
+                tag={Field}
+                type="text"
+                name="quarter_id"
+                id="quarter_id"
+                invalid={touched.quarter_id && !!errors.quarter_id}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.quarter_id}
+              />
+              <ErrorMessage name="quarter_id" component={FormFeedback} />
+            </FormGroup>
+            <FormGroup>
+              <Label for="date_of_allotment">Date of Allotment</Label>
+              <Input
+                tag={Field}
+                type="date"
+                name="date_of_allotment"
+                id="date_of_allotment"
+                invalid={touched.date_of_allotment && !!errors.date_of_allotment}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.date_of_allotment}
+              />
+              <ErrorMessage name="date_of_allotment" component={FormFeedback} />
+            </FormGroup>
+            <FormGroup>
+              <Label for="date_of_occupation">Date of Occupation</Label>
+              <Input
+                tag={Field}
+                type="date"
+                name="date_of_occupation"
+                id="date_of_occupation"
+                invalid={touched.date_of_occupation && !!errors.date_of_occupation}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.date_of_occupation}
+              />
+              <ErrorMessage name="date_of_occupation" component={FormFeedback} />
+            </FormGroup>
+            <FormGroup>
+              <Label for="date_of_leaving">Date of Leaving</Label>
+              <Input
+                tag={Field}
+                type="date"
+                name="date_of_leaving"
+                id="date_of_leaving"
+                invalid={touched.date_of_leaving && !!errors.date_of_leaving}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.date_of_leaving}
+              />
+              <ErrorMessage name="date_of_leaving" component={FormFeedback} />
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  tag={Field}
+                  type="checkbox"
+                  name="is_current"
+                  id="is_current"
+                  checked={values.is_current}
+                  onChange={handleChange}
+                />{' '}
+                Is Current
+              </Label>
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={toggle}>Cancel</Button>
+            <Button color="primary" type="submit">Save</Button>
+          </ModalFooter>
+        </Form>
+      )}
+    </Formik>
   </Modal>
 );
 
