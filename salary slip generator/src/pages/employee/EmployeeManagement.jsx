@@ -33,15 +33,15 @@ const statusChipColor = (status) => {
 };
 
 export default function EmployeeManagement() {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [menuUserIndex, setMenuUserIndex] = React.useState(null);
+    const [ anchorEl, setAnchorEl ] = React.useState(null);
+    const [ menuUserIndex, setMenuUserIndex ] = React.useState(null);
     // const [ , setEditingId] = useState(null);
-    const employees = useSelector((state) => state.employee.employees) || [];
-    const {name} = useSelector((state) => state.auth.user.role);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [searchQuery, setSearchQuery] = React.useState("");
-    const [selectedIndexes, setSelectedIndexes] = React.useState([]);
+    const { employees } = useSelector((state) => state.employee.employees) || [];
+    const { name } = useSelector((state) => state.auth.user.role);
+    const [ page, setPage ] = React.useState(0);
+    const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
+    const [ searchQuery, setSearchQuery ] = React.useState("");
+    const [ selectedIndexes, setSelectedIndexes ] = React.useState([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const loading = useSelector((state) => state.employee.loading);
@@ -52,7 +52,7 @@ export default function EmployeeManagement() {
 
     
     // Filter users based on search query
-    const filteredEmployees = employees.filter(emp => emp.first_name && emp.first_name.toLowerCase().includes(searchQuery.toLowerCase()));
+    const filteredEmployees = employees?.filter(emp => emp.first_name && emp.first_name.toLowerCase().includes(searchQuery.toLowerCase()));
    
 
     const paginatedEmployees = filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);

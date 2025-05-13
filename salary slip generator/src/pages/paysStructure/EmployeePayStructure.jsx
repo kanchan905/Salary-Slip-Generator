@@ -35,7 +35,7 @@ const EmployeePayStructures = () => {
     dispatch(fetchPayCell());
   },[])
 
-  const [form, setForm] = useState({
+  const [ form, setForm ] = useState({
     pay_structure_id: Date.now(),
     employee_id: '',
     cell_id: '',
@@ -112,9 +112,9 @@ const EmployeePayStructures = () => {
                 labelId="select-pay-cell"
                 id="cell_id"
                 name="cell_id"
-                value={form.cell_id}
+                value={selectedCellId}
                 label="Select Pay Cell"
-                onChange={(e) => setForm({ ...form, cell_id: e.target.value })}
+                onChange={(e) => setSelectedCellId(e.target.value)}
                 required
               >
                 {filteredCells.length === 0 ? (
@@ -165,7 +165,7 @@ const EmployeePayStructures = () => {
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Order Reference"
@@ -174,7 +174,7 @@ const EmployeePayStructures = () => {
               onChange={handleChange}
               required
             />
-          </Grid>
+          </Grid> */}
         </Grid>
           <Grid container spacing={2} mt={4} mb={4}>
             <Button

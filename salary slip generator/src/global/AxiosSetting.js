@@ -8,7 +8,6 @@ export function updateToken(token) {
   // console.log({authToken, token})
   // console.log("updateToken :",token);
   authToken = token;
-  
 }
 
 const axiosInstance = axios.create({
