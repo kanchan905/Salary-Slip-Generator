@@ -31,7 +31,7 @@ const NewSidebar = ({ routes }) => {
                       <NavItem key={key}>
                         <RouterNavLink
                           to={route.layout + route.path}
-                          className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+                          className={({ isActive }) => `sidebar-link ${isActive ? "active-class-name" : ""}`}
                         >
                           <i className={`${route.icon} me-2`} />
                           {route.name}
