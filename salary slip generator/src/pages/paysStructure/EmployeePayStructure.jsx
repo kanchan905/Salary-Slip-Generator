@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Grid,
@@ -6,16 +6,34 @@ import {
   TextField,
   Typography,
   Box,
-  IconButton
+  IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDispatch, useSelector } from 'react-redux';
 import { addEmployeePayStructure, deleteEmployeePayStructure } from '../../redux/slices/levelSlice';
+import {
+  fetchPayLevel,
+  fetchPayCell,
+} from '../../redux/slices/levelCellSlice';
+
+
 
 const EmployeePayStructures = () => {
   const dispatch = useDispatch();
   const employeePayStructures = useSelector((state) => state.levels.employeePayStructures);
+  const { levels, matrixCells, loading } = useSelector((state) => state.levelCells);
+  const [selectedLevelId, setSelectedLevelId] = useState('');
+  const [selectedCellId, setSelectedCellId] = useState('');
+
+  useEffect(() => {
+    dispatch(fetchPayLevel());
+    dispatch(fetchPayCell());
+  },[])
 
   const [form, setForm] = useState({
     pay_structure_id: Date.now(),
@@ -50,10 +68,31 @@ const EmployeePayStructures = () => {
     dispatch(deleteEmployeePayStructure(id));
   };
 
+  
+  const filteredCells = matrixCells.filter(cell => cell.matrix_level_id === Number(selectedLevelId));
+  
+  console.log("Levels: ",selectedLevelId); 
+  console.log("Matrix Cells: ",selectedCellId);
   return (
     <>
     <Typography variant="h6" mb={2}>Employee Pay Structure</Typography>
     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, boxShadow: 'none' }}>
+
+      <FormControl fullWidth margin="normal" className='mb-3'>
+        <InputLabel>Select Pay Level</InputLabel>
+          <Select
+            value={selectedLevelId}
+            label="Select Pay Level"
+            onChange={(e) => setSelectedLevelId(e.target.value)}
+          >
+          {levels.map((level) => (
+            <MenuItem key={level.id} value={level.id}>
+              {level.name}
+            </MenuItem>
+          ))}
+          </Select>
+      </FormControl>
+    
       <form onSubmit={handleAddPayStructure}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -67,15 +106,30 @@ const EmployeePayStructures = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Cell ID"
-              name="cell_id"
-              value={form.cell_id}
-              onChange={handleChange}
-              required
-            />
+            <FormControl fullWidth sx={{minWidth: 150 }}>
+              <InputLabel id="select-pay-cell">Select Pay Cell</InputLabel>
+              <Select
+                labelId="select-pay-cell"
+                id="cell_id"
+                name="cell_id"
+                value={form.cell_id}
+                label="Select Pay Cell"
+                onChange={(e) => setForm({ ...form, cell_id: e.target.value })}
+                required
+              >
+                {filteredCells.length === 0 ? (
+                  <MenuItem disabled>Select Pay Level First</MenuItem>
+                ) : (
+                  filteredCells.map((cell) => (
+                    <MenuItem key={cell.id} value={cell.id}>
+                      {cell.index}
+                    </MenuItem>
+                  ))
+                )}
+              </Select>
+            </FormControl>
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
