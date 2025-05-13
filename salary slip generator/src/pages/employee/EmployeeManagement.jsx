@@ -23,6 +23,7 @@ import { deleteEmployee, deleteMultipleEmployees, toggleStatus } from '../../red
 import { useNavigate } from 'react-router-dom';
 import { fetchEmployees } from '../../redux/slices/employeeSlice';
 import Preloader from 'include/Preloader';
+import HomeIcon from '@mui/icons-material/Home';
 
 const statusChipColor = (status) => {
     switch (status) {
@@ -67,14 +68,14 @@ export default function EmployeeManagement() {
     };
 
     const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value); // Update search query
-        setPage(0); // Reset to the first page when searching
+        setSearchQuery(event.target.value); 
+        setPage(0); 
     };
 
-    const handleDeleteSelected = () => {
-        dispatch(deleteMultipleEmployees(selectedIndexes))
-        setSelectedIndexes([]);
-    };
+    // const handleDeleteSelected = () => {
+    //     dispatch(deleteMultipleEmployees(selectedIndexes))
+    //     setSelectedIndexes([]);
+    // };
 
 
     const handleMenuClick = (event, index) => {
@@ -89,33 +90,33 @@ export default function EmployeeManagement() {
 
     const handleEdit = (emp) => {
         handleClose();
-        navigate(`/admin/employee/edit/${emp.id}`);
+        navigate(`/${name.toLowerCase()}/employee/edit/${emp.id}`);
     };
 
-    const handleDelete = (id) => {
-        dispatch(deleteEmployee(id))
-        handleClose(); 
-    };
+    // const handleDelete = (id) => {
+    //     dispatch(deleteEmployee(id))
+    //     handleClose(); 
+    // };
 
-    const handleSelectAll = (e) => {
-        if (e.target.checked) {
-            setSelectedIndexes(paginatedEmployees.map((user) => user.id)); 
-        } else {
-            setSelectedIndexes([]);
-        }
-    };
+    // const handleSelectAll = (e) => {
+    //     if (e.target.checked) {
+    //         setSelectedIndexes(paginatedEmployees.map((user) => user.id)); 
+    //     } else {
+    //         setSelectedIndexes([]);
+    //     }
+    // };
 
-    const handleRowSelect = (id) => {
-        setSelectedIndexes((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((selectedId) => selectedId !== id) // Deselect
-                : [...prevSelected, id] // Select
-        );
-    };
+    // const handleRowSelect = (id) => {
+    //     setSelectedIndexes((prevSelected) =>
+    //         prevSelected.includes(id)
+    //             ? prevSelected.filter((selectedId) => selectedId !== id) // Deselect
+    //             : [...prevSelected, id] // Select
+    //     );
+    // };
 
-    const handleToggleStatus = (id) => {
-        dispatch(toggleStatus(id));
-    };
+    // const handleToggleStatus = (id) => {
+    //     dispatch(toggleStatus(id));
+    // };
 
     const handleView = (id) => {
         handleClose();
@@ -132,14 +133,14 @@ export default function EmployeeManagement() {
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
                             <TextField placeholder="Search user..." onChange={handleSearchChange} />
-                            <button
+                            {/* <button
                                 className="btn btn-outline-danger btn-sm"
                                 onClick={handleDeleteSelected}
                                 disabled={selectedIndexes.length === 0}
                             >
                                 <i className="bi bi-trash-fill me-1"></i>
                                 Delete Selected ({selectedIndexes.length})
-                            </button>
+                            </button> */}
                             <NavLink to= {`/${name.toLowerCase()}/employee/add`}>
                             <Button
                                 style={{background:"#004080"}}
@@ -155,13 +156,13 @@ export default function EmployeeManagement() {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell><Checkbox
+                                        {/* <TableCell><Checkbox
                                             onChange={handleSelectAll}
                                             checked={
                                                 selectedIndexes.length === paginatedEmployees.length &&
                                                 paginatedEmployees.length > 0
                                             }
-                                        /></TableCell>
+                                        /></TableCell> */}
                                         <TableCell>Full Name</TableCell>
                                         <TableCell>Gender</TableCell>
                                         <TableCell>DOB</TableCell>

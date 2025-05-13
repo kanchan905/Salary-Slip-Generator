@@ -72,7 +72,6 @@ export const addEmploeeStatus = createAsyncThunk(
 export const addBankdetails = createAsyncThunk(
     "employee/addBankdetails",
     async (bankData, { rejectWithValue }) => {
-        const token = getCookie("token");
         try {
             const response = await axiosInstance.post("/employee-bank", bankData);
             return response.data.data;
@@ -118,6 +117,17 @@ export const updateDesignation = createAsyncThunk(
     }
 );
 
+export const UpdateEmployee = createAsyncThunk(
+    "employee/updateEmployee",  
+    async ({ employeeId, employeeData }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`/employees/${employeeId}?_method=PUT`, employeeData);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
 
 const initialState = {
     employees: [],
@@ -308,6 +318,21 @@ const employeeSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(UpdateEmployee.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(UpdateEmployee.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.employees.findIndex(emp => emp.id === action.payload.id);
+                if (index !== -1) {
+                    state.employees[index] = action.payload;
+                }
+            })
+            .addCase(UpdateEmployee.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     },
 
 })

@@ -1,7 +1,38 @@
-import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Button } from 'reactstrap';
+import React,{useState} from 'react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Button, FormFeedback } from 'reactstrap';
 
 function StatusModal({ isOpen, toggle, modalType, selectedStatus, setSelectedStatus, handleSave }) {
+  const [errors, setErrors] = useState({});
+
+  // Validate fields
+  const validate = () => {
+    const newErrors = {};
+    if (!selectedStatus?.status || selectedStatus.status === '') {
+      newErrors.status = 'Please select a status';
+    }
+    if (!selectedStatus?.effective_from) {
+      newErrors.effective_from = 'Effective From is required';
+    }
+    // Optional: Validate effective_till is after effective_from
+    if (
+      selectedStatus?.effective_till &&
+      selectedStatus.effective_from &&
+      selectedStatus.effective_till < selectedStatus.effective_from
+    ) {
+      newErrors.effective_till = 'Effective Till cannot be before Effective From';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Wrap handleSave to include validation
+  const onSave = () => {
+    if (validate()) {
+      handleSave();
+      setErrors({});
+    }
+  };
+  
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle}>
@@ -13,6 +44,7 @@ function StatusModal({ isOpen, toggle, modalType, selectedStatus, setSelectedSta
           <Input
             type="select"
             id="status"
+            invalid={!!errors.status}
             value={selectedStatus?.status || ''}
             onChange={(e) =>
               setSelectedStatus((prev) => ({
@@ -21,7 +53,7 @@ function StatusModal({ isOpen, toggle, modalType, selectedStatus, setSelectedSta
               }))
             }
           >
-            <option value="select" disabled>
+            <option value="" disabled>
               Select Status
             </option>
             <option value="Active">Active</option>
@@ -30,12 +62,14 @@ function StatusModal({ isOpen, toggle, modalType, selectedStatus, setSelectedSta
             <option value="Retired">Retired</option>
             <option value="On Leave">On Leave</option>
           </Input>
+          {errors.status && <FormFeedback>{errors.status}</FormFeedback>}
         </FormGroup>
         <FormGroup>
           <Label for="effectiveFrom">Effective From</Label>
           <Input
             type="date"
             id="effectiveFrom"
+            invalid={!!errors.effective_from}
             value={selectedStatus?.effective_from || ''}
             onChange={(e) =>
               setSelectedStatus((prev) => ({
@@ -44,12 +78,14 @@ function StatusModal({ isOpen, toggle, modalType, selectedStatus, setSelectedSta
               }))
             }
           />
+          {errors.effective_from && <FormFeedback>{errors.effective_from}</FormFeedback>}
         </FormGroup>
         <FormGroup>
           <Label for="effectiveTill">Effective Till</Label>
           <Input
             type="date"
             id="effectiveTill"
+            invalid={!!errors.effective_till}
             value={selectedStatus?.effective_till || ''}
             onChange={(e) =>
               setSelectedStatus((prev) => ({
@@ -58,10 +94,11 @@ function StatusModal({ isOpen, toggle, modalType, selectedStatus, setSelectedSta
               }))
             }
           />
+          {errors.effective_till && <FormFeedback>{errors.effective_till}</FormFeedback>}
         </FormGroup>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={handleSave}>
+        <Button color="primary" onClick={onSave}>
           Save
         </Button>
         <Button color="secondary" onClick={toggle}>
