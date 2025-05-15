@@ -15,12 +15,32 @@ import {
     TableHead,
     TableRow,
     TableCell,
-    TableBody
+    TableBody,
+    FormGroup,
+    TablePagination
 } from '@mui/material';
 import { Row } from 'reactstrap';
-import { addDearnessAllowance, addHouseRent, addNonPracticing, fetchDearnessAllowance } from '../../redux/slices/allowenceSlice';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { fetchPayLevel } from '../../redux/slices/levelSlice';
+import { 
+    addDearnessAllowance, 
+    addHouseRent, 
+    addNonPracticing, 
+    addTransport, 
+    addUniform, 
+    fetchDearnessAllowance, 
+    fetchHouseRent, 
+    fetchNonPracticing, 
+    fetchTransport, 
+    fetchUniform, 
+    updateDearnessAllowance,
+    updateHouseRent,
+    updateNonPracticing,
+    updateTransport,
+    updateUniform
+} from '../../redux/slices/allowenceSlice';
 
 const ALLOWANCE_TYPES = [
     'Dearness',
@@ -32,16 +52,18 @@ const ALLOWANCE_TYPES = [
 
 
 const initialFormValues = {
+    id: '',
     rate_percentage: '',
     pwd_rate_percentage: '',
     city_class: '',
     applicable_post: '',
     transport_type: '',
-    pwd_applicable: false,
+    transport_amount: '',
     amount: '',
     effective_from: '',
     effective_till: '',
-    notification_ref: ''
+    notification_ref: '',
+    pay_level: ''
 };
 
 
@@ -49,43 +71,119 @@ export default function AllowanceForm() {
     const dispatch = useDispatch();
     const [value, setValue] = React.useState(0);
     const [formData, setFormData] = React.useState({});
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [editMode, setEditMode] = React.useState(false);
     const currentType = ALLOWANCE_TYPES[value].toLowerCase().replace(/\s/g, '');
     const allowence = useSelector((state) => state.allowence);
+    const { levels } = useSelector((state) => state.levels);
 
     React.useEffect(() => {
         if (currentType === 'dearness') {
-            dispatch(fetchDearnessAllowance({ page: 1, limit: 10 }));
+            dispatch(fetchDearnessAllowance({ page: page, limit: rowsPerPage }));
+        } else if (currentType === 'houserent') {
+            dispatch(fetchHouseRent({ page: page, limit: rowsPerPage }));
+        } else if (currentType === 'nonpracticing') {
+            dispatch(fetchNonPracticing({ page: page, limit: rowsPerPage }));
+        } else if (currentType === 'transport'){
+            dispatch(fetchPayLevel({ page: 1, limit: 10 }));
+            dispatch(fetchTransport({ page: page, limit: rowsPerPage }));
+        } else if (currentType === 'uniform'){
+            dispatch(fetchUniform({ page: page, limit: rowsPerPage }));
         }
-        
     }, [dispatch, currentType]);
+
+
+   const handlePageChange = (event, value) => {
+        setPage(value);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        console.log("Events: ", parseInt(event.target.value));
+        setRowsPerPage(parseInt(event.target.value));
+        setPage(0);
+    };
 
     const formik = useFormik({
         initialValues: initialFormValues,
-        onSubmit: (values, { resetForm }) => {
-        let action;
-        switch (currentType) {
-            case 'dearness':
-                dispatch(addDearnessAllowance({ type: currentType, data: values }));
-                break;
-            case 'houserent':
-                dispatch(addHouseRent({ type: currentType, data: values }));
-                break;
-            case 'nonpracticing':
-                dispatch(addNonPracticing({ type: currentType, data: values }));
-                break;
-            // Add more allowance types if needed
-            default:
-                console.warn('Unknown allowance type:', currentType);
-        }
-        resetForm();
+        onSubmit: async (values, { resetForm }) => {
+            let action;
+            const isUpdate = !!values.id;
+            try{
+                switch (currentType) {
+                    case 'dearness':
+                        action = isUpdate
+                            ? await dispatch(updateDearnessAllowance({ id: values.id, data: values }))
+                            : await dispatch(addDearnessAllowance({ type: currentType, data: values }));
+                        break;
+                    case 'houserent':
+                        action = isUpdate
+                            ? await dispatch(updateHouseRent({ id: values.id, type: currentType, data: values }))
+                            : await dispatch(addHouseRent({ type: currentType, data: values }));
+                        break;
+                    case 'nonpracticing':
+                        action = isUpdate
+                            ? await dispatch(updateNonPracticing({ id: values.id, type: currentType, data: values }))
+                            : await dispatch(addNonPracticing({ type: currentType, data: values }));
+                        break;
+                    case 'transport':
+                        action = isUpdate
+                            ? await dispatch(updateTransport({ id: values.id, type: currentType, data: values }))
+                            : await dispatch(addTransport({ type: currentType, data: values }));
+                        break;
+                    case 'uniform':
+                        action = isUpdate
+                            ? await dispatch(updateUniform({ id: values.id, type: currentType, data: values }))
+                            : await dispatch(addUniform({ type: currentType, data: values }));
+                        break;
+                    // Add more allowance types if needed
+                    default:
+                        console.warn('Unknown allowance type:', currentType);
+                        return;
+                }
+                // Check if fulfilled
+                if (addDearnessAllowance.fulfilled.match(action) ||
+                    updateDearnessAllowance.fulfilled.match(action) ||
+                    addHouseRent.fulfilled.match(action) ||
+                    updateHouseRent.fulfilled.match(action) ||
+                    addNonPracticing.fulfilled.match(action) ||
+                    updateNonPracticing.fulfilled.match(action) ||
+                    addTransport.fulfilled.match(action) ||
+                    updateTransport.fulfilled.match(action) ||
+                    addUniform.fulfilled.match(action) ||
+                    updateUniform.fulfilled.match(action)) {
+                    console.log("success", action.payload.successMsg)                        
+                    toast.success(action.payload.successMsg || 'Allowance added successfully');
+                    resetForm();
+                }
+            } catch (error){
+                toast.error('Something went wrong');
+            }
+            // If thunk returned rejected
+            if (action?.error) {
+            toast.error(action.payload?.message || 'Failed to add allowance');
+            }
         }
     });
 
-    // console.log("Allowance", allowence);
-    
-    const handleTabChange = (event, newValue) => {
-        setValue(newValue);
+    const handleEdit = (item) => {
+        setEditMode(true);
+        formik.setValues({
+            id: item.id || '',
+            rate_percentage: item.rate_percentage || '',
+            pwd_rate_percentage: item.pwd_rate_percentage || '',
+            city_class: item.city_class || '',
+            applicable_post: item.applicable_post || '',
+            transport_type: item.transport_type || '',
+            transport_amount: item.transport_amount || '',
+            amount: item.amount || '',
+            effective_from: item.effective_from || '',
+            effective_till: item.effective_till || '',
+            notification_ref: item.notification_ref || '',
+            pay_level: item.pay_level || ''
+        });
     };
+
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -129,7 +227,7 @@ export default function AllowanceForm() {
                         <Grid item xs={12} sm={6}>
                             <TextField name="applicable_post" label="Applicable Post" fullWidth onChange={formik.handleChange} value={formik.values.applicable_post} />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <TextField name="rate_percentage" label="Rate %" fullWidth type="number" onChange={formik.handleChange} value={formik.values.rate_percentage} />
                         </Grid>
                     </>
@@ -137,28 +235,15 @@ export default function AllowanceForm() {
             case 'Transport':
                 return (
                     <>
-                        <Grid item xs={12} sm={6} sx={{ minWidth: "80px"}}>
-                            <TextField select name="city_class" label="City Class" fullWidth value={formik.values.city_class} onChange={formik.handleChange}>
-                                {['X', 'Y', 'Z'].map((opt) => (
-                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Grid>
                         <Grid item xs={12} sm={6}  sx={{ minWidth: "150px"}}>
-                            <TextField select name="transport_type" label="Transport Type" fullWidth value={formik.values.transport_type} onChange={formik.handleChange}>
-                                {['Type1', 'Type2', 'Type3', 'Type4'].map((opt) => (
-                                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                            <TextField select name="pay_level" label="Pay Level" fullWidth value={formik.values.pay_level} onChange={formik.handleChange}>
+                                {levels.map((opt) => (
+                                <MenuItem key={opt.id} value={opt.name}>{opt.name}</MenuItem>
                                 ))}
                             </TextField>
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <FormControlLabel
-                                control={<Checkbox name="pwd_applicable" onChange={formik.handleChange} checked={formik.values.pwd_applicable} />}
-                                label="PWD Applicable"
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField name="amount" label="Amount" fullWidth type="number" onChange={formik.handleChange} value={formik.values.amount} />
+                            <TextField name="transport_amount" label="Amount" fullWidth type="number" onChange={formik.handleChange} value={formik.values.transport_amount} />
                         </Grid>
                     </>
                 );
@@ -177,11 +262,14 @@ export default function AllowanceForm() {
                 return null;
         }
     };
+    
+    // console.log(`Allowance: ${currentType}`, allowence );
 
     const renderTableRows = () => {
         switch (ALLOWANCE_TYPES[value]) {
             case 'Dearness':
             return (
+                <>
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
@@ -202,16 +290,26 @@ export default function AllowanceForm() {
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined">Edit</Button>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
                             </TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    component="div"
+                    count={allowence.dearnessAllowance?.list.length}
+                    page={page}
+                    onPageChange={handlePageChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+                </>
             );
 
             case 'House Rent':
             return (
+                <>
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
@@ -232,16 +330,26 @@ export default function AllowanceForm() {
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined">Edit</Button>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
                             </TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    component="div"
+                    count={allowence.houseRent?.list.length}
+                    page={page}
+                    onPageChange={handlePageChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+                </>
             );
 
             case 'Non Practicing':
             return (
+                <>
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
@@ -262,14 +370,98 @@ export default function AllowanceForm() {
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined">Edit</Button>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
                             </TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    component="div"
+                    count={allowence.nonPracticing?.list.length}
+                    page={page}
+                    onPageChange={handlePageChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+                </>
             );
 
+            case 'Transport':
+            return (
+                <>
+                <Table>
+                    <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow>
+                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Pay level</b></TableCell>
+                            <TableCell><b>Amount</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {allowence.transport?.list?.map((item, index) => (
+                        <TableRow key={item.id || index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.pay_level || '-'}</TableCell>
+                            <TableCell>{item.amount || '-'}</TableCell>
+                            <TableCell>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <TablePagination
+                    component="div"
+                    count={allowence.transport?.list.length}
+                    page={page}
+                    onPageChange={handlePageChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+                </>
+            );
+
+            case 'Uniform':
+            return (
+                <>
+                <Table>
+                    <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow>
+                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Applicable Post</b></TableCell>
+                            <TableCell><b>Amount</b></TableCell>
+                            <TableCell><b>Effective from</b></TableCell>
+                            <TableCell><b>Effective till</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {allowence.uniform?.list?.map((item, index) => (
+                        <TableRow key={item.id || index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.applicable_post || '-'}</TableCell>
+                            <TableCell>{item.amount || '-'}</TableCell>
+                            <TableCell>{item.effective_from || '-'}</TableCell>
+                            <TableCell>{item.effective_till || '-'}</TableCell>
+                            <TableCell>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <TablePagination
+                    component="div"
+                    count={allowence.uniform?.list.length}
+                    page={page}
+                    onPageChange={handlePageChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+                </>
+            );
             default:
             return (
                 <Table>
@@ -308,56 +500,71 @@ export default function AllowanceForm() {
                     <form onSubmit={formik.handleSubmit} className="mb-5">
                         <Grid container spacing={2}>
                             {renderFields()}
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="effective_from"
-                                    label="Effective From"
-                                    type="date"
-                                    fullWidth
-                                    InputLabelProps={{ shrink: true }}
-                                    onChange={formik.handleChange}
-                                    value={formik.values.effective_from}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    name="effective_till"
-                                    label="Effective Till"
-                                    type="date"
-                                    fullWidth
-                                    InputLabelProps={{ shrink: true }}
-                                    onChange={formik.handleChange}
-                                    value={formik.values.effective_till}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    name="notification_ref"
-                                    label="Notification Ref"
-                                    fullWidth
-                                    onChange={formik.handleChange}
-                                    value={formik.values.notification_ref}
-                                />
-                            </Grid>
+                            {
+                                currentType !== "transport" ?
+                                <>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        name="effective_from"
+                                        label="Effective From"
+                                        type="date"
+                                        fullWidth
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={formik.handleChange}
+                                        value={formik.values.effective_from}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        name="effective_till"
+                                        label="Effective Till"
+                                        type="date"
+                                        fullWidth
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={formik.handleChange}
+                                        value={formik.values.effective_till}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        name="notification_ref"
+                                        label="Notification Ref"
+                                        fullWidth
+                                        onChange={formik.handleChange}
+                                        value={formik.values.notification_ref}
+                                    />
+                                </Grid>
+                                </> : null
+
+                            }
                         </Grid>
                         <Row className='m-0 mt-4'>
                             <Grid item xs={12}>
                                 <Button
-                                    type='submit'
-                                    className='text-white pt-2 pb-2 pl-4 pr-4'
-                                    style={{background:'#004080'}}
-                                    //    variant="contained"
-                                    //     color="primary"
-                                    fullWidth
+                                    style={{ background: "#004080", color: '#fff' }}
+                                    type="submit"
                                 >
-                                    Submit
+                                    {editMode ? "Update" : "Submit"}
                                 </Button>
+                                {editMode && (
+                                    <Button
+                                        type="button"
+                                        color="secondary"
+                                        onClick={() => {
+                                            formik.resetForm();
+                                            setEditMode(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                )}
                             </Grid>
                         </Row>
                     </form>
 
                     <TableContainer component={Paper} variant="outlined">
                         {renderTableRows()}
+                       
                     </TableContainer>
                 
                 </Paper>

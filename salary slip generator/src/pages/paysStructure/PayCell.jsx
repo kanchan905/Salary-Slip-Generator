@@ -159,6 +159,7 @@ const PayMatrixCell = () => {
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
                   <TableCell><b>Index</b></TableCell>
+                  <TableCell><b>Cell Index</b></TableCell>
                   <TableCell><b>Basic Pay</b></TableCell>
                   <TableCell><b>Actions</b></TableCell>
                 </TableRow>
@@ -167,8 +168,9 @@ const PayMatrixCell = () => {
                 {loading ? (
                   <TableRow><TableCell colSpan={3}>Loading...</TableCell></TableRow>
                 ) : (
-                  filteredCells.map((cell) => (
+                  filteredCells.map((cell, index) => (
                     <TableRow key={cell.id}>
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         {editingCellId === cell.id ? (
                           <TextField

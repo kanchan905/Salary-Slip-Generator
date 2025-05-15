@@ -10,7 +10,6 @@ export const fetchDearnessAllowance = createAsyncThunk(
     async ({ page, limit }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`dearness-allowance-rate?page=${page}&limit=${limit}`);
-            console.log("DR Res", response);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch dearness allowance");
@@ -42,7 +41,9 @@ export const addDearnessAllowance = createAsyncThunk(
 export const updateDearnessAllowance = createAsyncThunk(
     "dearnessAllowance/updateDearnessAllowance",
     async (data, { rejectWithValue }) => {
+
         try {
+            console.log("DA update", data);
             const {
                 id,
                 rate_percentage,
@@ -196,6 +197,134 @@ export const updateNonPracticing = createAsyncThunk(
 );
 
 
+// ------------------ TRANSPORT ALLOWANCE ------------------
+
+// Fetch Transport
+export const fetchTransport = createAsyncThunk(
+    "transport/fetchTransport",
+    async ({ page, limit }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`transport-allowance-rate?page=${page}&limit=${limit}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch transport");
+        }
+    }
+);
+
+
+// Add Transport Allowance Rate
+export const addTransport = createAsyncThunk(
+    "transport/addTransport",
+    async (data, { rejectWithValue }) => {
+        try {
+            const {
+                transport_amount,
+                pay_level,
+            } = data.data;
+            const response = await axiosInstance.post("/transport-allowance-rate", {
+                amount: transport_amount,
+                pay_level,
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to add transport allowance rate");
+        }
+    }
+);
+
+// Update Transport Allowance Rate
+export const updateTransport = createAsyncThunk(
+    "transport/updateTransport",
+    async (data, { rejectWithValue }) => {
+        try {
+            const {
+                id,
+                transport_amount,
+                pay_level,
+            } = data.data;
+            const response = await axiosInstance.put(`/transport-allowance-rate/${id}`, {
+                amount: transport_amount,
+                pay_level,
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update transport allowance rate");
+        }
+    }
+);
+
+
+
+
+// ------------------ TRANSPORT ALLOWANCE ------------------
+
+// Fetch Uniform Allowance
+export const fetchUniform = createAsyncThunk(
+    "uniform/fetchUniform",
+    async ({ page, limit }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`uniform-allowance-rate?page=${page}&limit=${limit}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch uniform allowance");
+        }
+    }
+);
+
+// Add Uniform Allowance
+export const addUniform = createAsyncThunk(
+    "uniform/addUniform",
+    async (data, { rejectWithValue }) => {
+        try {
+            const {
+                applicable_post,
+                amount,
+                effective_from,
+                effective_till,
+                notification_ref
+            } = data.data;
+            const response = await axiosInstance.post("/uniform-allowance-rate", {
+                applicable_post,
+                amount,
+                effective_from,
+                effective_till,
+                notification_ref
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to add uniform allowance rate");
+        }
+    }
+);
+
+// UPdate Uniform Allowance
+export const updateUniform = createAsyncThunk(
+    "uniform/updateUniform",
+    async (data, { rejectWithValue }) => {
+        try {
+            const {
+                id,
+                applicable_post,
+                amount,
+                effective_from,
+                effective_till,
+                notification_ref
+            } = data.data;
+            const response = await axiosInstance.post(`/uniform-allowance-rate/${id}`, {
+                applicable_post,
+                amount,
+                effective_from,
+                effective_till,
+                notification_ref
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update uniform allowance rate");
+        }
+    }
+);
+
 const initialState = {
     dearnessAllowance: {
         list: [],
@@ -212,6 +341,17 @@ const initialState = {
         loading: false,
         error: null,
     },
+    transport: {
+        list: [],
+        loading: false,
+        error: null,
+    },
+    uniform: {
+        list: [],
+        loading: false,
+        error: null,
+    }
+
 };
 
 
@@ -288,6 +428,53 @@ const allowanceSlice = createSlice({
             const index = state.nonPracticing.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.nonPracticing.list[index] = updated;
         });
+        
+    // Transport Allowance
+    builder
+        .addCase(fetchTransport.pending, (state) => {
+            state.transport.loading = true;
+            state.transport.error = null;
+        })
+        .addCase(fetchTransport.fulfilled, (state, action) => {
+            state.transport.loading = false;
+            state.transport.list = action.payload.data || [];
+        })
+        .addCase(fetchTransport.rejected, (state, action) => {
+            state.transport.loading = false;
+            state.transport.error = action.payload;
+        })
+        .addCase(addTransport.fulfilled, (state, action) => {
+            state.transport.list.push(action.payload.data);
+        })
+        .addCase(updateTransport.fulfilled, (state, action) => {
+            const updated = action.payload.data;
+            const index = state.transport.list.findIndex((item) => item.id === updated.id);
+            if (index !== -1) state.transport.list[index] = updated;
+        });
+
+    // Uniform Allowance
+    builder
+        .addCase(fetchUniform.pending, (state) => {
+            state.uniform.loading = true;
+            state.uniform.error = null;
+        })
+        .addCase(fetchUniform.fulfilled, (state, action) => {
+            state.uniform.loading = false;
+            state.uniform.list = action.payload.data || [];
+        })
+        .addCase(fetchUniform.rejected, (state, action) => {
+            state.uniform.loading = false;
+            state.uniform.error = action.payload;
+        })
+        .addCase(addUniform.fulfilled, (state, action) => {
+            state.uniform.list.push(action.payload.data);
+        })
+        .addCase(updateUniform.fulfilled, (state, action) => {
+            const updated = action.payload.data;
+            const index = state.uniform.list.findIndex((item) => item.id === updated.id);
+            if (index !== -1) state.uniform.list[index] = updated;
+        });
+
     },
 });
 
