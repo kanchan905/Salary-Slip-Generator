@@ -74,7 +74,6 @@ function EmployeeQuarter() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-<<<<<<< Updated upstream
     const handleFormSubmit = (values, { resetForm }) => {
         const data = {
             employee_id: id,
@@ -113,45 +112,8 @@ function EmployeeQuarter() {
         setModalOpen(false);
         resetForm();
     };
-=======
-    // const handleFormSubmit = (e) => {
-    //     e.preventDefault();
-    //     const data = {
-    //         employee_id: id,
-    //         ...form,
-    //         is_current: form.is_current ? 1 : 0,
-    //     };
-    //     if (editId) {
-    //         dispatch(updateEmployeeQuarter({ id: editId, data }));
-    //     } else {
-    //         dispatch(createEmployeeQuarter(data));
-    //     }
-    //     setModalOpen(false);
-    //     setForm({
-    //         quarter_id: '',
-    //         date_of_allotment: '',
-    //         date_of_occupation: '',
-    //         date_of_leaving: '',
-    //         is_current: false,
-    //     });
-    // };
 
 
-const handleFormSubmit = (values, { resetForm }) => {
-    const data = {
-        employee_id: id,
-        ...values,
-        is_current: values.is_current ? 1 : 0,
-    };
-    if (editId) {
-        dispatch(updateEmployeeQuarter({ id: editId, data }));
-    } else {
-        dispatch(createEmployeeQuarter(data));
-    }
-    setModalOpen(false);
-    resetForm();
-};
->>>>>>> Stashed changes
 
     return (
         <>
@@ -246,10 +208,7 @@ const handleFormSubmit = (values, { resetForm }) => {
                 isOpen={modalOpen}
                 toggle={handleModalToggle}
                 form={form}
-<<<<<<< Updated upstream
-=======
                 // onChange={handleFormChange}
->>>>>>> Stashed changes
                 onSubmit={handleFormSubmit}
             />
         </>

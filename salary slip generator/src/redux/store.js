@@ -7,6 +7,7 @@ import employeeReducer from './slices/employeeSlice'
 import levelCellSlice from './slices/levelCellSlice';
 import quarterReducer from './slices/quarterSlice';
 import payStructureSlice from './slices/payStructureSlice';
+import pensionerReducer from './slices/pensionerSlice'
 
 const store = configureStore({
   reducer: {
@@ -17,7 +18,8 @@ const store = configureStore({
     employee:employeeReducer,
     levelCells: levelCellSlice,
     quarter:quarterReducer,
-    payStructure: payStructureSlice
+    payStructure: payStructureSlice,
+    pensioner:pensionerReducer
   },
 });
 

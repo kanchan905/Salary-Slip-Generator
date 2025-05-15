@@ -15,6 +15,7 @@ import EmployeeForm from "pages/employee/EmployeeForm";
 import EmployeeDetail from "pages/employee/EmployeeDetail";
 import EmployeeEditForm from 'pages/employee/EmployeeEditForm'
 import EmployeeQuarter from 'pages/employee/EmployeeQuarter'
+import PensionerForm from "pages/pensioner/PensionerForm";
 
 
 const getAdminRoutes = (role) => (
@@ -89,13 +90,29 @@ const getAdminRoutes = (role) => (
       layout: role,
     },
   ],
-  pentioner: [
+  pensioner: [
     {
       path: "/pensioners",
       name: "Pensioners",
       icon: "ni ni-circle-08 text-red",
       component: PensionerManagement,
       layout: role,
+    },
+    {
+      path: "/pensioner/add",
+      name: "Add-Pensioners",
+      icon: "ni ni-circle-08 text-red",
+      component: PensionerForm,
+      layout: role,
+       showInSidebar: false,
+    },
+    {
+      path: "/pensioner/edit/:id",
+      name: "Id-Pensioners",
+      icon: "ni ni-circle-08 text-red",
+      component: PensionerForm,
+      layout: role,
+      showInSidebar: false,
     },
   ],
   processing: [

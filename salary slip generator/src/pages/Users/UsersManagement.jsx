@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { changeUserStatus, createUserData, fetchUserData, updateUserData } from '../../redux/slices/userSlice';
 import UserFormModal from "../../Modal/UserFormModal";
 import CircularProgress from '@mui/material/CircularProgress';
+import { toast } from 'react-toastify';
 
 
 const statusChipColor = (status) => {
@@ -39,6 +40,7 @@ export default function UserTable() {
     const users = useSelector((state) => state.user.users);
     const loading = useSelector((state) => state.user.loading);
     const [editId, setEditId] = React.useState(null);
+    const errror = useSelector((state) => state.user.error);
 
     useEffect(() => {
         dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
@@ -116,9 +118,32 @@ export default function UserTable() {
         console.log("Edit User", values);
         if (formMode === 'edit') {
             const { password, ...rest } = values;
-            dispatch(updateUserData({ formData: rest, id: editId }));
+            dispatch(updateUserData({ formData: rest, id: editId })).unwrap()
+                .then(() => {
+                    toast.success('User updated successfully');
+                })
+                .catch((err) => {
+                    const apiMsg =
+                        err?.response?.data?.message ||
+                        err?.message ||
+                        err?.message ||
+                        'Failed to update quarter.';
+                    toast.error(apiMsg);
+                });
+
         } else {
-            dispatch(createUserData(values));
+            dispatch(createUserData(values)).unwrap()
+                .then(() => {
+                    toast.success('User created successfully');
+                })
+                .catch((err) => {
+                    const apiMsg =
+                        err?.response?.data?.message ||
+                        err?.message ||
+                        err?.message ||
+                        'Failed to create user.';
+                    toast.error(apiMsg);
+                });
         }
         resetForm();
         setFormOpen(false);
@@ -141,7 +166,7 @@ export default function UserTable() {
     };
 
     const handleToggleStatus = async (user) => {
-        await dispatch(changeUserStatus({ id:user.id }));
+        await dispatch(changeUserStatus({ id: user.id }));
         dispatch(fetchUserData({ page, limit: rowsPerPage }));
     };
 
@@ -154,7 +179,7 @@ export default function UserTable() {
                         <div className="d-flex justify-content-between align-items-center">
                             <TextField placeholder="Search user..." onChange={handleSearchChange} />
                             <Button
-                                style={{ background: "#004080" }}
+                                style={{ background: "#004080",color:'#fff' }}
                                 type="button"
                                 onClick={() => toggleModal("create")}
                             >

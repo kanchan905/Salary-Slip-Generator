@@ -506,3 +506,7 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #002a5a; /* Darker blue thumb hover color */
 }
+
+.Mui-selected{
+  background-color: #125a91 !important;
+}

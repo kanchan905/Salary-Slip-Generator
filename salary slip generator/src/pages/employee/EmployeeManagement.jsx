@@ -97,7 +97,7 @@ export default function EmployeeManagement() {
                             <TextField placeholder="Search user..." onChange={handleSearchChange} />
                             <NavLink to={`/${name.toLowerCase()}/employee/add`}>
                                 <Button
-                                    style={{ background: "#004080" }}
+                                    style={{ background: "#004080",color:'#fff' }}
                                     type="button"
                                 >
                                     + Add Employee
