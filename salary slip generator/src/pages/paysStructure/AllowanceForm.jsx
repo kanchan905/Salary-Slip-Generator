@@ -9,9 +9,18 @@ import {
     FormControlLabel,
     Button,
     Grid,
-    Paper
+    Paper,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody
 } from '@mui/material';
 import { Row } from 'reactstrap';
+import { addDearnessAllowance, addHouseRent, addNonPracticing, fetchDearnessAllowance } from '../../redux/slices/allowenceSlice';
+import { useFormik } from 'formik';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ALLOWANCE_TYPES = [
     'Dearness',
@@ -21,10 +30,59 @@ const ALLOWANCE_TYPES = [
     'Uniform'
 ];
 
+
+const initialFormValues = {
+    rate_percentage: '',
+    pwd_rate_percentage: '',
+    city_class: '',
+    applicable_post: '',
+    transport_type: '',
+    pwd_applicable: false,
+    amount: '',
+    effective_from: '',
+    effective_till: '',
+    notification_ref: ''
+};
+
+
 export default function AllowanceForm() {
+    const dispatch = useDispatch();
     const [value, setValue] = React.useState(0);
     const [formData, setFormData] = React.useState({});
+    const currentType = ALLOWANCE_TYPES[value].toLowerCase().replace(/\s/g, '');
+    const allowence = useSelector((state) => state.allowence);
 
+    React.useEffect(() => {
+        if (currentType === 'dearness') {
+            dispatch(fetchDearnessAllowance({ page: 1, limit: 10 }));
+        }
+        
+    }, [dispatch, currentType]);
+
+    const formik = useFormik({
+        initialValues: initialFormValues,
+        onSubmit: (values, { resetForm }) => {
+        let action;
+        switch (currentType) {
+            case 'dearness':
+                dispatch(addDearnessAllowance({ type: currentType, data: values }));
+                break;
+            case 'houserent':
+                dispatch(addHouseRent({ type: currentType, data: values }));
+                break;
+            case 'nonpracticing':
+                dispatch(addNonPracticing({ type: currentType, data: values }));
+                break;
+            // Add more allowance types if needed
+            default:
+                console.warn('Unknown allowance type:', currentType);
+        }
+        resetForm();
+        }
+    });
+
+    // console.log("Allowance", allowence);
+    
     const handleTabChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -43,31 +101,25 @@ export default function AllowanceForm() {
                 return (
                     <>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="rate_percentage" label="Rate %" fullWidth type="number" onChange={handleChange} />
+                            <TextField name="rate_percentage" label="Rate %" type="number" fullWidth onChange={formik.handleChange} value={formik.values.rate_percentage} />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="pwd_rate_percentage" label="PWD Rate %" fullWidth type="number" onChange={handleChange} />
+                            <TextField name="pwd_rate_percentage" label="PWD Rate %" type="number" fullWidth onChange={formik.handleChange} value={formik.values.pwd_rate_percentage} />
                         </Grid>
                     </>
                 );
             case 'House Rent':
                 return (
                     <>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                select
-                                name="city_class"
-                                label="City Class"
-                                onChange={handleChange}
-                                defaultValue="Agra"
-                            >
-                                {['Agra', 'Delhi', 'Noida'].map((opt) => (
-                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                        <Grid item xs={12} sm={6} sx={{ minWidth: "120px"}}>
+                            <TextField select name="city_class" label="City Class" fullWidth value={formik.values.city_class} onChange={formik.handleChange}>
+                                {['X', 'Y', 'Z'].map((opt) => (
+                                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
                                 ))}
                             </TextField>
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="rate_percentage" label="Rate %" fullWidth type="number" onChange={handleChange} />
+                            <TextField name="rate_percentage" label="Rate %" fullWidth type="number" onChange={formik.handleChange} value={formik.values.rate_percentage} />
                         </Grid>
                     </>
                 );
@@ -75,52 +127,38 @@ export default function AllowanceForm() {
                 return (
                     <>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="applicable_post" label="Applicable Post" fullWidth onChange={handleChange} />
+                            <TextField name="applicable_post" label="Applicable Post" fullWidth onChange={formik.handleChange} value={formik.values.applicable_post} />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="rate_percentage" label="Rate %" fullWidth type="number" onChange={handleChange} />
+                            <TextField name="rate_percentage" label="Rate %" fullWidth type="number" onChange={formik.handleChange} value={formik.values.rate_percentage} />
                         </Grid>
                     </>
                 );
             case 'Transport':
                 return (
                     <>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                select
-                                name="city_class"
-                                label="City Class"
-                                fullWidth
-                                onChange={handleChange}
-                                defaultValue="Agra"
-                            >
-                                {['Agra', 'Delhi', 'Noida'].map((opt) => (
+                        <Grid item xs={12} sm={6} sx={{ minWidth: "80px"}}>
+                            <TextField select name="city_class" label="City Class" fullWidth value={formik.values.city_class} onChange={formik.handleChange}>
+                                {['X', 'Y', 'Z'].map((opt) => (
                                     <MenuItem key={opt} value={opt}>{opt}</MenuItem>
                                 ))}
                             </TextField>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                select
-                                name="transport_type"
-                                label="Transport Type"
-                                fullWidth
-                                onChange={handleChange}
-                                defaultValue="Type1"
-                            >
+                        <Grid item xs={12} sm={6}  sx={{ minWidth: "150px"}}>
+                            <TextField select name="transport_type" label="Transport Type" fullWidth value={formik.values.transport_type} onChange={formik.handleChange}>
                                 {['Type1', 'Type2', 'Type3', 'Type4'].map((opt) => (
-                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
                                 ))}
                             </TextField>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <FormControlLabel
-                                control={<Checkbox name="pwd_applicable" onChange={handleChange} />}
+                                control={<Checkbox name="pwd_applicable" onChange={formik.handleChange} checked={formik.values.pwd_applicable} />}
                                 label="PWD Applicable"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="amount" label="Amount" fullWidth type="number" onChange={handleChange} />
+                            <TextField name="amount" label="Amount" fullWidth type="number" onChange={formik.handleChange} value={formik.values.amount} />
                         </Grid>
                     </>
                 );
@@ -128,10 +166,10 @@ export default function AllowanceForm() {
                 return (
                     <>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="applicable_post" label="Applicable Post" fullWidth onChange={handleChange} />
+                            <TextField name="applicable_post" label="Applicable Post" fullWidth onChange={formik.handleChange} value={formik.values.applicable_post} />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField name="amount" label="Amount" fullWidth type="number" onChange={handleChange} />
+                            <TextField name="amount" label="Amount" fullWidth type="number" onChange={formik.handleChange} value={formik.values.amount} />
                         </Grid>
                     </>
                 );
@@ -140,74 +178,191 @@ export default function AllowanceForm() {
         }
     };
 
+    const renderTableRows = () => {
+        switch (ALLOWANCE_TYPES[value]) {
+            case 'Dearness':
+            return (
+                <Table>
+                    <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow>
+                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Rate %</b></TableCell>
+                            <TableCell><b>PWD Rate %</b></TableCell>
+                            <TableCell><b>Effective from</b></TableCell>
+                            <TableCell><b>Effective till</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {allowence.dearnessAllowance?.list?.map((item, index) => (
+                        <TableRow key={item.id || index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.rate_percentage || '-'}</TableCell>
+                            <TableCell>{item.pwd_rate_percentage || '-'}</TableCell>
+                            <TableCell>{item.effective_from || '-'}</TableCell>
+                            <TableCell>{item.effective_till || '-'}</TableCell>
+                            <TableCell>
+                                <Button size="small" variant="outlined">Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            );
+
+            case 'House Rent':
+            return (
+                <Table>
+                    <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow>
+                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>City Class</b></TableCell>
+                            <TableCell><b>Rate %</b></TableCell>
+                            <TableCell><b>Effective from</b></TableCell>
+                            <TableCell><b>Effective till</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {allowence.houseRent?.list?.map((item, index) => (
+                        <TableRow key={item.id || index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.city_class || '-'}</TableCell>
+                            <TableCell>{item.rate_percentage || '-'}</TableCell>
+                            <TableCell>{item.effective_from || '-'}</TableCell>
+                            <TableCell>{item.effective_till || '-'}</TableCell>
+                            <TableCell>
+                                <Button size="small" variant="outlined">Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            );
+
+            case 'Non Practicing':
+            return (
+                <Table>
+                    <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow>
+                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Applicable Post</b></TableCell>
+                            <TableCell><b>Rate %</b></TableCell>
+                            <TableCell><b>Effective from</b></TableCell>
+                            <TableCell><b>Effective till</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {allowence.nonPracticing?.list?.map((item, index) => (
+                        <TableRow key={item.id || index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.applicable_post || '-'}</TableCell>
+                            <TableCell>{item.rate_percentage || '-'}</TableCell>
+                            <TableCell>{item.effective_from || '-'}</TableCell>
+                            <TableCell>{item.effective_till || '-'}</TableCell>
+                            <TableCell>
+                                <Button size="small" variant="outlined">Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            );
+
+            default:
+            return (
+                <Table>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={6}>No records found</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            );
+        }
+    };
+
+
 
     return (
         <>
-          <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'>
-          <Box sx={{ maxWidth: { xs: '80%', sm: '90%' }, margin:'auto'}}>
-              <Tabs
-                value={value}
-                onChange={handleTabChange}
-                variant="scrollable"
-                scrollButtons="auto"
-                aria-label="scrollable auto tabs"
-                TabIndicatorProps={{ sx: { height: 3 } }}
-              >
-                {ALLOWANCE_TYPES.map((label, index) => (
-                  <Tab key={index} label={label} sx={{ flex: '0 0 33.33%', color:'white' }} />
-                ))}
-              </Tabs>
-            </Box>
-      
-          </div>
-          <Box sx={{ width: '100%', bgcolor: 'background.paper', p: 3, pt:8, pb:8, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <div className='header bg-gradient-info pb-5 pt-8 pt-md-8 main-head'>
+                <Box sx={{ maxWidth: { xs: '80%', sm: '90%' }, margin:'auto'}}>
+                    <Tabs
+                        value={value}
+                        onChange={(e, newValue) => setValue(newValue)}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        TabIndicatorProps={{ sx: { height: 3 } }}
+                    >
+                        {ALLOWANCE_TYPES.map((label, index) => (
+                        <Tab key={index} label={label} sx={{ flex: '0 0 33.33%', color:'white' }} />
+                        ))}
+                    </Tabs>
+                </Box>
+            </div>
+            <Box sx={{ width: '100%', bgcolor: 'background.paper', p: 3, pt:8, pb:8, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         
-            <Paper sx={{ p: 3, width: '100%', maxWidth:{xs: '80%', sm: '90%'  }}}>
-              <Grid container spacing={2}>
-                {renderFields()}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    name="effective_from"
-                    label="Effective From"
-                    type="date"
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    name="effective_till"
-                    label="Effective Till"
-                    type="date"
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name="notification_ref"
-                    label="Notification Ref"
-                    fullWidth
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
-              <Row className='m-0 mt-4'>
-              <Grid item xs={12}>
-                  <Button
-                  className='text-white pt-2 pb-2 pl-4 pr-4'
-                  style={{background:'#004080'}}
-                //    variant="contained"
-                //     color="primary"
-                     fullWidth>
-                    Submit
-                  </Button>
-                </Grid>
-              </Row>
-            </Paper>
-          </Box>
+                <Paper sx={{ p: 3, width: '100%', maxWidth:{xs: '80%', sm: '90%'  }}}>
+                    <form onSubmit={formik.handleSubmit} className="mb-5">
+                        <Grid container spacing={2}>
+                            {renderFields()}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="effective_from"
+                                    label="Effective From"
+                                    type="date"
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.effective_from}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    name="effective_till"
+                                    label="Effective Till"
+                                    type="date"
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.effective_till}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    name="notification_ref"
+                                    label="Notification Ref"
+                                    fullWidth
+                                    onChange={formik.handleChange}
+                                    value={formik.values.notification_ref}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Row className='m-0 mt-4'>
+                            <Grid item xs={12}>
+                                <Button
+                                    type='submit'
+                                    className='text-white pt-2 pb-2 pl-4 pr-4'
+                                    style={{background:'#004080'}}
+                                    //    variant="contained"
+                                    //     color="primary"
+                                    fullWidth
+                                >
+                                    Submit
+                                </Button>
+                            </Grid>
+                        </Row>
+                    </form>
+
+                    <TableContainer component={Paper} variant="outlined">
+                        {renderTableRows()}
+                    </TableContainer>
+                
+                </Paper>
+            </Box>
+
         </>
-      );
+    );
 }

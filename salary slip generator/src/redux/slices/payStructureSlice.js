@@ -20,8 +20,8 @@ export const addPayStructure = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/employee-pay-structures', {
-        employee_id: data.emp_id,
-        matrix_cell_id: data.cell_id,
+        employee_id: data.employee_id,
+        matrix_cell_id: data.matrix_cell_id,
         commission: data.commission,
         effective_from: data.effective_from,
         effective_till: data.effective_till,
@@ -38,17 +38,15 @@ export const updatePayStructure = createAsyncThunk(
   'payStructure/updatePayStructure',
   async (data, { rejectWithValue }) => {
     try {
-      const { id, emp_id, cell_id, commission, effective_from, effective_till, order_reference } = data;
-
+      const { id, employee_id, matrix_cell_id, commission, effective_from, effective_till, order_reference } = data;
       const response = await axiosInstance.put(`/employee-pay-structures/${id}`, {
-        employee_id: emp_id,
-        matrix_cell_id: cell_id,
+        employee_id: employee_id,
+        matrix_cell_id: matrix_cell_id,
         commission,
         effective_from,
         effective_till,
         order_reference,
       });
-
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to update pay structure');
