@@ -16,6 +16,12 @@ import EmployeeDetail from "pages/employee/EmployeeDetail";
 import EmployeeEditForm from 'pages/employee/EmployeeEditForm'
 import EmployeeQuarter from 'pages/employee/EmployeeQuarter'
 import PensionerForm from "pages/pensioner/PensionerForm";
+import Arrears from "pages/arrears/Arrears";
+import BankDetails from "pages/bank-details/BankDetails";
+import DearnessRelief from "pages/dearness-relief/DearnessRelief";
+import MonthlyPension from "pages/monthly-pension/MonthlyPension";
+import PensionDeduction from "pages/pension-deduction/PensionDeduction";
+import PensionDocuments from "pages/pension-documents/PensionDocuments";
 
 
 const getAdminRoutes = (role) => (
@@ -92,7 +98,7 @@ const getAdminRoutes = (role) => (
       layout: role,
     }
   ],
-  pensioner: [
+  pensioner_Management: [
     {
       path: "/pensioners",
       name: "Pensioners",
@@ -101,12 +107,54 @@ const getAdminRoutes = (role) => (
       layout: role,
     },
     {
+     path: "/arrears",
+      name: "Arrears",
+      icon: "fa-solid fa-dollar-sign",
+      component: Arrears,
+      layout: role,
+    },
+    {
+     path: "/pensioner/bank-detail",
+      name: "Bank",
+      icon: "fa-solid fa-landmark",
+      component: BankDetails,
+      layout: role,
+    },
+    {
+     path: "/pensioner/dearness-relief",
+      name: "Dearness Relief",
+      icon: "fa-solid fa-hand-holding-heart",
+      component: DearnessRelief,
+      layout: role,
+    },
+    {
+     path: "/pensioner/monthly-pension",
+      name: "Monthly Pension",
+      icon: "fa-solid fa-hand-holding-dollar", 
+      component: MonthlyPension,
+      layout: role,
+    },
+    {
+     path: "/pensioner/pension-deduction",
+      name: "Pension Deduction",
+      icon: "fa-solid fa-money-bill-transfer", 
+      component: PensionDeduction,
+      layout: role,
+    },
+    {
+     path: "/pensioner/pension-documents",
+      name: "Pension Documents",
+      icon: "fa-solid fa-receipt",
+      component: PensionDocuments,
+      layout: role,
+    },
+    {
       path: "/pensioner/add",
       name: "Add-Pensioners",
       icon: "ni ni-circle-08 text-red",
       component: PensionerForm,
       layout: role,
-       showInSidebar: false,
+      showInSidebar: false,
     },
     {
       path: "/pensioner/edit/:id",
@@ -116,24 +164,32 @@ const getAdminRoutes = (role) => (
       layout: role,
       showInSidebar: false,
     },
+    {
+      path: "/pensioner/edit/:id",
+      name: "Id-Pensioners",
+      icon: "ni ni-circle-08 text-red",
+      component: PensionerForm,
+      layout: role,
+      showInSidebar: false,
+    }
   ],
   processing: [
     {
       path: "/salary",
-      name: "Salary Processing",
+      name: "Salary",
       icon: "ni ni-settings-gear-65 text-info",
       component: SalaryProcessing,
       layout: role,
       showInSidebar: true,
-    },
-    {
+    },{
       path: "/pension",
-      name: "Pension Processing",
-      icon: "ni ni-sound-wave text-pink",
+      name: "Pension",
+      icon: "ni ni-settings-gear-65 text-info",
       component: PensionProcessing,
       layout: role,
       showInSidebar: true,
-    },
+    }
+
   ],
   report: [
     {

@@ -34,7 +34,7 @@ export default function UserTable() {
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
     const [formOpen, setFormOpen] = React.useState(false);
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(2);
     const [searchQuery, setSearchQuery] = React.useState("");
     const dispatch = useDispatch();
     const users = useSelector((state) => state.user.users);
@@ -44,7 +44,7 @@ export default function UserTable() {
 
     useEffect(() => {
         dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
-    }, [dispatch]);
+    }, [dispatch, page, rowsPerPage]);
 
     // Filter users based on search query
     const filteredUsers = users.filter((user) =>
@@ -52,6 +52,7 @@ export default function UserTable() {
     );
 
     const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    // const paginatedUsers = users;
     const [formMode, setFormMode] = React.useState('create');
 
     const handleSearchChange = (event) => {
@@ -59,8 +60,8 @@ export default function UserTable() {
         setPage(0);
     };
 
-    const handlePageChange = (event, value) => {
-        setPage(value);
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -179,7 +180,7 @@ export default function UserTable() {
                         <div className="d-flex justify-content-between align-items-center">
                             <TextField placeholder="Search user..." onChange={handleSearchChange} />
                             <Button
-                                style={{ background: "#004080",color:'#fff' }}
+                                style={{ background: "#004080", color: '#fff' }}
                                 type="button"
                                 onClick={() => toggleModal("create")}
                             >
