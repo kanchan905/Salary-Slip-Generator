@@ -29,6 +29,15 @@ const getAdminRoutes = (role) => (
       layout: role,
     },
   ],
+  masters: [
+    {
+      path: "/allowance-rates",
+      name: "Allowance Rates",
+      icon: "ni ni-money-coins text-orange",
+      component: AllowanceForm,
+      layout: role,
+    },
+  ],
   management: [
     {
       path: "/user-management",
@@ -74,21 +83,14 @@ const getAdminRoutes = (role) => (
       showInSidebar: false,
     }
   ],
-  masters: [
+  employee_masters: [
     {
       path: "/pay-structure",
       name: "Pay Structure",
       icon: "ni ni-settings-gear-65 text-orange",
       component: PaysStructure,
       layout: role,
-    },
-    {
-      path: "/allowance-rates",
-      name: "Allowance Rates",
-      icon: "ni ni-money-coins text-orange",
-      component: AllowanceForm,
-      layout: role,
-    },
+    }
   ],
   pensioner: [
     {
