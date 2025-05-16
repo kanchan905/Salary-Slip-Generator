@@ -16,7 +16,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Pagination
+  TablePagination,
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import SendIcon from '@mui/icons-material/Send';
@@ -32,7 +32,6 @@ import {
   fetchPayStructure, 
   updatePayStructure 
 } from '../../redux/slices/payStructureSlice';
-import { PaginationItem, PaginationLink } from 'reactstrap';
 
 
 
@@ -41,36 +40,48 @@ const EmployeePayStructures = () => {
   // const employeePayStructures = useSelector((state) => state.levels.employeePayStructures);
   const employees = useSelector((state) => state.employee.employees) || [];
   const { levels, matrixCells, loading } = useSelector((state) => state.levelCells);
-  const { payStructure } = useSelector((state) => state.payStructure);
+  const { payStructure, totalCount } = useSelector((state) => state.payStructure);
   const [selectedLevelId, setSelectedLevelId] = useState('');
+  const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     dispatch(fetchPayLevel());
-    dispatch(fetchPayCell());
-    dispatch(fetchEmployees({page: 1, limit: 10, search: ""}));
-    dispatch(fetchPayStructure({page: currentPage, limit: rowsPerPage, search: ""}));
-  },[dispatch])
+    dispatch(fetchEmployees({ page: 1, limit: 40, search: "" }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedLevelId) {
+      dispatch(fetchPayCell({ matrix_level_id: Number(selectedLevelId), page: 1, limit: 1000 }));
+    }
+  }, [dispatch, selectedLevelId]);
+
+  useEffect(() => {
+    dispatch(fetchPayStructure({ page: page + 1 , limit: rowsPerPage, search: "" }));
+  }, [dispatch, page]);
+
 
   
   const filteredCells = matrixCells.filter(cell => cell.matrix_level_id === Number(selectedLevelId));
 
-   const initialValues = editData || {
-    pay_structure_id: Date.now(),
-    employee_id: editData ? editData?.employee_id : '',
-    matrix_cell_id: editData ? editData?.matrix_cell_id : '',
-    commission: '',
-    effective_from: '',
-    effective_till: '',
+  const initialValues = {
+    pay_structure_id: editData?.pay_structure_id || Date.now(),
+    employee_id: editData?.employee_id || '',
+    matrix_cell_id: editData?.matrix_cell_id || '',
+    commission: editData?.commission || '',
+    effective_from: editData?.effective_from || '',
+    effective_till: editData?.effective_till || '',
   };
+
   
   const handleSubmit = async (values, { resetForm }) => {
     try {
       if (editData) {
-        const res = await dispatch(updatePayStructure(values)).unwrap();
+        const res = await dispatch(updatePayStructure({ id: editData.id, values })).unwrap();
         toast.success(res?.successMsg || "Pay Structure updated successfully");
+        setEditMode(false);
       } else {
         const res = await dispatch(addPayStructure(values)).unwrap();
         toast.success(res?.successMsg || "Pay Structure added successfully");
@@ -87,15 +98,19 @@ const EmployeePayStructures = () => {
   };
 
   const handleEdit = (structure) => {
-    setSelectedLevelId(
-      matrixCells.find((c) => c.id === structure.matrix_cell_id)?.matrix_level_id || ''
-    );
+    setEditMode(true);
+    setSelectedLevelId(structure.pay_matrix_cell.matrix_level_id);
     setEditData(structure);
   };
-
   
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
+  const handleChangePage = (event, newPage) => {
+    console.log("CHange newPa",newPage);
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
   };
 
   return (
@@ -111,7 +126,7 @@ const EmployeePayStructures = () => {
           >
             {levels.map((level) => (
               <MenuItem key={level.id} value={level.id}>
-                {level.name}
+                {level.name < 10 ? `0${level.name}` : level.name}
               </MenuItem>
             ))}
           </Select>
@@ -125,46 +140,27 @@ const EmployeePayStructures = () => {
           {({ values, handleChange, handleReset }) => (
             <Form>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth sx={{ minWidth: 170 }}>
-                    <InputLabel id="employee_id">Select Employee</InputLabel>
-                    <Select
-                      labelId="employee_id"
-                      name="employee_id"
-                      value={values.employee_id}
-                      onChange={handleChange}
-                      required
-                    >
-                      {employees.map((emp) => (
-                        <MenuItem key={emp.id} className='text-capitalize' value={emp.id}>
-                          {emp.first_name} {emp.last_name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                <Grid item xs={12} sm={6} sx={{ minWidth: 180 }}>
+                  <TextField select name="employee_id" label="Employee" className='text-capitalize' fullWidth value={values.employee_id} onChange={handleChange}>
+                    {employees.map((emp) => (
+                      <MenuItem key={emp.id} className='text-capitalize' value={emp.id}>
+                        {emp.first_name} {emp.last_name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth sx={{ minWidth: 180 }}>
-                    <InputLabel id="matrix_cell_id">Select Pay Cell</InputLabel>
-                    <Select
-                      labelId="matrix_cell_id"
-                      name="matrix_cell_id"
-                      value={values.matrix_cell_id}
-                      onChange={handleChange}
-                      required
-                    >
-                      {filteredCells.length === 0 ? (
+                <Grid item xs={12} sm={6} sx={{ minWidth: 180 }}>
+                  <TextField select name="matrix_cell_id" label="Select Pay Cell" fullWidth value={values.matrix_cell_id} onChange={handleChange}>
+                    {filteredCells.length === 0 ? (
                         <MenuItem disabled>Select Pay Level First</MenuItem>
                       ) : (
                         filteredCells.map((cell) => (
                           <MenuItem key={cell.id} value={cell.id}>
-                            {cell.index}
+                          {cell.index < 10 ? `0${cell.index}` : cell.index} - {cell.amount}
                           </MenuItem>
                         ))
                       )}
-                    </Select>
-                  </FormControl>
+                  </TextField>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -213,8 +209,20 @@ const EmployeePayStructures = () => {
                   type="submit"
                   endIcon={<SendIcon />}
                 >
-                  {editData ? 'Update' : 'Add'} Pay Structure
+                  {editMode ? 'Update' : 'Add'} Pay Structure
                 </Button>
+                {editMode && (
+                    <Button
+                        type="button"
+                        color="secondary"
+                        onClick={() => {
+                          setEditData(null);
+                          setEditMode(false);
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                )}
               </Grid>
             </Form>
           )}
@@ -230,6 +238,7 @@ const EmployeePayStructures = () => {
               <TableRow>
                 <TableCell><b>Index</b></TableCell>
                 <TableCell><b>Employee</b></TableCell>
+                <TableCell><b>Level</b></TableCell>
                 <TableCell><b>Cell ID</b></TableCell>
                 <TableCell><b>Commission</b></TableCell>
                 <TableCell><b>Actions</b></TableCell>
@@ -243,7 +252,8 @@ const EmployeePayStructures = () => {
                   <TableRow key={structure.id}>
                     <TableCell>{index + 1 || '-'}</TableCell>
                     <TableCell className='text-capitalize'>{structure.employee.first_name || '-'} {structure.employee.last_name}</TableCell>
-                    <TableCell>{structure?.pay_matrix_cell?.index || '-'}</TableCell>
+                    <TableCell>{ structure?.pay_matrix_cell?.matrix_level_id < 10 ? `0${structure?.pay_matrix_cell?.matrix_level_id}` : structure?.pay_matrix_cell?.matrix_level_id || '-'}</TableCell>
+                    <TableCell>{structure?.pay_matrix_cell?.index < 10 ? `0${structure?.pay_matrix_cell?.index}` : structure?.pay_matrix_cell?.index || '-'} - {structure?.pay_matrix_cell?.amount}</TableCell>
                     <TableCell>₹ {structure?.commission || '-'}</TableCell>
                     <TableCell>
                       <Button
@@ -262,31 +272,15 @@ const EmployeePayStructures = () => {
 
           </Table>
         </TableContainer>
-
-        {/* <Box display="flex" justifyContent="center" mt={2}>
-          {[...Array(payStructure?.total_count || 1)].map((_, i) => (
-            <PaginationItem key={i} active={i + 1 === currentPage}>
-              <PaginationLink
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentPage(i + 1);
-                }}
-              >
-                {i + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-
-          <PaginationItem disabled={currentPage >= payStructure?.total_count}>
-            <PaginationLink
-              next
-              onClick={(e) => {
-                e.preventDefault();
-                if (currentPage < payStructure?.total_count) setCurrentPage(currentPage + 1);
-              }}
-            />
-          </PaginationItem>
-        </Box> */}
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 20, 50]}
+          component="div"
+          count={totalCount}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Paper>
   </>
   );

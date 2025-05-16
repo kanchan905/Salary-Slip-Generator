@@ -8,12 +8,9 @@ import levelCellSlice from './slices/levelCellSlice';
 import quarterReducer from './slices/quarterSlice';
 import payStructureSlice from './slices/payStructureSlice';
 import pensionerReducer from './slices/pensionerSlice'
-<<<<<<< Updated upstream
 import allowenceSlice from './slices/allowenceSlice';
-=======
 import arrearReducer from './slices/arrearsSlice'
 import bankReducer from './slices/bankSlice'
->>>>>>> Stashed changes
 
 const store = configureStore({
   reducer: {
@@ -26,12 +23,9 @@ const store = configureStore({
     quarter:quarterReducer,
     payStructure: payStructureSlice,
     pensioner:pensionerReducer,
-<<<<<<< Updated upstream
-    allowence: allowenceSlice
-=======
-    arrears:arrearReducer,
+    allowence: allowenceSlice,
+    arrears: arrearReducer,
     bankdetail:bankReducer
->>>>>>> Stashed changes
   },
 });
 
