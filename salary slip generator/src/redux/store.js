@@ -11,13 +11,10 @@ import pensionerReducer from './slices/pensionerSlice'
 import allowenceSlice from './slices/allowenceSlice';
 import arrearReducer from './slices/arrearsSlice'
 import bankReducer from './slices/bankSlice'
-<<<<<<< Updated upstream
-=======
 import monthlyReducer from './slices/monthlyPensionSlice'
 import dearnessReducer from './slices/dearnessRelief'
 import pensionReducer from './slices/pensionDeductionSlice'
 import documentReducer from './slices/pensionDocumentSlice'
->>>>>>> Stashed changes
 
 const store = configureStore({
   reducer: {
@@ -32,16 +29,11 @@ const store = configureStore({
     pensioner:pensionerReducer,
     allowence: allowenceSlice,
     arrears: arrearReducer,
-    bankdetail:bankReducer
-=======
-    allowence: allowenceSlice,
-    arrears:arrearReducer,
     bankdetail:bankReducer,
     monthlypension:monthlyReducer,
     dearnessRelief:dearnessReducer,
     pensionDeduction:pensionReducer,
     pensionDocument:documentReducer
->>>>>>> Stashed changes
   },
 });
 
