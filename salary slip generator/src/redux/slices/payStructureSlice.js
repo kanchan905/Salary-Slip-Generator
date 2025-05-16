@@ -36,17 +36,19 @@ export const addPayStructure = createAsyncThunk(
 // UPDATE Pay Structure
 export const updatePayStructure = createAsyncThunk(
   'payStructure/updatePayStructure',
-  async (data, { rejectWithValue }) => {
+  async ({ id, values }, { rejectWithValue }) => {
     try {
-      const { id, employee_id, matrix_cell_id, commission, effective_from, effective_till, order_reference } = data;
+      const { employee_id, matrix_cell_id, commission, effective_from, effective_till, order_reference } = values;
+
       const response = await axiosInstance.put(`/employee-pay-structures/${id}`, {
-        employee_id: employee_id,
-        matrix_cell_id: matrix_cell_id,
+        employee_id,
+        matrix_cell_id,
         commission,
         effective_from,
         effective_till,
         order_reference,
       });
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to update pay structure');
@@ -55,9 +57,11 @@ export const updatePayStructure = createAsyncThunk(
 );
 
 
+
 // Initial state
 const initialState = {
   payStructure: [],
+  totalCount: 0,
   loading: false,
   error: null,
 };
@@ -77,6 +81,7 @@ const payStructureSlice = createSlice({
       .addCase(fetchPayStructure.fulfilled, (state, action) => {
         state.loading = false;
         state.payStructure = action.payload?.data || [];
+        state.totalCount = action.payload?.total_count || 0;
       })
       .addCase(fetchPayStructure.rejected, (state, action) => {
         state.loading = false;

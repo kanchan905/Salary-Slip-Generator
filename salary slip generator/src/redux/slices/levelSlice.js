@@ -35,10 +35,12 @@ export const updateLevelToAPI = createAsyncThunk(
   "levels/updateLevelToAPI",
   async (data, { rejectWithValue }) => {
     try {
+      console.log("Update Level Data:", data);
       const response = await axiosInstance.put(`/pay-matrix-levels/${data.id}`, {
         name: data.levelName,
         description: data.description
       });
+      console.log("Update Level Response:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to update level");
@@ -49,6 +51,7 @@ export const updateLevelToAPI = createAsyncThunk(
 // INITIAL STATE
 const initialState = {
   levels: [],
+  totalCount: 0,
   employeePayStructures: [],
   loading: false,
   error: null
@@ -141,6 +144,7 @@ const levelSlice = createSlice({
       .addCase(fetchPayLevel.fulfilled, (state, action) => {
         state.loading = false;
         state.levels = action.payload?.data || [];
+        state.totalCount = action.payload?.total_count || 0;
       })
       .addCase(fetchPayLevel.rejected, (state, action) => {
         state.loading = false;

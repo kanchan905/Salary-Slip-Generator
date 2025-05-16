@@ -14,26 +14,29 @@ import {
   fetchPayLevel,
   updateLevelToAPI
 } from "../../redux/slices/levelSlice";
-import { Typography } from "@mui/material";
+import { TablePagination, Typography } from "@mui/material";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 function PayLevel() {
+
   const dispatch = useDispatch();
-  const { levels } = useSelector((state) => state.levels);
+  const { levels, totalCount } = useSelector((state) => state.levels);
 
   const [editingId, setEditingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedIndexes, setSelectedIndexes] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const pageSize = 5;
+
+  const pageSize = 10;
 
   useEffect(() => {
-    dispatch(fetchPayLevel({ page: currentPage, limit: rowsPerPage }));
-  }, [dispatch, currentPage]);
+    console.log("page: ",page + 1, "RowPErPage:", rowsPerPage);
+    dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
+  }, [dispatch, page, rowsPerPage]);
+
 
   const formik = useFormik({
     initialValues: {
@@ -50,7 +53,7 @@ function PayLevel() {
         const response = await dispatch(updateLevelToAPI({ id: editingId, ...values }));
         if (response.payload?.successMsg) {
           toast.success(response.payload.successMsg);
-          dispatch(fetchPayLevel({ page: currentPage, limit: rowsPerPage }));
+          dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
           setEditingId(null);
           resetForm();
         } else {
@@ -64,7 +67,7 @@ function PayLevel() {
         } else {
           toast.error(response.payload?.message || "Failed to add level.");
         }
-        dispatch(fetchPayLevel({ page: currentPage, limit: rowsPerPage }));
+        dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
       }
     }
   });
@@ -76,18 +79,27 @@ function PayLevel() {
       description.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  const totalPages = Math.ceil(filteredLevels.length / pageSize);
-  const paginatedData = filteredLevels.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleEdit = (level) => {
     formik.setValues({ levelName: level.name, description: level.description });
     setEditingId(level.id);
   };
 
+  const handleChangePage = (event, newPage) => {
+    console.log("CHange newPa",newPage);
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  console.log("Levels", levels);
   return (
     <>
       <Typography variant="h6" mb={2}>Pay Matrix Levels</Typography>
-      <Form onSubmit={() => formik.handleSubmit}>
+      <Form onSubmit={formik.handleSubmit}>
         <Row>
           <Col>
             <FormGroup>
@@ -168,13 +180,13 @@ function PayLevel() {
               <table className="table table-hover mb-0 align-middle text-center">
                 <thead className="table-light">
                   <tr className="text-uppercase small text-muted">
-                    <th>Name</th>
+                    <th>Level</th>
                     <th>Description</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedData.map((level, index) => (
+                  {levels.map((level) => (
                     <tr key={level.id}>
                       <td>{level.name}</td>
                       <td>{level.description}</td>
@@ -189,24 +201,24 @@ function PayLevel() {
                       </td>
                     </tr>
                   ))}
-                  {paginatedData.length === 0 && (
+                  {levels.length === 0 && (
                     <tr><td colSpan="4">No data found</td></tr>
                   )}
                 </tbody>
               </table>
             </div>
+            
 
-            <div className="d-flex justify-content-center gap-2 p-3">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  className={`btn btn-sm ${i + 1 === currentPage ? 'btn-primary' : 'btn-outline-primary'}`}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 20, 50]}
+              component="div"
+              count={totalCount}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+
           </div>
         </div>
       </CardBody>

@@ -19,9 +19,10 @@ export const fetchPayLevel = createAsyncThunk(
 // Fetch Pay Cells
 export const fetchPayCell = createAsyncThunk(
   "levels/fetchPayCell",
-  async ({ page, limit }, { rejectWithValue }) => {
+  async ({ matrix_level_id, page, limit }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`pay-matrix-cells?page=${page}&limit=${limit}`);
+      const response = await axiosInstance.get(`pay-matrix-cells?matrix_level_id=${matrix_level_id}&page=${page}&limit=${limit}`);
+      console.log("Response Cell: ", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch matrix cells");
@@ -67,6 +68,8 @@ export const updateCellToAPI = createAsyncThunk(
 const initialState = {
   levels: [],
   matrixCells: [],
+  levelCount: 0,
+  cellCount: 0,
   loading: false,
   error: null
 };
@@ -86,6 +89,7 @@ const levelCellSlice = createSlice({
       .addCase(fetchPayLevel.fulfilled, (state, action) => {
         state.loading = false;
         state.levels = action.payload?.data || [];
+        state.levelCount = action.payload?.total_count || 0;
       })
       .addCase(fetchPayLevel.rejected, (state, action) => {
         state.loading = false;
@@ -100,6 +104,7 @@ const levelCellSlice = createSlice({
       .addCase(fetchPayCell.fulfilled, (state, action) => {
         state.loading = false;
         state.matrixCells = action.payload?.data || [];
+        state.cellCount = action.payload?.total_count || 0;
       })
       .addCase(fetchPayCell.rejected, (state, action) => {
         state.loading = false;

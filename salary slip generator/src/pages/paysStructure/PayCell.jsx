@@ -3,7 +3,8 @@ import {
   Button, Grid, IconButton, Paper,
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TextField, Typography,
-  MenuItem, Select, FormControl, InputLabel
+  MenuItem, Select, FormControl, InputLabel,
+  TablePagination
 } from '@mui/material';
 import { Edit, Save, Cancel } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
@@ -21,21 +22,23 @@ import * as Yup from 'yup';
 
 const PayMatrixCell = () => {
   const dispatch = useDispatch();
-  const { levels, matrixCells, loading } = useSelector((state) => state.levelCells);
+  const { levels, levelCount, matrixCells, cellCount, loading } = useSelector((state) => state.levelCells);
 
   const [selectedLevelId, setSelectedLevelId] = useState('');
   const [editingCellId, setEditingCellId] = useState(null);
+  const [editedLevel, setEditedLevel] = useState('');
   const [editedIndex, setEditedIndex] = useState('');
   const [editedPay, setEditedPay] = useState('');
-  const [page] = useState(1);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [limit] = useState(100);
 
   useEffect(() => {
-    dispatch(fetchPayLevel({ page, limit }));
-    dispatch(fetchPayCell({ page, limit }));
-  }, [dispatch, page, limit]);
-
-  const refreshCells = () => dispatch(fetchPayCell({ page, limit }));
+    dispatch(fetchPayLevel({ page: 1, limit: levelCount }));
+    console.log("matrix_level_id: ", selectedLevelId, "Page:", page + 1, "RowPerPage:", rowsPerPage);
+    dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
+  }, [dispatch, selectedLevelId, page, limit]);
+  const refreshCells = () => dispatch(fetchPayCell({ page: page + 1, limit: rowsPerPage }));
 
   const handleSaveEdit = async (cellId) => {
     try {
@@ -55,6 +58,7 @@ const PayMatrixCell = () => {
 
   const handleStartEdit = (cell) => {
     setEditingCellId(cell.id);
+    setEditedLevel(cell.pay_matrix_level.name);
     setEditedIndex(cell.index);
     setEditedPay(cell.amount);
   };
@@ -63,9 +67,22 @@ const PayMatrixCell = () => {
     setEditingCellId(null);
   };
 
+  
+  const handleChangePage = (event, newPage) => {
+    console.log("CHange newPa",newPage);
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+
   const filteredCells = matrixCells.filter(cell => cell.matrix_level_id === Number(selectedLevelId));
 
-  
+  console.log("Matrix Cells:", matrixCells);
+  console.log("Filtered Cells:", filteredCells.length);
 
   return (
     <Paper sx={{ p: 3, boxShadow: 'none' }}>
@@ -158,8 +175,9 @@ const PayMatrixCell = () => {
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
-                  <TableCell><b>Index</b></TableCell>
-                  <TableCell><b>Cell Index</b></TableCell>
+                  <TableCell><b>Sr.No.</b></TableCell>
+                  <TableCell><b>Level</b></TableCell>
+                  <TableCell><b>Cell/Index</b></TableCell>
                   <TableCell><b>Basic Pay</b></TableCell>
                   <TableCell><b>Actions</b></TableCell>
                 </TableRow>
@@ -170,7 +188,24 @@ const PayMatrixCell = () => {
                 ) : (
                   filteredCells.map((cell, index) => (
                     <TableRow key={cell.id}>
-                      <TableCell>{index + 1}</TableCell>
+                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                      <TableCell>
+                        {editingCellId === cell.id ? (
+                          <Select
+                            value={editedLevel}
+                            onChange={(e) => setEditedLevel(e.target.value)}
+                            fullWidth
+                          >
+                            {levels.map((level) => (
+                              <MenuItem key={level.id} value={level.id}>
+                                {level.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        ) : (
+                          cell.pay_matrix_level.name
+                        )}
+                      </TableCell>
                       <TableCell>
                         {editingCellId === cell.id ? (
                           <TextField
@@ -204,6 +239,16 @@ const PayMatrixCell = () => {
                 )}
               </TableBody>
             </Table>
+
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 20, 50]}
+              component="div"
+              count={cellCount}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </TableContainer>
         </>
       )}

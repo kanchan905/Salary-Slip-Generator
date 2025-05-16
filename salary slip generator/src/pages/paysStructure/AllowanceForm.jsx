@@ -5,8 +5,6 @@ import {
     Tab,
     TextField,
     MenuItem,
-    Checkbox,
-    FormControlLabel,
     Button,
     Grid,
     Paper,
@@ -16,7 +14,6 @@ import {
     TableRow,
     TableCell,
     TableBody,
-    FormGroup,
     TablePagination
 } from '@mui/material';
 import { Row } from 'reactstrap';
@@ -263,7 +260,6 @@ export default function AllowanceForm() {
         }
     };
     
-    // console.log(`Allowance: ${currentType}`, allowence );
 
     const renderTableRows = () => {
         switch (ALLOWANCE_TYPES[value]) {
