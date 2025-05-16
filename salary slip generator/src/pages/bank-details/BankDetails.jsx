@@ -49,7 +49,8 @@ export default function BankDetails() {
   }, [dispatch]);
 
   const filteredData = bankdetails.filter((item) =>
-    item.bank_name.toLowerCase().includes(searchQuery.toLowerCase())
+    String(item.pensioner_id).toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.pensioner?.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -122,8 +123,12 @@ export default function BankDetails() {
         .then(() => {
           toast.success("Bank detail added");
         })
-        .catch(() => {
-          toast.error("Failed to create");
+        .catch((err) => {
+          const apiMsg =
+            err?.response?.data?.message ||
+            err?.message ||
+            'Failed to save pensioner.';
+          toast.error(apiMsg);
         });
     }
     resetForm();
@@ -143,9 +148,9 @@ export default function BankDetails() {
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
             <div className="d-flex justify-content-between align-items-center">
-              <TextField placeholder="Search bank..." onChange={handleSearchChange} />
+              <TextField placeholder="pensioner id & name" onChange={handleSearchChange} />
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
-                + Add Bank Detail
+                + Add
               </Button>
             </div>
           </CardHeader>

@@ -88,14 +88,13 @@ const bankSlice = createSlice(({
             })
             .addCase(updateBankDetail.fulfilled, (state, action) => {
                 const updatedata = action.payload;
-                state.loading = false;
                 const index = state.bankdetails.findIndex(a => a.id === action.payload.id);
                 if (index !== -1) {
-                    state.arrears[index] = {
+                    state.bankdetails[index] = {
                         ...state.bankdetails[index], ...updatedata
                     };
                 }
-                state.bankdetails.push(action.payload);
+                state.loading = false;
             })
             .addCase(updateBankDetail.rejected, (state, action) => {
                 state.loading = false;
@@ -105,11 +104,15 @@ const bankSlice = createSlice(({
                 state.loading = true;
             })
             .addCase(toggleBankDetailStatus.fulfilled, (state, action) => {
-                state.loading = false;
+                const updateBankStatus = action.payload;
                 const index = state.bankdetails.findIndex(bank => bank.id === action.payload.id);
                 if (index !== -1) {
-                    state.bankdetails[index] = action.payload;
+                    state.bankdetails[index] = {
+                        ...state.bankdetails[index],
+                        ...updateBankStatus
+                    };
                 }
+                state.loading = false;
             })
             .addCase(toggleBankDetailStatus.rejected, (state, action) => {
                 state.loading = false;

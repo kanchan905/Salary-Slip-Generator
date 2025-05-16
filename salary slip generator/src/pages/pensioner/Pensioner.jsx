@@ -70,7 +70,7 @@ export default function Pensioner() {
           <CardHeader>
             <div className="d-flex justify-content-between align-items-center">
               <TextField
-                placeholder="Search pensioner..."
+                placeholder="pensioner name or ppo"
                 onChange={handleSearchChange}
                 value={searchQuery}
               />
@@ -79,7 +79,7 @@ export default function Pensioner() {
                 type="button"
                 onClick={() => navigate(`/${name.toLowerCase()}/pensioner/add`)}
               >
-                + Add Pensioner
+                + Add
               </Button>
             </div>
           </CardHeader>

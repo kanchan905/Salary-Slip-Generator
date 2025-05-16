@@ -339,7 +339,7 @@ export default function PensionerForm() {
                     color="secondary"
                     type="button"
                     className="ms-2"
-                    onClick={() => navigate("/pensioner")}
+                    onClick={() => navigate(`/${name.toLowerCase()}/pensioners`)}
                   >
                     Cancel
                   </Button>
