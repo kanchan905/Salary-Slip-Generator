@@ -35,7 +35,7 @@ export default function Arrears() {
   }, [dispatch]);
 
   const filteredArrears = arrearsData.filter(a =>
-    a.remarks?.toLowerCase().includes(searchQuery.toLowerCase())
+    a.pensioner_id?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const paginatedArrears = filteredArrears.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -66,7 +66,7 @@ export default function Arrears() {
           <CardHeader>
             <div className="d-flex justify-content-between align-items-center">
               <TextField
-                placeholder="Search arrears..."
+                placeholder="Search arrears by id"
                 onChange={handleSearchChange}
                 value={searchQuery}
               />
@@ -75,7 +75,7 @@ export default function Arrears() {
                 type="button"
                 onClick={() => handleToggleModal(null)}
               >
-                + Add Arrear
+                + Add
               </Button>
 
             </div>

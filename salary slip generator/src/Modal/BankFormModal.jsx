@@ -16,7 +16,7 @@ export default function BankFormModal({
     branch_name: formData.branch_name || "",
     account_no: formData.account_no || "",
     ifsc_code: formData.ifsc_code || "",
-    is_active: formData.status?  '1' : '0'  
+    is_active: formData.is_active ?? true
   };
 
   const validate = (values) => {
@@ -138,11 +138,9 @@ export default function BankFormModal({
                     <Label check>
                       <Input
                         type="checkbox"
-                        name="status"
-                        checked={values.status}
-                        onChange={() =>
-                          setFieldValue("status", !values.status)
-                        }
+                        name="is_active"
+                        checked={values.is_active}
+                        onChange={() => setFieldValue("is_active", !values.is_active)}
                       />
                       {" "} Status
                     </Label>
