@@ -10,7 +10,11 @@ import payStructureSlice from './slices/payStructureSlice';
 import pensionerReducer from './slices/pensionerSlice'
 import allowenceSlice from './slices/allowenceSlice';
 import arrearReducer from './slices/arrearsSlice'
+<<<<<<< Updated upstream
 import bankReducer from './slices/bankSlice';
+=======
+import bankReducer from './slices/bankSlice'
+>>>>>>> Stashed changes
 import monthlyReducer from './slices/monthlyPensionSlice'
 import dearnessReducer from './slices/dearnessRelief'
 import pensionReducer from './slices/pensionDeductionSlice'
@@ -33,8 +37,12 @@ const store = configureStore({
     monthlypension:monthlyReducer,
     dearnessRelief:dearnessReducer,
     pensionDeduction:pensionReducer,
+<<<<<<< Updated upstream
     pensionDocument:documentReducer,
     bankdetail:bankReducer
+=======
+    pensionDocument:documentReducer
+>>>>>>> Stashed changes
   },
 });
 
