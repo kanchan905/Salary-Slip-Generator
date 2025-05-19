@@ -10,15 +10,14 @@ import payStructureSlice from './slices/payStructureSlice';
 import pensionerReducer from './slices/pensionerSlice'
 import allowenceSlice from './slices/allowenceSlice';
 import arrearReducer from './slices/arrearsSlice'
-<<<<<<< Updated upstream
-import bankReducer from './slices/bankSlice';
-=======
 import bankReducer from './slices/bankSlice'
->>>>>>> Stashed changes
 import monthlyReducer from './slices/monthlyPensionSlice'
 import dearnessReducer from './slices/dearnessRelief'
 import pensionReducer from './slices/pensionDeductionSlice'
 import documentReducer from './slices/pensionDocumentSlice'
+import creditReducer from './slices/creditSlice'
+import loanReducer from './slices/employeeLoanSlice'
+import netSalaryReducer from './slices/netSalarySlice'
 
 const store = configureStore({
   reducer: {
@@ -37,12 +36,10 @@ const store = configureStore({
     monthlypension:monthlyReducer,
     dearnessRelief:dearnessReducer,
     pensionDeduction:pensionReducer,
-<<<<<<< Updated upstream
     pensionDocument:documentReducer,
-    bankdetail:bankReducer
-=======
-    pensionDocument:documentReducer
->>>>>>> Stashed changes
+    societyMember: creditReducer,
+    employeeLoan: loanReducer,
+    netSalary:netSalaryReducer
   },
 });
 

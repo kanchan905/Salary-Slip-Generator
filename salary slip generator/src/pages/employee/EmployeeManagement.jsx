@@ -27,6 +27,7 @@ export default function EmployeeManagement() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
     const employees = useSelector((state) => state.employee.employees) || [];
+    const totalCount = useSelector((state) => state.employee.totalCount) || 0;
     const { name } = useSelector((state) => state.auth.user.role);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -41,10 +42,10 @@ export default function EmployeeManagement() {
 
 
     // Filter users based on search query
-    const filteredEmployees = employees.filter(emp => emp.first_name && emp.first_name.toLowerCase().includes(searchQuery.toLowerCase()));
+    // const filteredEmployees = employees.filter(emp => emp.first_name && emp.first_name.toLowerCase().includes(searchQuery.toLowerCase()));
 
 
-    const paginatedEmployees = filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    // const paginatedEmployees = filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -124,7 +125,7 @@ export default function EmployeeManagement() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {paginatedEmployees.map((emp, idx) => (
+                                    {employees.map((emp, idx) => (
                                         <TableRow key={emp.id}>
                                             <TableCell>{emp.first_name + " " + emp.last_name}</TableCell>
                                             <TableCell>{emp.gender}</TableCell>
@@ -160,7 +161,7 @@ export default function EmployeeManagement() {
                             <div className="d-flex justify-content-end align-items-center p-2">
                                 <TablePagination
                                     component="div"
-                                    count={filteredEmployees.length}
+                                    count={totalCount}
                                     page={page}
                                     onPageChange={handlePageChange}
                                     rowsPerPage={rowsPerPage}

@@ -26,6 +26,7 @@ import DearnessReliefModal from '../../Modal/DearnessRelief';
 export default function DearnessRelief() {
   const dispatch = useDispatch();
   const { dearness, loading } = useSelector((state) => state.dearnessRelief);
+  const totalCount = useSelector((state) => state.dearnessRelief.totalCount) || 0;
   const { error } = useSelector((state) => state.dearnessRelief)
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
@@ -45,11 +46,11 @@ export default function DearnessRelief() {
     dispatch(fetchDearnessRelief());
   }, [dispatch]);
 
-  const filteredData = dearness.filter((item) =>
-    String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredData = dearness.filter((item) =>
+  //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
-  const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -163,7 +164,7 @@ export default function DearnessRelief() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {paginatedData.map((row, idx) => (
+                    {dearness.map((row, idx) => (
                       <TableRow key={row.id}>
                         <TableCell>{row.effective_from}</TableCell>
                         <TableCell>{row.effective_to}</TableCell>
@@ -181,7 +182,7 @@ export default function DearnessRelief() {
                 </Table>
                 <TablePagination
                   component="div"
-                  count={filteredData.length}
+                  count={totalCount}
                   page={page}
                   onPageChange={handlePageChange}
                   rowsPerPage={rowsPerPage}

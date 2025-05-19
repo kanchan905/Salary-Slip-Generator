@@ -25,6 +25,7 @@ import PensionDocumentModal from '../../Modal/PensionDocumentModal';
 export default function PensionDocuments() {
   const dispatch = useDispatch();
   const { document, loading } = useSelector((state) => state.pensionDocument);
+  const totalCount = useSelector((state) => state.pensionDocument.totalCount) || 0;
   const { error } = useSelector((state) => state.pensionDocument)
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
@@ -47,12 +48,12 @@ export default function PensionDocuments() {
     dispatch(fetchPensionDocument());
   }, [dispatch]);
 
-  const filteredData = document.filter((item) =>
-    item.document_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.pensioner_id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredData = document.filter((item) =>
+  //   item.document_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //   item.pensioner_id.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
-  const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -169,7 +170,7 @@ export default function PensionDocuments() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {paginatedData.map((row, idx) => (
+                    {document.map((row, idx) => (
                       <TableRow key={row.id}>
                         <TableCell>{row.pensioner_id}</TableCell>
                         <TableCell>{row.document_type}</TableCell>
@@ -187,7 +188,7 @@ export default function PensionDocuments() {
                 </Table>
                 <TablePagination
                   component="div"
-                  count={filteredData.length}
+                  count={totalCount}
                   page={page}
                   onPageChange={handlePageChange}
                   rowsPerPage={rowsPerPage}

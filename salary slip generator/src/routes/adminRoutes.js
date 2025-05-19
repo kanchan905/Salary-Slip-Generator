@@ -22,7 +22,10 @@ import DearnessRelief from "pages/dearness-relief/DearnessRelief";
 import MonthlyPension from "pages/monthly-pension/MonthlyPension";
 import PensionDeduction from "pages/pension-deduction/PensionDeduction";
 import PensionDocuments from "pages/pension-documents/PensionDocuments";
-
+import CreditSocietyMember from "pages/credit/CreditSocietyMember";
+import EmployeeLoan from "pages/employee-loan/EmployeeLoan";
+import NetSalary from 'pages/net-salary/NetSalary'
+import NetSalaryCard from "pages/net-salary/NetSalaryCard";
 
 const getAdminRoutes = (role) => (
    {
@@ -96,7 +99,36 @@ const getAdminRoutes = (role) => (
       icon: "ni ni-settings-gear-65 text-orange",
       component: PaysStructure,
       layout: role,
-    }
+    },
+    {
+      path: "/credit-society-member",
+      name: "Credit Society Member",
+      icon: "fa-regular fa-credit-card", 
+      component: CreditSocietyMember,
+      layout: role,
+    },
+    {
+      path: "/employee-loan",
+      name: "Employee Loan",
+      icon: "fa-solid fa-money-check", 
+      component: EmployeeLoan,
+      layout: role,
+    },
+    {
+      path: "/net-salary",
+      name: "Net Salary",
+      icon: "fa-solid fa-sack-dollar",
+      component: NetSalary,
+      layout: role,
+    },
+    {
+      path: "/employee/net-salary/:id",
+      name: "Net Salary",
+      icon: "fa-solid fa-sack-dollar",
+      component: NetSalaryCard,
+      layout: role,
+      showInSidebar: false,
+    },
   ],
   pensioner_Management: [
     {

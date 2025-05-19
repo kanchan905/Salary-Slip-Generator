@@ -6,7 +6,10 @@ export const fetchPensionDeduction = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/pension-deduction`);
-            return response.data.data;
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee");
         }
@@ -39,6 +42,7 @@ export const updatePensionDeduction = createAsyncThunk(
 
 const initialState = {
     pension: [],
+    totalCount: 0,
     loading: false,
     error: null
 }
@@ -53,7 +57,8 @@ const pensionDeductionSlice = createSlice(({
             })
             .addCase(fetchPensionDeduction.fulfilled, (state, action) => {
                 state.loading = false;
-                state.pension = action.payload;
+                state.pension = action.payload.data;
+                state.totalCount = action.payload.totalCount;
             })
             .addCase(fetchPensionDeduction.rejected, (state, action) => {
                 state.loading = false;

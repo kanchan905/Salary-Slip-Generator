@@ -38,6 +38,7 @@ export default function UserTable() {
     const [searchQuery, setSearchQuery] = React.useState("");
     const dispatch = useDispatch();
     const users = useSelector((state) => state.user.users);
+    const totalCount = useSelector((state) => state.user.totalCount);
     const loading = useSelector((state) => state.user.loading);
     const [editId, setEditId] = React.useState(null);
     const errror = useSelector((state) => state.user.error);
@@ -47,11 +48,11 @@ export default function UserTable() {
     }, [dispatch, page, rowsPerPage]);
 
     // Filter users based on search query
-    const filteredUsers = users.filter((user) =>
-        user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // const filteredUsers = users.filter((user) =>
+    //     user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    // );
 
-    const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    // const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     // const paginatedUsers = users;
     const [formMode, setFormMode] = React.useState('create');
 
@@ -207,7 +208,7 @@ export default function UserTable() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {paginatedUsers.map((user, idx) => (
+                                        {users.map((user, idx) => (
                                             <TableRow key={idx}>
                                                 <TableCell>{user.role_id}</TableCell>
                                                 <TableCell>{user.name}</TableCell>
@@ -243,7 +244,7 @@ export default function UserTable() {
                                 <div className="d-flex justify-content-end align-items-center p-2">
                                     <TablePagination
                                         component="div"
-                                        count={filteredUsers.length}
+                                        count={totalCount}
                                         page={page}
                                         onPageChange={handlePageChange}
                                         rowsPerPage={rowsPerPage}

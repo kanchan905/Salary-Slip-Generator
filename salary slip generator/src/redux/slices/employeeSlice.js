@@ -8,7 +8,10 @@ export const fetchEmployees = createAsyncThunk(
         const { page, limit, search } = credentials;
         try {
             const response = await axiosInstance.get(`/employees?search=${search}&page=${page}&limit=${limit}`);
-            return response.data.data;
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch employees");
         }
@@ -117,7 +120,7 @@ export const updateDesignation = createAsyncThunk(
 );
 
 export const UpdateEmployee = createAsyncThunk(
-    "employee/updateEmployee",  
+    "employee/updateEmployee",
     async ({ employeeId, employeeData }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/employees/${employeeId}?_method=PUT`, employeeData);
@@ -130,6 +133,7 @@ export const UpdateEmployee = createAsyncThunk(
 
 const initialState = {
     employees: [],
+    totalCount: 0,
     EmployeeDetail: null,
     loading: false,
     error: null,
@@ -146,7 +150,8 @@ const employeeSlice = createSlice({
             })
             .addCase(fetchEmployees.fulfilled, (state, action) => {
                 state.loading = false;
-                state.employees = action.payload;
+                state.employees = action.payload.data;
+                state.totalCount = action.payload.totalCount;
             })
             .addCase(fetchEmployees.rejected, (state, action) => {
                 state.loading = false;

@@ -3,15 +3,18 @@ import axiosInstance from "global/AxiosSetting";
 
 
 export const fetchArrears = createAsyncThunk(
-    "Arrears/details",
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.get(`/arrears`);
-            return response.data.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || "Failed to fetch employees");
-        }
+  "Arrears/details",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/arrears`);
+      return {
+        data: response.data.data,
+        totalCount: response.data.total_count
+      };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch employees");
     }
+  }
 );
 
 export const createArrear = createAsyncThunk(
@@ -39,28 +42,30 @@ export const updateArrear = createAsyncThunk(
 );
 
 const initialState = {
-    arrears:[],
-    loading:false,
-    error:null
+  arrears: [],
+  totalCount: 0,
+  loading: false,
+  error: null
 }
 
 const arrearSlice = createSlice({
-    name:'arrears',
-    initialState,
-    extraReducers:(builder)=> {
-        builder
-        .addCase(fetchArrears.pending,(state,action)=>{
-            state.loading = true;
-        })
-        .addCase(fetchArrears.fulfilled,(state,action)=>{
-            state.arrears = action.payload;
-            state.loading = false;
-        })
-        .addCase(fetchArrears.rejected,(state,action)=>{
-            state.loading = false;
-            state.error = action.payload;
-        })
-        .addCase(createArrear.pending, (state) => {
+  name: 'arrears',
+  initialState,
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchArrears.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(fetchArrears.fulfilled, (state, action) => {
+        state.loading = false;
+        state.arrears = action.payload.data;
+        state.totalCount = action.payload.totalCount;
+      })
+      .addCase(fetchArrears.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createArrear.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -90,7 +95,7 @@ const arrearSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-    }
+  }
 })
 
 export default arrearSlice.reducer;

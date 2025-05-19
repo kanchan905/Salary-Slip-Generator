@@ -1,15 +1,18 @@
-import { createSlice,createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from 'global/AxiosSetting';
 
 export const fetchUserData = createAsyncThunk(
     'user/fetchUserData',
     async ({ page, limit }, { rejectWithValue }) => {
         try {
-                const response = await axiosInstance.get(`/users?page=${page}&limit=${limit}`);
-                return response.data.data;
-            } catch (error) {
-                return rejectWithValue(error.response?.data || "Failed to update employee");
-            }
+            const response = await axiosInstance.get(`/users?page=${page}&limit=${limit}`);
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
     }
 );
 
@@ -27,7 +30,7 @@ export const createUserData = createAsyncThunk(
 
 export const updateUserData = createAsyncThunk(
     'user/updateUserData',
-    async ({formData,id}, { rejectWithValue }) => {
+    async ({ formData, id }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/user/${id}`, formData);
             return response.data;
@@ -40,7 +43,7 @@ export const updateUserData = createAsyncThunk(
 
 export const changeUserStatus = createAsyncThunk(
     'user/changeUserStatus',
-    async ({ id}, { rejectWithValue }) => {
+    async ({ id }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/user-status/${id}`);
             return response.data;
@@ -51,7 +54,8 @@ export const changeUserStatus = createAsyncThunk(
 );
 
 const initialState = {
-    users : [],
+    users: [],
+    totalCount: 0,
     loading: false,
     error: null,
 }
@@ -66,7 +70,8 @@ const userSlice = createSlice({
             })
             .addCase(fetchUserData.fulfilled, (state, action) => {
                 state.loading = false;
-                state.users = action.payload;
+                state.users = action.payload.data;
+                state.totalCount = action.payload.totalCount
             })
             .addCase(fetchUserData.rejected, (state, action) => {
                 state.loading = false;

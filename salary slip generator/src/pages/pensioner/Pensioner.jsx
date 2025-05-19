@@ -27,6 +27,7 @@ export default function Pensioner() {
   const { name } = useSelector((state) => state.auth.user.role);
   const dispatch = useDispatch();
   const pensionersData = useSelector((state) => state.pensioner.pensioners)
+  const totalCount = useSelector((state) => state.pensioner.totalCount) || 0;
   const loading = useSelector((state) => state.pensioner.loading)
 
 
@@ -35,14 +36,14 @@ export default function Pensioner() {
   }, [dispatch, page, rowsPerPage])
 
   // Filter pensioners based on search query
-  const filteredPensioners = pensionersData.filter(p =>
-    p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.ppo_no?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredPensioners = pensionersData.filter(p =>
+  //   p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //   p.ppo_no?.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
 
 
-  const paginatedPensioners = filteredPensioners.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // const paginatedPensioners = filteredPensioners.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -110,7 +111,7 @@ export default function Pensioner() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paginatedPensioners.map((p) => (
+                      {pensionersData.map((p) => (
                         <TableRow key={p.id}>
                           <TableCell>{p.retired_employee_id}</TableCell>
                           <TableCell>{p.name}</TableCell>
@@ -149,7 +150,7 @@ export default function Pensioner() {
             <div className="d-flex justify-content-end align-items-center p-2">
               <TablePagination
                 component="div"
-                count={filteredPensioners.length}
+                count={totalCount}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}

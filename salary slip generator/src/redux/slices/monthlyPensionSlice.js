@@ -6,7 +6,10 @@ export const monthlyPensionDetails = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/monthly-pension`);
-            return response.data.data;
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee");
         }
@@ -27,6 +30,7 @@ export const createMonthlyPension = createAsyncThunk(
 
 const initialState = {
     monthlyPension: [],
+    totalCount: 0,
     loading: false,
     error: null
 }
@@ -41,7 +45,8 @@ const monthlyPensionSlice = createSlice(({
             })
             .addCase(monthlyPensionDetails.fulfilled, (state, action) => {
                 state.loading = false;
-                state.monthlyPension = action.payload;
+                state.monthlyPension = action.payload.data;
+                state.totalCount = action.payload.totalCount;
             })
             .addCase(monthlyPensionDetails.rejected, (state, action) => {
                 state.loading = false;
@@ -54,10 +59,10 @@ const monthlyPensionSlice = createSlice(({
                 state.loading = false;
                 state.monthlyPension.push(action.payload);
             })
-            // .addCase(createMonthlyPension.rejected, (state, action) => {
-            //     state.loading = false;
-            //     state.error = action.error.message;
-            // })
+        // .addCase(createMonthlyPension.rejected, (state, action) => {
+        //     state.loading = false;
+        //     state.error = action.error.message;
+        // })
     }
 }));
 

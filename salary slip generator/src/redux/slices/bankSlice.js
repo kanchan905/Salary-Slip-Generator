@@ -6,7 +6,10 @@ export const fetchBankDetails = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/bank-account`);
-            return response.data.data;
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee");
         }
@@ -39,7 +42,7 @@ export const updateBankDetail = createAsyncThunk(
 
 export const toggleBankDetailStatus = createAsyncThunk(
     'bank/toggleBankDetailStatus',
-    async ({id}, { rejectWithValue }) => {
+    async ({ id }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/bank-account/${id}`);
             return response.data.data;
@@ -52,6 +55,7 @@ export const toggleBankDetailStatus = createAsyncThunk(
 
 const initialState = {
     bankdetails: [],
+    totalCount: 0,
     loading: false,
     error: null
 }
@@ -66,7 +70,8 @@ const bankSlice = createSlice(({
             })
             .addCase(fetchBankDetails.fulfilled, (state, action) => {
                 state.loading = false;
-                state.bankdetails = action.payload;
+                state.bankdetails = action.payload.data;
+                state.totalCount = action.payload.totalCount;
             })
             .addCase(fetchBankDetails.rejected, (state, action) => {
                 state.loading = false;

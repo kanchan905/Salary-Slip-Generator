@@ -6,7 +6,10 @@ export const fetchDearnessRelief = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/dearness-relief`);
-            return response.data.data;
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee");
         }
@@ -39,6 +42,7 @@ export const updateDearnessRelief = createAsyncThunk(
 
 const initialState = {
     dearness: [],
+    totalCount: 0,
     loading: false,
     error: null
 }
@@ -53,7 +57,8 @@ const dearnessSlice = createSlice(({
             })
             .addCase(fetchDearnessRelief.fulfilled, (state, action) => {
                 state.loading = false;
-                state.dearness = action.payload;
+                state.dearness = action.payload.data;
+                state.totalCount = action.payload.totalCount;
             })
             .addCase(fetchDearnessRelief.rejected, (state, action) => {
                 state.loading = false;

@@ -26,6 +26,7 @@ export default function Arrears() {
   const [modalOpen, setModalOpen] = useState(false);
   const toggle = () => setModalOpen(!modalOpen);
   const arrearsData = useSelector((state) => state.arrears.arrears || []);
+  const totalCount = useSelector((state) => state.arrears.totalCount || 0);
   const [selectedArrearId, setSelectedArrearId] = useState(null);
   const loading = useSelector((state) => state.arrears.loading);
   const { name } = useSelector((state) => state.auth.user.role);
@@ -34,11 +35,11 @@ export default function Arrears() {
     dispatch(fetchArrears());
   }, [dispatch]);
 
-  const filteredArrears = arrearsData.filter(a =>
-    a.pensioner_id?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredArrears = arrearsData.filter(a =>
+  //   a.pensioner_id?.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
-  const paginatedArrears = filteredArrears.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // const paginatedArrears = filteredArrears.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleChangePage = (event, newPage) => setPage(newPage);
 
@@ -107,7 +108,7 @@ export default function Arrears() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paginatedArrears?.map((a) => (
+                      {arrearsData?.map((a) => (
                         <TableRow key={a.id}>
                           <TableCell>{a.pensioner_id}</TableCell>
                           <TableCell>{a.from_month}</TableCell>
@@ -136,7 +137,7 @@ export default function Arrears() {
             <div className="d-flex justify-content-end align-items-center p-2">
               <TablePagination
                 component="div"
-                count={filteredArrears.length}
+                count={totalCount}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}

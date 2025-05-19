@@ -27,6 +27,7 @@ const statusChipColor = (status) => status ? "success" : "error";
 export default function BankDetails() {
   const dispatch = useDispatch();
   const { bankdetails, loading } = useSelector((state) => state.bankdetail);
+  const totalCount = useSelector((state) => state.bankdetail.totalCount) || 0;
   const { error } = useSelector((state) => state.bankdetail)
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
@@ -48,11 +49,12 @@ export default function BankDetails() {
     dispatch(fetchBankDetails());
   }, [dispatch]);
 
-  const filteredData = bankdetails.filter((item) =>
-    String(item.pensioner_id).toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.pensioner?.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // const filteredData = bankdetails.filter((item) =>
+  //   String(item.pensioner_id).toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //   item.pensioner?.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
+
+  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -177,7 +179,7 @@ export default function BankDetails() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {paginatedData.map((row, idx) => (
+                    {bankdetails.map((row, idx) => (
                       <TableRow key={row.id}>
                         <TableCell>{row.pensioner_id}</TableCell>
                         <TableCell>{row.pensioner?.name}</TableCell>
@@ -213,7 +215,7 @@ export default function BankDetails() {
                 </Table>
                 <TablePagination
                   component="div"
-                  count={filteredData.length}
+                  count={totalCount}
                   page={page}
                   onPageChange={handlePageChange}
                   rowsPerPage={rowsPerPage}

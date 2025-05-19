@@ -6,7 +6,10 @@ export const fetchPensioners = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/pensioner`);
-            return response.data.data;
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch employees");
         }
@@ -39,7 +42,7 @@ export const createPensioner = createAsyncThunk(
 
 export const updatePensioner = createAsyncThunk(
     "pensioner/update",
-    async ({id,values}, { rejectWithValue }) => {
+    async ({ id, values }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/pensioner/${id}?_method=PUT`, values);
             return response.data.data;
@@ -51,6 +54,7 @@ export const updatePensioner = createAsyncThunk(
 
 const initialState = {
     pensioners: [],
+    totalCount: 0,
     loading: false,
     error: null
 }
@@ -65,7 +69,8 @@ const pensionerSlice = createSlice({
             })
             .addCase(fetchPensioners.fulfilled, (state, action) => {
                 state.loading = false;
-                state.pensioners = action.payload;
+                state.pensioners = action.payload.data;
+                state.totalCount = action.payload.totalCount
             })
             .addCase(fetchPensioners.rejected, (state, action) => {
                 state.loading = false;
@@ -89,7 +94,7 @@ const pensionerSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-             .addCase(createPensioner.pending, (state) => {
+            .addCase(createPensioner.pending, (state) => {
                 state.loading = true;
             })
             .addCase(createPensioner.fulfilled, (state, action) => {
@@ -100,7 +105,7 @@ const pensionerSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-             .addCase(updatePensioner.pending, (state) => {
+            .addCase(updatePensioner.pending, (state) => {
                 state.loading = true;
             })
             .addCase(updatePensioner.fulfilled, (state, action) => {
