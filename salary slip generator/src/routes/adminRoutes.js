@@ -26,6 +26,7 @@ import CreditSocietyMember from "pages/credit/CreditSocietyMember";
 import EmployeeLoan from "pages/employee-loan/EmployeeLoan";
 import NetSalary from 'pages/net-salary/NetSalary'
 import NetSalaryCard from "pages/net-salary/NetSalaryCard";
+import Quarter from "pages/paysStructure/Quarter";
 
 const getAdminRoutes = (role) => (
    {
