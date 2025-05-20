@@ -8,6 +8,7 @@ export default function NetSalaryModal({
   formData,
   handleSubmit,
   setFormOpen,
+  formMode
 }) {
   const initialValues = {
     employee_id: formData.employee_id || "",
@@ -47,7 +48,7 @@ export default function NetSalaryModal({
         >
           {({ isSubmitting }) => (
             <Form>
-              <h4 className="mb-4">Add Net Salary</h4>
+              <h4 className="mb-4">{formMode === 'edit'? 'Edit' : 'Add'} Net Salary</h4>
               <Row>
                 <Col md="6">
                   <FormGroup>

@@ -7,7 +7,8 @@ export default function EmployeeLoanModal({
   toggleModal,
   formData,
   handleSubmit,
-  setFormOpen
+  setFormOpen,
+  formMode
 }) {
   const initialValues = {
     employee_id: formData.employee_id || "",
@@ -50,7 +51,7 @@ export default function EmployeeLoanModal({
         >
           {({ isSubmitting }) => (
             <Form>
-              <h4 className="mb-4">Add Employee Loan</h4>
+              <h4 className="mb-4">{formMode === 'edit'? 'Edit' : 'Add'} Employee Loan</h4>
               <Row>
                 <Col md="6">
                   <FormGroup>

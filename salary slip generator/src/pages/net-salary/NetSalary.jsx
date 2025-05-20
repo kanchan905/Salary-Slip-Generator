@@ -49,8 +49,8 @@ export default function NetSalary() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
-        dispatch(fetchNetSalary({ page, limit: rowsPerPage }));
-    }, [dispatch]);
+        dispatch(fetchNetSalary({id: searchQuery, page, limit: rowsPerPage }));
+    }, [dispatch,searchQuery]);
 
     // const filteredData = dearness.filter((item) =>
     //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())

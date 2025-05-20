@@ -33,10 +33,10 @@ const NewSidebar = ({ routes }) => {
               const visibleRoutes = routes[category].filter(
                 (route) => route.showInSidebar !== false
               );
+              
+              const isDropdownCategory = ["pensioner_Management", "employee_masters"].includes(category);
 
-              const isDropdownCategory = category === "pensioner_Management"; // Set dropdown categories here
-
-              const isOpen = openDropdowns[category] ;
+              const isOpen = openDropdowns[category];
 
               return (
                 <React.Fragment key={index}>
@@ -44,15 +44,14 @@ const NewSidebar = ({ routes }) => {
                     <NavItem>
                       <div
                         className="sidebar-dropdown d-flex justify-content-between align-items-center"
+                        style={{cursor:'pointer'}}
                         onClick={() => toggleDropdown(category)}
-                      >
+                      >                   
                         <div className="sidebar-section-title text-white text-uppercase small mt-3 mb-2">
-                          {/* <i className={`${visibleRoutes[0]?.icon} me-2`} /> */}
-                          Pensioner Management
+                          {category.replaceAll("_", " ")}
                         </div>
                         <i
-                          className={`ni ${isOpen ? "ni-bold-down" : "ni-bold-right"} mt-3 mb-2 text-white`}
-                        />
+                          className={`ni ${isOpen ? "ni-bold-down" : "ni-bold-right"} mt-3 mb-2 text-white`}/>
                       </div>
                       <Collapse isOpen={isOpen}>
                         {visibleRoutes.map((route, key) => (

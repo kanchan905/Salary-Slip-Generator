@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classnames from "classnames";
 import Chart from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
@@ -20,16 +20,21 @@ import {
   chartExample2,
 } from "variables/charts.js";
 import Header from "components/Headers/Header.js";
-
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { fetchEmployees } from "../redux/slices/employeeSlice";
 
 
 const AdminDashboard = () => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
+  const employeeTotalCount = useSelector((state) => state.employee.totalCount) || 0;
+  const totalCount = useSelector((state) => state.user.totalCount);
+  const dispatch = useDispatch();
 
   // Sample static data (replace with API later)
   const [stats] = useState({
-    totalEmployees: 120,
+    totalEmployees: 3,
     totalPensioners: 80,
     pendingTasks: 5,
     instituteBreakdown: { NIOH: 70, ROHC: 50 },
@@ -49,6 +54,11 @@ const AdminDashboard = () => {
   const [selected, setSelected] = useState("Select Institute");
   const [open, setOpen] = useState(false);
   const options = ["NIOH", "RHOC"];
+
+
+  useEffect(()=>{
+   dispatch(fetchEmployees())
+  },[])
 
   return (
     <>

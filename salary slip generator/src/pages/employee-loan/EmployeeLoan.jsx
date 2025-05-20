@@ -49,7 +49,7 @@ export default function EmployeeLoan() {
 
     useEffect(() => {
         dispatch(fetchEmployeeLoan({ id: searchQuery, page, limit: rowsPerPage }));
-    }, [dispatch]);
+    }, [dispatch,searchQuery]);
 
     // const filteredData = dearness.filter((item) =>
     //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())

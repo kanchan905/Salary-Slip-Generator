@@ -1,26 +1,34 @@
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 import React,{useState, useEffect} from 'react'
-import CustomSnackbar from "../../components/include/CustomSnackbar";
-
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { fetchEmployees } from "../../redux/slices/employeeSlice";
+import { fetchPensioners } from "../../redux/slices/pensionerSlice";
 
 const Header = () => {
 
+
   const [open, setOpen] = useState(false);
+  const employeeTotalCount = useSelector((state) => state.employee.totalCount) || 0;
+  const pensionerTotalCount = useSelector((state) => state.pensioner.totalCount) || 0;
+  const dispatch = useDispatch();
  
   // Sample static data (replace with API later)
-  const [stats] = useState({
-    totalEmployees: 120,
-    totalPensioners: 80,
+  const stats = {
+    totalEmployees: employeeTotalCount,
+    totalPensioners: pensionerTotalCount,
     pendingTasks: 5,
     instituteBreakdown: { NIOH: 70, ROHC: 50 },
     pensionBreakdown: { NIOH: 45, ROHC: 35 }
-  });
+  };
 
-  useEffect(() => {
+useEffect(() => {
+     dispatch(fetchEmployees({page:'',limit:'',search:''}))
+     dispatch(fetchPensioners())
     if (stats.pendingTasks > 0) {
       setOpen(true);
     }
-  }, [stats.pendingTasks]);
+  }, [stats.pendingTasks,dispatch]);
 
   return (
     <>

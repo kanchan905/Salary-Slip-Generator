@@ -129,7 +129,7 @@ export default function UserTable() {
                         err?.response?.data?.message ||
                         err?.message ||
                         err?.message ||
-                        'Failed to update quarter.';
+                        'Failed to update user.';
                     toast.error(apiMsg);
                 });
 
