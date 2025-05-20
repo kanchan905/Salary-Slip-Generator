@@ -15,9 +15,12 @@ import monthlyReducer from './slices/monthlyPensionSlice'
 import dearnessReducer from './slices/dearnessRelief'
 import pensionReducer from './slices/pensionDeductionSlice'
 import documentReducer from './slices/pensionDocumentSlice'
+<<<<<<< Updated upstream
 import creditReducer from './slices/creditSlice'
 import loanReducer from './slices/employeeLoanSlice'
 import netSalaryReducer from './slices/netSalarySlice'
+=======
+>>>>>>> Stashed changes
 
 const store = configureStore({
   reducer: {
@@ -36,10 +39,14 @@ const store = configureStore({
     monthlypension:monthlyReducer,
     dearnessRelief:dearnessReducer,
     pensionDeduction:pensionReducer,
+<<<<<<< Updated upstream
     pensionDocument:documentReducer,
     societyMember: creditReducer,
     employeeLoan: loanReducer,
     netSalary:netSalaryReducer
+=======
+    pensionDocument:documentReducer
+>>>>>>> Stashed changes
   },
 });
 
