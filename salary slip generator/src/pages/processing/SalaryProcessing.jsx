@@ -182,7 +182,6 @@ const SalaryProcessing = () => {
                                     ))
                                     : <MenuItem value="">No Bank Details Available</MenuItem>
                             }
-
                             </TextField>
                         </Grid>
                             <Grid size={{xs:12}} >
