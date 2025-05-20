@@ -125,7 +125,7 @@ const quarterSlice = createSlice({
       .addCase(fetchQuarterList.fulfilled, (state, action) => {
         state.loading = false;
         state.quarterList = action.payload.data;
-        state.totalCount = action.payload.data.total_count; // Assuming the response contains the total count
+        state.totalCount = action.payload.total_count; // Assuming the response contains the total count
       })
       .addCase(fetchQuarterList.rejected, (state, action) => {
         state.loading = false;

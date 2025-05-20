@@ -220,11 +220,11 @@ export const addTransport = createAsyncThunk(
         try {
             const {
                 transport_amount,
-                pay_level,
+                pay_matrix_level,
             } = data.data;
             const response = await axiosInstance.post("/transport-allowance-rate", {
                 amount: transport_amount,
-                pay_level,
+                pay_matrix_level,
             });
             return response.data;
         } catch (error) {
@@ -241,11 +241,11 @@ export const updateTransport = createAsyncThunk(
             const {
                 id,
                 transport_amount,
-                pay_level,
+                pay_matrix_level,
             } = data.data;
             const response = await axiosInstance.put(`/transport-allowance-rate/${id}`, {
                 amount: transport_amount,
-                pay_level,
+                pay_matrix_level,
             });
             return response.data;
         } catch (error) {
@@ -311,7 +311,7 @@ export const updateUniform = createAsyncThunk(
                 effective_till,
                 notification_ref
             } = data.data;
-            const response = await axiosInstance.post(`/uniform-allowance-rate/${id}`, {
+            const response = await axiosInstance.put(`/uniform-allowance-rate/${id}`, {
                 applicable_post,
                 amount,
                 effective_from,
@@ -374,7 +374,7 @@ export const updateGisEligibility = createAsyncThunk(
                 scheme_category,
                 gis_amount
             } = data.data;
-            const response = await axiosInstance.post(`/employee-gis/${id}`, {
+            const response = await axiosInstance.put(`/employee-gis/${id}`, {
                 pay_matrix_level,
                 scheme_category,
                 amount: gis_amount

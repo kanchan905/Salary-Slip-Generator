@@ -85,21 +85,20 @@ export default function AllowanceForm() {
 
     React.useEffect(() => {
         if (currentType === 'dearness') {
-            dispatch(fetchDearnessAllowance({ page: page, limit: rowsPerPage }));
+            dispatch(fetchDearnessAllowance({ page: page + 1, limit: rowsPerPage }));
         } else if (currentType === 'houserent') {
-            dispatch(fetchHouseRent({ page: page, limit: rowsPerPage }));
+            dispatch(fetchHouseRent({ page: page + 1, limit: rowsPerPage }));
         } else if (currentType === 'nonpracticing') {
-            dispatch(fetchNonPracticing({ page: page, limit: rowsPerPage }));
+            dispatch(fetchNonPracticing({ page: page + 1, limit: rowsPerPage }));
         } else if (currentType === 'transport'){
-            dispatch(fetchPayLevel({ page: 1, limit: totalCount }));
-            dispatch(fetchTransport({ page: page, limit: rowsPerPage }));
+            dispatch(fetchTransport({ page: page + 1, limit: rowsPerPage }));
         } else if (currentType === 'uniform'){
-            dispatch(fetchUniform({ page: page, limit: rowsPerPage }));
+            dispatch(fetchUniform({ page: page + 1, limit: rowsPerPage }));
         } else if (currentType === 'giseligibility'){
-            console.log("GIS Eligibility");
-            dispatch(fetchGisEligibility({ page: page, limit: rowsPerPage }));
+            dispatch(fetchGisEligibility({ page: page + 1, limit: rowsPerPage }));
         }
-    }, [dispatch, currentType]);
+        dispatch(fetchPayLevel({ page: 1, limit: totalCount }));
+    }, [dispatch, currentType, page, rowsPerPage]);
 
 
    const handlePageChange = (event, value) => {
@@ -107,7 +106,6 @@ export default function AllowanceForm() {
     };
 
     const handleChangeRowsPerPage = (event) => {
-        console.log("Events: ", parseInt(event.target.value));
         setRowsPerPage(parseInt(event.target.value));
         setPage(0);
     };
@@ -117,6 +115,7 @@ export default function AllowanceForm() {
         onSubmit: async (values, { resetForm }) => {
             let action;
             const isUpdate = !!values.id;
+            console.log("Current Type: ", currentType);
             try{
                 switch (currentType) {
                     case 'dearness':
@@ -148,12 +147,19 @@ export default function AllowanceForm() {
                         action = isUpdate
                             ? await dispatch(updateGisEligibility({ id: values.id, type: currentType, data: values }))
                             : await dispatch(addGisEligibility({ type: currentType, data: values }));
-                    // Add more allowance types if needed
-                    default:
-                        console.warn('Unknown allowance type:', currentType);
-                        return;
-                }
-                // Check if fulfilled
+                            console.log("Action: ", action);
+                            if(action?.meta?.requestStatus === 'fulfilled'){
+                                toast.success(action.payload?.successMsg);  
+                                setEditMode(false);
+                            } else{
+                                toast.error(action.payload?.message);  
+                            }
+                            // Add more allowance types if needed
+                            default:
+                                console.warn('Unknown allowance type:', currentType);
+                                return;
+                            }
+                            // Check if fulfilled
                 if (addDearnessAllowance.fulfilled.match(action) ||
                     updateDearnessAllowance.fulfilled.match(action) ||
                     addHouseRent.fulfilled.match(action) ||
@@ -182,6 +188,7 @@ export default function AllowanceForm() {
 
     const handleEdit = (item) => {
         setEditMode(true);
+        console.log("Item: ", item);
         formik.setValues({
             id: item.id || '',
             rate_percentage: item.rate_percentage || '',
@@ -189,12 +196,11 @@ export default function AllowanceForm() {
             city_class: item.city_class || '',
             applicable_post: item.applicable_post || '',
             transport_type: item.transport_type || '',
-            transport_amount: item.transport_amount || '',
+            transport_amount: item.amount || '',
             amount: item.amount || '',
             effective_from: item.effective_from || '',
             effective_till: item.effective_till || '',
             notification_ref: item.notification_ref || '',
-            pay_level: item.pay_level || '',
             gis_amount: item.amount || '',
             pay_matrix_level: item.pay_matrix_level || '',
             scheme_category: item.scheme_category || '',
@@ -252,8 +258,8 @@ export default function AllowanceForm() {
             case 'Transport':
                 return (
                     <>
-                        <Grid item xs={12} sm={6}  sx={{ minWidth: "150px"}}>
-                            <TextField select name="pay_level" label="Pay Level" fullWidth value={formik.values.pay_level} onChange={formik.handleChange}>
+                        <Grid item xs={12} sm={6}  sx={{ minWidth: "180px"}}>
+                            <TextField select name="pay_matrix_level" label="Pay Matrix Level" fullWidth value={formik.values.pay_matrix_level} onChange={formik.handleChange}>
                                 {levels.map((opt) => (
                                 <MenuItem key={opt.id} value={opt.name}>{opt.name}</MenuItem>
                                 ))}
@@ -302,7 +308,6 @@ export default function AllowanceForm() {
         }
     };
     
-    console.log("Current_Type: ", currentType);
     const renderTableRows = () => {
         switch (ALLOWANCE_TYPES[value]) {
             case 'Dearness':
@@ -311,7 +316,7 @@ export default function AllowanceForm() {
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
-                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Sr. No.</b></TableCell>
                             <TableCell><b>Rate %</b></TableCell>
                             <TableCell><b>PWD Rate %</b></TableCell>
                             <TableCell><b>Effective from</b></TableCell>
@@ -329,14 +334,14 @@ export default function AllowanceForm() {
                         ) : allowence.dearnessAllowance?.list?.length > 0 ? (
                         allowence.dearnessAllowance.list.map((item, index) => (
                             <TableRow key={item.id || index}>
-                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                             <TableCell>{item.rate_percentage || '-'}</TableCell>
                             <TableCell>{item.pwd_rate_percentage || '-'}</TableCell>
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
                                 <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
-                                Edit
+                                    Edit
                                 </Button>
                             </TableCell>
                             </TableRow>
@@ -368,7 +373,7 @@ export default function AllowanceForm() {
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
-                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Sr. No.</b></TableCell>
                             <TableCell><b>City Class</b></TableCell>
                             <TableCell><b>Rate %</b></TableCell>
                             <TableCell><b>Effective from</b></TableCell>
@@ -386,14 +391,14 @@ export default function AllowanceForm() {
                         ) : allowence.houseRent?.list?.length > 0 ? (
                         allowence.houseRent.list.map((item, index) => (
                             <TableRow key={item.id || index}>
-                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                             <TableCell>{item.city_class || '-'}</TableCell>
                             <TableCell>{item.rate_percentage || '-'}</TableCell>
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
                                 <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
-                                Edit
+                                    Edit
                                 </Button>
                             </TableCell>
                             </TableRow>
@@ -425,7 +430,7 @@ export default function AllowanceForm() {
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
-                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Sr. No.</b></TableCell>
                             <TableCell><b>Applicable Post</b></TableCell>
                             <TableCell><b>Rate %</b></TableCell>
                             <TableCell><b>Effective from</b></TableCell>
@@ -443,7 +448,7 @@ export default function AllowanceForm() {
                         ) : allowence.nonPracticing?.list?.length > 0 ? (
                         allowence.nonPracticing.list.map((item, index) => (
                             <TableRow key={item.id || index}>
-                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                             <TableCell>{item.applicable_post || '-'}</TableCell>
                             <TableCell>{item.rate_percentage || '-'}</TableCell>
                             <TableCell>{item.effective_from || '-'}</TableCell>
@@ -482,7 +487,7 @@ export default function AllowanceForm() {
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
-                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Sr. No.</b></TableCell>
                             <TableCell><b>Pay level</b></TableCell>
                             <TableCell><b>Amount</b></TableCell>
                             <TableCell><b>Actions</b></TableCell>
@@ -498,12 +503,12 @@ export default function AllowanceForm() {
                         ) : allowence.transport?.list?.length > 0 ? (
                         allowence.transport.list.map((item, index) => (
                             <TableRow key={item.id || index}>
-                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                             <TableCell>{item.pay_matrix_level || '-'}</TableCell>
                             <TableCell>{item.amount || '-'}</TableCell>
                             <TableCell>
                                 <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
-                                Edit
+                                    Edit
                                 </Button>
                             </TableCell>
                             </TableRow>
@@ -535,7 +540,7 @@ export default function AllowanceForm() {
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
-                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Sr. No.</b></TableCell>
                             <TableCell><b>Applicable Post</b></TableCell>
                             <TableCell><b>Amount</b></TableCell>
                             <TableCell><b>Effective from</b></TableCell>
@@ -553,7 +558,7 @@ export default function AllowanceForm() {
                         ) : allowence.uniform?.list?.length > 0 ? (
                         allowence.uniform.list.map((item, index) => (
                             <TableRow key={item.id || index}>
-                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                             <TableCell>{item.applicable_post || '-'}</TableCell>
                             <TableCell>{item.amount || '-'}</TableCell>
                             <TableCell>{item.effective_from || '-'}</TableCell>
@@ -590,7 +595,7 @@ export default function AllowanceForm() {
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableRow>
-                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Sr. No.</b></TableCell>
                             <TableCell><b>Matrix level</b></TableCell>
                             <TableCell><b>Scheme Category</b></TableCell>
                             <TableCell><b>Amount</b></TableCell>
@@ -607,7 +612,7 @@ export default function AllowanceForm() {
                         ) : allowence.gisEligibility?.list?.length > 0 ? (
                         allowence.gisEligibility.list.map((item, index) => (
                             <TableRow key={item.id || index}>
-                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                             <TableCell>{item.pay_matrix_level || '-'}</TableCell>
                             <TableCell>{item.scheme_category || '-'}</TableCell>
                             <TableCell>{item.amount || '-'}</TableCell>

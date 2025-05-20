@@ -21,11 +21,32 @@ import {
     FormControl,
 } from '@mui/material';
 import { Alert } from 'reactstrap';
+import { fetchEmployeeBankdetail, fetchEmployees } from '../../redux/slices/employeeSlice';
+
+const months = [
+    { value: 'January', label: 'January' },
+    { value: 'February', label: 'February' },
+    { value: 'March', label: 'March' },
+    { value: 'April', label: 'April' },
+    { value: 'May', label: 'May' },
+    { value: 'June', label: 'June' },
+    { value: 'July', label: 'July' },
+    { value: 'August', label: 'August' },
+    { value: 'September', label: 'September' },
+    { value: 'October', label: 'October' },
+    { value: 'November', label: 'November' },
+    { value: 'December', label: 'December' },
+];
+const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map((year) => ({
+    value: year,
+    label: year,
+}));
+
 
 const steps = [
     'Select Mode',
-    'Salary Components',
-    'Deductions',
+    'Employee Detail',
+    'Deduction',
     'Finalize & Approve',
     'Process Arrears',
 ];
@@ -37,8 +58,8 @@ const SalaryProcessing = () => {
     const [errorMsg, setErrorMsg] = React.useState('');
     const [, setIsReady] = React.useState(false);
     const {hra,da,npa,otherAllowances,pf,tax} = useSelector((state) => state.salary.formData);
-
-
+    const employees = useSelector((state) => state.employee.employees) || [];
+    const employeeBank  = useSelector((state) => state.employee);
     const grossSalary = formData.basic + formData.hra + formData.da + formData.npa + formData.otherAllowances + formData.arrears;
     const totalDeductions = formData.pf + formData.tax;
     const netPay = grossSalary - totalDeductions;
@@ -48,12 +69,20 @@ const SalaryProcessing = () => {
     };
 
     useEffect(() => {
+        dispatch(fetchEmployees({ page: 1, limit: 40, search: "" }));
+
+        if (formData.employee_id) {
+            console.log("2 employee id", formData.employee_id);
+            dispatch(fetchEmployeeBankdetail({ employeeId: formData.employee_id }));
+        }
+    }, [dispatch, formData.employee_id]);
+
+    useEffect(() => {
         if(slipRef?.current) {
             setIsReady(true);
         }
     },[slipRef]);
 
-    
 
     const handlePrint = useReactToPrint({
         contentRef: slipRef,
@@ -70,37 +99,92 @@ const SalaryProcessing = () => {
                     <Grid container spacing={2}>
                         <Grid size={{xs:12}}>
                             <FormControl fullWidth>
-                                <InputLabel>Mode</InputLabel>
-                                <Select name="mode" value={formData.mode} onChange={handleChange}>
+                                <TextField select name="mode" label="Mode" fullWidth value={formData.mode} onChange={handleChange}>
                                     <MenuItem value="bulk">Bulk Salary Processing</MenuItem>
                                     <MenuItem value="individual">Individual Salary Processing</MenuItem>
-                                </Select>
+                                </TextField>
                             </FormControl>
                         </Grid>
 
                         {formData.mode === 'bulk' ? (
                             <>
                                 <Grid size={{xs:12}} >
-                                    <TextField required name="month" label="Month" value={new Date().getMonth()} fullWidth onChange={handleChange} />
+                                    <TextField select required name="month" label="Month" value={formData.month} fullWidth onChange={handleChange} >
+                                        {months.map((month) => (
+                                            <MenuItem key={month.value} value={month.value}>
+                                                {month.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
                                 </Grid>
                                 <Grid size={{xs:12}}>
-                                    <TextField name="year" label="Year" value={new Date().getFullYear()} fullWidth onChange={handleChange} />
+                                    <TextField name="year" label="Year" value={formData.year} fullWidth onChange={handleChange} />
+                                </Grid>
+                                <Grid size={{xs:12}}>
+                                    <TextField type='date' name="processing_date" label="Processing Date" value={formData.processing_date} fullWidth onChange={handleChange} />
+                                </Grid>
+                                <Grid size={{xs:12}}>
+                                    <TextField type='date' name="payment_date" label="Payment Date" value={formData.payment_date} fullWidth onChange={handleChange} />
                                 </Grid>
                             </>
                         ) : (
-                            <Grid size={{xs:12}}>
-                                <TextField
-                                    name="employeeId"
-                                    label="Employee ID"
-                                    fullWidth
-                                    onChange={handleChange}
-                                />
-                            </Grid>
+                            null
                         )}
                     </Grid>
                 );
-
             case 1:
+                return (
+                    <Grid container spacing={2}>
+                            <>
+                            <Grid size={{xs:6}}>
+                                <TextField select required name="employee_id" label="Employee" value={formData.employee_id} fullWidth onChange={handleChange} >
+                                    {
+                                        employees.map((employee) => (
+                                            <MenuItem key={employee.id} value={employee.id}>
+                                                {employee.first_name} {employee.last_name}
+                                            </MenuItem>
+                                        ))
+                                    }
+                                </TextField>
+                            </Grid>
+                            <Grid size={{xs:6}}>
+                                <TextField select required name="employee_bank_id" label="Employee Bank" value={formData.employee_bank_id} fullWidth onChange={handleChange} >
+                                {
+                                    Array.isArray(employeeBank?.employeeBank)
+                                        ? employeeBank.employeeBank.map((bank) => (
+                                            <MenuItem key={bank.id} value={bank.id}>
+                                            {bank.bank_name} - {bank.branch_name}
+                                            </MenuItem>
+                                        ))
+                                        : <MenuItem value="">No Bank Details Available</MenuItem>
+                                }
+
+                                </TextField>
+                            </Grid>
+                             <Grid size={{xs:12}} >
+                                <TextField select required name="month" label="Month" value={formData.month} fullWidth onChange={handleChange} >
+                                    {months.map((month) => (
+                                        <MenuItem key={month.value} value={month.value}>
+                                            {month.label}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+                            <Grid size={{xs:12}}>
+                                <TextField name="year" label="Year" value={formData.year} fullWidth onChange={handleChange} />
+                            </Grid>
+                            <Grid size={{xs:12}}>
+                                <TextField type='date' name="processing_date" label="Processing Date" value={formData.processing_date} fullWidth onChange={handleChange} />
+                            </Grid>
+                            <Grid size={{xs:12}}>
+                                <TextField type='date' name="payment_date" label="Payment Date" value={formData.payment_date} fullWidth onChange={handleChange} />
+                            </Grid>
+                            </>
+                    </Grid>
+                    
+                );
+
+            case 2:
                 return (
                     <Grid container spacing={2}>
                         <Grid size={{xs:6}}>
@@ -121,7 +205,7 @@ const SalaryProcessing = () => {
                     </Grid>
                 );
 
-            case 2:
+            case 3:
                 return (
                     <Grid container spacing={2}>
                         <Grid size={{xs:6}}>
@@ -133,7 +217,7 @@ const SalaryProcessing = () => {
                     </Grid>
                 );
 
-            case 3:
+            case 4:
                 return (
                     <Box >
                         <Typography variant="h6" mb={2}>Salary Slip Preview</Typography>
@@ -189,7 +273,7 @@ const SalaryProcessing = () => {
                     </Box>
                 );
 
-            case 4:
+            case 5:
                 return (
                     <TextField
                         name="arrears"
@@ -205,16 +289,19 @@ const SalaryProcessing = () => {
     };
 
     const validateStep = () => {
-        const { mode, month, year, employeeId, basic, hra, da } = formData;
+        const { mode, month, year, processing_date, employee_id, employee_bank_id, basic, hra, da } = formData;
+
+
 
         switch (activeStep) {
 
             case 0: 
                 if (!month || !year) return { valid: false, message: 'Please select both month and year.' };
-                if (mode === 'individual' && !employeeId) return { valid: false, message: 'Please select an employee.' };
                 return { valid: true };
-
-            case 1: 
+            case 1:
+                if (mode === 'individual' && !employee_id) return { valid: false, message: 'Please select an employee.' };
+                return { valid: true };
+            case 2: 
                 if (basic <= 0) return { valid: false, message: 'Basic salary must be greater than 0.' };
                 // if (hra > 0 || da > 0 || npa> 0 || otherAllowances > 0) return { valid: false, message: 'HRA and DA cannot be negative.' };
                 return { valid: true };

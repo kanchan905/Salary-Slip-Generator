@@ -39,22 +39,7 @@ const getAdminRoutes = (role) => (
       layout: role,
     },
   ],
-  masters: [
-    {
-      path: "/allowance-rates",
-      name: "Allowance Rates",
-      icon: "ni ni-money-coins text-orange",
-      component: AllowanceForm,
-      layout: role,
-    },
-    {
-      path: "/quarter",
-      name: "Quarter",
-      icon: "fa-solid fa-chart-pie text-orange",
-      component: Quarter,
-      layout: role,
-    },
-  ],
+  
   management: [
     {
       path: "/user-management",
@@ -272,6 +257,22 @@ const getAdminRoutes = (role) => (
       component: SystemSettingsPage,
       layout: role,
     }
+  ],
+  masters: [
+    {
+      path: "/allowance-rates",
+      name: "Allowance Rates",
+      icon: "ni ni-money-coins text-orange",
+      component: AllowanceForm,
+      layout: role,
+    },
+    {
+      path: "/quarter",
+      name: "Quarter",
+      icon: "fa-solid fa-chart-pie text-orange",
+      component: Quarter,
+      layout: role,
+    },
   ],
 });
 export default getAdminRoutes;

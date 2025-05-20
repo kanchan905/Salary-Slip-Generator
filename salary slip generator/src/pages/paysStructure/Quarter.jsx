@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import QuarterModal from 'Modal/QuarterModal';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +12,8 @@ export default function Quarter() {
     const [isOpen, setIsOpen] = React.useState(false);
     const [formMode, setFormMode] = React.useState('create');
     const [editId, setEditId] = React.useState(null);
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const [formData, setFormData] = React.useState({
         quarter_no: '',
@@ -84,6 +86,17 @@ export default function Quarter() {
         }
     };
 
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        console.log("Events: ", parseInt(event.target.value));
+        setRowsPerPage(parseInt(event.target.value));
+        setPage(0);
+    };
+
+    console.log("TotalCount: ", totalCount);
     return (
         <>
             <div className='header bg-gradient-info pb-5 pt-8 pt-md-8 main-head'></div>
@@ -145,6 +158,14 @@ export default function Quarter() {
                                 }
                                 </TableBody>
                             </Table>
+                            <TablePagination
+                                component="div"
+                                count={totalCount}
+                                page={page}
+                                onPageChange={handlePageChange}
+                                rowsPerPage={rowsPerPage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
                         </TableContainer>
                     </CardBody>
                 </Card>

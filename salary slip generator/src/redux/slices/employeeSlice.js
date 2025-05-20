@@ -71,6 +71,18 @@ export const addEmploeeStatus = createAsyncThunk(
     }
 );
 
+export const fetchEmployeeBankdetail = createAsyncThunk(
+    "employeeBank/fetchEmployeeBankdetail",
+    async ({ employeeId }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/employee-bank?employee_id=${employeeId}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch employee bank details");
+        }
+    }
+);
+
 export const addBankdetails = createAsyncThunk(
     "employee/addBankdetails",
     async (bankData, { rejectWithValue }) => {
@@ -133,6 +145,7 @@ export const UpdateEmployee = createAsyncThunk(
 
 const initialState = {
     employees: [],
+    employeeBank: [],
     totalCount: 0,
     EmployeeDetail: null,
     loading: false,
@@ -217,6 +230,18 @@ const employeeSlice = createSlice({
                 }
             })
             .addCase(addEmploeeStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchEmployeeBankdetail.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchEmployeeBankdetail.fulfilled, (state, action) => {
+                state.loading = false;
+                state.employeeBank = action.payload; // ✅ Set the fetched data
+            })
+            .addCase(fetchEmployeeBankdetail.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
