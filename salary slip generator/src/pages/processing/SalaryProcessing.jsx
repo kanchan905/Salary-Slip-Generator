@@ -22,6 +22,9 @@ import {
 } from '@mui/material';
 import { Alert } from 'reactstrap';
 import { fetchEmployeeBankdetail, fetchEmployees } from '../../redux/slices/employeeSlice';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const months = [
     { value: 'January', label: 'January' },
@@ -120,11 +123,32 @@ const SalaryProcessing = () => {
                                 <Grid size={{xs:12}}>
                                     <TextField name="year" label="Year" value={formData.year} fullWidth onChange={handleChange} />
                                 </Grid>
-                                <Grid size={{xs:12}}>
-                                    <TextField type='date' name="processing_date" label="Processing Date" value={formData.processing_date} fullWidth onChange={handleChange} />
+                                <Grid item xs={6}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                        label="Processing Date"
+                                        name="processing_date"
+                                        value={formData.processing_date || null}
+                                        onChange={(date) =>
+                                            dispatch(updateField({ name: "processing_date", value: date }))
+                                        }
+                                        slotProps={{ textField: { fullWidth: true } }}
+                                        />
+                                    </LocalizationProvider>
                                 </Grid>
-                                <Grid size={{xs:12}}>
-                                    <TextField type='date' name="payment_date" label="Payment Date" value={formData.payment_date} fullWidth onChange={handleChange} />
+
+                                <Grid item xs={6}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                        label="Payment Date"
+                                        name="payment_date"
+                                        value={formData.payment_date || null}
+                                        onChange={(date) =>
+                                            dispatch(updateField({ name: "payment_date", value: date }))
+                                        }
+                                        slotProps={{ textField: { fullWidth: true } }}
+                                        />
+                                    </LocalizationProvider>
                                 </Grid>
                             </>
                         ) : (
@@ -135,51 +159,72 @@ const SalaryProcessing = () => {
             case 1:
                 return (
                     <Grid container spacing={2}>
-                            <>
-                            <Grid size={{xs:6}}>
-                                <TextField select required name="employee_id" label="Employee" value={formData.employee_id} fullWidth onChange={handleChange} >
-                                    {
-                                        employees.map((employee) => (
-                                            <MenuItem key={employee.id} value={employee.id}>
-                                                {employee.first_name} {employee.last_name}
-                                            </MenuItem>
-                                        ))
-                                    }
-                                </TextField>
-                            </Grid>
-                            <Grid size={{xs:6}}>
-                                <TextField select required name="employee_bank_id" label="Employee Bank" value={formData.employee_bank_id} fullWidth onChange={handleChange} >
+                        <>
+                        <Grid size={{xs:6}}>
+                            <TextField select required name="employee_id" label="Employee" value={formData.employee_id} fullWidth onChange={handleChange} >
                                 {
-                                    Array.isArray(employeeBank?.employeeBank)
-                                        ? employeeBank.employeeBank.map((bank) => (
-                                            <MenuItem key={bank.id} value={bank.id}>
-                                            {bank.bank_name} - {bank.branch_name}
-                                            </MenuItem>
-                                        ))
-                                        : <MenuItem value="">No Bank Details Available</MenuItem>
-                                }
-
-                                </TextField>
-                            </Grid>
-                             <Grid size={{xs:12}} >
-                                <TextField select required name="month" label="Month" value={formData.month} fullWidth onChange={handleChange} >
-                                    {months.map((month) => (
-                                        <MenuItem key={month.value} value={month.value}>
-                                            {month.label}
+                                    employees.map((employee) => (
+                                        <MenuItem key={employee.id} value={employee.id}>
+                                            {employee.first_name} {employee.last_name}
                                         </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                            <Grid size={{xs:12}}>
-                                <TextField name="year" label="Year" value={formData.year} fullWidth onChange={handleChange} />
-                            </Grid>
-                            <Grid size={{xs:12}}>
-                                <TextField type='date' name="processing_date" label="Processing Date" value={formData.processing_date} fullWidth onChange={handleChange} />
-                            </Grid>
-                            <Grid size={{xs:12}}>
-                                <TextField type='date' name="payment_date" label="Payment Date" value={formData.payment_date} fullWidth onChange={handleChange} />
-                            </Grid>
-                            </>
+                                    ))
+                                }
+                            </TextField>
+                        </Grid>
+                        <Grid size={{xs:6}}>
+                            <TextField select required name="employee_bank_id" label="Employee Bank" value={formData.employee_bank_id} fullWidth onChange={handleChange} >
+                            {
+                                Array.isArray(employeeBank?.employeeBank)
+                                    ? employeeBank.employeeBank.map((bank) => (
+                                        <MenuItem key={bank.id} value={bank.id}>
+                                        {bank.bank_name} - {bank.branch_name}
+                                        </MenuItem>
+                                    ))
+                                    : <MenuItem value="">No Bank Details Available</MenuItem>
+                            }
+
+                            </TextField>
+                        </Grid>
+                            <Grid size={{xs:12}} >
+                            <TextField select required name="month" label="Month" value={formData.month} fullWidth onChange={handleChange} >
+                                {months.map((month) => (
+                                    <MenuItem key={month.value} value={month.value}>
+                                        {month.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                        <Grid size={{xs:12}}>
+                            <TextField name="year" label="Year" value={formData.year} fullWidth onChange={handleChange} />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                label="Processing Date"
+                                name="processing_date"
+                                value={formData.processing_date || null}
+                                onChange={(date) =>
+                                    dispatch(updateField({ name: "processing_date", value: date }))
+                                }
+                                slotProps={{ textField: { fullWidth: true } }}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+
+                        <Grid item xs={6}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                label="Payment Date"
+                                name="payment_date"
+                                value={formData.payment_date || null}
+                                onChange={(date) =>
+                                    dispatch(updateField({ name: "payment_date", value: date }))
+                                }
+                                slotProps={{ textField: { fullWidth: true } }}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        </>
                     </Grid>
                     
                 );
