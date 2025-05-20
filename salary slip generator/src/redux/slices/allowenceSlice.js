@@ -257,7 +257,7 @@ export const updateTransport = createAsyncThunk(
 
 
 
-// ------------------ TRANSPORT ALLOWANCE ------------------
+// ------------------ UNIFORM ALLOWANCE ------------------
 
 // Fetch Uniform Allowance
 export const fetchUniform = createAsyncThunk(
@@ -298,7 +298,7 @@ export const addUniform = createAsyncThunk(
     }
 );
 
-// UPdate Uniform Allowance
+// Update Uniform Allowance
 export const updateUniform = createAsyncThunk(
     "uniform/updateUniform",
     async (data, { rejectWithValue }) => {
@@ -325,32 +325,105 @@ export const updateUniform = createAsyncThunk(
     }
 );
 
+
+// ------------------ GIS ELIGIBILITY ------------------
+
+// Fetch GIS Eligibility
+export const fetchGisEligibility = createAsyncThunk(
+    "gisEligibility/fetchGisEligibility",
+    async ({ page, limit }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`employee-gis?page=${page}&limit=${limit}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch GIS Eligibility");
+        }
+    }
+);
+
+// Add GIS Eligibility
+export const addGisEligibility = createAsyncThunk(
+    "gisEligibility/addGisEligibility",
+    async (data, { rejectWithValue }) => {
+        try {
+            const {
+                pay_matrix_level,
+                scheme_category,
+                gis_amount
+            } = data.data;
+            const response = await axiosInstance.post("/employee-gis", {
+                pay_matrix_level,
+                scheme_category,
+                amount: gis_amount
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to add GIS Eligibility");
+        }
+    }
+);
+
+// Update GIS Eligibility
+export const updateGisEligibility = createAsyncThunk(
+    "gisEligibility/updateGisEligibility",
+    async (data, { rejectWithValue }) => {
+        try {
+            const {
+                id,
+                pay_matrix_level,
+                scheme_category,
+                gis_amount
+            } = data.data;
+            const response = await axiosInstance.post(`/employee-gis/${id}`, {
+                pay_matrix_level,
+                scheme_category,
+                amount: gis_amount
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update GIS Eligibility");
+        }
+    }
+);
+
+
 const initialState = {
     dearnessAllowance: {
         list: [],
         loading: false,
+        totalCount: 0,
         error: null,
     },
     houseRent: {
         list: [],
         loading: false,
+        totalCount: 0,
         error: null,
     },
     nonPracticing: {
         list: [],
         loading: false,
+        totalCount: 0,
         error: null,
     },
     transport: {
         list: [],
         loading: false,
+        totalCount: 0,
         error: null,
     },
     uniform: {
         list: [],
         loading: false,
+        totalCount: 0,
         error: null,
-    }
+    },
+    gisEligibility: {
+        list: [],
+        loading: false,
+        totalCount: 0,
+        error: null,
+    },
 
 };
 
@@ -369,6 +442,7 @@ const allowanceSlice = createSlice({
         .addCase(fetchDearnessAllowance.fulfilled, (state, action) => {
             state.dearnessAllowance.loading = false;
             state.dearnessAllowance.list = action.payload.data || [];
+            state.dearnessAllowance.totalCount = action.payload.total_count || 0;
         })
         .addCase(fetchDearnessAllowance.rejected, (state, action) => {
             state.dearnessAllowance.loading = false;
@@ -392,6 +466,7 @@ const allowanceSlice = createSlice({
         .addCase(fetchHouseRent.fulfilled, (state, action) => {
             state.houseRent.loading = false;
             state.houseRent.list = action.payload.data || [];
+            state.houseRent.totalCount = action.payload.total_count || 0;
         })
         .addCase(fetchHouseRent.rejected, (state, action) => {
             state.houseRent.loading = false;
@@ -415,6 +490,7 @@ const allowanceSlice = createSlice({
         .addCase(fetchNonPracticing.fulfilled, (state, action) => {
             state.nonPracticing.loading = false;
             state.nonPracticing.list = action.payload.data || [];
+            state.nonPracticing.totalCount = action.payload.total_count || 0;
         })
         .addCase(fetchNonPracticing.rejected, (state, action) => {
             state.nonPracticing.loading = false;
@@ -438,6 +514,7 @@ const allowanceSlice = createSlice({
         .addCase(fetchTransport.fulfilled, (state, action) => {
             state.transport.loading = false;
             state.transport.list = action.payload.data || [];
+            state.transport.totalCount = action.payload.total_count || 0;
         })
         .addCase(fetchTransport.rejected, (state, action) => {
             state.transport.loading = false;
@@ -461,6 +538,7 @@ const allowanceSlice = createSlice({
         .addCase(fetchUniform.fulfilled, (state, action) => {
             state.uniform.loading = false;
             state.uniform.list = action.payload.data || [];
+            state.uniform.totalCount = action.payload.total_count || 0;
         })
         .addCase(fetchUniform.rejected, (state, action) => {
             state.uniform.loading = false;
@@ -473,6 +551,30 @@ const allowanceSlice = createSlice({
             const updated = action.payload.data;
             const index = state.uniform.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.uniform.list[index] = updated;
+        });
+
+    // GIS Eligibility
+    builder
+        .addCase(fetchGisEligibility.pending, (state) => {
+            state.gisEligibility.loading = true;
+            state.gisEligibility.error = null;
+        })
+        .addCase(fetchGisEligibility.fulfilled, (state, action) => {
+            state.gisEligibility.loading = false;
+            state.gisEligibility.list = action.payload.data || [];
+            state.gisEligibility.totalCount = action.payload.total_count || 0;
+        })
+        .addCase(fetchGisEligibility.rejected, (state, action) => {
+            state.gisEligibility.loading = false;
+            state.gisEligibility.error = action.payload;
+        })
+        .addCase(addGisEligibility.fulfilled, (state, action) => {
+            state.gisEligibility.list.push(action.payload.data);
+        })
+        .addCase(updateGisEligibility.fulfilled, (state, action) => {
+            const updated = action.payload.data;
+            const index = state.gisEligibility.list.findIndex((item) => item.id === updated.id);
+            if (index !== -1) state.gisEligibility.list[index] = updated;
         });
 
     },

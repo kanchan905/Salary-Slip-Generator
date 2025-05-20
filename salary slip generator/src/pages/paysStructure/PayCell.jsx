@@ -35,7 +35,6 @@ const PayMatrixCell = () => {
 
   useEffect(() => {
     dispatch(fetchPayLevel({ page: 1, limit: levelCount }));
-    console.log("matrix_level_id: ", selectedLevelId, "Page:", page + 1, "RowPerPage:", rowsPerPage);
     dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
   }, [dispatch, selectedLevelId, page, limit]);
   const refreshCells = () => dispatch(fetchPayCell({ page: page + 1, limit: rowsPerPage }));

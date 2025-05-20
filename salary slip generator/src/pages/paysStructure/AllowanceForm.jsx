@@ -14,7 +14,8 @@ import {
     TableRow,
     TableCell,
     TableBody,
-    TablePagination
+    TablePagination,
+    CircularProgress
 } from '@mui/material';
 import { Row } from 'reactstrap';
 import { useFormik } from 'formik';
@@ -23,16 +24,19 @@ import { toast } from 'react-toastify';
 import { fetchPayLevel } from '../../redux/slices/levelSlice';
 import { 
     addDearnessAllowance, 
+    addGisEligibility, 
     addHouseRent, 
     addNonPracticing, 
     addTransport, 
     addUniform, 
     fetchDearnessAllowance, 
+    fetchGisEligibility, 
     fetchHouseRent, 
     fetchNonPracticing, 
     fetchTransport, 
     fetchUniform, 
     updateDearnessAllowance,
+    updateGisEligibility,
     updateHouseRent,
     updateNonPracticing,
     updateTransport,
@@ -44,7 +48,8 @@ const ALLOWANCE_TYPES = [
     'House Rent',
     'Non Practicing',
     'Transport',
-    'Uniform'
+    'Uniform',
+    'GIS Eligibility',
 ];
 
 
@@ -60,7 +65,10 @@ const initialFormValues = {
     effective_from: '',
     effective_till: '',
     notification_ref: '',
-    pay_level: ''
+    pay_level: '',
+    gis_amount: '',
+    pay_matrix_level: '',
+    scheme_category: '',
 };
 
 
@@ -73,7 +81,7 @@ export default function AllowanceForm() {
     const [editMode, setEditMode] = React.useState(false);
     const currentType = ALLOWANCE_TYPES[value].toLowerCase().replace(/\s/g, '');
     const allowence = useSelector((state) => state.allowence);
-    const { levels } = useSelector((state) => state.levels);
+    const { levels, totalCount } = useSelector((state) => state.levels);
 
     React.useEffect(() => {
         if (currentType === 'dearness') {
@@ -83,10 +91,13 @@ export default function AllowanceForm() {
         } else if (currentType === 'nonpracticing') {
             dispatch(fetchNonPracticing({ page: page, limit: rowsPerPage }));
         } else if (currentType === 'transport'){
-            dispatch(fetchPayLevel({ page: 1, limit: 10 }));
+            dispatch(fetchPayLevel({ page: 1, limit: totalCount }));
             dispatch(fetchTransport({ page: page, limit: rowsPerPage }));
         } else if (currentType === 'uniform'){
             dispatch(fetchUniform({ page: page, limit: rowsPerPage }));
+        } else if (currentType === 'giseligibility'){
+            console.log("GIS Eligibility");
+            dispatch(fetchGisEligibility({ page: page, limit: rowsPerPage }));
         }
     }, [dispatch, currentType]);
 
@@ -133,6 +144,10 @@ export default function AllowanceForm() {
                             ? await dispatch(updateUniform({ id: values.id, type: currentType, data: values }))
                             : await dispatch(addUniform({ type: currentType, data: values }));
                         break;
+                    case 'giseligibility':
+                        action = isUpdate
+                            ? await dispatch(updateGisEligibility({ id: values.id, type: currentType, data: values }))
+                            : await dispatch(addGisEligibility({ type: currentType, data: values }));
                     // Add more allowance types if needed
                     default:
                         console.warn('Unknown allowance type:', currentType);
@@ -148,9 +163,11 @@ export default function AllowanceForm() {
                     addTransport.fulfilled.match(action) ||
                     updateTransport.fulfilled.match(action) ||
                     addUniform.fulfilled.match(action) ||
-                    updateUniform.fulfilled.match(action)) {
-                    console.log("success", action.payload.successMsg)                        
+                    updateUniform.fulfilled.match(action) ||
+                    addGisEligibility.fulfilled.match(action) ||
+                    updateGisEligibility.fulfilled.match(action)) {
                     toast.success(action.payload.successMsg || 'Allowance added successfully');
+                    setEditMode(false);
                     resetForm();
                 }
             } catch (error){
@@ -177,7 +194,10 @@ export default function AllowanceForm() {
             effective_from: item.effective_from || '',
             effective_till: item.effective_till || '',
             notification_ref: item.notification_ref || '',
-            pay_level: item.pay_level || ''
+            pay_level: item.pay_level || '',
+            gis_amount: item.amount || '',
+            pay_matrix_level: item.pay_matrix_level || '',
+            scheme_category: item.scheme_category || '',
         });
     };
 
@@ -255,12 +275,34 @@ export default function AllowanceForm() {
                         </Grid>
                     </>
                 );
+            case 'GIS Eligibility':
+                return (
+                    <>
+                        <Grid item xs={12} sm={6}  sx={{ minWidth: "180px"}}>
+                            <TextField select name="pay_matrix_level" label="Pay Matrix Level" fullWidth value={formik.values.pay_matrix_level} onChange={formik.handleChange}>
+                                {levels.map((opt) => (
+                                <MenuItem key={opt.id} value={opt.name}>{opt.name}</MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={12} sm={6} sx={{ minWidth: "180px"}}>
+                            <TextField select name="scheme_category" label="Scheme Category" fullWidth value={formik.values.scheme_category} onChange={formik.handleChange}>
+                                {[' A', 'B', 'C', 'D'].map((opt) => (
+                                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField name="gis_amount" label="Amount" fullWidth type="number" onChange={formik.handleChange} value={formik.values.gis_amount} />
+                        </Grid>
+                    </>
+                );
             default:
                 return null;
         }
     };
     
-
+    console.log("Current_Type: ", currentType);
     const renderTableRows = () => {
         switch (ALLOWANCE_TYPES[value]) {
             case 'Dearness':
@@ -278,23 +320,40 @@ export default function AllowanceForm() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {allowence.dearnessAllowance?.list?.map((item, index) => (
-                        <TableRow key={item.id || index}>
+                        {allowence.dearnessAllowance?.loading ? (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                                <CircularProgress />
+                            </TableCell>
+                        </TableRow>
+                        ) : allowence.dearnessAllowance?.list?.length > 0 ? (
+                        allowence.dearnessAllowance.list.map((item, index) => (
+                            <TableRow key={item.id || index}>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{item.rate_percentage || '-'}</TableCell>
                             <TableCell>{item.pwd_rate_percentage || '-'}</TableCell>
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
+                                Edit
+                                </Button>
+                            </TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            No records found.
                             </TableCell>
                         </TableRow>
-                        ))}
+                        )}
+
                     </TableBody>
                 </Table>
                 <TablePagination
                     component="div"
-                    count={allowence.dearnessAllowance?.list.length}
+                    count={allowence.dearnessAllowance?.totalCount}
                     page={page}
                     onPageChange={handlePageChange}
                     rowsPerPage={rowsPerPage}
@@ -318,23 +377,40 @@ export default function AllowanceForm() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {allowence.houseRent?.list?.map((item, index) => (
-                        <TableRow key={item.id || index}>
+                        {allowence.houseRent?.loading ? (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            <CircularProgress />
+                            </TableCell>
+                        </TableRow>
+                        ) : allowence.houseRent?.list?.length > 0 ? (
+                        allowence.houseRent.list.map((item, index) => (
+                            <TableRow key={item.id || index}>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{item.city_class || '-'}</TableCell>
                             <TableCell>{item.rate_percentage || '-'}</TableCell>
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
+                                Edit
+                                </Button>
+                            </TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            No records found.
                             </TableCell>
                         </TableRow>
-                        ))}
+                        )}
+
                     </TableBody>
                 </Table>
                 <TablePagination
                     component="div"
-                    count={allowence.houseRent?.list.length}
+                    count={allowence.houseRent?.totalCount}
                     page={page}
                     onPageChange={handlePageChange}
                     rowsPerPage={rowsPerPage}
@@ -358,23 +434,40 @@ export default function AllowanceForm() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {allowence.nonPracticing?.list?.map((item, index) => (
-                        <TableRow key={item.id || index}>
+                       {allowence.nonPracticing?.loading ? (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            <CircularProgress />
+                            </TableCell>
+                        </TableRow>
+                        ) : allowence.nonPracticing?.list?.length > 0 ? (
+                        allowence.nonPracticing.list.map((item, index) => (
+                            <TableRow key={item.id || index}>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{item.applicable_post || '-'}</TableCell>
                             <TableCell>{item.rate_percentage || '-'}</TableCell>
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
+                                Edit
+                                </Button>
+                            </TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            No records found.
                             </TableCell>
                         </TableRow>
-                        ))}
+                        )}
+
                     </TableBody>
                 </Table>
                 <TablePagination
                     component="div"
-                    count={allowence.nonPracticing?.list.length}
+                    count={allowence.nonPracticing?.totalCount}
                     page={page}
                     onPageChange={handlePageChange}
                     rowsPerPage={rowsPerPage}
@@ -396,21 +489,38 @@ export default function AllowanceForm() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {allowence.transport?.list?.map((item, index) => (
-                        <TableRow key={item.id || index}>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>{item.pay_level || '-'}</TableCell>
-                            <TableCell>{item.amount || '-'}</TableCell>
-                            <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                       {allowence.transport?.loading ? (
+                        <TableRow>
+                            <TableCell colSpan={4} align="center">
+                            <CircularProgress />
                             </TableCell>
                         </TableRow>
-                        ))}
+                        ) : allowence.transport?.list?.length > 0 ? (
+                        allowence.transport.list.map((item, index) => (
+                            <TableRow key={item.id || index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.pay_matrix_level || '-'}</TableCell>
+                            <TableCell>{item.amount || '-'}</TableCell>
+                            <TableCell>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
+                                Edit
+                                </Button>
+                            </TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={4} align="center">
+                            No records found.
+                            </TableCell>
+                        </TableRow>
+                        )}
+
                     </TableBody>
                 </Table>
                 <TablePagination
                     component="div"
-                    count={allowence.transport?.list.length}
+                    count={allowence.transport?.totalCount}
                     page={page}
                     onPageChange={handlePageChange}
                     rowsPerPage={rowsPerPage}
@@ -434,8 +544,15 @@ export default function AllowanceForm() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {allowence.uniform?.list?.map((item, index) => (
-                        <TableRow key={item.id || index}>
+                       {allowence.uniform?.loading ? (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            <CircularProgress />
+                            </TableCell>
+                        </TableRow>
+                        ) : allowence.uniform?.list?.length > 0 ? (
+                        allowence.uniform.list.map((item, index) => (
+                            <TableRow key={item.id || index}>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{item.applicable_post || '-'}</TableCell>
                             <TableCell>{item.amount || '-'}</TableCell>
@@ -444,13 +561,74 @@ export default function AllowanceForm() {
                             <TableCell>
                                 <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
                             </TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            No records found.
+                            </TableCell>
                         </TableRow>
-                        ))}
+                        )}
+
                     </TableBody>
                 </Table>
                 <TablePagination
                     component="div"
                     count={allowence.uniform?.list.length}
+                    page={page}
+                    onPageChange={handlePageChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+                </>
+            );
+            
+            case 'GIS Eligibility':
+            return (
+                <>
+                <Table>
+                    <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableRow>
+                            <TableCell><b>Index</b></TableCell>
+                            <TableCell><b>Matrix level</b></TableCell>
+                            <TableCell><b>Scheme Category</b></TableCell>
+                            <TableCell><b>Amount</b></TableCell>
+                            <TableCell><b>Actions</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {allowence.gisEligibility?.loading ? (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            <CircularProgress />
+                            </TableCell>
+                        </TableRow>
+                        ) : allowence.gisEligibility?.list?.length > 0 ? (
+                        allowence.gisEligibility.list.map((item, index) => (
+                            <TableRow key={item.id || index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.pay_matrix_level || '-'}</TableCell>
+                            <TableCell>{item.scheme_category || '-'}</TableCell>
+                            <TableCell>{item.amount || '-'}</TableCell>
+                            <TableCell>
+                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                            </TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={6} align="center">
+                            No records found.
+                            </TableCell>
+                        </TableRow>
+                        )}
+
+                    </TableBody>
+                </Table>
+                <TablePagination
+                    component="div"
+                    count={allowence.gisEligibility?.totalCount}
                     page={page}
                     onPageChange={handlePageChange}
                     rowsPerPage={rowsPerPage}
@@ -497,7 +675,7 @@ export default function AllowanceForm() {
                         <Grid container spacing={2}>
                             {renderFields()}
                             {
-                                currentType !== "transport" ?
+                                (currentType !== "transport" && currentType !== "giseligibility") && (
                                 <>
                                 <Grid item xs={12} sm={6}>
                                     <TextField
@@ -530,7 +708,7 @@ export default function AllowanceForm() {
                                         value={formik.values.notification_ref}
                                     />
                                 </Grid>
-                                </> : null
+                                </> )
 
                             }
                         </Grid>

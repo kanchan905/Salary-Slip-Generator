@@ -2,6 +2,67 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "global/AxiosSetting";
 
 
+// ------------------ QUARTER ------------------
+
+// Fetch Quarter List
+export const fetchQuarterList = createAsyncThunk(
+  "quarter/fetchQuarterList",
+  async (credentials, { rejectWithValue }) => {
+    const { page, limit } = credentials;
+    try {
+      const response = await axiosInstance.get(`/quarters?page=${page}&limit=${limit}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch quarters");
+    }
+  }
+);
+
+// Fetch Quarter by ID
+export const fetchQuarterById = createAsyncThunk(
+  "quarter/fetchQuarterById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/quarter/${id}`);
+      console.log("Quarter by ID Response:", response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch quarter");
+    }
+  }
+);
+
+// Create Quarter
+export const createQuarter = createAsyncThunk(
+  "quarter/createQuarter",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/quarters", formData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to create quarter");
+    }
+  }
+);
+
+// Update Quarter
+export const updateQuarter = createAsyncThunk(
+  "quarter/updateQuarter",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      console.log("Update Quarter Data:", formData);
+      const response = await axiosInstance.put(`/quarters/${id}`, formData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update quarter");
+    }
+  }
+);
+
+
+// ------------------ EMPLOYEE QUARTER ------------------
+
+// Fetch Employee Quarter List
 export  const fetchEmployeeQuarterList = createAsyncThunk(
   "quarter/fetchEmployeeQuarterList",
    async (credentials, { rejectWithValue }) => {
@@ -16,6 +77,7 @@ export  const fetchEmployeeQuarterList = createAsyncThunk(
       }
 );
 
+// Create Employee Quarter
 export const createEmployeeQuarter = createAsyncThunk(
   "quarter/createEmployeeQuarter",
   async (formData, { rejectWithValue }) => {
@@ -28,6 +90,7 @@ export const createEmployeeQuarter = createAsyncThunk(
   }
 );
 
+// Update Employee Quarter
 export const updateEmployeeQuarter = createAsyncThunk(
   "quarter/updateEmployeeQuarter",
   async ({ id, data }, { rejectWithValue }) => {
@@ -42,9 +105,12 @@ export const updateEmployeeQuarter = createAsyncThunk(
 
 const initialState = {
   employeeQuarterList: [],
-    loading: false,
-    error: null,    
-    updateStatus: 'idle',
+  quarterList: [],
+  totalCount: 0,
+  singleQuarter: null,
+  loading: false,
+  error: null,    
+  updateStatus: 'idle',
 };
 
 const quarterSlice = createSlice({
@@ -52,6 +118,60 @@ const quarterSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
+      // Quarter Reducers
+      .addCase(fetchQuarterList.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchQuarterList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.quarterList = action.payload.data;
+        state.totalCount = action.payload.data.total_count; // Assuming the response contains the total count
+      })
+      .addCase(fetchQuarterList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchQuarterById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchQuarterById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.singleQuarter = action.payload;
+      })
+      .addCase(fetchQuarterById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createQuarter.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createQuarter.fulfilled, (state, action) => {
+        state.loading = false;
+        state.quarterList.push(action.payload);
+      })
+      .addCase(createQuarter.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateQuarter.pending, (state) => {
+        state.loading = true;
+        state.updateStatus = 'pending';
+      })
+      .addCase(updateQuarter.fulfilled, (state, action) => {
+        state.loading = false;
+        state.updateStatus = 'succeeded';
+        const updatedQuarter = action.payload;
+        const index = state.quarterList.findIndex(q => q.id === updatedQuarter.id);
+        if (index !== -1) {
+          state.quarterList[index] = updatedQuarter;
+        }
+      })
+      .addCase(updateQuarter.rejected, (state, action) => {
+        state.loading = false;
+        state.updateStatus = 'failed';
+        state.error = action.payload;
+      })
+      // Employee Quarter Reducers
       .addCase(fetchEmployeeQuarterList.pending, (state) => {
         state.loading = true;
       })

@@ -46,6 +46,13 @@ const getAdminRoutes = (role) => (
       component: AllowanceForm,
       layout: role,
     },
+    {
+      path: "/quarter",
+      name: "Quarter",
+      icon: "fa-solid fa-chart-pie text-orange",
+      component: Quarter,
+      layout: role,
+    },
   ],
   management: [
     {
