@@ -41,11 +41,11 @@ const EmployeePayStructures = () => {
   const employees = useSelector((state) => state.employee.employees) || [];
   const { levels, matrixCells, loading } = useSelector((state) => state.levelCells);
   const { payStructure, totalCount } = useSelector((state) => state.payStructure);
-  const [selectedLevelId, setSelectedLevelId] = useState('');
-  const [editMode, setEditMode] = useState(false);
-  const [editData, setEditData] = useState(null);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [ selectedLevelId, setSelectedLevelId ] = useState('');
+  const [ editMode, setEditMode ] = useState(false);
+  const [ editData, setEditData ] = useState(null);
+  const [ page, setPage ] = useState(0);
+  const [ rowsPerPage, setRowsPerPage ] = useState(5);
 
   useEffect(() => {
     dispatch(fetchPayLevel());

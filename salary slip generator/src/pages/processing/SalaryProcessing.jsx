@@ -23,8 +23,9 @@ import {
 import { Alert } from 'reactstrap';
 import { fetchEmployeeBankdetail, fetchEmployees } from '../../redux/slices/employeeSlice';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { fetchPayStructure } from '../../redux/slices/payStructureSlice';
+import { addPaySlip, fetchPaySlips } from '../../redux/slices/paySlipSlice';
 
 const months = [
     { value: 'January', label: 'January' },
@@ -54,6 +55,29 @@ const steps = [
     'Process Arrears',
 ];
 
+
+const InistialValues = {
+    pay_structure_id: '',
+    npa_rate_id: '',
+    hra_rate_id: '',
+    da_rate_id: '',
+    uniform_rate_id: '',
+    pay_plus_npa: '',
+    govt_contribution: '',
+    arrears: '',
+    spacial_pay: '',
+    da_1: '',
+    da_2: '',
+    itc_leave_salary: '',
+    employee_id: '',
+    month: '',
+    year: '',
+    processing_date: '',
+    employee_bank_id: '',
+    payment_date: '',
+}
+
+
 const SalaryProcessing = () => {
     const slipRef = useRef(null);
     const dispatch = useDispatch();
@@ -63,6 +87,8 @@ const SalaryProcessing = () => {
     const {hra,da,npa,otherAllowances,pf,tax} = useSelector((state) => state.salary.formData);
     const employees = useSelector((state) => state.employee.employees) || [];
     const employeeBank  = useSelector((state) => state.employee);
+    const { payStructure, totalCount } = useSelector((state) => state.payStructure);
+    const paySlip  = useSelector((state) => state.paySlip);
     const grossSalary = formData.basic + formData.hra + formData.da + formData.npa + formData.otherAllowances + formData.arrears;
     const totalDeductions = formData.pf + formData.tax;
     const netPay = grossSalary - totalDeductions;
@@ -73,7 +99,8 @@ const SalaryProcessing = () => {
 
     useEffect(() => {
         dispatch(fetchEmployees({ page: 1, limit: 40, search: "" }));
-
+        dispatch(fetchPaySlips({ page: 1, limit: 40, search: "" }));
+        dispatch(fetchPayStructure({ page: 1 , limit: 10, search: "" }));
         if (formData.employee_id) {
             console.log("2 employee id", formData.employee_id);
             dispatch(fetchEmployeeBankdetail({ employeeId: formData.employee_id }));
@@ -84,16 +111,36 @@ const SalaryProcessing = () => {
         if(slipRef?.current) {
             setIsReady(true);
         }
-    },[slipRef]);
+    },[slipRef]);   
 
+    console.log("paySlip", paySlip);
+    console.log("pay Structure", payStructure);
+    console.log("Employees: ", employees);
+
+    const filterPayStructure = payStructure.filter((structure) => structure?.employee_id === formData.employee_id);
+    console.log("Filtered Pay Structure: ", filterPayStructure);
 
     const handlePrint = useReactToPrint({
         contentRef: slipRef,
-        documentTitle: `SalarySlip_${formData.employeeId || 'Bulk'}_${formData.month}`,
+        documentTitle: `SalarySlip_${formData.employee_id || 'Bulk'}_${formData.month}`,
         onPrintError: () => alert('Error printing the document. Please try again.'),
         onAfterPrint: () => alert('Document printed successfully!'),
     });
-      
+    
+
+    const handleSubmit = async (e) => {
+        console.log("Form submit triggered");
+        e.preventDefault();
+        try {
+            console.log("Call handleSubmit");
+            console.log("Form Values: ", formData);
+            const response = await dispatch(addPaySlip(formData));
+            console.log("Response: ", response);
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    };
+
 
     const renderStepContent = (step) => {
         switch (step) {
@@ -161,10 +208,10 @@ const SalaryProcessing = () => {
                     <Grid container spacing={2}>
                         <>
                         <Grid size={{xs:6}}>
-                            <TextField select required name="employee_id" label="Employee" value={formData.employee_id} fullWidth onChange={handleChange} >
+                            <TextField select required name="employee_id" className='text-capitalize' label="Employee" value={formData.employee_id} fullWidth onChange={handleChange} >
                                 {
                                     employees.map((employee) => (
-                                        <MenuItem key={employee.id} value={employee.id}>
+                                        <MenuItem key={employee.id} className='text-capitalize' value={employee.id}>
                                             {employee.first_name} {employee.last_name}
                                         </MenuItem>
                                     ))
@@ -172,7 +219,7 @@ const SalaryProcessing = () => {
                             </TextField>
                         </Grid>
                         <Grid size={{xs:6}}>
-                            <TextField select required name="employee_bank_id" label="Employee Bank" value={formData.employee_bank_id} fullWidth onChange={handleChange} >
+                            <TextField select required name="employee_bank_id" className='text-capitalize' label="Employee Bank" value={formData.employee_bank_id} fullWidth onChange={handleChange} >
                             {
                                 Array.isArray(employeeBank?.employeeBank)
                                     ? employeeBank.employeeBank.map((bank) => (
@@ -184,7 +231,16 @@ const SalaryProcessing = () => {
                             }
                             </TextField>
                         </Grid>
-                            <Grid size={{xs:12}} >
+                        <Grid size={{xs:12}} >
+                            <TextField select required name="pay_structure_id" label="Pay Structure" value={formData.pay_structure_id} fullWidth onChange={handleChange} >
+                                {filterPayStructure.map((data) => (
+                                    <MenuItem key={data.id} value={data.id}>
+                                        {`${data?.pay_matrix_cell?.pay_matrix_level?.name}`.padStart(2, '0')} - {data?.pay_matrix_cell?.index} - {data?.pay_matrix_cell?.amount}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                        <Grid size={{xs:6}} >
                             <TextField select required name="month" label="Month" value={formData.month} fullWidth onChange={handleChange} >
                                 {months.map((month) => (
                                     <MenuItem key={month.value} value={month.value}>
@@ -193,7 +249,7 @@ const SalaryProcessing = () => {
                                 ))}
                             </TextField>
                         </Grid>
-                        <Grid size={{xs:12}}>
+                        <Grid size={{xs:6}}>
                             <TextField name="year" label="Year" value={formData.year} fullWidth onChange={handleChange} />
                         </Grid>
                         <Grid item xs={6}>
@@ -366,51 +422,55 @@ const SalaryProcessing = () => {
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
-            <Box sx={{ width: '80%', margin: 'auto', mt: 8, mb: 8 }}>
-                <Typography variant="h5" gutterBottom fontWeight="bold">💼 Salary Processing</Typography>
+            <form onSubmit={handleSubmit}>
+                <Box sx={{ width: '80%', margin: 'auto', mt: 8, mb: 8 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold">💼 Salary Processing</Typography>
 
-                <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-                    {steps.map((label) => (
-                        <Step key={label}>
-                            <StepLabel>{label}</StepLabel>
-                        </Step>
-                    ))}
-                </Stepper>
+                    <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+                        {steps.map((label) => (
+                            <Step key={label}>
+                                <StepLabel>{label}</StepLabel>
+                            </Step>
+                        ))}
+                    </Stepper>
 
-                <Box sx={{ mb: 3 }}>{renderStepContent(activeStep)}</Box>
+                    <Box sx={{ mb: 3 }}>{renderStepContent(activeStep)}</Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button disabled={activeStep === 0} onClick={() => dispatch(prevStep())}>
-                        Back
-                    </Button>
-                    {activeStep < steps.length - 1 ? (
-                        <Button
-                        className='btn text-white'
-                            style={{background:'#004080'}}
-                            onClick={() => {
-                                const { valid, message } = validateStep();
-                                if (valid) {
-                                    dispatch(nextStep());
-                                    setErrorMsg('');
-                                } else {
-                                    setErrorMsg(message);
-                                }
-                            }}
-                        >
-                            Next
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Button disabled={activeStep === 0} onClick={() => dispatch(prevStep())}>
+                            Back
                         </Button>
-                    ) : (
-                        <Button variant="contained" color="primary" onClick={() => alert('Salary Processed!')}>
-                            Finish
-                        </Button>
-                    )}
+                        {activeStep < steps.length - 1 ? (
+                            <Button
+                                type='submit'
+                                className='btn text-white'
+                                style={{background:'#004080'}}
+                                onClick={() => {
+                                    const { valid, message } = validateStep();
+                                    if (valid) {
+                                        // dispatch(nextStep());
+                                        setErrorMsg('');
+                                    } else {
+                                        setErrorMsg(message);
+                                    }
+                                }}
+                            >
+                                Next
+                            </Button>
+                        ) : (
+                            <Button variant="contained" color="primary" onClick={() => alert('Salary Processed!')}>
+                                Finish
+                            </Button>
+                        )}
+                    </Box>
                 </Box>
-            </Box>
-            {errorMsg && (
-                <Alert severity="error" onClose={() => setErrorMsg('')} sx={{ mb: 2 }}>
-                    {errorMsg}
-                </Alert>
-            )}
+                {errorMsg && (
+                    <Alert severity="error" onClose={() => setErrorMsg('')} sx={{ mb: 2 }}>
+                        {errorMsg}
+                    </Alert>
+                )}
+
+            </form>
 
         </>
     );

@@ -18,6 +18,7 @@ import documentReducer from './slices/pensionDocumentSlice'
 import creditReducer from './slices/creditSlice'
 import loanReducer from './slices/employeeLoanSlice'
 import netSalaryReducer from './slices/netSalarySlice'
+import paySlipSlice from './slices/paySlipSlice';
 
 const store = configureStore({
   reducer: {
@@ -39,7 +40,8 @@ const store = configureStore({
     pensionDocument:documentReducer,
     societyMember: creditReducer,
     employeeLoan: loanReducer,
-    netSalary:netSalaryReducer
+    netSalary:netSalaryReducer,
+    paySlip: paySlipSlice,
   },
 });
 
