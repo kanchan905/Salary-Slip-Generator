@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
 
 function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setSelectedDesignation, handleSave }) {
   const [errors, setErrors] = useState({});
@@ -7,7 +7,7 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSelectedDesignation((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: '' })); 
+    // setErrors((prev) => ({ ...prev, [name]: '' })); 
   };
 
   // Ensure selectedBank has default values to avoid undefined
@@ -28,7 +28,8 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
     if (!designationData.cadre) newErrors.cadre = 'Cadre is required';
     if (!designationData.job_group) newErrors.job_group = 'Job Group is required';
     if (!designationData.effective_from) newErrors.effective_from = 'Effective From is required';
-    if (!designationData.effective_till) newErrors.effective_till = 'Effective Till is required';
+    if (designationData.effective_till && designationData.effective_from && designationData.effective_till < designationData.effective_from) newErrors.effective_till = 'Effective Till cannot be before Effective From';
+    setErrors(newErrors);
     return newErrors;
   };
 
@@ -112,7 +113,8 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
               onChange={handleChange}
               invalid={!!errors.effective_till}
             />
-            {errors.effective_till && <div className="text-danger">{errors.effective_till}</div>}
+            {/* {errors.effective_till && <div className="text-danger">{errors.effective_till}</div>} */}
+            {errors.effective_till && <FormFeedback>{errors.effective_till}</FormFeedback>}
           </FormGroup>
         </Form>
       </ModalBody>

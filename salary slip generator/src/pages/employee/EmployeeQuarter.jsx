@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CardBody, CardHeader, Card } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { createEmployeeQuarter, fetchEmployeeQuarterList, updateEmployeeQuarter } from '../../redux/slices/quarterSlice'
+import { createEmployeeQuarter, fetchEmployeeQuarterList, fetchQuarterList, updateEmployeeQuarter } from '../../redux/slices/quarterSlice'
 import QuarterAllocateModal from 'Modal/QuarterAllocateModal';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -28,10 +28,12 @@ function EmployeeQuarter() {
     const updateStatus = useSelector((state) => state.quarter.updateStatus);
     const loading = useSelector((state) => state.quarter.loading);
     const error = useSelector((state) => state.quarter.error);
+    const { quarterList} = useSelector((state) => state.quarter);
 
 
     useEffect(() => {
         dispatch(fetchEmployeeQuarterList({ page: currentPage, limit: PAGE_SIZE }));
+        dispatch(fetchQuarterList())
     }, [updateStatus, dispatch, currentPage,]);
 
 
@@ -180,7 +182,7 @@ function EmployeeQuarter() {
                                 </table>
                                 <div className="d-flex justify-content-between align-items-center mt-4">
                                     <button
-                                        className="btn btn-light border border-secondary"
+                                        className="btn btn-primary border border-secondary"
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage((p) => p - 1)}
                                     >
@@ -190,7 +192,7 @@ function EmployeeQuarter() {
                                         Page {currentPage} of {totalPages}
                                     </span>
                                     <button
-                                        className="btn btn-light border border-secondary"
+                                        className="btn btn-primary border border-secondary"
                                         disabled={currentPage === totalPages || quarters.length === 0}
                                         onClick={() => setCurrentPage((p) => p + 1)}
                                     >
@@ -208,8 +210,8 @@ function EmployeeQuarter() {
                 isOpen={modalOpen}
                 toggle={handleModalToggle}
                 form={form}
-                // onChange={handleFormChange}
                 onSubmit={handleFormSubmit}
+                quarterList={quarterList}
             />
         </>
     );

@@ -34,7 +34,7 @@ export default function UserTable() {
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
     const [formOpen, setFormOpen] = React.useState(false);
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(2);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [searchQuery, setSearchQuery] = React.useState("");
     const dispatch = useDispatch();
     const users = useSelector((state) => state.user.users);
@@ -123,6 +123,7 @@ export default function UserTable() {
             dispatch(updateUserData({ formData: rest, id: editId })).unwrap()
                 .then(() => {
                     toast.success('User updated successfully');
+                    dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
                 })
                 .catch((err) => {
                     const apiMsg =
@@ -137,6 +138,7 @@ export default function UserTable() {
             dispatch(createUserData(values)).unwrap()
                 .then(() => {
                     toast.success('User created successfully');
+                    dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
                 })
                 .catch((err) => {
                     const apiMsg =

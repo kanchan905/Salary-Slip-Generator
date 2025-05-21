@@ -33,7 +33,6 @@ function PayLevel() {
   const pageSize = 10;
 
   useEffect(() => {
-    console.log("page: ",page + 1, "RowPErPage:", rowsPerPage);
     dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
   }, [dispatch, page, rowsPerPage]);
 
@@ -86,7 +85,6 @@ function PayLevel() {
   };
 
   const handleChangePage = (event, newPage) => {
-    console.log("CHange newPa",newPage);
     setPage(newPage);
   };
 
@@ -95,7 +93,7 @@ function PayLevel() {
     setPage(0);
   };
 
-  console.log("Levels", levels);
+  
   return (
     <>
       <Typography variant="h6" mb={2}>Pay Matrix Levels</Typography>

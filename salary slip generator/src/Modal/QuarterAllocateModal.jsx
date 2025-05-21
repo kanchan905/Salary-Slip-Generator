@@ -12,7 +12,9 @@ const validationSchema = Yup.object().shape({
   is_current: Yup.boolean(),
 });
 
-const QuarterAllocateModal = ({ isOpen, toggle, form, onSubmit }) => (
+
+
+const QuarterAllocateModal = ({ isOpen, toggle, form, onSubmit, quarterList }) => (
   <Modal isOpen={isOpen} toggle={toggle}>
     <ModalHeader toggle={toggle}>Allocate Quarter</ModalHeader>
     <Formik
@@ -26,18 +28,22 @@ const QuarterAllocateModal = ({ isOpen, toggle, form, onSubmit }) => (
           <ModalBody>
             <FormGroup>
               <Label for="quarter_id">Quarter ID</Label>
-              <Input
-                tag={Field}
-                type="text"
+              <Field
                 name="quarter_id"
+                as="select"
+                className={`form-control ${touched.quarter_id && errors.quarter_id ? "is-invalid" : ""}`}
                 id="quarter_id"
-                invalid={touched.quarter_id && !!errors.quarter_id}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.quarter_id}
-              />
+              >
+                <option value="">Select Quarter</option>               
+                {quarterList.map((quarter) => (
+                  <option key={quarter.id} value={quarter.id}>
+                    {quarter.id}
+                  </option>
+                ))}
+              </Field>
               <ErrorMessage name="quarter_id" component={FormFeedback} />
             </FormGroup>
+
             <FormGroup>
               <Label for="date_of_allotment">Date of Allotment</Label>
               <Input

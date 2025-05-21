@@ -54,7 +54,7 @@ useEffect(() => {
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
-                          <i className="fas fa-chart-bar" />
+                          <i class="fa-solid fa-user-tie"></i>
                         </div>
                       </Col>
                     </Row>
@@ -82,7 +82,7 @@ useEffect(() => {
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
-                          <i className="fas fa-chart-pie" />
+                          <i className="fa-solid fa-users" />
                         </div>
                       </Col>
                     </Row>
@@ -110,7 +110,7 @@ useEffect(() => {
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-info text-white rounded-circle shadow">
-                          <i className="fas fa-percent" />
+                          <i class="fa-solid fa-list-check"></i>
                         </div>
                       </Col>
                     </Row>

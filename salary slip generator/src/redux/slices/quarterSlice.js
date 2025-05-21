@@ -11,6 +11,7 @@ export const fetchQuarterList = createAsyncThunk(
     const { page, limit } = credentials;
     try {
       const response = await axiosInstance.get(`/quarters?page=${page}&limit=${limit}`);
+      console.log('response',response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch quarters");
@@ -69,7 +70,7 @@ export  const fetchEmployeeQuarterList = createAsyncThunk(
           const { page, limit} = credentials;
           try {
               const response = await axiosInstance.get(`/employee-quarters?page=${page}&limit=${limit}`);
-              console.log("Employee Quarter List Response:", response.data);
+              // console.log("Employee Quarter List Response:", response.data);
               return response.data.data;
           } catch (error) {
               return rejectWithValue(error.response?.data || "Failed to fetch employees");

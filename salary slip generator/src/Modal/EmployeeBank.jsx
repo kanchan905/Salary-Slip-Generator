@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import {
     Modal,
     ModalHeader,
@@ -13,7 +13,7 @@ import {
 
 function BankModal({ isOpen, toggle, modalType, selectedBank, setSelectedBank, handleSave }) {
     const [errors, setErrors] = useState({});
-    
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setSelectedBank((prev) => ({
@@ -33,7 +33,7 @@ function BankModal({ isOpen, toggle, modalType, selectedBank, setSelectedBank, h
         is_active: false,
     };
 
-    const bankData = { ...defaultBank, ...selectedBank }; 
+    const bankData = { ...defaultBank, ...selectedBank };
 
     const validate = () => {
         const newErrors = {};
@@ -42,6 +42,7 @@ function BankModal({ isOpen, toggle, modalType, selectedBank, setSelectedBank, h
         if (!bankData.account_number.trim()) newErrors.account_number = 'Account number is required';
         if (!bankData.ifsc_code.trim()) newErrors.ifsc_code = 'IFSC code is required';
         if (!bankData.effective_from) newErrors.effective_from = 'Effective from date is required';
+
         return newErrors;
     };
 

@@ -78,18 +78,18 @@ const userSlice = createSlice({
                 state.error = action.error.message;
             })
             .addCase(createUserData.pending, (state) => {
-                state.loading = true;
+                // state.loading = true;
             })
             .addCase(createUserData.fulfilled, (state, action) => {
                 state.loading = false;
                 state.users.push(action.payload);
             })
             .addCase(createUserData.rejected, (state, action) => {
-                state.loading = false;
+                // state.loading = false;
                 state.error = action.error.message;
             })
             .addCase(updateUserData.pending, (state) => {
-                state.loading = true;
+                // state.loading = true;
             })
             .addCase(updateUserData.fulfilled, (state, action) => {
                 state.loading = false;
@@ -99,11 +99,11 @@ const userSlice = createSlice({
                 }
             })
             .addCase(updateUserData.rejected, (state, action) => {
-                state.loading = false;
+                // state.loading = false;
                 state.error = action.error.message;
             })
             .addCase(changeUserStatus.pending, (state) => {
-                state.loading = true;
+                // state.loading = true;
             })
             .addCase(changeUserStatus.fulfilled, (state, action) => {
                 state.loading = false;
@@ -113,7 +113,7 @@ const userSlice = createSlice({
                 }
             })
             .addCase(changeUserStatus.rejected, (state, action) => {
-                state.loading = false;
+                // state.loading = false;
                 state.error = action.error.message;
             });
     }

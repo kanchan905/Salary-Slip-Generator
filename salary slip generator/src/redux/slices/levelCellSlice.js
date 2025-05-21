@@ -22,7 +22,6 @@ export const fetchPayCell = createAsyncThunk(
   async ({ matrix_level_id, page, limit }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`pay-matrix-cells?matrix_level_id=${matrix_level_id}&page=${page}&limit=${limit}`);
-      console.log("Response Cell: ", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch matrix cells");

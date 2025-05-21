@@ -173,7 +173,7 @@ function EmployeeDetail() {
       <Container className="mt--7 mb-7" fluid>
         <Row className="justify-content-center">
           {loading || !data ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <CircularProgress />
             </Box>
           ) : (
@@ -208,9 +208,9 @@ function EmployeeDetail() {
                     </h2>
                     <span className="badge bg-info text-white mb-2">{data.gender}</span>
                     <div className="text-gray-600 mb-2">{data.email}</div>
-                    <div className="flex flex-wrap justify-center gap-2 mb-3">
-                      <span className="badge bg-light text-dark">DOB: {data.date_of_birth}</span>
-                      <span className="badge bg-light text-dark">DOJ: {data.date_of_joining}</span>
+                    <div className="flex flex-wrap justify-center mb-3" style={{gap:'3px'}}>
+                      <span className="badge bg-light text-dark mr-2">DOB: {data.date_of_birth}</span>
+                      <span className="badge bg-light text-dark mr-2">DOJ: {data.date_of_joining}</span>
                       <span className="badge bg-light text-dark">Retirement: {data.date_of_retirement || "N/A"}</span>
                     </div>
                     <hr />

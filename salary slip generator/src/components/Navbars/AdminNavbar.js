@@ -98,8 +98,8 @@ const AdminNavbar = (props) => {
                     <i className="ni ni-single-02" />
                     <span>Profile</span>
                   </DropdownItem>
-                  <DropdownItem to="/admin/user-profile" tag={Link}>
-                    <i className="ni ni-calendar-grid-58" />
+                  <DropdownItem to="/admin/user-profile" tag={Link}>                  
+                    <i class="fa-solid fa-lock"></i>
                     <span>Change password</span>
                   </DropdownItem>
                   <DropdownItem divider />

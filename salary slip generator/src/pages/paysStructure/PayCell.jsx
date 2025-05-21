@@ -68,7 +68,6 @@ const PayMatrixCell = () => {
 
   
   const handleChangePage = (event, newPage) => {
-    console.log("CHange newPa",newPage);
     setPage(newPage);
   };
 
@@ -80,9 +79,7 @@ const PayMatrixCell = () => {
 
   const filteredCells = matrixCells.filter(cell => cell.matrix_level_id === Number(selectedLevelId));
 
-  console.log("Matrix Cells:", matrixCells);
-  console.log("Filtered Cells:", filteredCells.length);
-
+  
   return (
     <Paper sx={{ p: 3, boxShadow: 'none' }}>
       <Typography variant="h6" mb={2}>Pay Matrix Cells</Typography>
