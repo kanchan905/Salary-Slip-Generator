@@ -28,18 +28,18 @@ import { fetchPayStructure } from '../../redux/slices/payStructureSlice';
 import { addPaySlip, fetchPaySlips } from '../../redux/slices/paySlipSlice';
 
 const months = [
-    { value: 'January', label: 'January' },
-    { value: 'February', label: 'February' },
-    { value: 'March', label: 'March' },
-    { value: 'April', label: 'April' },
-    { value: 'May', label: 'May' },
-    { value: 'June', label: 'June' },
-    { value: 'July', label: 'July' },
-    { value: 'August', label: 'August' },
-    { value: 'September', label: 'September' },
-    { value: 'October', label: 'October' },
-    { value: 'November', label: 'November' },
-    { value: 'December', label: 'December' },
+    { value: 1, label: 'January' },
+    { value: 2, label: 'February' },
+    { value: 3, label: 'March' },
+    { value: 4, label: 'April' },
+    { value: 5, label: 'May' },
+    { value: 6, label: 'June' },
+    { value: 7, label: 'July' },
+    { value: 8, label: 'August' },
+    { value: 9, label: 'September' },
+    { value: 10, label: 'October' },
+    { value: 11, label: 'November' },
+    { value: 12, label: 'December' },
 ];
 const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map((year) => ({
     value: year,
@@ -448,7 +448,7 @@ const SalaryProcessing = () => {
                                 onClick={() => {
                                     const { valid, message } = validateStep();
                                     if (valid) {
-                                        // dispatch(nextStep());
+                                        dispatch(nextStep());
                                         setErrorMsg('');
                                     } else {
                                         setErrorMsg(message);
