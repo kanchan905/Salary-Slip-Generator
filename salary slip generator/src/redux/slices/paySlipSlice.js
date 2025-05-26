@@ -16,10 +16,10 @@ export const fetchPaySlips = createAsyncThunk(
     'paySlips/fetch',
     async ({ page, limit }, thunkAPI) => {
         try {
-        const res = await axiosInstance.get(`employee-pay-slip?page=${page}&limit=${limit}`);
-        return res.data;
+            const res = await axiosInstance.get(`employee-pay-slip?page=${page}&limit=${limit}`);
+            return res.data;
         } catch (err) {
-        return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
+            return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
@@ -27,12 +27,12 @@ export const fetchPaySlips = createAsyncThunk(
 // 2. Add a new Payslip
 export const addPaySlip = createAsyncThunk(
     'paySlips/add',
-    async (formData, thunkAPI) => {
+    async (cleanFormData, thunkAPI) => {
         try {
-        const res = await axiosInstance.post(`employee-pay-slip`, formData);
-        return res.data;
+            const res = await axiosInstance.post(`employee-pay-slip`, cleanFormData);
+            return res.data;
         } catch (err) {
-        return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
+            return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
@@ -42,10 +42,10 @@ export const updatePaySlip = createAsyncThunk(
     'paySlips/update',
     async ({ id, formData }, thunkAPI) => {
         try {
-        const res = await axiosInstance.put(`employee-pay-slip/${id}`, formData);
-        return res.data;
+            const res = await axiosInstance.put(`employee-pay-slip/${id}`, formData);
+            return res.data;
         } catch (err) {
-        return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
+            return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
@@ -57,51 +57,54 @@ const paySlipSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-        // Fetch
-        .addCase(fetchPaySlips.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(fetchPaySlips.fulfilled, (state, action) => {
-            state.loading = false;
-            state.paySlips = action.payload?.data || [];
-            state.paySlipCount = action.payload?.total_count || 0;
-        })
-        .addCase(fetchPaySlips.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        })
+            // Fetch
+            .addCase(fetchPaySlips.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchPaySlips.fulfilled, (state, action) => {
+                state.loading = false;
+                state.paySlips = action.payload?.data || [];
+                state.paySlipCount = action.payload?.total_count || 0;
+            })
+            .addCase(fetchPaySlips.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
 
-        // Add
-        .addCase(addPaySlip.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(addPaySlip.fulfilled, (state, action) => {
-            state.loading = false;
-            state.paySlips.unshift(action.payload);
-        })
-        .addCase(addPaySlip.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        })
+            // Add
+            .addCase(addPaySlip.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addPaySlip.fulfilled, (state, action) => {
+                state.loading = false;              
+                const newPaySlip = action.payload; 
+                if (newPaySlip) {
+                    state.paySlips.unshift(newPaySlip);
+                }
+            })
+            .addCase(addPaySlip.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
 
-        // Update
-        .addCase(updatePaySlip.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(updatePaySlip.fulfilled, (state, action) => {
-            state.loading = false;
-            const index = state.paySlips.findIndex((s) => s.id === action.payload.id);
-            if (index !== -1) {
-            state.slips[index] = action.payload;
-            }
-        })
-        .addCase(updatePaySlip.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        });
+            // Update
+            .addCase(updatePaySlip.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updatePaySlip.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.paySlips.findIndex((s) => s.id === action.payload.id);
+                if (index !== -1) {
+                    state.slips[index] = action.payload;
+                }
+            })
+            .addCase(updatePaySlip.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     },
 });
 
