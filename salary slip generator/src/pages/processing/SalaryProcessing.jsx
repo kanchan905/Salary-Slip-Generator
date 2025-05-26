@@ -59,7 +59,11 @@ const months = [
     { value: 9, label: 'September' },
     { value: 10, label: 'October' },
     { value: 11, label: 'November' },
+<<<<<<< Updated upstream
     { value: 12, label: 'December' },
+=======
+    { value: 12, label: 'December' }
+>>>>>>> Stashed changes
 ];
 
 

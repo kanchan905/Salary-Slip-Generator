@@ -162,9 +162,9 @@ export default function NetSalary() {
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
                             <TextField placeholder="Employee Id" onChange={handleSearchChange} />
-                            <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
+                            {/* <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                                 + Add
-                            </Button>
+                            </Button> */}
                         </div>
                     </CardHeader>
                     <CardBody>
@@ -174,20 +174,17 @@ export default function NetSalary() {
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <TableContainer component={Paper} style={{ boxShadow: "none", minWidth: 1500 }}>
+                                <TableContainer component={Paper} style={{ boxShadow: "none", minWidth: 1000 }}>
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Employee Id</TableCell>
+                                                <TableCell>Emp Id</TableCell>
                                                 <TableCell>Month</TableCell>
                                                 <TableCell>Year</TableCell>
                                                 <TableCell>Processing Date</TableCell>
                                                 <TableCell>Net Amount</TableCell>
                                                 <TableCell>Payment Date</TableCell>
                                                 <TableCell>Bank Id</TableCell>
-                                                <TableCell>Varified By</TableCell>
-                                                <TableCell>Add By</TableCell>
-                                                <TableCell>Edit By</TableCell>
                                                 <TableCell>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -201,9 +198,6 @@ export default function NetSalary() {
                                                     <TableCell>{row.net_amount}</TableCell>
                                                     <TableCell>{row.payment_date}</TableCell>
                                                     <TableCell>{row.employee_bank_id}</TableCell>
-                                                    <TableCell>{row.varifyby?.name}</TableCell>
-                                                    <TableCell>{row.addby?.name}</TableCell>
-                                                    <TableCell>{row.editby?.name}</TableCell>
                                                     <TableCell align="left">
                                                         <IconButton onClick={(e) => handleMenuClick(e, idx)}>
                                                             <MoreVertIcon />

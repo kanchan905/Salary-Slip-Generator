@@ -40,9 +40,9 @@ export const addPaySlip = createAsyncThunk(
 // 3. Update an existing Payslip
 export const updatePaySlip = createAsyncThunk(
     'paySlips/update',
-    async ({ id, formData }, thunkAPI) => {
+    async ({ id, pay_slip }, thunkAPI) => {
         try {
-            const res = await axiosInstance.put(`employee-pay-slip/${id}`, formData);
+            const res = await axiosInstance.post(`/employee-pay-slip/${id}?_method=PUT`, pay_slip);
             return res.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);

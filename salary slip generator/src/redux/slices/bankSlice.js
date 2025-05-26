@@ -3,9 +3,9 @@ import axiosInstance from 'global/AxiosSetting';
 
 export const fetchBankDetails = createAsyncThunk(
     'bank/fetchBankDetails',
-    async (_, { rejectWithValue }) => {
+    async ({page,limit,id}, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/bank-account`);
+            const response = await axiosInstance.get(`/bank-account?page=${page}&limit=${limit}&pensioner_id=${id}`);
             return {
                 data: response.data.data,
                 totalCount: response.data.total_count

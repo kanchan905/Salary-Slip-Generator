@@ -46,8 +46,8 @@ export default function BankDetails() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    dispatch(fetchBankDetails());
-  }, [dispatch]);
+    dispatch(fetchBankDetails({page:page, limit: rowsPerPage,id:searchQuery}));
+  }, [dispatch,page, rowsPerPage, searchQuery]);
 
   // const filteredData = bankdetails.filter((item) =>
   //   String(item.pensioner_id).toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -150,7 +150,7 @@ export default function BankDetails() {
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
             <div className="d-flex justify-content-between align-items-center">
-              <TextField placeholder="pensioner id & name" onChange={handleSearchChange} />
+              <TextField placeholder="pensioner id" onChange={handleSearchChange} />
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                 + Add
               </Button>

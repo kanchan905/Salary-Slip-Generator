@@ -46,7 +46,6 @@ export const viewNetSalary = createAsyncThunk(
   async ({ id }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/salary/${id}`);
-      console.log(response)
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);

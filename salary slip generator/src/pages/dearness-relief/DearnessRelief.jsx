@@ -138,8 +138,8 @@ export default function DearnessRelief() {
       <div className="mt--7 mb-7 container-fluid">
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
-            <div className="d-flex justify-content-between align-items-center">
-              <TextField placeholder="dr percentage" onChange={handleSearchChange} />
+            <div className="d-flex justify-content-end align-items-center">
+              {/* <TextField placeholder="dr percentage" onChange={handleSearchChange} /> */}
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                 + Add
               </Button>

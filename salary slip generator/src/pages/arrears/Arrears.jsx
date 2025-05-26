@@ -32,8 +32,8 @@ export default function Arrears() {
   const { name } = useSelector((state) => state.auth.user.role);
   
   useEffect(() => {
-    dispatch(fetchArrears());
-  }, [dispatch]);
+    dispatch(fetchArrears({page:page,limit:rowsPerPage,id:searchQuery}));
+  }, [dispatch,page, rowsPerPage, searchQuery]);
 
   // const filteredArrears = arrearsData.filter(a =>
   //   a.pensioner_id?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -147,7 +147,7 @@ export default function Arrears() {
           </CardBody>
         </Card>
 
-
+ 
         <ArrearModal
           isOpen={modalOpen}
           toggle={toggle}

@@ -4,9 +4,9 @@ import axiosInstance from "global/AxiosSetting";
 
 export const fetchArrears = createAsyncThunk(
   "Arrears/details",
-  async (_, { rejectWithValue }) => {
+  async ({page,limit,id}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/arrears`);
+      const response = await axiosInstance.get(`/arrears?page=${page}&limit=${limit}&pensioner_id=${id}`);
       return {
         data: response.data.data,
         totalCount: response.data.total_count
