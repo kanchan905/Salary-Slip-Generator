@@ -15,6 +15,17 @@ export const fetchPayLevel = createAsyncThunk(
   }
 );
 
+export const fetchPayLevelShow = createAsyncThunk(
+  "levelShow/fetchPayLevelShow",
+  async (level_id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`pay-matrix-levels/${level_id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch levels show");
+    }
+  }
+);
 
 export const addLevelToAPI = createAsyncThunk(
   "levels/addLevelToAPI",
@@ -51,6 +62,7 @@ export const updateLevelToAPI = createAsyncThunk(
 // INITIAL STATE
 const initialState = {
   levels: [],
+  levelShow: {},
   totalCount: 0,
   employeePayStructures: [],
   loading: false,
@@ -150,7 +162,18 @@ const levelSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
+      .addCase(fetchPayLevelShow.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPayLevelShow.fulfilled, (state, action) => {
+        state.loading = false;
+        state.levelShow = action.payload?.data || [];
+      })
+      .addCase(fetchPayLevelShow.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       // Add Level
       .addCase(addLevelToAPI.fulfilled, (state, action) => {
         state.levels.push({

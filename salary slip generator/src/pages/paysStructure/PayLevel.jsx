@@ -12,29 +12,88 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addLevelToAPI,
   fetchPayLevel,
+  fetchPayLevelShow,
   updateLevelToAPI
 } from "../../redux/slices/levelSlice";
 import { TablePagination, Typography } from "@mui/material";
 import { toast } from "react-toastify";
+import HistoryIcon from '@mui/icons-material/History';
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import HistoryModal from "Modal/HistoryModal";
 
 function PayLevel() {
 
   const dispatch = useDispatch();
-  const { levels, totalCount } = useSelector((state) => state.levels);
-
+  const { levels, levelShow, totalCount } = useSelector((state) => state.levels);
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
   const [editingId, setEditingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  const [tableHead, setTableHead] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
 
   const pageSize = 10;
 
   useEffect(() => {
     dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
   }, [dispatch, page, rowsPerPage]);
+
+   const getTableConfig = (type) => {
+    switch (type) {
+      case "levels":
+        return {
+          head: [
+            "Sr. No.",
+            "Level",
+            "Description",
+            "Added By",
+            "Edited By"
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{record.name}</td>
+              <td>{record.description || "NA"}</td>
+              <td>{record.added_by?.name || "NA"} </td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+      // You can add more.
+      
+      default:
+        return { head: [], renderRow: () => null };
+    }
+  };
+
+  // Status History handlers
+  const handleHistoryStatus = (level_id) => {
+    dispatch(fetchPayLevelShow(level_id));
+    toggleHistoryModal(); // Open the modal immediately (or you can delay until data loads if preferred)
+  };
+
+
+  useEffect(() => {
+    if (levelShow && levelShow.history) {
+      const config = getTableConfig("levels");
+      setHistoryRecord(levelShow.history);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow);
+    }
+  }, [levelShow]);
+
 
 
   const formik = useFormik({
@@ -196,6 +255,14 @@ function PayLevel() {
                         >
                           Edit
                         </Button>
+                        <Button
+                          size="sm"
+                          color="primary"
+                          title="View History"
+                          onClick={() => handleHistoryStatus(level?.id)}
+                        >
+                          <HistoryIcon fontSize="small" />
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -220,6 +287,14 @@ function PayLevel() {
           </div>
         </div>
       </CardBody>
+
+      <HistoryModal
+        isOpen={isHistoryModalOpen}
+        toggle={toggleHistoryModal}
+        tableHead={tableHead}
+        historyRecord={historyRecord}
+        renderRow={renderFunction}
+      />
     </>
   );
 }

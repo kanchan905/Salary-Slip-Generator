@@ -5,7 +5,10 @@ import {
   addBankdetails,
   addDesignation,
   addEmploeeStatus,
+  fetchEmployeeBankdetailStatus,
   fetchEmployeeById,
+  fetchEmployeeDesignationStatus,
+  fetchEmployeeStatus,
   updateDesignation,
   updateEmployeeBankdetail,
   updateEmployeeStatus
@@ -26,15 +29,20 @@ import {
   TabPane
 } from "reactstrap";
 import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import AddIcon from '@mui/icons-material/Add';
 import StatusModal from 'Modal/statusModal';
 import BankModal from 'Modal/EmployeeBank';
 import DesignationModal from 'Modal/DesignationModal';
 import { Box, CircularProgress } from '@mui/material';
+import HistoryModal from 'Modal/HistoryModal';
 
 function EmployeeDetail() {
   const { id } = useParams();
   const data = useSelector((state) => state.employee.EmployeeDetail) || null;
+  const historyStatus = useSelector((state) => state.employee.employeeStatus) || null;
+  const historyBank = useSelector((state) => state.employee.bankStatus) || null;
+  const historyDesignation = useSelector((state) => state.employee.designationStatus) || null;
   const loading = useSelector((state) => state.employee.loading);
   const dispatch = useDispatch();
 
@@ -48,7 +56,18 @@ function EmployeeDetail() {
     effective_till: '',
     remarks: '',
     order_reference: '',
-  });
+  }); 
+
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [tableHead, setTableHead] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
 
   const [isBankModalOpen, setIsBankModalOpen] = useState(false);
   const [bankModalType, setBankModalType] = useState('create');
@@ -63,6 +82,7 @@ function EmployeeDetail() {
 
   const [isDesignationModalOpen, setIsDesignationModalOpen] = useState(false);
   const [designationModalType, setDesignationModalType] = useState('create');
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
   const [selectedDesignation, setSelectedDesignation] = useState({
     designation: '',
     cadre: '',
@@ -71,6 +91,8 @@ function EmployeeDetail() {
     effective_till: '',
     promotion_order_no: ''
   });
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
 
   // Tab state
   const [activeTab, setActiveTab] = useState('1');
@@ -89,11 +111,137 @@ function EmployeeDetail() {
     });
     toggleModal();
   };
+
+  const getTableConfig = (type) => {
+    switch (type) {
+      case "status":
+        return {
+          head: [
+            "Sr. No.",
+            "Status",
+            "Effective From",
+            "Effective Till",
+            "Remarks",
+            "Added By",
+            "Edited By"
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>
+                <span className={`badge ${record.status === 'Active' ? 'bg-success text-white' : 'bg-danger text-white'}`}>{record.status}</span>
+              </td>
+              <td>{record.effective_from}</td>
+              <td>{record.effective_till || "NA"}</td>
+              <td>{record.remarks || "NA"}</td>
+              <td>{record.added_by?.name}</td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+
+      case "bank":
+        return {
+          head: [
+            "Sr. No.",
+            "Bank Name",
+            "IFSC",
+            "Account Number",
+            "Effective From",
+            "Effective Till",
+            "Added By",
+            "Edited By",
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td className='text-capitalize'>{record.bank_name} - {record.branch_name}</td>
+              <td>{record.ifsc_code}</td>
+              <td>{record.account_number}</td>
+              <td>{record.effective_from}</td>
+              <td>{record.effective_till || "NA"}</td>
+              <td>{record.added_by?.name}</td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+      case "designation":
+        return {
+          head: [
+            "Sr. No.",
+            "Job Group",
+            "Cadre",
+            "Designation",
+            "Effective From",
+            "Effective Till",
+            "Added By",
+            "Edited By",
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td className='text-capitalize'>{record.job_group}</td>
+              <td>{record.cadre}</td>
+              <td>{record.designation}</td>
+              <td>{record.effective_from}</td>
+              <td>{record.effective_till || "NA"}</td>
+              <td>{record.added_by?.name || "NA"}</td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+
+      // You can add more like designation, pay scale, etc.
+      
+      default:
+        return { head: [], renderRow: () => null };
+    }
+  };
+
+
   const handleUpdateStatus = (status) => {
     setModalType('update');
     setSelectedStatus(status);
     toggleModal();
   };
+
+  // Status History handlers
+  const handleHistoryStatus = (employeeID) => {
+    console.log("Employee ID: ", employeeID);
+    dispatch(fetchEmployeeStatus(employeeID));
+  };
+  
+  useEffect(() => {
+    if (historyStatus && historyStatus.history) {
+      const config = getTableConfig("status");
+      setHistoryRecord(historyStatus?.history || []);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow); // <- use useState to hold render function
+      toggleHistoryModal();
+    }
+  }, [historyStatus]);
+
+const handleHistoryBank = (employeeID) => {
+  console.log("Employee ID for Bank History: ", historyBank);
+  dispatch(fetchEmployeeBankdetailStatus(employeeID));
+  const config = getTableConfig("bank");
+  setHistoryRecord(historyBank?.history || []);
+  setTableHead(config.head);
+  setRenderFunction(() => config.renderRow);
+  toggleHistoryModal();
+};
+
+const handleHistoryDesignation = (employeeID) => {
+  console.log("Employee ID for Designation History: ", historyDesignation);
+  dispatch(fetchEmployeeDesignationStatus(employeeID));
+  const config = getTableConfig("designation");
+  setHistoryRecord(historyDesignation?.history || []);
+  setTableHead(config.head);
+  setRenderFunction(() => config.renderRow);
+  toggleHistoryModal();
+};
+
+
   const handleSave = () => {
     if (modalType === 'create') {
       const statusDataWithId = { ...selectedStatus, employee_id: id };
@@ -295,6 +443,9 @@ function EmployeeDetail() {
                                   <Button color="link" size="sm" onClick={() => handleUpdateStatus(status)}>
                                     <EditIcon fontSize="small" />
                                   </Button>
+                                  <Button color="link" size="sm" onClick={() => handleHistoryStatus(status?.employee_id)}>
+                                    <HistoryIcon fontSize="small" />
+                                  </Button>
                                 </td>
                               </tr>
                             ))}
@@ -336,6 +487,9 @@ function EmployeeDetail() {
                                   <Button color="link" size="sm" onClick={() => handleUpdateBank(bank)}>
                                     <EditIcon fontSize="small" />
                                   </Button>
+                                  <Button color="link" size="sm" onClick={() => handleHistoryBank(bank?.employee_id)}>
+                                    <HistoryIcon fontSize="small" />
+                                  </Button>
                                 </td>
                               </tr>
                             ))}
@@ -372,6 +526,9 @@ function EmployeeDetail() {
                                 <td>
                                   <Button color="link" size="sm" onClick={() => handleUpdateDesignation(designation)}>
                                     <EditIcon fontSize="small" />
+                                  </Button>
+                                  <Button color="link" size="sm" onClick={() => handleHistoryDesignation(designation?.employee_id)}>
+                                    <HistoryIcon fontSize="small" />
                                   </Button>
                                 </td>
                               </tr>
@@ -411,6 +568,13 @@ function EmployeeDetail() {
         selectedDesignation={selectedDesignation}
         setSelectedDesignation={setSelectedDesignation}
         handleSave={handleSaveDesignation}
+      />
+      <HistoryModal
+        isOpen={isHistoryModalOpen}
+        toggle={toggleHistoryModal}
+        tableHead={tableHead}
+        historyRecord={historyRecord}
+        renderRow={renderFunction}
       />
     </>
   );

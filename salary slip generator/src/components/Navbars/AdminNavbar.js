@@ -99,7 +99,7 @@ const AdminNavbar = (props) => {
                     <span>Profile</span>
                   </DropdownItem>
                   <DropdownItem to="/admin/user-profile" tag={Link}>                  
-                    <i class="fa-solid fa-lock"></i>
+                    <i className="fa-solid fa-lock"></i>
                     <span>Change password</span>
                   </DropdownItem>
                   <DropdownItem divider />

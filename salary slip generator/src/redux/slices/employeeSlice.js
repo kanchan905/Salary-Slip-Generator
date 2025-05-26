@@ -58,6 +58,20 @@ export const updateEmployeeStatus = createAsyncThunk(
     }
 );
 
+// Fetch employee status by employee ID
+export const fetchEmployeeStatus = createAsyncThunk(
+    "employeeStatus/fetchEmployeeStatus",
+    async (employeeId, { rejectWithValue }) => {
+        try {
+            console.log("Emp_ID:", employeeId);
+            const response = await axiosInstance.get(`/employee-status/${employeeId}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch employee status");
+        }
+    }
+)
+
 export const addEmploeeStatus = createAsyncThunk(
     "employee/addEmployeeStatus",
     async (statusData, { rejectWithValue }) => {
@@ -83,14 +97,26 @@ export const fetchEmployeeBankdetail = createAsyncThunk(
     }
 );
 
+export const fetchEmployeeBankdetailStatus = createAsyncThunk(
+    "bankStatus/fetchEmployeeBankdetailStatus",
+    async (employeeId, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/employee-bank/${employeeId}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch employee bank details");
+        }
+    }
+);
+
 export const addBankdetails = createAsyncThunk(
-    "employee/addBankdetails",
+    "employeeBankStatus/addBankdetails",
     async (bankData, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post("/employee-bank", bankData);
             return response.data.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data || "Failed to add employee bank details");
+            return rejectWithValue(error.response?.data || "Failed to add employee bank status");
         }
     }
 );
@@ -103,6 +129,18 @@ export const updateEmployeeBankdetail = createAsyncThunk(
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee bank details");
+        }
+    }
+);
+
+export const fetchEmployeeDesignationStatus = createAsyncThunk(
+    "designationStatus/fetchEmployeeDesignationStatus",
+    async (employeeId, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/employee-designation/${employeeId}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch employee designation status");
         }
     }
 );
@@ -145,7 +183,11 @@ export const UpdateEmployee = createAsyncThunk(
 
 const initialState = {
     employees: [],
+    employeeStatus: [],
     employeeBank: [],
+    bankStatus: [],
+    employeeBank: [],
+    designationStatus: [],
     totalCount: 0,
     EmployeeDetail: null,
     loading: false,
@@ -219,6 +261,19 @@ const employeeSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(fetchEmployeeStatus.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchEmployeeStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                state.employeeStatus = action.payload; // ✅ Set the fetched data
+                // If you want to also set the history status, you can do so here
+            })
+            .addCase(fetchEmployeeStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
             .addCase(addEmploeeStatus.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -242,6 +297,19 @@ const employeeSlice = createSlice({
                 state.employeeBank = action.payload; // ✅ Set the fetched data
             })
             .addCase(fetchEmployeeBankdetail.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchEmployeeBankdetailStatus.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchEmployeeBankdetailStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                state.bankStatus = action.payload; // ✅ Set the fetched data
+                // If you want to also set the history status, you can do so here
+            })
+            .addCase(fetchEmployeeBankdetailStatus.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
@@ -281,6 +349,19 @@ const employeeSlice = createSlice({
                 }
             })
             .addCase(updateEmployeeBankdetail.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchEmployeeDesignationStatus.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchEmployeeDesignationStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                state.designationStatus = action.payload; // ✅ Set the fetched data
+                // If you want to also set the history status, you can do so here
+            })
+            .addCase(fetchEmployeeDesignationStatus.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
