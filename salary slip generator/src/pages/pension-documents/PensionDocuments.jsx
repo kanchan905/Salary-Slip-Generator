@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, TextField, TablePagination, Box
+  IconButton, TextField, TablePagination, Box,
+  Chip,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -17,6 +18,7 @@ import {
   fetchPensionDocument,
   createPensionDocument,
   updatePensionDocument,
+  fetchPensionDocumentShow,
 } from '../../redux/slices/pensionDocumentSlice';
 import PensionDocumentModal from '../../Modal/PensionDocumentModal';
 import Menu from '@mui/material/Menu';
@@ -24,12 +26,16 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
+import HistoryIcon from '@mui/icons-material/History';
+import HistoryModal from 'Modal/HistoryModal';
+import { FileCopyOutlined, GetApp } from '@mui/icons-material';
+import { BASE_URL } from 'utils/helpers';
 
 
 
 export default function PensionDocuments() {
   const dispatch = useDispatch();
-  const { document, loading } = useSelector((state) => state.pensionDocument);
+  const { document, showPensionerDocument, loading } = useSelector((state) => state.pensionDocument);
   const totalCount = useSelector((state) => state.pensionDocument.totalCount) || 0;
   const { error } = useSelector((state) => state.pensionDocument)
   const [formOpen, setFormOpen] = useState(false);
@@ -50,17 +56,97 @@ export default function PensionDocuments() {
   const [menuRowId, setMenuRowId] = useState(null);
   const navigate = useNavigate();
   const { name } = useSelector((state) => state.auth.user.role);
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [tableHead, setTableHead] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
+      
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
+    
 
+  const getTableConfig = (type) => {
+    switch (type) {
+    case "document":
+      return {
+        head: [
+          "Sr. No.",
+          "Document Type",
+          "Document Number",
+          "Issue Date",
+          "Expiry Date",
+          "File",
+          "Added By",
+          "Edited By"
+        ],
+        renderRow: (record, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>{record?.document_type ?? "NA"}</td>
+            <td>{record?.document_number || "NA"}</td>
+            <td>{record?.issue_date || "NA"}</td>
+            <td>{record?.expiry_date || "NA"}</td>
+            <td>
+              {record?.file_path ? (
+                <a
+                  href={`${BASE_URL}/${record.file_path}`}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none" }}
+                >
+                  <Chip
+                    icon={<GetApp />}
+                    color="primary"
+                    label="Download"
+                    style={{ cursor: "pointer" }}
+                  />
+                </a>
+              ) : (
+                <Chip label="No File" color="default" />
+              )}
+            </td>
+            <td>{record?.added_by?.name || "NA"}</td>
+            <td>{record?.edited_by?.name || "NA"}</td>
+          </tr>
+        ),
+      };
+  
+      // You can add more like designation, pay scale, etc.
+      default:
+        return null;
+    }
+  };
+  
   useEffect(() => {
     dispatch(fetchPensionDocument());
   }, [dispatch]);
-
-  // const filteredData = document.filter((item) =>
-  //   item.document_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //   item.pensioner_id.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  
+  
+  const handleHistoryStatus = (id) => {
+    setShouldOpenHistory(true);
+    dispatch(fetchPensionDocumentShow(id));
+  };
+    
+  useEffect(() => {
+    if ( showPensionerDocument && showPensionerDocument?.history) {
+      const config = getTableConfig("document");
+      setHistoryRecord(showPensionerDocument.history);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow);
+      setIsHistoryModalOpen(true);
+      setShouldOpenHistory(false);
+    }
+  }, [showPensionerDocument, shouldOpenHistory]);
+  
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -199,6 +285,12 @@ export default function PensionDocuments() {
                           <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
                             <MoreVertIcon />
                           </IconButton>
+                          <IconButton onClick={() => handleEdit(row)}>
+                            <EditIcon fontSize="small" color='primary'/>
+                          </IconButton>
+                          <IconButton onClick={() => handleHistoryStatus(row.id)}>
+                            <HistoryIcon fontSize="small" color='warning'/>
+                          </IconButton>
                           <Menu
                             anchorEl={menuAnchorEl}
                             open={menuRowId === row.id}
@@ -237,6 +329,14 @@ export default function PensionDocuments() {
           formData={formData}
           handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
           handleSubmit={handleSubmit}
+        />
+
+        <HistoryModal
+          isOpen={isHistoryModalOpen}
+          toggle={toggleHistoryModal}
+          tableHead={tableHead}
+          historyRecord={historyRecord}
+          renderRow={renderFunction}
         />
       </div>
     </>

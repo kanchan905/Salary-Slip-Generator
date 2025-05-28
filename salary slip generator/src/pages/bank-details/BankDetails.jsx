@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import {
   Button,
   Card,
@@ -18,17 +19,19 @@ import {
   fetchBankDetails,
   createBankDetail,
   updateBankDetail,
-  toggleBankDetailStatus
+  toggleBankDetailStatus,
+  fetchBankShow
 } from '../../redux/slices/bankSlice';
 import BankFormModal from '../../Modal/BankFormModal';
 import ViewIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
+import HistoryModal from 'Modal/HistoryModal';
 
 const statusChipColor = (status) => status ? "success" : "error";
 
 export default function BankDetails() {
   const dispatch = useDispatch();
-  const { bankdetails, loading } = useSelector((state) => state.bankdetail);
+  const { bankdetails, bankShow, loading } = useSelector((state) => state.bankdetail);
   const totalCount = useSelector((state) => state.bankdetail.totalCount) || 0;
   const { error } = useSelector((state) => state.bankdetail)
   const [menuIndex, setMenuIndex] = useState(null);
@@ -45,10 +48,6 @@ export default function BankDetails() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { name } = useSelector((state) => state.auth.user.role);
-  const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuBankDetailId, setMenuBankDetailId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchBankDetails({ page: page, limit: rowsPerPage, id: searchQuery }));
@@ -94,6 +93,9 @@ export default function BankDetails() {
     }
     setFormOpen(!formOpen);
   };
+
+
+  
 
   const handleEdit = (row) => {
     setEditId(row.id);
@@ -218,7 +220,10 @@ export default function BankDetails() {
                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                           >
                             <MenuItem onClick={() => handleEdit(row)}>
-                              <EditIcon fontSize="small" /> Edit
+                              <EditIcon fontSize="small" color='primary'/> Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                              <HistoryIcon fontSize="small" color='warning'/> History
                             </MenuItem>
                             <MenuItem onClick={() => handleView(row.pensioner_id)}>
                               <ViewIcon fontSize="small" /> View
@@ -249,6 +254,14 @@ export default function BankDetails() {
           formData={formData}
           handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
           handleSubmit={handleSubmit}
+        />
+
+        <HistoryModal
+          isOpen={isHistoryModalOpen}
+          toggle={toggleHistoryModal}
+          tableHead={tableHead}
+          historyRecord={historyRecord}
+          renderRow={renderFunction}
         />
       </div>
     </>

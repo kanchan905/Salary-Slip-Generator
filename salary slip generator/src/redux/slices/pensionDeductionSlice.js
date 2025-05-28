@@ -40,8 +40,23 @@ export const updatePensionDeduction = createAsyncThunk(
     }
 );
 
+export const fetchPensionDeductionShow = createAsyncThunk(
+    'showPension/fetchPensionDeductionShow',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/pension-deduction/${id}`);
+            return {
+                data: response.data.data,
+            };
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch pension deduction details");
+        }
+    }
+);
+
 const initialState = {
     pension: [],
+    showPension: null,
     totalCount: 0,
     loading: false,
     error: null
@@ -92,6 +107,17 @@ const pensionDeductionSlice = createSlice(({
                 state.loading = false;
                 state.error = action.error.message;
             })
+            .addCase(fetchPensionDeductionShow.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchPensionDeductionShow.fulfilled, (state, action) => {
+                state.loading = false;
+                state.showPension = action.payload.data;
+            })
+            .addCase(fetchPensionDeductionShow.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
     }
 }));
 

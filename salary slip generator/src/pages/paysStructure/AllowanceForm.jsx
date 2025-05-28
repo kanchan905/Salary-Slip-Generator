@@ -15,8 +15,11 @@ import {
     TableCell,
     TableBody,
     TablePagination,
-    CircularProgress
+    CircularProgress,
+    IconButton
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import { Row } from 'reactstrap';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
@@ -216,6 +219,11 @@ export default function AllowanceForm() {
         }));
     };
 
+
+    const handleHistoryShow = () => {
+        
+    }
+
     const renderFields = () => {
         switch (ALLOWANCE_TYPES[value]) {
             case 'Dearness':
@@ -340,9 +348,12 @@ export default function AllowanceForm() {
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
-                                    Edit
-                                </Button>
+                                <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
+                                  <EditIcon/>
+                                </IconButton>
+                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                  <HistoryIcon />
+                                </IconButton>
                             </TableCell>
                             </TableRow>
                         ))
@@ -397,9 +408,12 @@ export default function AllowanceForm() {
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
-                                    Edit
-                                </Button>
+                                <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
+                                  <EditIcon/>
+                                </IconButton>
+                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                  <HistoryIcon />
+                                </IconButton>
                             </TableCell>
                             </TableRow>
                         ))
@@ -454,9 +468,12 @@ export default function AllowanceForm() {
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
-                                Edit
-                                </Button>
+                                <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
+                                  <EditIcon/>
+                                </IconButton>
+                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                  <HistoryIcon />
+                                </IconButton>
                             </TableCell>
                             </TableRow>
                         ))
@@ -507,9 +524,12 @@ export default function AllowanceForm() {
                             <TableCell>{item.pay_matrix_level || '-'}</TableCell>
                             <TableCell>{item.amount || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>
-                                    Edit
-                                </Button>
+                                <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
+                                  <EditIcon/>
+                                </IconButton>
+                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                  <HistoryIcon />
+                                </IconButton>
                             </TableCell>
                             </TableRow>
                         ))
@@ -564,7 +584,12 @@ export default function AllowanceForm() {
                             <TableCell>{item.effective_from || '-'}</TableCell>
                             <TableCell>{item.effective_till || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                                <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
+                                  <EditIcon/>
+                                </IconButton>
+                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                  <HistoryIcon />
+                                </IconButton>
                             </TableCell>
                             </TableRow>
                         ))
@@ -617,7 +642,12 @@ export default function AllowanceForm() {
                             <TableCell>{item.scheme_category || '-'}</TableCell>
                             <TableCell>{item.amount || '-'}</TableCell>
                             <TableCell>
-                                <Button size="small" variant="outlined" onClick={() => handleEdit(item)}>Edit</Button>
+                                <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
+                                  <EditIcon/>
+                                </IconButton>
+                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                  <HistoryIcon />
+                                </IconButton>
                             </TableCell>
                             </TableRow>
                         ))

@@ -3,8 +3,8 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton, Menu, MenuItem, TablePagination, Box
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import {
   Button,
   Card,
@@ -18,15 +18,17 @@ import {
   fetchDearnessRelief,
   createDearnessRelief,
   updateDearnessRelief,
+  fetchDearnessReliefShow,
 } from '../../redux/slices/dearnessRelief';
 import DearnessReliefModal from '../../Modal/DearnessRelief';
 import ViewIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';import HistoryModal from 'Modal/HistoryModal';
+
 
 
 export default function DearnessRelief() {
   const dispatch = useDispatch();
-  const { dearness, loading } = useSelector((state) => state.dearnessRelief);
+  const { dearness, showDearness, loading } = useSelector((state) => state.dearnessRelief);
   const totalCount = useSelector((state) => state.dearnessRelief.totalCount) || 0;
   const { error } = useSelector((state) => state.dearnessRelief)
   const [formOpen, setFormOpen] = useState(false);
@@ -40,6 +42,69 @@ export default function DearnessRelief() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [tableHead, setTableHead] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
+    
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
+  
+  const getTableConfig = (type) => {
+    switch (type) {
+    case "bank":
+      return {
+        head: [
+          "Sr. No.",
+          "Dearness Relief %",
+          "Effective From",
+          "Effective To",
+          "Added By",
+          "Edited By"
+        ],
+        renderRow: (record, index) => (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>{record?.dr_percentage ?? "NA"}</td>
+            <td>{record?.effective_from || "NA"}</td>
+            <td>{record?.effective_to || "NA"}</td>
+            <td>{record?.added_by?.name || "NA"}</td>
+            <td>{record?.edited_by?.name || "NA"}</td>
+          </tr>
+        ),
+      };
+
+    
+      // You can add more like designation, pay scale, etc.
+      default:
+        return null;
+    }
+  };
+
+  const handleHistoryStatus = (id) => {
+    setShouldOpenHistory(true);
+    dispatch(fetchDearnessReliefShow(id));
+  };
+  
+  useEffect(() => {
+    if (shouldOpenHistory && showDearness?.history) {
+      const config = getTableConfig("bank");
+      setHistoryRecord(showDearness.history);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow);
+      setIsHistoryModalOpen(true);
+      setShouldOpenHistory(false);
+    }
+  }, [showDearness, shouldOpenHistory]);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuReliefId, setMenuReliefId] = useState(null);
   const { name } = useSelector((state) => state.auth.user.role);
@@ -166,21 +231,30 @@ export default function DearnessRelief() {
                 <Table>
                   <TableHead>
                     <TableRow>
+                      <TableCell>Sr. No.</TableCell>
+                      <TableCell>Dearness Relief %</TableCell>
                       <TableCell>Effective From</TableCell>
                       <TableCell>Effective To</TableCell>
-                      <TableCell>Dr Percentage</TableCell>
+                      <TableCell>Added By</TableCell>
+                      <TableCell>Edited By</TableCell>
                       <TableCell>Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {dearness.map((row, idx) => (
                       <TableRow key={row.id}>
-                        <TableCell>{row.effective_from}</TableCell>
-                        <TableCell>{row.effective_to}</TableCell>
-                        <TableCell>{row.dr_percentage}</TableCell>
+                        <TableCell>{idx + 1}</TableCell>
+                        <TableCell>{row.dr_percentage ?? "NA"}</TableCell>
+                        <TableCell>{row.effective_from || "NA"}</TableCell>
+                        <TableCell>{row.effective_to || "NA"}</TableCell>
+                        <TableCell>{row.added_by?.name || "NA"}</TableCell>
+                        <TableCell>{row.edited_by?.name || "NA"}</TableCell>
                         <TableCell align="left">
                           <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
-                            <MoreVertIcon />
+                            <MoreVertIcon color='primary'/>
+                          </IconButton>
+                          <IconButton onClick={() => handleHistoryStatus(row.id)}>
+                            <HistoryIcon fontSize="small" color='warning'/>
                           </IconButton>
                           <Menu
                             anchorEl={anchorEl}
@@ -200,6 +274,7 @@ export default function DearnessRelief() {
                     ))}
                   </TableBody>
                 </Table>
+
                 <TablePagination
                   component="div"
                   count={totalCount}
@@ -220,6 +295,14 @@ export default function DearnessRelief() {
           formData={formData}
           handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
           handleSubmit={handleSubmit}
+        />
+
+        <HistoryModal
+          isOpen={isHistoryModalOpen}
+          toggle={toggleHistoryModal}
+          tableHead={tableHead}
+          historyRecord={historyRecord}
+          renderRow={renderFunction}
         />
       </div>
     </>

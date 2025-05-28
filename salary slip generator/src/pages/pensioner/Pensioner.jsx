@@ -245,8 +245,11 @@ export default function Pensioner() {
                             <IconButton onClick={(e) => handleMenuClick(e, p.id)}>
                               <MoreVertIcon />
                             </IconButton>
+                            <IconButton onClick={() => navigate(`/${name.toLowerCase()}/pensioner/edit/${p.id}`)}>
+                              <EditIcon fontSize="small" color="primary"/>
+                            </IconButton>
                             <IconButton onClick={() => handleHistoryStatus(p.id)}>
-                              <HistoryIcon fontSize="small" />
+                              <HistoryIcon fontSize="small" color="warning"/>
                             </IconButton>
                             <Menu
                               anchorEl={anchorEl}

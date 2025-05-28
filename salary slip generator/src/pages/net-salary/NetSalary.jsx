@@ -104,7 +104,7 @@ export default function NetSalary() {
             default:
                 return { head: [], renderRow: () => null };
         }
-  };
+    };
 
     // Status History handlers
     const handleHistoryStatus = (id) => {

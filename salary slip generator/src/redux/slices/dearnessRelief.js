@@ -53,8 +53,24 @@ export const showDearnessRelief = createAsyncThunk(
     }
 );
 
+export const fetchDearnessReliefShow = createAsyncThunk(
+    'showDearness/fetchDearnessReliefShow',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/dearness-relief/${id}`);
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch dearness relief");
+        }
+    }
+);
+
 const initialState = {
     dearness: [],
+    showDearness: null,
     showdearness:{},
     totalCount: 0,
     loading: false,
@@ -106,6 +122,17 @@ const dearnessSlice = createSlice(({
                 state.loading = false;
                 state.error = action.error.message;
             })
+            .addCase(fetchDearnessReliefShow.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchDearnessReliefShow.fulfilled, (state, action) => {
+                state.loading = false;
+                state.showDearness = action.payload.data;
+            })
+            .addCase(fetchDearnessReliefShow.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
             .addCase(showDearnessRelief.pending, (state) => {
                 state.loading = true;
             })

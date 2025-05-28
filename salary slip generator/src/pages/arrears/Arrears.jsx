@@ -51,6 +51,7 @@ export default function Arrears() {
     
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
   
   const getTableConfig = (type) => {
     switch (type) {
@@ -100,21 +101,21 @@ export default function Arrears() {
 
   // Status History handlers
   const handleHistoryStatus = (id) => {
+    setShouldOpenHistory(true); // only allow opening if this was user-triggered
     dispatch(fetchArrearsShow(id));
   };
           
   useEffect(() => {
-    console.log("Updated Arrears: ", showArrear);
-    if (showArrear && Array.isArray(showArrear.history)) {
+    if (shouldOpenHistory && Array.isArray(showArrear.history)) {
       const config = getTableConfig("arrear");
       setHistoryRecord(showArrear.history);
       setTableHead(config.head);
       setRenderFunction(() => config.renderRow);
       toggleHistoryModal();
+      setShouldOpenHistory(false); // reset the flag
     }
-  }, [showArrear]);
+  }, [showArrear, shouldOpenHistory]);
 
-  console.log("Show Arrears: ", historyRecord);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuArrearId, setMenuArrearId] = useState(null);
 
@@ -224,7 +225,7 @@ export default function Arrears() {
                               <MoreVertIcon />
                             </IconButton>
                             <IconButton onClick={() => handleHistoryStatus(a.id)}>
-                              <HistoryIcon fontSize="small" />
+                              <HistoryIcon fontSize="small" color="warning"/>
                             </IconButton>
                             <Menu
                               anchorEl={anchorEl}

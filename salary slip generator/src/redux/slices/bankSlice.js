@@ -63,11 +63,25 @@ export const showBankDetail = createAsyncThunk(
         }
     }
 );
-
+export const fetchBankShow = createAsyncThunk(
+    'bankShow/fetchBankShow',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/bank-account/${id}`);
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to bank details");
+        }
+    }
+)
 
 const initialState = {
     bankdetails: [],
     showBank:{},
+    bankShow: null,
     totalCount: 0,
     loading: false,
     error: null
@@ -144,6 +158,17 @@ const bankSlice = createSlice(({
                 state.showBank = action.payload;
             })
             .addCase(showBankDetail.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(fetchBankShow.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchBankShow.fulfilled, (state, action) => {
+                state.loading = false;
+                state.bankShow = action.payload.data; 
+            })
+            .addCase(fetchBankShow.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             });

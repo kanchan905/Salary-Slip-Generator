@@ -11,17 +11,19 @@ export default function PensionDeductionModal({
   setFormOpen
 }) {
   const initialValues = {
-    pension_id: formData.pension_id || "",
-    deduction_type: formData.deduction_type || "",
-    amount: formData.amount || "",
+    net_pension_id: formData.net_pension_id || "",
+    income_tax: formData.income_tax || "",
+    recovery: formData.recovery || "",
+    other: formData.other || "",
     description: formData.description || ""
   };
 
   const validate = (values) => {
     const errors = {};
-    if (!values.pension_id) errors.pension_id = "Required";
-    if (!values.deduction_type) errors.deduction_type = "Required";
-    if (!values.amount) errors.amount = "Required";
+    if (!values.net_pension_id) errors.net_pension_id = "Required";
+    if (!values.income_tax) errors.income_tax = "Required";
+    if (!values.recovery) errors.recovery = "Required";
+    if (!values.other) errors.other = "Required";
     if (!values.description) errors.description = "Required"
     return errors;
   };
@@ -32,40 +34,45 @@ export default function PensionDeductionModal({
         <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit} enableReinitialize>
           {({ isSubmitting }) => (
             <Form>
-              <h4 className="mb-4">{formMode === "edit" ? "Edit DR" : "Add DR"}</h4>
+              <h4 className="mb-4">{formMode === "edit" ? "Edit Pensioner Deduction" : "Add Pensioner Deduction"}</h4>
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="pension_id">Pension Id</Label>
-                    <Field as={Input} id="pension_id" name="pension_id" type="text" />
-                    <ErrorMessage name="pension_id" component="div" className="text-danger" />
+                    <Label for="pension_id">Net Pension</Label>
+                    <Field as={Input} id="net_pension_id" name="net_pension_id" type="select" disabled={ formMode === "edit" ? true : false }>
+                      <option value="">Select</option>
+                      
+                    </Field>
+                    <ErrorMessage name="net_pension_id" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                  <FormGroup>
-                    <Label for="deduction_type">Deduction Type</Label>
-                    <Field as={Input} type="select" name="deduction_type" id="deduction_type">
-                      <option value="">Select</option>
-                      <option value="Income Tax">Income Tax</option>
-                      <option value="Recovery">Recovery</option>
-                      <option value="Other">Other</option>
-                    </Field>
-                    <ErrorMessage name="deduction_type" component="div" className="text-danger" />
+                    <Label for="income_tax">Income Tax</Label>
+                    <Field as={Input} type="number" name="income_tax" id="income_tax"/>
+                    <ErrorMessage name="income_tax" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
               </Row>
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="amount">amount</Label>
-                    <Field as={Input} id="amount" name="amount" type="text" />
-                    <ErrorMessage name="amount" component="div" className="text-danger" />
+                    <Label for="recovery">Recovery</Label>
+                    <Field as={Input} id="recovery" name="recovery" type="number" />
+                    <ErrorMessage name="recovery" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
+                    <Label for="other">Other</Label>
+                    <Field as={Input} id="other" name="other" type="number" />
+                    <ErrorMessage name="other" component="div" className="text-danger" />
+                  </FormGroup>
+                </Col>
+                <Col md="12">
+                  <FormGroup>
                     <Label for="description">Description</Label>
-                    <Field as={Input} id="description" name="description" type="text" />
+                    <Field as={Input} id="description" name="description" type="text"/>
                     <ErrorMessage name="description" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>

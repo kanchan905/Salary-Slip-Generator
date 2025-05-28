@@ -1,3 +1,6 @@
+
+export const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const months = [
     { value: 1, label: 'January' },
     { value: 2, label: 'February' },
