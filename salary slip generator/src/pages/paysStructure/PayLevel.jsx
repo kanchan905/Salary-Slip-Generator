@@ -50,7 +50,7 @@ function PayLevel() {
     dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
   }, [dispatch, page, rowsPerPage]);
 
-   const getTableConfig = (type) => {
+  const getTableConfig = (type) => {
     switch (type) {
       case "levels":
         return {

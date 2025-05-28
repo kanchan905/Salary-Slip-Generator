@@ -52,8 +52,21 @@ export const updatePensioner = createAsyncThunk(
     }
 )
 
+export const showPension = createAsyncThunk(
+    "pensionerShow/showPension",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/pensioner/${id}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch pension details");
+        }
+    }
+);
+
 const initialState = {
     pensioners: [],
+    pensionerShow: null,
     totalCount: 0,
     loading: false,
     error: null
@@ -123,6 +136,17 @@ const pensionerSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(showPension.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(showPension.fulfilled, (state, action) => {
+                state.loading = false;
+                state.pensionerShow = action.payload;
+            })
+            .addCase(showPension.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     }
 })
 

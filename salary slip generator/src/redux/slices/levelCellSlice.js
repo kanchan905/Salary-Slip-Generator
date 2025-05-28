@@ -63,10 +63,26 @@ export const updateCellToAPI = createAsyncThunk(
   }
 );
 
+
+// Show Pay Cell
+export const showCellToAPI = createAsyncThunk(
+  "showCells/showCellToAPI",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/pay-matrix-cells/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update cell");
+    }
+  }
+);
+
+
 // INITIAL STATE
 const initialState = {
   levels: [],
   matrixCells: [],
+  showCells: {},
   levelCount: 0,
   cellCount: 0,
   loading: false,
@@ -132,6 +148,19 @@ const levelCellSlice = createSlice({
         state.loading = false;
       })
       .addCase(updateCellToAPI.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // SHOW PAY CELL
+      .addCase(showCellToAPI.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(showCellToAPI.fulfilled, (state, action) => {
+        state.loading = false;
+        state.showCells = action.payload?.data || {};
+      })
+      .addCase(showCellToAPI.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -14,8 +14,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import CircularProgress from '@mui/material/CircularProgress';
-import { fetchArrears } from "../../redux/slices/arrearsSlice";
+import { fetchArrears, fetchArrearsShow } from "../../redux/slices/arrearsSlice";
 import ArrearModal from "Modal/Arrears";
+import HistoryIcon from '@mui/icons-material/History';
+import HistoryModal from "Modal/HistoryModal";
 
 export default function Arrears() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,11 +28,91 @@ export default function Arrears() {
   const [modalOpen, setModalOpen] = useState(false);
   const toggle = () => setModalOpen(!modalOpen);
   const arrearsData = useSelector((state) => state.arrears.arrears || []);
+  const showArrear = useSelector((state) => state.arrears.showArrear);
   const totalCount = useSelector((state) => state.arrears.totalCount || 0);
   const [selectedArrearId, setSelectedArrearId] = useState(null);
   const loading = useSelector((state) => state.arrears.loading);
   const { name } = useSelector((state) => state.auth.user.role);
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [tableHead, setTableHead] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
+    
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
   
+  const getTableConfig = (type) => {
+    switch (type) {
+      case "arrear":
+        return {
+          head: [
+            "Sr. No.",
+            "Pensioner ID",
+            "From Month",
+            "To Month",
+            "Payment Month",
+            "Basic Arrear",
+            "Additional Arrear",
+            "DR %",
+            "DR Arrear",
+            "Total Arrear",
+            "Remarks",
+            "Added By",
+            "Edited By"
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{record.pensioner_id}</td>
+              <td>{record.from_month}</td>
+              <td>{record.to_month}</td>
+              <td>{record.payment_month}</td>
+              <td>{record.basic_arrear}</td>
+              <td>{record.additional_arrear}</td>
+              <td>{record.dr_percentage}</td>
+              <td>{record.dr_arrear}</td>
+              <td>{record.total_arrear}</td>
+              <td>{record.remarks || "NA"}</td>
+              <td>{record.added_by?.name}</td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+
+  
+    // You can add more like designation, pay scale, etc.
+              
+    default:
+      return { head: [], renderRow: () => null };
+    }
+  };
+
+  // Status History handlers
+  const handleHistoryStatus = (id) => {
+    dispatch(fetchArrearsShow(id));
+  };
+          
+  useEffect(() => {
+    console.log("Updated Arrears: ", showArrear);
+    if (showArrear && Array.isArray(showArrear.history)) {
+      const config = getTableConfig("arrear");
+      setHistoryRecord(showArrear.history);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow);
+      toggleHistoryModal();
+    }
+  }, [showArrear]);
+
+  console.log("Show Arrears: ", historyRecord);
+
+
   useEffect(() => {
     dispatch(fetchArrears());
   }, [dispatch]);
@@ -126,6 +208,9 @@ export default function Arrears() {
                             <IconButton onClick={() => handleToggleModal(a.id)}>
                               <EditIcon fontSize="small" />
                             </IconButton>
+                            <IconButton onClick={() => handleHistoryStatus(a.id)}>
+                              <HistoryIcon fontSize="small" />
+                            </IconButton>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -154,6 +239,13 @@ export default function Arrears() {
           id={selectedArrearId}
         />
 
+        <HistoryModal
+          isOpen={isHistoryModalOpen}
+          toggle={toggleHistoryModal}
+          tableHead={tableHead}
+          historyRecord={historyRecord}
+          renderRow={renderFunction}
+        />
       </div>
     </>
   );

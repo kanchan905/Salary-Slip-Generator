@@ -30,8 +30,10 @@ import {
 import { 
   addPayStructure, 
   fetchPayStructure, 
+  showPayStructure, 
   updatePayStructure 
 } from '../../redux/slices/payStructureSlice';
+import HistoryModal from 'Modal/HistoryModal';
 
 
 
@@ -40,12 +42,74 @@ const EmployeePayStructures = () => {
   // const employeePayStructures = useSelector((state) => state.levels.employeePayStructures);
   const employees = useSelector((state) => state.employee.employees) || [];
   const { levels, matrixCells, loading } = useSelector((state) => state.levelCells);
-  const { payStructure, totalCount } = useSelector((state) => state.payStructure);
+  const { payStructure, payStructureShow, totalCount } = useSelector((state) => state.payStructure);
   const [ selectedLevelId, setSelectedLevelId ] = useState('');
   const [ editMode, setEditMode ] = useState(false);
   const [ editData, setEditData ] = useState(null);
   const [ page, setPage ] = useState(0);
   const [ rowsPerPage, setRowsPerPage ] = useState(5);
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [ tableHead, setTableHead ] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  
+  const getTableConfig = (type) => {
+    switch (type) {
+      case "cell":
+        return {
+          head: [
+            "Sr. No.",
+            "Employee Name",
+            "Pay Level",
+            "Cell Index - Amount",
+            "Comission",
+            "Added By",
+            "Edited By"
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td className='text-capitalize'>{record.employee?.first_name} {record.employee?.last_name}</td>
+              <td>{record.pay_matrix_cell?.pay_matrix_level?.name || "NA"}</td>
+              <td>{record.pay_matrix_cell.index} - {record.pay_matrix_cell.amount}</td>
+              <td>{record.commission || "NA"}</td>
+              <td>{record.added_by?.name || "NA"} </td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+        // You can add more.
+        default:
+          return { head: [], renderRow: () => null };
+      }
+    };
+
+  
+  // Status History handlers
+  const handleHistoryStatus = (id) => {
+    dispatch(showPayStructure(id));
+    toggleHistoryModal(); // Open the modal immediately (or you can delay until data loads if preferred)
+  };
+    
+    
+  useEffect(() => {
+    if (payStructureShow && payStructureShow.history) {
+      const config = getTableConfig("cell");
+      setHistoryRecord(payStructureShow.history);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow);
+    }
+  }, [payStructureShow]);
+    
 
   useEffect(() => {
     dispatch(fetchPayLevel());
@@ -264,6 +328,14 @@ const EmployeePayStructures = () => {
                       >
                         Edit
                       </Button>
+                      <Button
+                        variant="outlined"
+                        color="warning"
+                        size="small"
+                        onClick={() => handleHistoryStatus(structure?.id)}
+                      >
+                        History
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -282,6 +354,13 @@ const EmployeePayStructures = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <HistoryModal
+        isOpen={isHistoryModalOpen}
+        toggle={toggleHistoryModal}
+        tableHead={tableHead}
+        historyRecord={historyRecord}
+        renderRow={renderFunction}
+      />
   </>
   );
 };
