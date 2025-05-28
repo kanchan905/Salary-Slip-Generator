@@ -34,6 +34,7 @@ import ShowDearness from "pages/dearness-relief/ShowDearness";
 import ShowCredit from "pages/credit/ShowCredit";
 import ShowEmployee from "pages/employee-loan/ShowEmployee";
 import ShowPensionDoc from "pages/pension-documents/ShowPensionDoc";
+import NetPension from "pages/Net-Pension/NetPension";
 
 const getAdminRoutes = (role) => (
    {
@@ -119,6 +120,13 @@ const getAdminRoutes = (role) => (
       name: "Net Salary",
       icon: "fa-solid fa-sack-dollar",
       component: NetSalary,
+      layout: role,
+    },
+    {
+      path: "/net-pension",
+      name: "Net Pension",
+      icon: "fa-solid fa-person-cane",  
+      component: NetPension,
       layout: role,
     },
     {

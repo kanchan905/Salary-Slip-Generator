@@ -52,34 +52,34 @@ export const updatePensioner = createAsyncThunk(
     }
 )
 
-<<<<<<< Updated upstream
 export const showPension = createAsyncThunk(
     "pensionerShow/showPension",
-=======
-export const showPensioner = createAsyncThunk(
-    "pensioner/show",
->>>>>>> Stashed changes
     async (id, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/pensioner/${id}`);
             return response.data.data;
         } catch (error) {
-<<<<<<< Updated upstream
             return rejectWithValue(error.response?.data || "Failed to fetch pension details");
-=======
-            return rejectWithValue(error.response?.data || "Failed to fetch employee details");
->>>>>>> Stashed changes
+        }
+    }
+);
+
+export const showPensioner = createAsyncThunk(
+    "pensioner/show",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/pensioner/${id}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch pension details");
         }
     }
 );
 
 const initialState = {
     pensioners: [],
-<<<<<<< Updated upstream
     pensionerShow: null,
-=======
     pensioner:{},
->>>>>>> Stashed changes
     totalCount: 0,
     loading: false,
     error: null
@@ -149,7 +149,6 @@ const pensionerSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-<<<<<<< Updated upstream
             .addCase(showPension.pending, (state) => {
                 state.loading = true;
             })
@@ -158,8 +157,10 @@ const pensionerSlice = createSlice({
                 state.pensionerShow = action.payload;
             })
             .addCase(showPension.rejected, (state, action) => {
-=======
-            .addCase(showPensioner.pending, (state) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(showPensioner.pending, (state,action) => {
                 state.loading = true;
             })
             .addCase(showPensioner.fulfilled, (state, action) => {
@@ -167,7 +168,6 @@ const pensionerSlice = createSlice({
                 state.pensioner = action.payload;
             })
             .addCase(showPensioner.rejected, (state, action) => {
->>>>>>> Stashed changes
                 state.loading = false;
                 state.error = action.payload;
             });
