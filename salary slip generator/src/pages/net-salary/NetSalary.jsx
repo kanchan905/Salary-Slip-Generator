@@ -17,17 +17,21 @@ import {
     fetchNetSalary,
     createNetSalary,
     updateNetSalary,
+    viewNetSalary,
 } from '../../redux/slices/netSalarySlice';
 import NetSalaryModal from '../../Modal/NetSalaryModal';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ViewIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
+import HistoryIcon from '@mui/icons-material/History';
+import HistoryModal from 'Modal/HistoryModal';
+import { months } from 'utils/helpers';
 
 export default function NetSalary() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { name } = useSelector((state) => state.auth.user.role);
-    const { netSalary, loading } = useSelector((state) => state.netSalary);
+    const { netSalary, netSalaryData, loading } = useSelector((state) => state.netSalary);
     const totalCount = useSelector((state) => state.netSalary.totalCount) || 0;
     const { error } = useSelector((state) => state.netSalary)
     const [anchorEl, setAnchorEl] = useState(null);
@@ -47,16 +51,79 @@ export default function NetSalary() {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [ renderFunction, setRenderFunction ] = useState(() => null);
+    const [historyRecord, setHistoryRecord] = useState([]);
+    const [tableHead, setTableHead] = useState([
+        "Sr. No.",
+        "Head 1",
+        "Head 2",
+        "Head 3",
+        "Head 4",
+        "Head 5",
+        "Head 6",
+    ]);
+
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+    const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+    
+    const getTableConfig = (type) => {
+        switch (type) {
+            case "status":
+                return {
+                    head: [
+                        "Sr. No.",
+                        "Employee Code",
+                        "Month",
+                        "Net Amount",
+                        "Processing Date",
+                        "Payment Date",
+                        "Verified By",
+                        "Added By",
+                        "Edited By"
+                    ],
+                    renderRow: (record, index) => (
+                        <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{record?.employee_id}</td>
+                            <td>{months.find((m) => m.value === record.month)?.label || 'NA'}</td>
+                            <td>{record.net_amount || "NA"}</td>
+                            <td>{record.processing_date || "NA"}</td>
+                            <td>{record.payment_date || "NA"}</td>
+                            <td>{record.verified_by?.name}</td>
+                            <td>{record.added_by?.name}</td>
+                            <td>{record.edited_by?.name || "NA"}</td>
+                        </tr>
+                    ),
+                };
+
+            // You can add more like designation, pay scale, etc.
+            
+            default:
+                return { head: [], renderRow: () => null };
+        }
+  };
+
+    // Status History handlers
+    const handleHistoryStatus = (id) => {
+        console.log("Salary ID: ", id);
+        dispatch(viewNetSalary(id));
+    };
+      
+    useEffect(() => {
+        if (netSalaryData && netSalaryData.history) {
+            const config = getTableConfig("status");
+            setHistoryRecord(netSalaryData?.history || []);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow); // <- use useState to hold render function
+            toggleHistoryModal();
+        }
+    }, [netSalaryData]);
+    
 
     useEffect(() => {
         dispatch(fetchNetSalary({id: searchQuery, page, limit: rowsPerPage }));
     }, [dispatch,searchQuery]);
 
-    // const filteredData = dearness.filter((item) =>
-    //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())
-    // );
-
-    // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -154,6 +221,9 @@ export default function NetSalary() {
         navigate(`/${name.toLowerCase()}/employee/net-salary/${id}`);
     }
 
+    const isValidAnchorEl = document.body.contains(anchorEl);
+
+    console.log("Is valid anchorEl: ", isValidAnchorEl);
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
@@ -178,7 +248,7 @@ export default function NetSalary() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Emp Id</TableCell>
+                                                <TableCell>Employee Id</TableCell>
                                                 <TableCell>Month</TableCell>
                                                 <TableCell>Year</TableCell>
                                                 <TableCell>Processing Date</TableCell>
@@ -204,17 +274,20 @@ export default function NetSalary() {
                                                         </IconButton>
                                                         <Menu
                                                             anchorEl={anchorEl}
-                                                            open={menuIndex === idx}
+                                                            open={Boolean(anchorEl)}
                                                             onClose={handleClose}
                                                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                         >
                                                             <MenuItem
-                                                            onClick={() => handleView(row.id)}
+                                                                onClick={() => handleView(row.id)}
                                                             >
                                                                 <ViewIcon fontSize="small" /> View
                                                             </MenuItem>
                                                             <MenuItem onClick={() => handleEdit(row)}>
                                                                 <EditIcon fontSize="small" /> Edit
+                                                            </MenuItem>
+                                                            <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                                                                <HistoryIcon fontSize="small" /> History
                                                             </MenuItem>
                                                         </Menu>
                                                     </TableCell>
@@ -245,6 +318,13 @@ export default function NetSalary() {
                     handleSubmit={handleSubmit}
                 />
             </div>
+            <HistoryModal
+                isOpen={isHistoryModalOpen}
+                toggle={toggleHistoryModal}
+                tableHead={tableHead}
+                historyRecord={historyRecord}
+                renderRow={renderFunction}
+            />
         </>
     );
 }

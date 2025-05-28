@@ -27,6 +27,13 @@ import EmployeeLoan from "pages/employee-loan/EmployeeLoan";
 import NetSalary from 'pages/net-salary/NetSalary'
 import NetSalaryCard from "pages/net-salary/NetSalaryCard";
 import Quarter from "pages/paysStructure/Quarter";
+import pensionerDetail from "pages/pensioner/pensionerDetail";
+import arrearsDetail from "pages/arrears/arrearsDetail";
+import ShowBankDetail from "pages/bank-details/ShowBankDetail";
+import ShowDearness from "pages/dearness-relief/ShowDearness";
+import ShowCredit from "pages/credit/ShowCredit";
+import ShowEmployee from "pages/employee-loan/ShowEmployee";
+import ShowPensionDoc from "pages/pension-documents/ShowPensionDoc";
 
 const getAdminRoutes = (role) => (
    {
@@ -122,6 +129,22 @@ const getAdminRoutes = (role) => (
       layout: role,
       showInSidebar: false,
     },
+    {
+      path: "/employee/credit-society-member/view/:id",
+      name: "Net Salary",
+      icon: "fa-solid fa-sack-dollar",
+      component: ShowCredit,
+      layout: role,
+      showInSidebar: false,
+    },
+    {
+      path: "/employee-loan/view/:id",
+      name: "Net Salary",
+      icon: "fa-solid fa-sack-dollar",
+      component: ShowEmployee,
+      layout: role,
+      showInSidebar: false,
+    },
   ],
   pensioner_Management: [
     {
@@ -190,13 +213,45 @@ const getAdminRoutes = (role) => (
       showInSidebar: false,
     },
     {
-      path: "/pensioner/edit/:id",
+      path: "/pensioner/view/:id",
       name: "Id-Pensioners",
       icon: "ni ni-circle-08 text-red",
-      component: PensionerForm,
+      component: pensionerDetail,
       layout: role,
       showInSidebar: false,
-    }
+    },
+    {
+      path: "/arrears/view/:id",
+      name: "Id-Pensioners",
+      icon: "ni ni-circle-08 text-red",
+      component: arrearsDetail,
+      layout: role,
+      showInSidebar: false,
+    },
+    {
+      path: "/pensioner/bank-detail/view/:id",
+      name: "Id-Pensioners",
+      icon: "ni ni-circle-08 text-red",
+      component: ShowBankDetail,
+      layout: role,
+      showInSidebar: false,
+    },
+    {
+      path: "/pensioner/dearness-relief/view/:id",
+      name: "Id-Pensioners",
+      icon: "ni ni-circle-08 text-red",
+      component: ShowDearness,
+      layout: role,
+      showInSidebar: false,
+    },
+    {
+     path: "/pension-documents/view/:id",
+      name: "Pension Documents",
+      icon: "fa-solid fa-receipt",
+      component: ShowPensionDoc,
+      layout: role,
+      showInSidebar: false,
+    },
   ],
   processing: [
     {

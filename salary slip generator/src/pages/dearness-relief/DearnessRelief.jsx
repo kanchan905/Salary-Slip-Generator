@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Menu, MenuItem, TextField, Chip, TablePagination, Box
+  IconButton, Menu, MenuItem, TablePagination, Box
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -20,7 +20,8 @@ import {
   updateDearnessRelief,
 } from '../../redux/slices/dearnessRelief';
 import DearnessReliefModal from '../../Modal/DearnessRelief';
-
+import ViewIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function DearnessRelief() {
@@ -28,8 +29,6 @@ export default function DearnessRelief() {
   const { dearness, loading } = useSelector((state) => state.dearnessRelief);
   const totalCount = useSelector((state) => state.dearnessRelief.totalCount) || 0;
   const { error } = useSelector((state) => state.dearnessRelief)
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuIndex, setMenuIndex] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState('create');
   const [editId, setEditId] = useState(null);
@@ -41,6 +40,10 @@ export default function DearnessRelief() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuReliefId, setMenuReliefId] = useState(null);
+  const { name } = useSelector((state) => state.auth.user.role);
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchDearnessRelief());
@@ -63,10 +66,10 @@ export default function DearnessRelief() {
     setPage(0);
   };
 
- 
-  const handleClose = () => {
+
+  const handleMenuClose = () => {
     setAnchorEl(null);
-    setMenuIndex(null);
+    setMenuReliefId(null);
   };
 
   const toggleModal = (mode) => {
@@ -90,7 +93,7 @@ export default function DearnessRelief() {
       dr_percentage: row.dr_percentage,
     });
     setFormOpen(true);
-    handleClose();
+    handleMenuClose();
   };
 
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
@@ -130,7 +133,15 @@ export default function DearnessRelief() {
     setSubmitting(false);
   };
 
-  
+  const handleMenuClick = (event, id) => {
+    setAnchorEl(event.currentTarget);
+    setMenuReliefId(id);
+  };
+
+  const handleView = (id) => {
+    handleMenuClose();
+    navigate(`/${name.toLowerCase()}/pensioner/dearness-relief/view/${id}`);
+  };
 
   return (
     <>
@@ -158,8 +169,6 @@ export default function DearnessRelief() {
                       <TableCell>Effective From</TableCell>
                       <TableCell>Effective To</TableCell>
                       <TableCell>Dr Percentage</TableCell>
-                      <TableCell>Add By</TableCell>
-                      <TableCell>Edit By</TableCell>
                       <TableCell>Action</TableCell>
                     </TableRow>
                   </TableHead>
@@ -169,12 +178,23 @@ export default function DearnessRelief() {
                         <TableCell>{row.effective_from}</TableCell>
                         <TableCell>{row.effective_to}</TableCell>
                         <TableCell>{row.dr_percentage}</TableCell>
-                        <TableCell>{row.added_by?.name}</TableCell>
-                        <TableCell>{row.edited_by?.name}</TableCell>
                         <TableCell align="left">
-                          <IconButton onClick={() => handleEdit(row)}>
-                            <EditIcon fontSize="small" />
+                          <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
+                            <MoreVertIcon />
                           </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={menuReliefId === row.id}
+                            onClose={handleMenuClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                          >
+                            <MenuItem onClick={() => handleEdit(row)}>
+                              <EditIcon fontSize="small" /> Edit
+                            </MenuItem>
+                             <MenuItem onClick={() => handleView(row.id)}>
+                              <ViewIcon fontSize="small" /> View
+                            </MenuItem>
+                          </Menu>
                         </TableCell>
                       </TableRow>
                     ))}

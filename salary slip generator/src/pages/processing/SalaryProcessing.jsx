@@ -19,7 +19,9 @@ import {
     setTransportRate,
     setGisDeduction,
     fetchGisData,
-    reset
+    reset,
+    bulkUpdateField,
+    resetBulkState
 } from '../../redux/slices/salarySlice';
 import {
     Box,
@@ -33,6 +35,7 @@ import {
     MenuItem,
     FormControl,
     Divider,
+    Autocomplete,
 } from '@mui/material';
 import { Alert } from 'reactstrap';
 import { fetchEmployeeBankdetail, fetchEmployees } from '../../redux/slices/employeeSlice';
@@ -44,6 +47,7 @@ import dayjs from 'dayjs';
 import { addDeduction } from '../../redux/slices/deductionSlice';
 import { fetchEmployeeQuarterList } from '../../redux/slices/quarterSlice';
 import { toast } from 'react-toastify';
+import { createBulkSalry } from '../../redux/slices/bulkSlice';
 
 
 
@@ -59,11 +63,7 @@ const months = [
     { value: 9, label: 'September' },
     { value: 10, label: 'October' },
     { value: 11, label: 'November' },
-<<<<<<< Updated upstream
     { value: 12, label: 'December' },
-=======
-    { value: 12, label: 'December' }
->>>>>>> Stashed changes
 ];
 
 
@@ -78,8 +78,8 @@ const steps = [
 const SalaryProcessing = () => {
     const slipRef = useRef(null);
     const dispatch = useDispatch();
-    const [mode, setmode] = useState('bulk');
-    const { formData, activeStep, deductionForm } = useSelector((state) => state.salary);
+    const [mode, setmode] = useState('');
+    const { formData, activeStep, deductionForm, bulkForm } = useSelector((state) => state.salary);
     const [errorMsg, setErrorMsg] = React.useState('');
     const [, setIsReady] = React.useState(false);
     const { basic_pay, npa_amount, hra_amount, da_amount, uniform_amount, transport_amount, gis_deduction } = useSelector((state) => state.salary);
@@ -96,6 +96,8 @@ const SalaryProcessing = () => {
     const filterPayStructure = payStructure.filter((structure) => structure?.employee_id === formData.employee_id);
     const isHraEligible = filterPayStructure.length > 0 && filterPayStructure[0]?.employee?.hra_eligibility;
     const isUniformEligible = filterPayStructure.length > 0 && filterPayStructure[0]?.employee?.uniform_allowance_eligibility;
+    const { error } = useSelector((state) => state.bulk);
+
 
     const handleChange = (e) => {
         setmode(e.target.value);
@@ -214,31 +216,44 @@ const SalaryProcessing = () => {
     });
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
 
         try {
-            const { mode, ...cleanFormData } = formData;
-            // 1. Submit the payslip and get the net_salary_id
-            const paySlipResponse = await dispatch(addPaySlip(cleanFormData));
-            const net_salary_id = paySlipResponse?.payload?.data?.net_salary_id;
+            if (mode === 'bulk') {
+                await dispatch(createBulkSalry(bulkForm)).unwrap()
+                    .then(() => {
+                        toast.success('Bulk Deductions submitted successfully!');
+                        dispatch(resetBulkState());
+                    })
+                    .catch((err) => {
+                        console.log(error)
+                        const apiMsg = err?.data?.message || err?.message || err?.errorMsg || 'Failed to submit bulk deductions.';
+                        toast.error(apiMsg);
+                    });
 
-            if (!net_salary_id) {
-                throw new Error("Net Salary ID not returned from payslip response");
+            } else {
+                const { mode, ...cleanFormData } = formData;
+                // 1. Submit the payslip and get the net_salary_id
+                const paySlipResponse = await dispatch(addPaySlip(cleanFormData));
+                const net_salary_id = paySlipResponse?.payload?.data?.net_salary_id;
+
+                if (!net_salary_id) {
+                    throw new Error("Net Salary ID not returned from payslip response");
+                }
+
+                // 2. Prepare and submit deduction form with net_salary_id
+                const deductionPayload = {
+                    ...deductionForm,
+                    net_salary_id,
+                };
+
+                await dispatch(addDeduction(deductionPayload));
+
+                // 3. Show success toast
+                toast.success('Payslip and Deductions submitted successfully!');
+                dispatch(reset());
             }
-
-            // 2. Prepare and submit deduction form with net_salary_id
-            const deductionPayload = {
-                ...deductionForm,
-                net_salary_id,
-            };
-
-            await dispatch(addDeduction(deductionPayload));
-
-            // 3. Show success toast
-            toast.success('Payslip and Deductions submitted successfully!');
-            dispatch(reset());
         } catch (error) {
-            console.error("Error submitting payslip and deductions:", error);
             toast.error('Failed to submit payslip or deductions.');
         }
     };
@@ -246,15 +261,20 @@ const SalaryProcessing = () => {
 
 
     const handleNext = () => {
-        const result = validateStep({ formData, activeStep });
-        if (!result.valid) {
-            toast.error(result.message);
+        if (activeStep === 0 && mode === 'bulk') {
+            handleSubmit();
             return;
         }
-
-        dispatch(nextStep());
-        console.log('formdata', formData)
-        console.log('deduct', deductionForm)
+        else {
+            const result = validateStep({ formData, activeStep });
+            if (!result.valid) {
+                toast.error(result.message);
+                return;
+            }
+            if (mode === 'individual') {
+                dispatch(nextStep());
+            }
+        }
     };
 
 
@@ -265,12 +285,60 @@ const SalaryProcessing = () => {
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12 }}>
                             <FormControl fullWidth>
-                                <TextField select name="mode" label="Mode" fullWidth >
-                                    <MenuItem value="bulk">Bulk Salary Processing</MenuItem>
+                                <TextField select name="mode" label="Mode" fullWidth value={mode} onChange={(e) => setmode(e.target.value)}>
+                                    <MenuItem value="bulk" >Bulk Salary Processing</MenuItem>
                                     <MenuItem value="individual">Individual Salary Processing</MenuItem>
                                 </TextField>
                             </FormControl>
                         </Grid>
+
+                        {
+                            mode === 'bulk' ? (
+                                <>
+                                    <Grid size={{ xs: 12 }} >
+                                        <TextField select required name="month" label="Month" value={bulkForm.month} fullWidth onChange={(e) => dispatch(bulkUpdateField({ name: 'month', value: e.target.value }))} >
+                                            {months.map((month) => (
+                                                <MenuItem key={month.value} value={month.value}>
+                                                    {month.label}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }}>
+                                        <TextField name="year" label="Year" value={bulkForm.year} fullWidth onChange={(e) => dispatch(bulkUpdateField({ name: 'year', value: e.target.value }))} />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DatePicker
+                                                label="Processing Date"
+                                                name="processing_date"
+                                                value={bulkForm.processing_date ? dayjs(bulkForm.processing_date) : null}
+                                                onChange={(date) =>
+                                                    dispatch(bulkUpdateField({ name: "processing_date", value: date }))
+                                                }
+                                                slotProps={{ textField: { fullWidth: true } }}
+                                            />
+                                        </LocalizationProvider>
+                                    </Grid>
+
+                                    <Grid item xs={6}>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <DatePicker
+                                                label="Payment Date"
+                                                name="payment_date"
+                                                value={bulkForm.payment_date ? dayjs(bulkForm.payment_date) : null}
+                                                onChange={(date) =>
+                                                    dispatch(bulkUpdateField({ name: "payment_date", value: date }))
+                                                }
+                                                slotProps={{ textField: { fullWidth: true } }}
+                                            />
+                                        </LocalizationProvider>
+                                    </Grid>
+                                </>
+                            ) : (
+                                null
+                            )
+                        }
                     </Grid>
                 );
             case 1:
@@ -278,15 +346,26 @@ const SalaryProcessing = () => {
                     <Grid container spacing={2}>
                         <>
                             <Grid size={{ xs: 4 }}>
-                                <TextField select required name="employee_id" className='text-capitalize' label="Employee" value={formData.employee_id} fullWidth onChange={handleChange} >
-                                    {
-                                        employees?.map((employee) => (
-                                            <MenuItem key={employee.id} className='text-capitalize' value={employee.id}>
-                                                {employee.first_name} {employee.last_name} - ({employee.id})
-                                            </MenuItem>
-                                        ))
+                                <Autocomplete
+                                    options={employees}
+                                    getOptionLabel={(option) =>
+                                        `${option.first_name} ${option.last_name} - (${option.id})`
                                     }
-                                </TextField>
+                                    value={employees.find(emp => emp.id === formData.employee_id) || null}
+                                    onChange={(_, newValue) => {
+                                        dispatch(updateField({ name: 'employee_id', value: newValue ? newValue.id : '' }));
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            required
+                                            label="Employee"
+                                            name="employee_id"
+                                            fullWidth
+                                        />
+                                    )}
+                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                />
                             </Grid>
                             <Grid size={{ xs: 4 }}>
                                 <TextField select required name="employee_bank_id" className='text-capitalize' label="Employee Bank" value={formData.employee_bank_id} fullWidth onChange={handleChange} >
@@ -605,7 +684,6 @@ const SalaryProcessing = () => {
                     Number(deductionForm.credit_society_membership || 0) +
                     Number(gis_deduction || 0);
 
-                console.log("gis_deduction", gis_deduction)
                 const netPayCalc = totalEarnings - totalDeductionsCalc;
                 const half = Math.ceil(deductions.length / 2);
                 const leftDeductions = deductions.slice(0, half);

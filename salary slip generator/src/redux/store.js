@@ -20,6 +20,7 @@ import loanReducer from './slices/employeeLoanSlice'
 import netSalaryReducer from './slices/netSalarySlice'
 import paySlipSlice from './slices/paySlipSlice';
 import deductionReducer from './slices/deductionSlice'
+import bulkReducer from './slices/bulkSlice'
 
 const store = configureStore({
   reducer: {
@@ -44,6 +45,7 @@ const store = configureStore({
     netSalary:netSalaryReducer,
     paySlip: paySlipSlice,
     deduction:deductionReducer,
+    bulk:bulkReducer,
   },
 });
 

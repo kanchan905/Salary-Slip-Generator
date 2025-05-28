@@ -3,6 +3,7 @@ import axiosInstance from 'global/AxiosSetting';
 
 
 
+
 export const fetchNpaData = createAsyncThunk(
     'npa/fetchNpaData',
     async ({ page, limit }, { rejectWithValue }) => {
@@ -122,6 +123,12 @@ const initialState = {
         lic: '',
         credit_society_membership: ''
     },
+    bulkForm: {
+        month: '',
+        year: '',
+        processing_date: '',
+        payment_date: '',
+    },
     npaList: [],
     hraList: [],
     daList: [],
@@ -135,6 +142,7 @@ const initialState = {
     uniform_amount: '',
     transport_amount: '',
     gis_deduction: '',
+
 };
 
 const salarySlice = createSlice({
@@ -168,6 +176,28 @@ const salarySlice = createSlice({
                         : value;
             }
         },
+        bulkUpdateField: (state, action) => {
+            const { name, value } = action.payload;
+            if (state.activeStep === 0) {
+                const isDateField = ['processing_date', 'payment_date'].includes(name);
+
+                const formatDate = (date) => {
+                    if (!date) return '';
+                    const d = new Date(date);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                };
+
+                // state.bulkForm[name] = isDateField ? formatDate(value) : value;
+                 state.bulkForm[name] = ['month', 'year'].includes(name)
+                    ? Number(value) || 0
+                    : isDateField
+                        ? formatDate(value)
+                        : value;
+            }
+        },
         setDeductionField: (state, action) => {
             const { name, value } = action.payload;
             state.deductionForm[name] = Number(value);
@@ -188,8 +218,8 @@ const salarySlice = createSlice({
             state.hra_amount = hraamount;
         },
         setDaAmount: (state, action) => {
-            const { basic_pay, da_percentage,npa_amount } = action.payload;
-            const daamount = ((basic_pay + npa_amount) * da_percentage) /100
+            const { basic_pay, da_percentage, npa_amount } = action.payload;
+            const daamount = ((basic_pay + npa_amount) * da_percentage) / 100
             // const daamount = (basic_pay * da_percentage) / 100;
             state.basic_pay = basic_pay;
             state.da_amount = daamount;
@@ -211,6 +241,10 @@ const salarySlice = createSlice({
             state.deductionForm = initialState.deductionForm;
             state.activeStep = 0;
         },
+        resetBulkState: (state) => {
+            state.bulkForm = initialState.bulkForm;
+            state.activeStep = 0;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -235,5 +269,5 @@ const salarySlice = createSlice({
     }
 });
 
-export const { nextStep, prevStep, updateField, setDeductionField, resetSalaryState, setBasicPayAmount, setNpaAmount, setHraAmount, setUniformAmount, setDaAmount, setTransportRate, setGisDeduction,reset } = salarySlice.actions;
+export const { nextStep, prevStep, updateField, setDeductionField, resetSalaryState, setBasicPayAmount, setNpaAmount, setHraAmount, setUniformAmount, setDaAmount, setTransportRate, setGisDeduction, reset, bulkUpdateField, resetBulkState } = salarySlice.actions;
 export default salarySlice.reducer;

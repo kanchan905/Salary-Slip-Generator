@@ -41,8 +41,21 @@ export const updateEmployeeLoan = createAsyncThunk(
   }
 );
 
+export const showEmployeeLoan = createAsyncThunk(
+  "loan/showEmployeeLoan",
+  async ({id}, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/employee-loan?page=&limit=&employee_id=${id}`);
+      return response.data.data  
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch employees");
+    }
+  }
+);
+
 const initialState = {
   loans: [],
+  showloan:[],
   totalCount: 0,
   loading: false,
   error: null
@@ -94,7 +107,19 @@ const loanSlice = createSlice({
       .addCase(updateEmployeeLoan.rejected, (state, action) => {
         // state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(showEmployeeLoan.pending,(state,action)=>{
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(showEmployeeLoan.fulfilled,(state,action)=>{
+        state.showloan = action.payload
+        state.loading = false
+      })
+      .addCase(showEmployeeLoan.rejected,(state,action)=>{
+        state.loading = false;
+        state.error = action.payload;
+      })
   }
 })
 

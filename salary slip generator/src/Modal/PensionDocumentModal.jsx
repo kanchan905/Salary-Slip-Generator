@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Row, Col, Button, FormGroup, Label, Input } from "reactstrap";
 import { Formik, Form, ErrorMessage } from "formik";
+import { Autocomplete, TextField } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPensioners } from "../redux/slices/pensionerSlice";
 
 export default function PensionDocumentModal({
   formOpen,
@@ -30,6 +33,13 @@ export default function PensionDocumentModal({
     return errors;
   };
 
+  const pensionersData = useSelector((state) => state.pensioner.pensioners)
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchPensioners())
+  }, [dispatch])
+
   return (
     <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} scrollable>
       <div className="pt-4 pb-4 px-4">
@@ -42,8 +52,20 @@ export default function PensionDocumentModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="pensioner_id">Pensioner Id</Label>
-                    <Input name="pensioner_id" value={values.pensioner_id} onChange={(e) => setFieldValue("pensioner_id", e.target.value)} />
+                    <Label for="pensioner_id">Pensioner</Label>
+                    <Input
+                      type="select"
+                      name="pensioner_id"
+                      value={values.pensioner_id}
+                      onChange={(e) => setFieldValue('pensioner_id', e.target.value)}
+                    >
+                      <option value="">Select Pensioner</option>
+                      {pensionersData.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} - ({p.id})
+                        </option>
+                      ))}
+                    </Input>
                     <ErrorMessage name="pensioner_id" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>

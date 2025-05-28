@@ -23,6 +23,7 @@ import MonthlyPensionModal from '../../Modal/MonthlyPension';
 export default function MonthlyPension() {
   const dispatch = useDispatch();
   const { monthlyPension, loading } = useSelector((state) => state.monthlypension);
+  console.log(monthlyPension)
   const totalCount = useSelector((state) => state.monthlypension.totalCount) || 0;
   const { error } = useSelector((state) => state.monthlypension)
   const [formOpen, setFormOpen] = useState(false);

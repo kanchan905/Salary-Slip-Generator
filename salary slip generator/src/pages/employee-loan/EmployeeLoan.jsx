@@ -19,6 +19,11 @@ import {
     updateEmployeeLoan,
 } from '../../redux/slices/employeeLoanSlice';
 import EmployeeLoanModal from '../../Modal/EmployeeLoan';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -27,7 +32,6 @@ export default function EmployeeLoan() {
     const { loans, loading } = useSelector((state) => state.employeeLoan);
     const totalCount = useSelector((state) => state.employeeLoan.totalCount) || 0;
     const { error } = useSelector((state) => state.employeeLoan)
-    const [anchorEl, setAnchorEl] = useState(null);
     const [menuIndex, setMenuIndex] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState('create');
@@ -46,10 +50,14 @@ export default function EmployeeLoan() {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const navigate = useNavigate();
+    const { name } = useSelector((state) => state.auth.user.role);
+
 
     useEffect(() => {
         dispatch(fetchEmployeeLoan({ id: searchQuery, page, limit: rowsPerPage }));
-    }, [dispatch,searchQuery]);
+    }, [dispatch, searchQuery]);
 
     // const filteredData = dearness.filter((item) =>
     //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())
@@ -147,7 +155,14 @@ export default function EmployeeLoan() {
         setSubmitting(false);
     };
 
+    const handleMenuClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
+    const handleView = (id) => {
+        handleClose();
+        navigate(`/${name.toLowerCase()}/employee-loan/view/${id}`);
+    };
 
     return (
         <>
@@ -163,48 +178,53 @@ export default function EmployeeLoan() {
                         </div>
                     </CardHeader>
                     <CardBody>
-                        <div style={{ width: '100%', overflowX: 'auto' }} className="custom-scrollbar">
+                        <div className="custom-scrollbar">
                             {loading ? (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <TableContainer component={Paper} style={{ boxShadow: "none", minWidth: 1500 }}>
+                                <TableContainer component={Paper} style={{ boxShadow: "none"}}>
                                     <Table>
                                         <TableHead>
-                                            <TableRow>
-                                                <TableCell>Id</TableCell>
+                                            <TableRow>                                              
                                                 <TableCell>Loan Type</TableCell>
                                                 <TableCell>Loan Amount</TableCell>
                                                 <TableCell>Interest Rate</TableCell>
                                                 <TableCell>Sanctioned Date</TableCell>
                                                 <TableCell>Total Installments</TableCell>
-                                                <TableCell>Current Installment</TableCell>
-                                                <TableCell>Remaining Balance</TableCell>
-                                                <TableCell>Status</TableCell>
-                                                <TableCell>Add By</TableCell>
-                                                <TableCell>Edit By</TableCell>
+                                                <TableCell>Current Installment</TableCell>                                               
+                                                <TableCell>Status</TableCell>                                              
                                                 <TableCell>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {loans.map((row, idx) => (
-                                                <TableRow key={row.id}>
-                                                    <TableCell>{row.employee_id}</TableCell>
+                                                <TableRow key={row.id}>                                              
                                                     <TableCell>{row.loan_type}</TableCell>
                                                     <TableCell>{row.loan_amount}</TableCell>
                                                     <TableCell>{row.interest_rate}</TableCell>
                                                     <TableCell>{row.sanctioned_date}</TableCell>
                                                     <TableCell>{row.total_installments}</TableCell>
-                                                    <TableCell>{row.current_installment}</TableCell>
-                                                    <TableCell>{row.remaining_balance}</TableCell>
-                                                    <TableCell>{row.is_active ? 'Active' : 'Inactive'}</TableCell>
-                                                    <TableCell>{row.added_by?.name}</TableCell>
-                                                    <TableCell>{row.edited_by?.name}</TableCell>
+                                                    <TableCell>{row.current_installment}</TableCell>                                                  
+                                                    <TableCell>{row.is_active ? 'Active' : 'Inactive'}</TableCell>                                                  
                                                     <TableCell align="left">
-                                                        <IconButton onClick={() => handleEdit(row)}>
-                                                            <EditIcon fontSize="small" />
+                                                        <IconButton onClick={handleMenuClick}>
+                                                            <MoreVertIcon />
                                                         </IconButton>
+                                                        <Menu
+                                                            anchorEl={anchorEl}
+                                                            open={Boolean(anchorEl)}
+                                                            onClose={handleClose}
+                                                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                                        >
+                                                            <MenuItem onClick={handleEdit}>
+                                                                <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
+                                                            </MenuItem>
+                                                            <MenuItem onClick={()=> handleView(row.id)}>
+                                                                <VisibilityIcon fontSize="small" sx={{ mr: 1 }} /> View
+                                                            </MenuItem>
+                                                        </Menu>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

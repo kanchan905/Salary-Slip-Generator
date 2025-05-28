@@ -57,10 +57,24 @@ export const updatePayStructure = createAsyncThunk(
 );
 
 
+// Show Pay Structure Slice
+export const showPayStructure = createAsyncThunk(
+  'payStructureShow/showPayStructure',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/employee-pay-structures/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch pay structure show');
+    }
+  }
+);
+
 
 // Initial state
 const initialState = {
   payStructure: [],
+  payStructureShow: {},
   totalCount: 0,
   loading: false,
   error: null,
@@ -112,6 +126,19 @@ const payStructureSlice = createSlice({
         // Optional: update state.payStructure here based on response
       })
       .addCase(updatePayStructure.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // SHOW
+      .addCase(showPayStructure.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(showPayStructure.fulfilled, (state, action) => {
+        state.loading = false;
+        state.payStructureShow = action.payload?.data || {};
+      })
+      .addCase(showPayStructure.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

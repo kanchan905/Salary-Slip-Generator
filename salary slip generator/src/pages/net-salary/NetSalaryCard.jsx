@@ -96,7 +96,7 @@ function NetSalaryCard() {
                         <Grid container sx={{ justifyContent: 'space-between' }} >
                             {/* Pay Slip */}
                             <Grid item xs={12} md={6} width={'40%'}>
-                                <Box display="flex"  alignItems="center" mb={1} gap={4}>
+                                <Box display="flex" alignItems="center" mb={1} gap={4}>
                                     <Typography variant="h4" fontWeight="bold" gutterBottom>Pay Slip</Typography>
                                     {/* <Button size="small" variant="outlined" onClick={() => setPayModalOpen(true)}>Edit</Button> */}
                                     <Button size="sm" color="primary" outline onClick={() => setPayModalOpen(true)}>Edit</Button>
@@ -140,7 +140,7 @@ function NetSalaryCard() {
 
                             {/* Deductions */}
                             <Grid item xs={12} md={6} width={'50%'}>
-                                <Box display="flex"  alignItems="center" mb={1} gap={4}>
+                                <Box display="flex" alignItems="center" mb={1} gap={4}>
                                     <Typography variant="h4" fontWeight="bold" gutterBottom>Deductions</Typography>
                                     {/* <Button size="small" variant="outlined" onClick={() => setDeductionModalOpen(true)}>Edit</Button> */}
                                     <Button size="sm" color="danger" outline onClick={() => setDeductionModalOpen(true)}>Edit</Button>
@@ -197,8 +197,7 @@ function NetSalaryCard() {
                                 Net Pay:
                             </Typography>
                             <Chip
-                                Avatar={<Avatar>₹</Avatar>}
-                                label={netSalaryData?.net_amount ? netSalaryData.net_amount.toLocaleString() : '0'}
+                                label={netSalaryData?.net_amount ? `₹${netSalaryData.net_amount.toLocaleString()}` : '₹0'}
                                 color="success"
                                 sx={{ fontSize: 18, height: 40, px: 2 }}
                             />

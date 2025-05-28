@@ -19,6 +19,11 @@ import {
   updatePensionDocument,
 } from '../../redux/slices/pensionDocumentSlice';
 import PensionDocumentModal from '../../Modal/PensionDocumentModal';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -27,8 +32,6 @@ export default function PensionDocuments() {
   const { document, loading } = useSelector((state) => state.pensionDocument);
   const totalCount = useSelector((state) => state.pensionDocument.totalCount) || 0;
   const { error } = useSelector((state) => state.pensionDocument)
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuIndex, setMenuIndex] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState('create');
   const [editId, setEditId] = useState(null);
@@ -43,6 +46,10 @@ export default function PensionDocuments() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [menuRowId, setMenuRowId] = useState(null);
+  const navigate = useNavigate();
+  const { name } = useSelector((state) => state.auth.user.role);
 
   useEffect(() => {
     dispatch(fetchPensionDocument());
@@ -68,8 +75,8 @@ export default function PensionDocuments() {
 
 
   const handleClose = () => {
-    setAnchorEl(null);
-    setMenuIndex(null);
+    setMenuAnchorEl(null);
+    setMenuRowId(null);
   };
 
   const toggleModal = (mode) => {
@@ -95,8 +102,8 @@ export default function PensionDocuments() {
       document_type: row.document_type,
       document_number: row.document_number,
       issue_date: row.issue_date,
-      expiry_date:row.expiry_date,
-      file:row.file
+      expiry_date: row.expiry_date,
+      file: row.file
     });
     setFormOpen(true);
     handleClose();
@@ -138,14 +145,25 @@ export default function PensionDocuments() {
     setSubmitting(false);
   };
 
+  const handleMenuClick = (event, id) => {
+    setMenuAnchorEl(event.currentTarget);
+    setMenuRowId(id);
+  };
+
+  const handleView = (id) => {
+    handleClose();
+    navigate(`/${name.toLowerCase()}/pension-documents/view/${id}`);
+  };
+
+
   return (
     <>
       <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
       <div className="mt--7 mb-7 container-fluid">
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
-            <div className="d-flex justify-content-between align-items-center">
-              <TextField placeholder="Id & Type" onChange={handleSearchChange} />
+            <div className="d-flex justify-content-end align-items-center">
+              {/* <TextField placeholder="Id & Type" onChange={handleSearchChange} /> */}
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                 + Add
               </Button>
@@ -176,11 +194,24 @@ export default function PensionDocuments() {
                         <TableCell>{row.document_type}</TableCell>
                         <TableCell>{row.document_number}</TableCell>
                         <TableCell>{row.issue_date}</TableCell>
-                        <TableCell>{row.expiry_date}</TableCell>                        
+                        <TableCell>{row.expiry_date}</TableCell>
                         <TableCell align="left">
-                          <IconButton onClick={() => handleEdit(row)}>
-                            <EditIcon fontSize="small" />
+                          <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
+                            <MoreVertIcon />
                           </IconButton>
+                          <Menu
+                            anchorEl={menuAnchorEl}
+                            open={menuRowId === row.id}
+                            onClose={handleClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                          >
+                            <MenuItem onClick={() => { handleEdit(row); handleClose(); }}>
+                              <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => handleView(row.id)}>
+                              <VisibilityIcon fontSize="small" sx={{ mr: 1 }} /> View
+                            </MenuItem>
+                          </Menu>
                         </TableCell>
                       </TableRow>
                     ))}

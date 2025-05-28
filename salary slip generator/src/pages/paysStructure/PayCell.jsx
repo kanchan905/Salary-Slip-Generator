@@ -6,23 +6,25 @@ import {
   MenuItem, Select, FormControl, InputLabel,
   TablePagination
 } from '@mui/material';
-import { Edit, Save, Cancel } from '@mui/icons-material';
+import { Edit, Save, Cancel, History } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
   fetchPayLevel,
   fetchPayCell,
   addCellToAPI,
-  updateCellToAPI
+  updateCellToAPI,
+  showCellToAPI
 } from '../../redux/slices/levelCellSlice';
 
 import { toast } from 'react-toastify';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import HistoryModal from 'Modal/HistoryModal';
 
 const PayMatrixCell = () => {
   const dispatch = useDispatch();
-  const { levels, levelCount, matrixCells, cellCount, loading } = useSelector((state) => state.levelCells);
+  const { levels, levelCount, matrixCells, cellCount, showCells, loading } = useSelector((state) => state.levelCells);
 
   const [selectedLevelId, setSelectedLevelId] = useState('');
   const [editingCellId, setEditingCellId] = useState(null);
@@ -32,12 +34,74 @@ const PayMatrixCell = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [limit] = useState(100);
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [tableHead, setTableHead] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+
+  const getTableConfig = (type) => {
+    switch (type) {
+      case "cell":
+        return {
+          head: [
+            "Sr. No.",
+            "Level",
+            "Cell Index",
+            "Amount",
+            "Added By",
+            "Edited By"
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{record.pay_matrix_level?.name || "NA"}</td>
+              <td>{record.index}</td>
+              <td>{record.amount || "NA"}</td>
+              <td>{record.added_by?.name || "NA"} </td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+      // You can add more.
+      
+      default:
+        return { head: [], renderRow: () => null };
+    }
+  };
+
 
   useEffect(() => {
     dispatch(fetchPayLevel({ page: 1, limit: levelCount }));
     dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
   }, [dispatch, selectedLevelId, page, limit]);
   const refreshCells = () => dispatch(fetchPayCell({ page: page + 1, limit: rowsPerPage }));
+
+
+
+  // Status History handlers
+  const handleHistoryStatus = (id) => {
+    dispatch(showCellToAPI(id));
+    toggleHistoryModal(); // Open the modal immediately (or you can delay until data loads if preferred)
+  };
+  
+  
+  useEffect(() => {
+    if (showCells && showCells.history) {
+      const config = getTableConfig("cell");
+      setHistoryRecord(showCells.history);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow);
+   }
+  }, [showCells]);
 
   const handleSaveEdit = async (cellId) => {
     try {
@@ -227,7 +291,12 @@ const PayMatrixCell = () => {
                             <IconButton color="warning" onClick={handleCancelEdit}><Cancel /></IconButton>
                           </>
                         ) : (
-                          <IconButton color="primary" onClick={() => handleStartEdit(cell)}><Edit /></IconButton>
+                          <>
+                            <IconButton color="primary" onClick={() => handleStartEdit(cell)}><Edit /></IconButton>
+                            <IconButton color="info" onClick={() => handleHistoryStatus(cell.id)}>
+                              <History />
+                            </IconButton>
+                          </>
                         )}
                       </TableCell>
                     </TableRow>
@@ -246,6 +315,14 @@ const PayMatrixCell = () => {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </TableContainer>
+
+          <HistoryModal
+            isOpen={isHistoryModalOpen}
+            toggle={toggleHistoryModal}
+            tableHead={tableHead}
+            historyRecord={historyRecord}
+            renderRow={renderFunction}
+          />
         </>
       )}
     </Paper>

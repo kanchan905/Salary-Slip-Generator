@@ -21,6 +21,8 @@ import {
   toggleBankDetailStatus
 } from '../../redux/slices/bankSlice';
 import BankFormModal from '../../Modal/BankFormModal';
+import ViewIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 const statusChipColor = (status) => status ? "success" : "error";
 
@@ -29,7 +31,6 @@ export default function BankDetails() {
   const { bankdetails, loading } = useSelector((state) => state.bankdetail);
   const totalCount = useSelector((state) => state.bankdetail.totalCount) || 0;
   const { error } = useSelector((state) => state.bankdetail)
-  const [anchorEl, setAnchorEl] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState('create');
@@ -44,10 +45,14 @@ export default function BankDetails() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { name } = useSelector((state) => state.auth.user.role);
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuBankDetailId, setMenuBankDetailId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchBankDetails({page:page, limit: rowsPerPage,id:searchQuery}));
-  }, [dispatch,page, rowsPerPage, searchQuery]);
+    dispatch(fetchBankDetails({ page: page, limit: rowsPerPage, id: searchQuery }));
+  }, [dispatch, page, rowsPerPage, searchQuery]);
 
   // const filteredData = bankdetails.filter((item) =>
   //   String(item.pensioner_id).toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -67,13 +72,13 @@ export default function BankDetails() {
     setPage(0);
   };
 
-  const handleMenuClick = (e, idx) => {
-    setAnchorEl(e.currentTarget);
-    setMenuIndex(idx);
+  const handleMenuClick = (event, id) => {
+    setAnchorEl(event.currentTarget);
+    setMenuBankDetailId(id);
   };
-  const handleClose = () => {
+  const handleMenuClose = () => {
     setAnchorEl(null);
-    setMenuIndex(null);
+    setMenuBankDetailId(null);
   };
 
   const toggleModal = (mode) => {
@@ -101,7 +106,7 @@ export default function BankDetails() {
       ifsc_code: row.ifsc_code
     });
     setFormOpen(true);
-    handleClose();
+    handleMenuClose();
   };
 
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
@@ -143,6 +148,13 @@ export default function BankDetails() {
     await dispatch(toggleBankDetailStatus({ id: row.id }));
   };
 
+  const handleView = (id) => {
+    handleMenuClose();
+    navigate(`/${name.toLowerCase()}/pensioner/bank-detail/view/${id}`);
+  };
+
+
+
   return (
     <>
       <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
@@ -172,8 +184,6 @@ export default function BankDetails() {
                       <TableCell>Branch Name</TableCell>
                       <TableCell>Account No</TableCell>
                       <TableCell>IFSC</TableCell>
-                      <TableCell>Add By</TableCell>
-                      <TableCell>Edit By</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell align="right">Actions</TableCell>
                     </TableRow>
@@ -186,9 +196,7 @@ export default function BankDetails() {
                         <TableCell>{row.bank_name}</TableCell>
                         <TableCell>{row.branch_name}</TableCell>
                         <TableCell>{row.account_no}</TableCell>
-                        <TableCell>{row.ifsc_code}</TableCell>
-                        <TableCell>{row.added_by?.name}</TableCell>
-                        <TableCell>{row.edited_by?.name}</TableCell>
+                        <TableCell>{row.ifsc_code}</TableCell>                     
                         <TableCell>
                           <Chip
                             label={row.is_active ? 'Active' : 'Inactive'}
@@ -200,12 +208,20 @@ export default function BankDetails() {
                           />
                         </TableCell>
                         <TableCell align="right">
-                          <IconButton onClick={(e) => handleMenuClick(e, idx)}>
+                          <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
                             <MoreVertIcon />
                           </IconButton>
-                          <Menu anchorEl={anchorEl} open={menuIndex === idx} onClose={handleClose}>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={menuBankDetailId === row.id}
+                            onClose={handleMenuClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                          >
                             <MenuItem onClick={() => handleEdit(row)}>
                               <EditIcon fontSize="small" /> Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => handleView(row.pensioner_id)}>
+                              <ViewIcon fontSize="small" /> View
                             </MenuItem>
                           </Menu>
                         </TableCell>

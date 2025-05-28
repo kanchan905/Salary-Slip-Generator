@@ -3,9 +3,9 @@ import axiosInstance from "global/AxiosSetting";
 
 export const fetchPensioners = createAsyncThunk(
     "pensioner/details",
-    async (_, { rejectWithValue }) => {
+    async ({page,limit,id}, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/pensioner`);
+            const response = await axiosInstance.get(`/pensioner?page=${page}&limit=${limit}&retired_employee_id=${id}`);
             return {
                 data: response.data.data,
                 totalCount: response.data.total_count
@@ -52,15 +52,41 @@ export const updatePensioner = createAsyncThunk(
     }
 )
 
+<<<<<<< Updated upstream
+export const showPension = createAsyncThunk(
+    "pensionerShow/showPension",
+=======
+export const showPensioner = createAsyncThunk(
+    "pensioner/show",
+>>>>>>> Stashed changes
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/pensioner/${id}`);
+            return response.data.data;
+        } catch (error) {
+<<<<<<< Updated upstream
+            return rejectWithValue(error.response?.data || "Failed to fetch pension details");
+=======
+            return rejectWithValue(error.response?.data || "Failed to fetch employee details");
+>>>>>>> Stashed changes
+        }
+    }
+);
+
 const initialState = {
     pensioners: [],
+<<<<<<< Updated upstream
+    pensionerShow: null,
+=======
+    pensioner:{},
+>>>>>>> Stashed changes
     totalCount: 0,
     loading: false,
     error: null
 }
 
 const pensionerSlice = createSlice({
-    name: 'pentioner',
+    name: 'pensioner',
     initialState,
     extraReducers: (builder) => {
         builder
@@ -123,6 +149,28 @@ const pensionerSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+<<<<<<< Updated upstream
+            .addCase(showPension.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(showPension.fulfilled, (state, action) => {
+                state.loading = false;
+                state.pensionerShow = action.payload;
+            })
+            .addCase(showPension.rejected, (state, action) => {
+=======
+            .addCase(showPensioner.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(showPensioner.fulfilled, (state, action) => {
+                state.loading = false;
+                state.pensioner = action.payload;
+            })
+            .addCase(showPensioner.rejected, (state, action) => {
+>>>>>>> Stashed changes
+                state.loading = false;
+                state.error = action.payload;
+            });
     }
 })
 

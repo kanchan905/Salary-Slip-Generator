@@ -41,8 +41,36 @@ export const updateArrear = createAsyncThunk(
   }
 );
 
+<<<<<<< Updated upstream
+export const fetchArrearsShow = createAsyncThunk(
+  "showArrear/fetchArrearsShow",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/arrears/${id}`);
+      return response.data.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch arrear");
+=======
+export const showArrear = createAsyncThunk(
+  "arrears/showArrear",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/arrears?pensioner_id=${id}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+>>>>>>> Stashed changes
+    }
+  }
+);
+
 const initialState = {
   arrears: [],
+<<<<<<< Updated upstream
+  showArrear: null,
+=======
+  arrear:[],
+>>>>>>> Stashed changes
   totalCount: 0,
   loading: false,
   error: null
@@ -92,6 +120,30 @@ const arrearSlice = createSlice({
         }
       })
       .addCase(updateArrear.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+<<<<<<< Updated upstream
+      .addCase(fetchArrearsShow.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchArrearsShow.fulfilled, (state, action) => {
+        state.loading = false;
+        state.showArrear = action.payload;
+      })
+      .addCase(fetchArrearsShow.rejected, (state, action) => {
+=======
+      .addCase(showArrear.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(showArrear.fulfilled, (state, action) => {
+        state.loading = false;
+        state.arrear = action.payload.data;
+      })
+      .addCase(showArrear.rejected, (state, action) => {
+>>>>>>> Stashed changes
         state.loading = false;
         state.error = action.payload;
       });

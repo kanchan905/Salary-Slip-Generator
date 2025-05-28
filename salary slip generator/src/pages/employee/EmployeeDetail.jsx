@@ -221,15 +221,14 @@ function EmployeeDetail() {
     }
   }, [historyStatus]);
 
-const handleHistoryBank = (employeeID) => {
-  console.log("Employee ID for Bank History: ", historyBank);
-  dispatch(fetchEmployeeBankdetailStatus(employeeID));
-  const config = getTableConfig("bank");
-  setHistoryRecord(historyBank?.history || []);
-  setTableHead(config.head);
-  setRenderFunction(() => config.renderRow);
-  toggleHistoryModal();
-};
+  const handleHistoryBank = (employeeID) => {
+    dispatch(fetchEmployeeBankdetailStatus(employeeID));
+    const config = getTableConfig("bank");
+    setHistoryRecord(historyBank?.history || []);
+    setTableHead(config.head);
+    setRenderFunction(() => config.renderRow);
+    toggleHistoryModal();
+  };
 
 const handleHistoryDesignation = (employeeID) => {
   console.log("Employee ID for Designation History: ", historyDesignation);

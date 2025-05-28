@@ -52,9 +52,22 @@ export const toggleBankDetailStatus = createAsyncThunk(
     }
 );
 
+export const showBankDetail = createAsyncThunk(
+    'bank/showBankDetail',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/bank-account/${id}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
+
 
 const initialState = {
     bankdetails: [],
+    showBank:{},
     totalCount: 0,
     loading: false,
     error: null
@@ -123,6 +136,17 @@ const bankSlice = createSlice(({
                 state.loading = false;
                 state.error = action.error.message;
             })
+            .addCase(showBankDetail.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(showBankDetail.fulfilled, (state, action) => {
+                state.loading = false;
+                state.showBank = action.payload;
+            })
+            .addCase(showBankDetail.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
     }
 }));
 

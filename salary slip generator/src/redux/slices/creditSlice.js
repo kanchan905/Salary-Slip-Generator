@@ -41,8 +41,21 @@ export const updateCredit = createAsyncThunk(
   }
 );
 
+export const showCredit =  createAsyncThunk(
+  "credits/showCredit",
+  async ({ id}, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/credit-society-member?employee_id=${id}&page=&limit=`);
+      return response.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 const initialState = {
   credits: [],
+  showcredit:[],
   totalCount: 0,
   loading: false,
   error: null
@@ -94,7 +107,18 @@ const creditSlice = createSlice({
       .addCase(updateCredit.rejected, (state, action) => {
         // state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(showCredit.pending,(state,action)=>{
+        state.loading = true;
+      })
+      .addCase(showCredit.fulfilled,(state,action)=>{
+        state.showcredit = action.payload;
+        state.loading = false;
+      })
+      .addCase(showCredit.rejected,(state,action)=>{
+        state.loading = false;
+         state.error = action.payload;
+      })
   }
 })
 
