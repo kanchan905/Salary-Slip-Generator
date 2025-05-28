@@ -232,7 +232,7 @@ export default function MonthlyPension() {
                           <TableCell>{row.added_by?.name}</TableCell>
                           <TableCell>{row.edited_by?.name}</TableCell>
                         </TableRow>
-                      )}
+                      ))}
                     </TableBody>
 
                   </Table>
