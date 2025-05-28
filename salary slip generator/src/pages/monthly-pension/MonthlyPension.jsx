@@ -134,20 +134,20 @@ export default function MonthlyPension() {
                     <TableBody>
                       {monthlyPension.map((row, idx) => (
                         <TableRow key={row.id}>
-                          <TableCell>{row.pensioner_id}</TableCell>
-                          <TableCell>{row.pensioner?.name}</TableCell>
-                          <TableCell>{row.month}</TableCell>
-                          <TableCell>{row.basic_pension}</TableCell>
-                          <TableCell>{row.commutation_amount}</TableCell>
-                          <TableCell>{row.additional_pension}</TableCell>
-                          <TableCell>{row.dr_amount}</TableCell>
-                          <TableCell>{row.medical_allowance}</TableCell>
-                          <TableCell>{row.total_pension}</TableCell>
-                          <TableCell>{row.total_recovery}</TableCell>
-                          <TableCell>{row.net_pension}</TableCell>
-                          <TableCell>{row.status}</TableCell>
-                          <TableCell>{row.added_by?.name}</TableCell>
-                          <TableCell>{row.edited_by?.name}</TableCell>
+                          <TableCell>{row?.pensioner_id}</TableCell>
+                          <TableCell>{row?.pensioner?.name}</TableCell>
+                          <TableCell>{row?.month}</TableCell>
+                          <TableCell>{row?.basic_pension}</TableCell>
+                          <TableCell>{row?.commutation_amount}</TableCell>
+                          <TableCell>{row?.additional_pension}</TableCell>
+                          <TableCell>{row?.dr_amount}</TableCell>
+                          <TableCell>{row?.medical_allowance}</TableCell>
+                          <TableCell>{row?.total_pension}</TableCell>
+                          <TableCell>{row?.total_recovery}</TableCell>
+                          <TableCell>{row?.net_pension}</TableCell>
+                          <TableCell>{row?.status}</TableCell>
+                          <TableCell>{row?.added_by?.name}</TableCell>
+                          <TableCell>{row?.edited_by?.name}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

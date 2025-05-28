@@ -17,15 +17,12 @@ import { useDispatch } from "react-redux";
 import { fetchPensioners, showPension, updateStatus } from "../../redux/slices/pensionerSlice";
 import { Select, MenuItem } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-<<<<<<< Updated upstream
 import HistoryIcon from '@mui/icons-material/History';
 import HistoryModal from 'Modal/HistoryModal';
-=======
 import ViewIcon from '@mui/icons-material/Visibility';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 
->>>>>>> Stashed changes
 
 
 export default function Pensioner() {
@@ -38,7 +35,6 @@ export default function Pensioner() {
   const pensionersData = useSelector((state) => state.pensioner.pensioners);
   const pensionerShow = useSelector((state) => state.pensioner.pensionerShow);
   const totalCount = useSelector((state) => state.pensioner.totalCount) || 0;
-<<<<<<< Updated upstream
   const loading = useSelector((state) => state.pensioner.loading);
   const [ renderFunction, setRenderFunction ] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
@@ -128,11 +124,8 @@ export default function Pensioner() {
       toggleHistoryModal();
     }
   }, [pensionerShow]);
-=======
-  const loading = useSelector((state) => state.pensioner.loading)
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuPensionerId, setMenuPensionerId] = useState(null);
->>>>>>> Stashed changes
 
   useEffect(() => {
     dispatch(fetchPensioners({page:page,limit:rowsPerPage,id:searchQuery}))
@@ -252,11 +245,9 @@ export default function Pensioner() {
                             <IconButton onClick={(e) => handleMenuClick(e, p.id)}>
                               <MoreVertIcon />
                             </IconButton>
-<<<<<<< Updated upstream
                             <IconButton onClick={() => handleHistoryStatus(p.id)}>
                               <HistoryIcon fontSize="small" />
                             </IconButton>
-=======
                             <Menu
                               anchorEl={anchorEl}
                               open={menuPensionerId === p.id}
@@ -270,7 +261,6 @@ export default function Pensioner() {
                                 <EditIcon fontSize="small" /> Edit
                               </MenuItem>
                             </Menu>
->>>>>>> Stashed changes
                           </TableCell>
                         </TableRow>
                       ))}

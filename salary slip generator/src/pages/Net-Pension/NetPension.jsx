@@ -14,12 +14,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
-    fetchNetSalary,
-    createNetSalary,
-    updateNetSalary,
-    viewNetSalary,
-} from '../../redux/slices/netSalarySlice';
-import NetSalaryModal from '../../Modal/NetSalaryModal';
+    fetchNetPension,
+    showNetPension,
+    updateNetPension,
+} from '../../redux/slices/netPensionSlice';
+import NetPensionModal from '../../Modal/NetPensionModal';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ViewIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
@@ -27,12 +26,13 @@ import HistoryIcon from '@mui/icons-material/History';
 import HistoryModal from 'Modal/HistoryModal';
 import { months } from 'utils/helpers';
 
-export default function NetSalary() {
+export default function NetPension() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { name } = useSelector((state) => state.auth.user.role);
-    const { netSalary, netSalaryData, loading } = useSelector((state) => state.netSalary);
-    const totalCount = useSelector((state) => state.netSalary.totalCount) || 0;
+    const { netPension, netPensionData, loading } = useSelector((state) => state.netPension);
+    console.log('netPension',netPension)
+    const totalCount = useSelector((state) => state.netPension.totalCount) || 0;
     const { error } = useSelector((state) => state.netSalary)
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuIndex, setMenuIndex] = useState(null);
@@ -40,18 +40,17 @@ export default function NetSalary() {
     const [formMode, setFormMode] = useState('create');
     const [editId, setEditId] = useState(null);
     const [formData, setFormData] = useState({
-        employee_id: "",
+        pensioner_id: "",
+        pensioner_bank_id: "",
         month: "",
         year: "",
         processing_date: "",
-        net_amount: "",
         payment_date: "",
-        employee_bank_id: "",
     });
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [ renderFunction, setRenderFunction ] = useState(() => null);
+    const [renderFunction, setRenderFunction] = useState(() => null);
     const [historyRecord, setHistoryRecord] = useState([]);
     const [tableHead, setTableHead] = useState([
         "Sr. No.",
@@ -68,7 +67,7 @@ export default function NetSalary() {
         setIsHistoryModalOpen(!isHistoryModalOpen)
         handleClose();
     };
-    
+
     const getTableConfig = (type) => {
         switch (type) {
             case "status":
@@ -100,32 +99,32 @@ export default function NetSalary() {
                 };
 
             // You can add more like designation, pay scale, etc.
-            
+
             default:
                 return { head: [], renderRow: () => null };
         }
-  };
+    };
 
     // Status History handlers
     const handleHistoryStatus = (id) => {
         console.log("Salary ID: ", id);
-        dispatch(viewNetSalary(id));
+        dispatch(showNetPension(id));
     };
-      
+
     useEffect(() => {
-        if (netSalaryData && netSalaryData.history) {
+        if (netPensionData && netPensionData.history) {
             const config = getTableConfig("status");
-            setHistoryRecord(netSalaryData?.history || []);
+            setHistoryRecord(netPensionData?.history || []);
             setTableHead(config.head);
             setRenderFunction(() => config.renderRow); // <- use useState to hold render function
             toggleHistoryModal();
         }
-    }, [netSalaryData]);
-    
+    }, [netPensionData]);
+
 
     useEffect(() => {
-        dispatch(fetchNetSalary({id: searchQuery, page, limit: rowsPerPage }));
-    }, [dispatch,searchQuery]);
+        dispatch(fetchNetPension({ page, limit: rowsPerPage }));
+    }, [dispatch, searchQuery]);
 
 
     const handleSearchChange = (e) => {
@@ -148,13 +147,12 @@ export default function NetSalary() {
     const toggleModal = (mode) => {
         if (mode === 'create') {
             setFormData({
-                employee_id: "",
+                pensioner_id: "",
+                pensioner_bank_id: "",
                 month: "",
                 year: "",
                 processing_date: "",
-                net_amount: "",
                 payment_date: "",
-                employee_bank_id: "",
             });
             setFormMode('create');
         }
@@ -165,40 +163,23 @@ export default function NetSalary() {
         setEditId(row.id);
         setFormMode('edit');
         setFormData({
-            employee_id: row.employee_id || "",
+            pensioner_id: row.pensioner_id || "",
+            pensioner_bank_id: row.pensioner_bank_id || "",
             month: row.month || "",
             year: row.year || "",
             processing_date: row.processing_date || "",
-            net_amount: row.net_amount || "",
             payment_date: row.payment_date || "",
-            employee_bank_id: row.employee_bank_id || "",
         });
         setFormOpen(true);
         handleClose();
     };
 
     const handleSubmit = (values, { setSubmitting, resetForm }) => {
-        console.log(values)
-        if (formMode === 'edit') {
-            dispatch(updateNetSalary({ id: editId, values: values }))
-                .unwrap()
-                .then(() => {
-                    toast.success("NetSalary updated successfully");
-                    dispatch(fetchNetSalary({ page, limit: rowsPerPage }));
-                })
-                .catch((err) => {
-                    const apiMsg =
-                        err?.response?.data?.message ||
-                        err?.message ||
-                        'Failed to save pensioner.';
-                    toast.error(apiMsg);
-                });
-        } else {
-            dispatch(createNetSalary(values))
+            dispatch(updateNetPension(values))
                 .unwrap()
                 .then(() => {
                     toast.success("NetSalary added");
-                    dispatch(fetchNetSalary({ page, limit: rowsPerPage }));
+                    dispatch(fetchNetPension({ page, limit: rowsPerPage }));
                 })
                 .catch((err) => {
                     const apiMsg =
@@ -207,7 +188,6 @@ export default function NetSalary() {
                         'Failed to save pensioner.';
                     toast.error(apiMsg);
                 });
-        }
         resetForm();
         setFormOpen(false);
         setEditId(null);
@@ -234,7 +214,7 @@ export default function NetSalary() {
                 <Card className="card-stats mb-4 mb-lg-0">
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
-                            <TextField placeholder="Employee Id" onChange={handleSearchChange} />
+                            {/* <TextField placeholder="Employee Id" onChange={handleSearchChange} /> */}
                             {/* <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                                 + Add
                             </Button> */}
@@ -251,26 +231,24 @@ export default function NetSalary() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Employee Id</TableCell>
+                                                <TableCell>Pensioner Id</TableCell>
                                                 <TableCell>Month</TableCell>
                                                 <TableCell>Year</TableCell>
-                                                <TableCell>Processing Date</TableCell>
-                                                <TableCell>Net Amount</TableCell>
+                                                <TableCell>Net Pension</TableCell>
                                                 <TableCell>Payment Date</TableCell>
-                                                <TableCell>Bank Id</TableCell>
+                                                <TableCell>Verified</TableCell>
                                                 <TableCell>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {netSalary.map((row, idx) => (
+                                            {netPension?.data?.map((row, idx) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell>{row.employee_id}</TableCell>
+                                                    <TableCell>{row.pensioner_id}</TableCell>
                                                     <TableCell>{row.month}</TableCell>
-                                                    <TableCell>{row.year}</TableCell>
-                                                    <TableCell>{row.processing_date}</TableCell>
-                                                    <TableCell>{row.net_amount}</TableCell>
+                                                    <TableCell>{row.year}</TableCell>                                                   
+                                                    <TableCell>{row.net_pension}</TableCell>
                                                     <TableCell>{row.payment_date}</TableCell>
-                                                    <TableCell>{row.employee_bank_id}</TableCell>
+                                                    <TableCell>{row.is_verified}</TableCell>
                                                     <TableCell align="left">
                                                         <IconButton onClick={(e) => handleMenuClick(e, idx)}>
                                                             <MoreVertIcon />
@@ -311,7 +289,7 @@ export default function NetSalary() {
                         />
                     </CardBody>
                 </Card>
-                <NetSalaryModal
+                <NetPensionModal
                     setFormOpen={setFormOpen}
                     formOpen={formOpen}
                     toggleModal={toggleModal}

@@ -16,15 +16,12 @@ import { useDispatch, useSelector } from "react-redux";
 import CircularProgress from '@mui/material/CircularProgress';
 import { fetchArrears, fetchArrearsShow } from "../../redux/slices/arrearsSlice";
 import ArrearModal from "Modal/Arrears";
-<<<<<<< Updated upstream
 import HistoryIcon from '@mui/icons-material/History';
 import HistoryModal from "Modal/HistoryModal";
-=======
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import ViewIcon from '@mui/icons-material/Visibility';
 import {  MenuItem } from '@mui/material';
->>>>>>> Stashed changes
 
 export default function Arrears() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,7 +37,6 @@ export default function Arrears() {
   const [selectedArrearId, setSelectedArrearId] = useState(null);
   const loading = useSelector((state) => state.arrears.loading);
   const { name } = useSelector((state) => state.auth.user.role);
-<<<<<<< Updated upstream
   const [ renderFunction, setRenderFunction ] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
   const [tableHead, setTableHead] = useState([
@@ -119,10 +115,8 @@ export default function Arrears() {
   }, [showArrear]);
 
   console.log("Show Arrears: ", historyRecord);
-=======
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuArrearId, setMenuArrearId] = useState(null);
->>>>>>> Stashed changes
 
 
   useEffect(() => {
@@ -229,11 +223,9 @@ export default function Arrears() {
                             <IconButton onClick={(e) => handleMenuClick(e, a.id)}>
                               <MoreVertIcon />
                             </IconButton>
-<<<<<<< Updated upstream
                             <IconButton onClick={() => handleHistoryStatus(a.id)}>
                               <HistoryIcon fontSize="small" />
                             </IconButton>
-=======
                             <Menu
                               anchorEl={anchorEl}
                               open={menuArrearId === a.id}
@@ -247,7 +239,6 @@ export default function Arrears() {
                                 <EditIcon fontSize="small" /> Edit
                               </MenuItem>
                             </Menu>
->>>>>>> Stashed changes
                           </TableCell>
                         </TableRow>
                       ))}
