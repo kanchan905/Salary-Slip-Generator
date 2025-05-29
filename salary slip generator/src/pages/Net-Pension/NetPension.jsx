@@ -31,8 +31,8 @@ export default function NetPension() {
     const navigate = useNavigate();
     const { name } = useSelector((state) => state.auth.user.role);
     const { netPension, netPensionData, loading } = useSelector((state) => state.netPension);
-    console.log('netPension',netPension)
-    const totalCount = useSelector((state) => state.netPension.totalCount) || 0;
+    console.log('netPension', netPension)
+    const totalCount = useSelector((state) => state.netPension?.totalCount) || 0;
     const { error } = useSelector((state) => state.netSalary)
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuIndex, setMenuIndex] = useState(null);
@@ -50,74 +50,52 @@ export default function NetPension() {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [renderFunction, setRenderFunction] = useState(() => null);
-    const [historyRecord, setHistoryRecord] = useState([]);
-    const [tableHead, setTableHead] = useState([
-        "Sr. No.",
-        "Head 1",
-        "Head 2",
-        "Head 3",
-        "Head 4",
-        "Head 5",
-        "Head 6",
-    ]);
-
+    const [renderFunction, setRenderFunction] = useState(() => () => null);
+    const [tableHead, setTableHead] = useState([]);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-    const toggleHistoryModal = () => {
-        setIsHistoryModalOpen(!isHistoryModalOpen)
-        handleClose();
-    };
+    const [historyRecord, setHistoryRecord] = useState([]);
+    const [showHistory, setShowHistory] = useState(false);
+    
 
-    const getTableConfig = (type) => {
-        switch (type) {
-            case "status":
-                return {
-                    head: [
-                        "Sr. No.",
-                        "Employee Code",
-                        "Month",
-                        "Net Amount",
-                        "Processing Date",
-                        "Payment Date",
-                        "Verified By",
-                        "Added By",
-                        "Edited By"
-                    ],
-                    renderRow: (record, index) => (
-                        <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{record?.employee_id}</td>
-                            <td>{months.find((m) => m.value === record.month)?.label || 'NA'}</td>
-                            <td>{record.net_amount || "NA"}</td>
-                            <td>{record.processing_date || "NA"}</td>
-                            <td>{record.payment_date || "NA"}</td>
-                            <td>{record.verified_by?.name}</td>
-                            <td>{record.added_by?.name}</td>
-                            <td>{record.edited_by?.name || "NA"}</td>
-                        </tr>
-                    ),
-                };
-
-            // You can add more like designation, pay scale, etc.
-
-            default:
-                return { head: [], renderRow: () => null };
-        }
-    };
+    const getPensionHistoryTableConfig = () => ({
+        head: [
+            "Sr. No.",
+            "Month",
+            "Year",
+            "Net Pension",
+            "Processing Date",
+            "Payment Date",
+            "Created At"
+        ],
+        renderRow: (record, index) => (
+            <tr key={record.id}>
+                <td>{index + 1}</td>
+                <td>{record.month}</td>
+                <td>{record.year}</td>
+                <td>₹{record.net_pension}</td>
+                <td>{record.processing_date || 'N/A'}</td>
+                <td>{record.payment_date || 'N/A'}</td>
+                <td>{new Date(record.created_at).toLocaleString()}</td>
+            </tr>
+        )
+    });
 
     // Status History handlers
-    const handleHistoryStatus = (id) => {
-        console.log("Salary ID: ", id);
-        dispatch(showNetPension(id));
+    const handleHistoryPension = (id) => {
+        setShowHistory(true);
+        dispatch(showNetPension({ id }));
     };
 
+
     useEffect(() => {
-        if (netPensionData && netPensionData.history) {
-            const config = getTableConfig("status");
-            setHistoryRecord(netPensionData?.history || []);
+        if (netPensionData?.history?.length) {
+            const config = getPensionHistoryTableConfig();
             setTableHead(config.head);
-            setRenderFunction(() => config.renderRow); // <- use useState to hold render function
-            toggleHistoryModal();
+            setRenderFunction(() => config.renderRow);
+            setHistoryRecord(netPensionData.history);
+            setIsHistoryModalOpen(true);
+            handleClose()
+            setShowHistory(false);
         }
     }, [netPensionData]);
 
@@ -175,19 +153,19 @@ export default function NetPension() {
     };
 
     const handleSubmit = (values, { setSubmitting, resetForm }) => {
-            dispatch(updateNetPension(values))
-                .unwrap()
-                .then(() => {
-                    toast.success("NetSalary added");
-                    dispatch(fetchNetPension({ page, limit: rowsPerPage }));
-                })
-                .catch((err) => {
-                    const apiMsg =
-                        err?.response?.data?.message ||
-                        err?.message ||
-                        'Failed to save pensioner.';
-                    toast.error(apiMsg);
-                });
+        dispatch(updateNetPension({ id: editId, values }))
+            .unwrap()
+            .then(() => {
+                toast.success("NetPension added");
+                dispatch(fetchNetPension({ page, limit: rowsPerPage }));
+            })
+            .catch((err) => {
+                const apiMsg =
+                    err?.response?.data?.message ||
+                    err?.message ||
+                    'Failed to save net pension.';
+                toast.error(apiMsg);
+            });
         resetForm();
         setFormOpen(false);
         setEditId(null);
@@ -201,7 +179,7 @@ export default function NetPension() {
 
     const handleView = (id) => {
         handleClose();
-        navigate(`/${name.toLowerCase()}/employee/net-salary/${id}`);
+        navigate(`/${name.toLowerCase()}/net-pension/view/${id}`);
     }
 
     const isValidAnchorEl = document.body.contains(anchorEl);
@@ -221,13 +199,13 @@ export default function NetPension() {
                         </div>
                     </CardHeader>
                     <CardBody>
-                        <div style={{ width: '100%', overflowX: 'auto' }} className="custom-scrollbar">
+                        <div>
                             {loading ? (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <TableContainer component={Paper} style={{ boxShadow: "none", minWidth: 1000 }}>
+                                <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                                     <Table>
                                         <TableHead>
                                             <TableRow>
@@ -241,11 +219,11 @@ export default function NetPension() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {netPension?.data?.map((row, idx) => (
+                                            {netPension?.map((row, idx) => (
                                                 <TableRow key={row.id}>
                                                     <TableCell>{row.pensioner_id}</TableCell>
                                                     <TableCell>{row.month}</TableCell>
-                                                    <TableCell>{row.year}</TableCell>                                                   
+                                                    <TableCell>{row.year}</TableCell>
                                                     <TableCell>{row.net_pension}</TableCell>
                                                     <TableCell>{row.payment_date}</TableCell>
                                                     <TableCell>{row.is_verified}</TableCell>
@@ -267,7 +245,7 @@ export default function NetPension() {
                                                             <MenuItem onClick={() => handleEdit(row)}>
                                                                 <EditIcon fontSize="small" /> Edit
                                                             </MenuItem>
-                                                            <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                                                            <MenuItem onClick={() => handleHistoryPension(row.id)}>
                                                                 <HistoryIcon fontSize="small" /> History
                                                             </MenuItem>
                                                         </Menu>
@@ -301,11 +279,12 @@ export default function NetPension() {
             </div>
             <HistoryModal
                 isOpen={isHistoryModalOpen}
-                toggle={toggleHistoryModal}
+                toggle={() => setIsHistoryModalOpen(false)}
                 tableHead={tableHead}
                 historyRecord={historyRecord}
                 renderRow={renderFunction}
             />
+
         </>
     );
 }

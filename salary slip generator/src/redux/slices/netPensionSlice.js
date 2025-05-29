@@ -19,10 +19,10 @@ export const fetchNetPension = createAsyncThunk(
 
 export const updateNetPension = createAsyncThunk(
     "Pension/updateNetPension",
-    async ({ id }, { rejectWithValue }) => {
+    async ({ id, values}, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/net-pension/${id}?_method=PUT`);
-            return  response.data.data
+            const response = await axiosInstance.post(`/net-pension/${id}?_method=PUT`, values);
+            return  response.data
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch employees");
         }
@@ -61,7 +61,7 @@ const netPensionSlice = createSlice({
             })
             .addCase(fetchNetPension.fulfilled, (state, action) => {
                 state.loading = false;
-                state.netPension = action.payload;
+                state.netPension = action.payload.data;
                 state.totalCount = action.payload.totalCount;
             })
             .addCase(fetchNetPension.rejected, (state, action) => {
@@ -73,12 +73,10 @@ const netPensionSlice = createSlice({
             })
             .addCase(updateNetPension.fulfilled, (state, action) => {
                 const updatedPension = action.payload;
-                console.log('netpension',state.netPension.data)
-                console.log('action',action.payload)
-                const index = state.netPension.data.findIndex(a => a.id === action.payload.id);
+                const index = state.netPension.findIndex(a => a.id === action.payload.id);
                 if (index !== -1) {
-                    state.netPension.data[index] = {
-                        ...state.netPension.data[index], ...updatedPension
+                    state.netPension[index] = {
+                        ...state.netPension[index], ...updatedPension
                     };
                 }
                 state.loading = false;
