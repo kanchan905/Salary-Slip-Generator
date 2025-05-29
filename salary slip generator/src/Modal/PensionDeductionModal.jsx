@@ -49,11 +49,11 @@ export default function PensionDeductionModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="pension_id">Net Pension</Label>
+                    <Label for="net_pension_id">Net Pension</Label>
                     <Field as={Input} id="net_pension_id" name="net_pension_id" type="select" disabled={ formMode === "edit" ? true : false }>
                       <option value="">Select</option>
                     {
-                      netPension?.data?.map((data, idx) => (
+                      netPension.map((data, idx) => (
                         <option key={`netPension-${idx}`} value={data.id}>{data.net_pension}</option>
                       ))
                     }
