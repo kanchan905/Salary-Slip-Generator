@@ -116,6 +116,7 @@ export default function EmployeeLoan() {
         });
         setFormOpen(true);
         handleClose();
+        console.log(formData);
     };
 
     const handleSubmit = (values, { setSubmitting, resetForm }) => {
@@ -218,7 +219,7 @@ export default function EmployeeLoan() {
                                                             onClose={handleClose}
                                                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                         >
-                                                            <MenuItem onClick={handleEdit}>
+                                                            <MenuItem onClick={()=> handleEdit(row)}>
                                                                 <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
                                                             </MenuItem>
                                                             <MenuItem onClick={()=> handleView(row.id)}>

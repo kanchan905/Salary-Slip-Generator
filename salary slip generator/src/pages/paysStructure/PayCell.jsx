@@ -32,8 +32,7 @@ const PayMatrixCell = () => {
   const [editedIndex, setEditedIndex] = useState('');
   const [editedPay, setEditedPay] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [limit] = useState(100);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [ renderFunction, setRenderFunction ] = useState(() => null);
   const [tableHead, setTableHead] = useState([
     "Sr. No.",
@@ -71,26 +70,37 @@ const PayMatrixCell = () => {
             </tr>
           ),
         };
-      // You can add more.
-      
       default:
         return { head: [], renderRow: () => null };
     }
   };
 
 
-  useEffect(() => {
-    dispatch(fetchPayLevel({ page: 1, limit: levelCount }));
+ const refreshCells = () => {
+  if (selectedLevelId) {
     dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
-  }, [dispatch, selectedLevelId, page, limit]);
-  const refreshCells = () => dispatch(fetchPayCell({ page: page + 1, limit: rowsPerPage }));
+  }
+};
+
+// Fetch levels once
+useEffect(() => {
+  dispatch(fetchPayLevel({ page: 1, limit: 100 }));
+}, [dispatch]);
+
+// Fetch matrix cells based on selection & pagination
+useEffect(() => {
+  if (selectedLevelId) {
+    dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
+  }
+}, [dispatch, selectedLevelId, page, rowsPerPage]);
+
 
 
 
   // Status History handlers
   const handleHistoryStatus = (id) => {
     dispatch(showCellToAPI(id));
-    toggleHistoryModal(); // Open the modal immediately (or you can delay until data loads if preferred)
+    toggleHistoryModal(); 
   };
   
   
@@ -141,8 +151,7 @@ const PayMatrixCell = () => {
   };
 
 
-  const filteredCells = matrixCells.filter(cell => cell.matrix_level_id === Number(selectedLevelId));
-
+const paginatedCells = matrixCells;
   
   return (
     <Paper sx={{ p: 3, boxShadow: 'none' }}>
@@ -246,7 +255,7 @@ const PayMatrixCell = () => {
                 {loading ? (
                   <TableRow><TableCell colSpan={3}>Loading...</TableCell></TableRow>
                 ) : (
-                  filteredCells.map((cell, index) => (
+                  paginatedCells?.map((cell, index) => (
                     <TableRow key={cell.id}>
                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>
@@ -306,7 +315,7 @@ const PayMatrixCell = () => {
             </Table>
 
             <TablePagination
-              rowsPerPageOptions={[5, 10, 20, 50]}
+              // rowsPerPageOptions={[5, 10, 20, 50]}
               component="div"
               count={cellCount}
               rowsPerPage={rowsPerPage}

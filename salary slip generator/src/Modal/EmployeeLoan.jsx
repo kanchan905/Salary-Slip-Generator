@@ -10,6 +10,7 @@ export default function EmployeeLoanModal({
   setFormOpen,
   formMode
 }) {
+  console.log(formData)
   const initialValues = {
     employee_id: formData.employee_id || "",
     loan_type: formData.loan_type || "",

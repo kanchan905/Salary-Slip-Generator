@@ -30,7 +30,7 @@ function PayLevel() {
   const [editingId, setEditingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [tableHead, setTableHead] = useState([
     "Sr. No.",
     "Head 1",
@@ -44,7 +44,7 @@ function PayLevel() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
 
-  const pageSize = 10;
+
 
   useEffect(() => {
     dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
@@ -128,13 +128,6 @@ function PayLevel() {
         dispatch(fetchPayLevel({ page: page + 1, limit: rowsPerPage }));
       }
     }
-  });
-
-  const filteredLevels = levels?.filter(lvl => {
-    const name = lvl?.name || "";
-    const description = lvl?.description || "";
-    return name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      description.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
 
@@ -275,7 +268,7 @@ function PayLevel() {
             
 
             <TablePagination
-              rowsPerPageOptions={[5, 10, 20, 50]}
+              // rowsPerPageOptions={[5, 10, 20, 50]}
               component="div"
               count={totalCount}
               rowsPerPage={rowsPerPage}

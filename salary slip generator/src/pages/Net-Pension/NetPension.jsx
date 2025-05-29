@@ -87,7 +87,7 @@ export default function NetPension() {
 
 
     useEffect(() => {
-        if (netPensionData?.history?.length) {
+        if (showHistory && netPensionData?.history?.length) {
             const config = getPensionHistoryTableConfig();
             setTableHead(config.head);
             setRenderFunction(() => config.renderRow);
@@ -96,7 +96,7 @@ export default function NetPension() {
             handleClose()
             setShowHistory(false);
         }
-    }, [netPensionData]);
+    }, [netPensionData, showHistory]);
 
 
     useEffect(() => {
@@ -183,7 +183,7 @@ export default function NetPension() {
 
     const isValidAnchorEl = document.body.contains(anchorEl);
 
-    console.log("Is valid anchorEl: ", isValidAnchorEl);
+  
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>

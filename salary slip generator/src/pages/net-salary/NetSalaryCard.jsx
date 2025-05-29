@@ -47,7 +47,6 @@ function NetSalaryCard() {
             .then(() => {
                 toast.success("Deduction data update successfully");
                 dispatch(viewNetSalary({ id }));
-                console.log("NEt Salary Data; ", netSalaryData);
                 setDeductionModalOpen(false);
             }).catch((error) => {
                 toast.error("Failed to update deduction data: " + error.message);

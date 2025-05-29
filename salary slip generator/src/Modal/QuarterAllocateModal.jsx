@@ -9,6 +9,7 @@ const validationSchema = Yup.object().shape({
   date_of_allotment: Yup.date().required('Date of Allotment is required'),
   date_of_occupation: Yup.date().required('Date of Occupation is required'),
   date_of_leaving: Yup.date().required('Date of Leaving is required'),
+  is_occupied:Yup.boolean(),
   is_current: Yup.boolean(),
 });
 
@@ -85,6 +86,19 @@ const QuarterAllocateModal = ({ isOpen, toggle, form, onSubmit, quarterList }) =
                 value={values.date_of_leaving}
               />
               <ErrorMessage name="date_of_leaving" component={FormFeedback} />
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  tag={Field}
+                  type="checkbox"
+                  name="is_occupied"
+                  id="is_occupied"
+                  checked={values.is_occupied}
+                  onChange={handleChange}
+                />{' '}
+                Is Occupied
+              </Label>
             </FormGroup>
             <FormGroup check>
               <Label check>

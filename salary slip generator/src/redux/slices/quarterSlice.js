@@ -108,6 +108,7 @@ export const updateEmployeeQuarter = createAsyncThunk(
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(`/employee-quarters/${id}?_method=PUT`, data);
+      console.log(response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to update employee quarter");

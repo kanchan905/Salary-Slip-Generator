@@ -23,17 +23,19 @@ function EmployeeQuarter() {
         date_of_allotment: '',
         date_of_occupation: '',
         date_of_leaving: '',
+        is_occupied:'',
         is_current: false,
     });
     const updateStatus = useSelector((state) => state.quarter.updateStatus);
     const loading = useSelector((state) => state.quarter.loading);
     const error = useSelector((state) => state.quarter.error);
     const { quarterList} = useSelector((state) => state.quarter);
+    
 
 
     useEffect(() => {
         dispatch(fetchEmployeeQuarterList({ page: currentPage, limit: PAGE_SIZE }));
-        dispatch(fetchQuarterList())
+        dispatch(fetchQuarterList({page:'',limit:''}))
     }, [updateStatus, dispatch, currentPage,]);
 
 
@@ -45,6 +47,7 @@ function EmployeeQuarter() {
                 date_of_allotment: selectedQuarter.date_of_allotment || '',
                 date_of_occupation: selectedQuarter.date_of_occupation || '',
                 date_of_leaving: selectedQuarter.date_of_leaving || '',
+                is_occupied:selectedQuarter.is_occupied || '',
                 is_current: !!selectedQuarter.is_current,
             });
             setEditId(id);
@@ -64,6 +67,7 @@ function EmployeeQuarter() {
             date_of_allotment: '',
             date_of_occupation: '',
             date_of_leaving: '',
+            is_occupied:'',
             is_current: false,
         });
         setModalOpen(true);
@@ -83,6 +87,7 @@ function EmployeeQuarter() {
             is_current: values.is_current ? 1 : 0,
         };
         if (editId) {
+            console.log(data)
             dispatch(updateEmployeeQuarter({ id: editId, data }))
                 .unwrap()
                 .then(() => {
@@ -92,7 +97,7 @@ function EmployeeQuarter() {
                     const apiMsg =
                         err?.response?.data?.message ||
                         err?.message ||
-                        err?.message ||
+                        err?.errorMsg ||
                         'Failed to update quarter.';
                     toast.error(apiMsg);
                 });

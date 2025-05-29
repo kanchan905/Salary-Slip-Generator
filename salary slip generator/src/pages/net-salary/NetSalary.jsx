@@ -35,7 +35,7 @@ export default function NetSalary() {
     const totalCount = useSelector((state) => state.netSalary.totalCount) || 0;
     const { error } = useSelector((state) => state.netSalary)
     const [anchorEl, setAnchorEl] = useState(null);
-    const [menuIndex, setMenuIndex] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState('create');
     const [editId, setEditId] = useState(null);
@@ -109,7 +109,7 @@ export default function NetSalary() {
     // Status History handlers
     const handleHistoryStatus = (id) => {
         console.log("Salary ID: ", id);
-        dispatch(viewNetSalary(id));
+        dispatch(viewNetSalary({id}));
     };
       
     useEffect(() => {
@@ -142,7 +142,7 @@ export default function NetSalary() {
 
     const handleClose = () => {
         setAnchorEl(null);
-        setMenuIndex(null);
+        setSelectedRow(null)
     };
 
     const toggleModal = (mode) => {
@@ -162,7 +162,7 @@ export default function NetSalary() {
     };
 
     const handleEdit = (row) => {
-        setEditId(row.id);
+        setEditId(row.id)
         setFormMode('edit');
         setFormData({
             employee_id: row.employee_id || "",
@@ -178,7 +178,6 @@ export default function NetSalary() {
     };
 
     const handleSubmit = (values, { setSubmitting, resetForm }) => {
-        console.log(values)
         if (formMode === 'edit') {
             dispatch(updateNetSalary({ id: editId, values: values }))
                 .unwrap()
@@ -190,7 +189,7 @@ export default function NetSalary() {
                     const apiMsg =
                         err?.response?.data?.message ||
                         err?.message ||
-                        'Failed to save pensioner.';
+                        'Failed to save net salary.';
                     toast.error(apiMsg);
                 });
         } else {
@@ -204,7 +203,7 @@ export default function NetSalary() {
                     const apiMsg =
                         err?.response?.data?.message ||
                         err?.message ||
-                        'Failed to save pensioner.';
+                        'Failed to save net salary.';
                     toast.error(apiMsg);
                 });
         }
@@ -214,9 +213,9 @@ export default function NetSalary() {
         setSubmitting(false);
     };
 
-    const handleMenuClick = (event, index) => {
+    const handleMenuClick = (event, row) => {
         setAnchorEl(event.currentTarget);
-        setMenuIndex(index);
+       setSelectedRow(row);
     };
 
     const handleView = (id) => {
@@ -226,7 +225,7 @@ export default function NetSalary() {
 
     const isValidAnchorEl = document.body.contains(anchorEl);
 
-    console.log("Is valid anchorEl: ", isValidAnchorEl);
+   
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
@@ -241,13 +240,13 @@ export default function NetSalary() {
                         </div>
                     </CardHeader>
                     <CardBody>
-                        <div style={{ width: '100%', overflowX: 'auto' }} className="custom-scrollbar">
+                        <div className="custom-scrollbar">
                             {loading ? (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <TableContainer component={Paper} style={{ boxShadow: "none", minWidth: 1000 }}>
+                                <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                                     <Table>
                                         <TableHead>
                                             <TableRow>
@@ -272,7 +271,7 @@ export default function NetSalary() {
                                                     <TableCell>{row.payment_date}</TableCell>
                                                     <TableCell>{row.employee_bank_id}</TableCell>
                                                     <TableCell align="left">
-                                                        <IconButton onClick={(e) => handleMenuClick(e, idx)}>
+                                                        <IconButton onClick={(e) => handleMenuClick(e, row)}>
                                                             <MoreVertIcon />
                                                         </IconButton>
                                                         <Menu
@@ -286,7 +285,7 @@ export default function NetSalary() {
                                                             >
                                                                 <ViewIcon fontSize="small" /> View
                                                             </MenuItem>
-                                                            <MenuItem onClick={() => handleEdit(row)}>
+                                                            <MenuItem onClick={() =>  handleEdit(selectedRow)}>
                                                                 <EditIcon fontSize="small" /> Edit
                                                             </MenuItem>
                                                             <MenuItem onClick={() => handleHistoryStatus(row.id)}>

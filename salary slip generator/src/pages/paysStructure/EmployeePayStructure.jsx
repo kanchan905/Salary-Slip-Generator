@@ -124,7 +124,7 @@ const EmployeePayStructures = () => {
 
   useEffect(() => {
     dispatch(fetchPayStructure({ page: page + 1 , limit: rowsPerPage, search: "" }));
-  }, [dispatch, page]);
+  }, [dispatch, page, rowsPerPage]);
 
 
   
@@ -155,7 +155,7 @@ const EmployeePayStructures = () => {
       setEditData(null);
 
       // Refetch data after update
-      dispatch(fetchPayStructure({ page: 1, limit: 10, search: "" }));
+      dispatch(fetchPayStructure({ page: 1, limit: rowsPerPage, search: "" }));
     } catch (error) {
       toast.error(error?.message || "Something went wrong");
     }
@@ -321,6 +321,7 @@ const EmployeePayStructures = () => {
                     <TableCell>₹ {structure?.commission || '-'}</TableCell>
                     <TableCell>
                       <Button
+                      className='mr-2'
                         variant="outlined"
                         color="primary"
                         size="small"
