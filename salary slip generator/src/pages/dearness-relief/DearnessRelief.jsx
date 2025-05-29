@@ -3,6 +3,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton, Menu, MenuItem, TablePagination, Box
 } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import HistoryIcon from '@mui/icons-material/History';
 import {
@@ -22,7 +23,8 @@ import {
 } from '../../redux/slices/dearnessRelief';
 import DearnessReliefModal from '../../Modal/DearnessRelief';
 import ViewIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';import HistoryModal from 'Modal/HistoryModal';
+import { useNavigate } from 'react-router-dom';
+import HistoryModal from 'Modal/HistoryModal';
 
 
 
@@ -42,6 +44,10 @@ export default function DearnessRelief() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuReliefId, setMenuReliefId] = useState(null);
+  const { name } = useSelector((state) => state.auth.user.role);
+  const navigate = useNavigate();
   const [ renderFunction, setRenderFunction ] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
   const [tableHead, setTableHead] = useState([
@@ -55,7 +61,10 @@ export default function DearnessRelief() {
   ]);
     
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const toggleHistoryModal = () => {
+    setIsHistoryModalOpen(!isHistoryModalOpen);
+    handleMenuClose();
+  }
   const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
   
   const getTableConfig = (type) => {
@@ -105,10 +114,6 @@ export default function DearnessRelief() {
     }
   }, [showDearness, shouldOpenHistory]);
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuReliefId, setMenuReliefId] = useState(null);
-  const { name } = useSelector((state) => state.auth.user.role);
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchDearnessRelief());
@@ -235,6 +240,7 @@ export default function DearnessRelief() {
                       <TableCell>Dearness Relief %</TableCell>
                       <TableCell>Effective From</TableCell>
                       <TableCell>Effective To</TableCell>
+                      <TableCell>Dr Percentage</TableCell>
                       <TableCell>Added By</TableCell>
                       <TableCell>Edited By</TableCell>
                       <TableCell>Action</TableCell>
@@ -247,14 +253,12 @@ export default function DearnessRelief() {
                         <TableCell>{row.dr_percentage ?? "NA"}</TableCell>
                         <TableCell>{row.effective_from || "NA"}</TableCell>
                         <TableCell>{row.effective_to || "NA"}</TableCell>
+                        <TableCell>{row.dr_percentage ?? "NA"}</TableCell>
                         <TableCell>{row.added_by?.name || "NA"}</TableCell>
                         <TableCell>{row.edited_by?.name || "NA"}</TableCell>
                         <TableCell align="left">
                           <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
-                            <MoreVertIcon color='primary'/>
-                          </IconButton>
-                          <IconButton onClick={() => handleHistoryStatus(row.id)}>
-                            <HistoryIcon fontSize="small" color='warning'/>
+                            <MoreVertIcon />
                           </IconButton>
                           <Menu
                             anchorEl={anchorEl}
@@ -262,11 +266,14 @@ export default function DearnessRelief() {
                             onClose={handleMenuClose}
                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                           >
+                            <MenuItem onClick={() => handleView(row.id)}>
+                              <ViewIcon fontSize="small" /> View
+                            </MenuItem>
                             <MenuItem onClick={() => handleEdit(row)}>
                               <EditIcon fontSize="small" /> Edit
                             </MenuItem>
-                             <MenuItem onClick={() => handleView(row.id)}>
-                              <ViewIcon fontSize="small" /> View
+                            <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                              <HistoryIcon fontSize="small"/> History
                             </MenuItem>
                           </Menu>
                         </TableCell>

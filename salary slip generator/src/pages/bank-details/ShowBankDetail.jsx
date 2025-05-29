@@ -10,7 +10,8 @@ import {
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { Container } from 'reactstrap';
-import { showBankDetail } from '../../redux/slices/bankSlice';
+import { fetchBankShow } from '../../redux/slices/bankSlice';
+
 
 const LabelValue = ({ label, value }) => (
     <Grid item xs={12} sm={6} md={4}>
@@ -30,11 +31,11 @@ const Section = ({ title, children }) => (
 const ShowBankDetail = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
-    const data = useSelector((state) => state.bankdetail.showBank); 
+    const data = useSelector((state) => state.bankdetail.bankShow); 
     const { loading } = useSelector((state) => state.bankdetail);
 
     useEffect(() => {
-        dispatch(showBankDetail(id));
+        dispatch(fetchBankShow(id));
     }, [dispatch, id]);
 
     return (

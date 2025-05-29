@@ -69,7 +69,10 @@ export default function PensionDocuments() {
   ]);
       
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const toggleHistoryModal = () => {
+    setIsHistoryModalOpen(!isHistoryModalOpen);
+    handleClose();
+  }
   const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
     
 
@@ -285,12 +288,6 @@ export default function PensionDocuments() {
                           <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
                             <MoreVertIcon />
                           </IconButton>
-                          <IconButton onClick={() => handleEdit(row)}>
-                            <EditIcon fontSize="small" color='primary'/>
-                          </IconButton>
-                          <IconButton onClick={() => handleHistoryStatus(row.id)}>
-                            <HistoryIcon fontSize="small" color='warning'/>
-                          </IconButton>
                           <Menu
                             anchorEl={menuAnchorEl}
                             open={menuRowId === row.id}
@@ -302,6 +299,9 @@ export default function PensionDocuments() {
                             </MenuItem>
                             <MenuItem onClick={() => handleView(row.id)}>
                               <VisibilityIcon fontSize="small" sx={{ mr: 1 }} /> View
+                            </MenuItem>
+                            <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                              <HistoryIcon fontSize="small" color='warning'/> History
                             </MenuItem>
                           </Menu>
                         </TableCell>

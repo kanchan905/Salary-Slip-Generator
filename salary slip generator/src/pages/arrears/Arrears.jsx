@@ -50,7 +50,11 @@ export default function Arrears() {
   ]);
     
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const toggleHistoryModal = () => 
+    {
+      setIsHistoryModalOpen(!isHistoryModalOpen)
+      handleMenuClose()
+    }
   const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
   
   const getTableConfig = (type) => {
@@ -90,10 +94,7 @@ export default function Arrears() {
             </tr>
           ),
         };
-
-  
     // You can add more like designation, pay scale, etc.
-              
     default:
       return { head: [], renderRow: () => null };
     }
@@ -106,9 +107,9 @@ export default function Arrears() {
   };
           
   useEffect(() => {
-    if (shouldOpenHistory && Array.isArray(showArrear.history)) {
+    if (shouldOpenHistory && Array.isArray(showArrear?.history)) {
       const config = getTableConfig("arrear");
-      setHistoryRecord(showArrear.history);
+      setHistoryRecord(showArrear?.history);
       setTableHead(config.head);
       setRenderFunction(() => config.renderRow);
       toggleHistoryModal();
@@ -123,12 +124,6 @@ export default function Arrears() {
   useEffect(() => {
     dispatch(fetchArrears({ page: page, limit: rowsPerPage, id: searchQuery }));
   }, [dispatch, page, rowsPerPage, searchQuery]);
-
-  // const filteredArrears = arrearsData.filter(a =>
-  //   a.pensioner_id?.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  // const paginatedArrears = filteredArrears.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleChangePage = (event, newPage) => setPage(newPage);
 
@@ -224,9 +219,6 @@ export default function Arrears() {
                             <IconButton onClick={(e) => handleMenuClick(e, a.id)}>
                               <MoreVertIcon />
                             </IconButton>
-                            <IconButton onClick={() => handleHistoryStatus(a.id)}>
-                              <HistoryIcon fontSize="small" color="warning"/>
-                            </IconButton>
                             <Menu
                               anchorEl={anchorEl}
                               open={menuArrearId === a.id}
@@ -238,6 +230,9 @@ export default function Arrears() {
                               </MenuItem>
                               <MenuItem onClick={() => handleEdit(a.id)}>
                                 <EditIcon fontSize="small" /> Edit
+                              </MenuItem>
+                              <MenuItem onClick={() => handleHistoryStatus(a.id)}>
+                                <HistoryIcon fontSize="small"/> History
                               </MenuItem>
                             </Menu>
                           </TableCell>

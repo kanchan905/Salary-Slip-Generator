@@ -61,17 +61,6 @@ export const updatePensionDocument = createAsyncThunk(
   }
 );
 
-export const showPensionDocument = createAsyncThunk(
-  'document/showPensionDocument',
-  async ({id}, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get(`/pension-documents/${id}`);
-      return response.data.data      
-    } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to update employee");
-    }
-  }
-)
 
 export const fetchPensionDocumentShow = createAsyncThunk(
   'showPensionerDocument/fetchPensionDocumentShow',
@@ -91,7 +80,6 @@ export const fetchPensionDocumentShow = createAsyncThunk(
 
 const initialState = {
   document: [],
-  showdocument:{},
   showPensionerDocument: null,
   totalCount: 0,
   loading: false,
@@ -140,17 +128,6 @@ const pensionDocumentSlice = createSlice(({
         state.loading = false;
       })
       .addCase(updatePensionDocument.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(showPensionDocument.pending,(state,action)=>{
-        state.loading = true;
-      })
-      .addCase(showPensionDocument.fulfilled,(state,action)=>{
-        state.showdocument = action.payload;
-        state.loading = false
-      })
-      .addCase(showPensionDocument.rejected,(state,action)=>{
         state.loading = false;
         state.error = action.error.message;
       })

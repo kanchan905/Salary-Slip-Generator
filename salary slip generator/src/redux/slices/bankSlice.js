@@ -52,17 +52,6 @@ export const toggleBankDetailStatus = createAsyncThunk(
     }
 );
 
-export const showBankDetail = createAsyncThunk(
-    'bank/showBankDetail',
-    async (id, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.get(`/bank-account/${id}`);
-            return response.data.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || "Failed to update employee");
-        }
-    }
-);
 export const fetchBankShow = createAsyncThunk(
     'bankShow/fetchBankShow',
     async (id, { rejectWithValue }) => {
@@ -73,14 +62,14 @@ export const fetchBankShow = createAsyncThunk(
                 totalCount: response.data.total_count
             };
         } catch (error) {
-            return rejectWithValue(error.response?.data || "Failed to bank details");
+            return rejectWithValue(error.response?.data || "Failed to bank show detail");
         }
     }
-)
+);
+
 
 const initialState = {
     bankdetails: [],
-    showBank:{},
     bankShow: null,
     totalCount: 0,
     loading: false,
@@ -147,17 +136,6 @@ const bankSlice = createSlice(({
                 state.loading = false;
             })
             .addCase(toggleBankDetailStatus.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message;
-            })
-            .addCase(showBankDetail.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(showBankDetail.fulfilled, (state, action) => {
-                state.loading = false;
-                state.showBank = action.payload;
-            })
-            .addCase(showBankDetail.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
             })

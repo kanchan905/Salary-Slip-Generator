@@ -117,7 +117,6 @@ export default function PensionDeduction() {
     }
   }, [showPension, shouldOpenHistory]);
 
-  console.log("History Record: ", historyRecord);
 
   useEffect(() => {
     dispatch(fetchPensionDeduction());

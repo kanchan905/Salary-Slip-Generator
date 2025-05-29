@@ -48,6 +48,85 @@ export default function BankDetails() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { name } = useSelector((state) => state.auth.user.role);
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuBankDetailId, setMenuBankDetailId] = useState(null);
+  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [historyRecord, setHistoryRecord] = useState([]);
+  const [tableHead, setTableHead] = useState([
+    "Sr. No.",
+    "Head 1",
+    "Head 2",
+    "Head 3",
+    "Head 4",
+    "Head 5",
+    "Head 6",
+  ]);
+  
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const toggleHistoryModal = () => {
+    setIsHistoryModalOpen(!isHistoryModalOpen);
+    handleMenuClose();
+  }
+  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
+
+  const getTableConfig = (type) => {
+    switch (type) {
+      case "bank":
+        return {
+          head: [
+            "Sr. No.",
+            "Bank Name",
+            "Branch Name",  
+            "Account No",
+            "IFSC Code",
+            "Status",
+            "Added By",
+            "Edited By"
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{record?.bank_name}</td>
+              <td>{record.branch_name || "NA"}</td>
+              <td>{record.account_no || "NA"}</td>
+              <td>{record.ifsc_code || "NA"}</td>
+              <td>
+                <Chip
+                  label={record.is_active ? 'Active' : 'Inactive'}
+                  color={record.is_active ? 'success' : 'error'}
+                  variant="outlined"
+                  size="small"
+                />
+              </td>
+              <td>{record.added_by?.name}</td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+  
+      // You can add more like designation, pay scale, etc.
+      default:
+        return { head: [], renderRow: () => null };
+    }
+  };
+
+  const handleHistoryStatus = (id) => {
+    setShouldOpenHistory(true); // only allow opening if this was user-triggered
+    dispatch(fetchBankShow(id));
+  };
+
+  useEffect(() => {
+    if (shouldOpenHistory && bankShow?.history) {
+      const config = getTableConfig("bank");
+      setHistoryRecord(bankShow?.history || []);
+      setTableHead(config.head);
+      setRenderFunction(() => config.renderRow); // <- use useState to hold render function
+      toggleHistoryModal();
+      setShouldOpenHistory(false); // reset the flag
+    }
+  }, [bankShow, shouldOpenHistory]);
 
   useEffect(() => {
     dispatch(fetchBankDetails({ page: page, limit: rowsPerPage, id: searchQuery }));

@@ -26,7 +26,7 @@ import HistoryModal from 'Modal/HistoryModal';
 
 export default function MonthlyPension() {
   const dispatch = useDispatch();
-  const { monthlyPension, loading } = useSelector((state) => state.monthlypension);
+  const { monthlyPension, showMonthyPension, loading } = useSelector((state) => state.monthlypension);
   const totalCount = useSelector((state) => state.monthlypension.totalCount) || 0;
   const { error } = useSelector((state) => state.monthlypension)
   const [formOpen, setFormOpen] = useState(false);
@@ -202,6 +202,7 @@ export default function MonthlyPension() {
                         <TableCell>Pensioner Name</TableCell>
                         <TableCell>PPO No.</TableCell>
                         <TableCell>Basic Pension</TableCell>
+                        <TableCell>Commutation Amount</TableCell>
                         <TableCell>Additional Pension</TableCell>
                         <TableCell>Net Pension</TableCell>
                         <TableCell>DR %</TableCell>
@@ -215,24 +216,37 @@ export default function MonthlyPension() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {monthlyPension.map((row, idx) => (
-                        <TableRow key={row.id}>
-                          <TableCell>{row.pensioner_id}</TableCell>
-                          <TableCell>{row.pensioner?.name}</TableCell>
-                          <TableCell>{row.month}</TableCell>
-                          <TableCell>{row.basic_pension}</TableCell>
-                          <TableCell>{row.commutation_amount}</TableCell>
-                          <TableCell>{row.additional_pension}</TableCell>
-                          <TableCell>{row.dr_amount}</TableCell>
-                          <TableCell>{row.medical_allowance}</TableCell>
-                          <TableCell>{row.total_pension}</TableCell>
-                          <TableCell>{row.total_recovery}</TableCell>
-                          <TableCell>{row.net_pension}</TableCell>
-                          <TableCell>{row.status}</TableCell>
-                          <TableCell>{row.added_by?.name}</TableCell>
-                          <TableCell>{row.edited_by?.name}</TableCell>
+                      {monthlyPension && monthlyPension.length > 0 ? (
+                        monthlyPension.map((row, idx) => (
+                          <TableRow key={row.id}>
+                            <TableCell>{idx + 1}</TableCell>
+                            <TableCell>{row?.net_pension?.pensioner?.name ?? "NA"}</TableCell>
+                            <TableCell>{row?.net_pension?.pensioner?.ppo_no ?? "NA"}</TableCell>
+                            <TableCell>{row.basic_pension ?? "NA"}</TableCell>
+                            <TableCell>{row.commutation_amount ?? "NA"}</TableCell>
+                            <TableCell>{row.additional_pension ?? "NA"}</TableCell>
+                            <TableCell>{row.net_pension?.net_pension ?? "NA"}</TableCell>
+                            <TableCell>{row.dearness?.dr_percentage ?? "NA"}</TableCell>
+                            <TableCell>{row.dr_amount ?? "NA"}</TableCell>
+                            <TableCell>{row.medical_allowance ?? "NA"}</TableCell>
+                            <TableCell>{row.total_arrear ?? "NA"}</TableCell>
+                            <TableCell>{row.total_pension ?? "NA"}</TableCell>
+                            <TableCell>{row.remarks ?? "NA"}</TableCell>
+                            <TableCell>{row.status ?? "NA"}</TableCell>
+                            <TableCell>
+                              <IconButton title='History' onClick={() => handleHistoryStatus(row.id)}>
+                                <HistoryIcon fontSize="small" color="warning" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={15} align="center">
+                            No data available
+                          </TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
 
                   </Table>

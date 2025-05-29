@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { Container } from 'reactstrap';
-import { showDearnessRelief } from '../../redux/slices/dearnessRelief';
+import { fetchDearnessReliefShow } from '../../redux/slices/dearnessRelief';
 
 const LabelValue = ({ label, value }) => (
   <Grid item xs={12} sm={6} md={4}>
@@ -35,7 +35,7 @@ const ShowDearness = () => {
   console.log(data)
 
   useEffect(() => {
-    dispatch(showDearnessRelief({id}));
+    dispatch(fetchDearnessReliefShow({id}));
   }, [dispatch, id]);
 
   return (

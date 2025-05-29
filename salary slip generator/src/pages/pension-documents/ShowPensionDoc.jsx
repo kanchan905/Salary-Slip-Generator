@@ -5,7 +5,8 @@ import {
 import { Container } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { showPensionDocument } from '../../redux/slices/pensionDocumentSlice';
+import { fetchPensionDocumentShow } from '../../redux/slices/pensionDocumentSlice';
+
 
 const LabelValue = ({ label, value }) => (
     <Grid item xs={12} sm={6} md={4}>
@@ -25,11 +26,11 @@ const Section = ({ title, children }) => (
 const ShowPensionDoc = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
-    const { showdocument, loading } = useSelector((state) => state.pensionDocument);
+    const { showPensionerDocument, loading } = useSelector((state) => state.pensionDocument);
 
 
     useEffect(() => {
-        dispatch(showPensionDocument({ id }));
+        dispatch(fetchPensionDocumentShow({ id }));
     }, [dispatch, id]);
 
     return (
@@ -44,23 +45,23 @@ const ShowPensionDoc = () => {
                     ) : (
                         <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
                             <Typography variant="h4" fontWeight={600} mb={3}>
-                                Pension Document Detail (ID: {showdocument?.id})
+                                Pension Document Detail (ID: {showPensionerDocument?.id})
                             </Typography>
 
                             <Section title="Document Info">
-                                <LabelValue label="Pensioner ID" value={showdocument?.pensioner_id} />
-                                <LabelValue label="Document Type" value={showdocument?.document_type} />
-                                <LabelValue label="Document Number" value={showdocument?.document_number} />
-                                <LabelValue label="Issue Date" value={showdocument?.issue_date} />
-                                <LabelValue label="Expiry Date" value={showdocument?.expiry_date} />
-                                <LabelValue label="Upload Date" value={showdocument?.upload_date} />
+                                <LabelValue label="Pensioner ID" value={showPensionerDocument?.pensioner_id} />
+                                <LabelValue label="Document Type" value={showPensionerDocument?.document_type} />
+                                <LabelValue label="Document Number" value={showPensionerDocument?.document_number} />
+                                <LabelValue label="Issue Date" value={showPensionerDocument?.issue_date} />
+                                <LabelValue label="Expiry Date" value={showPensionerDocument?.expiry_date} />
+                                <LabelValue label="Upload Date" value={showPensionerDocument?.upload_date} />
                                 <LabelValue
                                     label="File"
                                     value={
-                                        showdocument?.file_path
+                                        showPensionerDocument?.file_path
                                             ? (
                                                 <a
-                                                    href={`${process.env.REACT_APP_IMAGE_FILAPI}/${showdocument.file_path}`}
+                                                    href={`${process.env.REACT_APP_IMAGE_FILAPI}/${showPensionerDocument.file_path}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                 >
@@ -73,10 +74,10 @@ const ShowPensionDoc = () => {
                             </Section>
 
                             <Section title="Audit Info">
-                                <LabelValue label="Added By" value={showdocument?.added_by?.name} />
-                                <LabelValue label="Edited By" value={showdocument?.edited_by?.name || '—'} />
-                                <LabelValue label="Created At" value={new Date(showdocument?.created_at).toLocaleString()} />
-                                <LabelValue label="Updated At" value={new Date(showdocument?.updated_at).toLocaleString()} />
+                                <LabelValue label="Added By" value={showPensionerDocument?.added_by?.name} />
+                                <LabelValue label="Edited By" value={showPensionerDocument?.edited_by?.name || '—'} />
+                                <LabelValue label="Created At" value={new Date(showPensionerDocument?.created_at).toLocaleString()} />
+                                <LabelValue label="Updated At" value={new Date(showPensionerDocument?.updated_at).toLocaleString()} />
                             </Section>
                         </Paper>
                     )}
