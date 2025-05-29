@@ -37,7 +37,6 @@ export default function PensionDeductionModal({
     dispatch(fetchNetPension({ page: 1, limit: 40}));
   },[dispatch]);
   
-  console.log("Net pension:", netPension);
 
   return (
     <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} scrollable>
