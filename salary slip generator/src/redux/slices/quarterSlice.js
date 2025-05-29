@@ -11,10 +11,22 @@ export const fetchQuarterList = createAsyncThunk(
     const { page, limit } = credentials;
     try {
       const response = await axiosInstance.get(`/quarters?page=${page}&limit=${limit}`);
-      console.log('response',response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch quarters");
+    }
+  }
+);
+
+// Fetch Quarter Show
+export const fetchQuarterShow = createAsyncThunk(
+  "quarterShow/fetchQuarterShow",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/quarters/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch quarters show");
     }
   }
 );
@@ -66,16 +78,15 @@ export const updateQuarter = createAsyncThunk(
 // Fetch Employee Quarter List
 export  const fetchEmployeeQuarterList = createAsyncThunk(
   "quarter/fetchEmployeeQuarterList",
-   async (credentials, { rejectWithValue }) => {
-          const { page, limit} = credentials;
-          try {
-              const response = await axiosInstance.get(`/employee-quarters?page=${page}&limit=${limit}`);
-              // console.log("Employee Quarter List Response:", response.data);
-              return response.data.data;
-          } catch (error) {
-              return rejectWithValue(error.response?.data || "Failed to fetch employees");
-          }
-      }
+  async (credentials, { rejectWithValue }) => {
+    const { page, limit} = credentials;
+    try {
+      const response = await axiosInstance.get(`/employee-quarters?page=${page}&limit=${limit}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch employees");
+    }
+  }
 );
 
 // Create Employee Quarter
@@ -104,9 +115,24 @@ export const updateEmployeeQuarter = createAsyncThunk(
   }
 );
 
+// Fetch Employee Quarter Show
+export  const fetchEmployeeQuarterShow = createAsyncThunk(
+  "employeeQuarterShow/fetchEmployeeQuarterShow",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/employee-quarters/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch employees quarter show");
+    }
+  }
+);
+
 const initialState = {
   employeeQuarterList: [],
   quarterList: [],
+  quarterShow: null,
+  employeeQuarterShow: null,
   totalCount: 0,
   singleQuarter: null,
   loading: false,
@@ -129,6 +155,17 @@ const quarterSlice = createSlice({
         state.totalCount = action.payload.total_count; // Assuming the response contains the total count
       })
       .addCase(fetchQuarterList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchQuarterShow.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchQuarterShow.fulfilled, (state, action) => {
+        state.loading = false;
+        state.quarterShow = action.payload.data;
+      })
+      .addCase(fetchQuarterShow.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -181,6 +218,17 @@ const quarterSlice = createSlice({
         state.employeeQuarterList = action.payload;
       })
       .addCase(fetchEmployeeQuarterList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchEmployeeQuarterShow.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchEmployeeQuarterShow.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employeeQuarterShow = action.payload;
+      })
+      .addCase(fetchEmployeeQuarterShow.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

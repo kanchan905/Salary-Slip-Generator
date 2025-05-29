@@ -28,6 +28,7 @@ import HistoryModal from 'Modal/HistoryModal';
 export default function PensionDeduction() {
   const dispatch = useDispatch();
   const { pension, showPension, loading } = useSelector((state) => state.pensionDeduction);
+  const { netPension, netPensionData } = useSelector((state) => state.netPension);
   const totalCount = useSelector((state)=> state.pensionDeduction.totalCount) || 0;
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
@@ -100,7 +101,9 @@ export default function PensionDeduction() {
         return { head: [], renderRow: () => null };
     }
   };
-  
+
+
+
   const handleHistoryStatus = (id) => {
     setShouldOpenHistory(true); // only allow opening if this was user-triggered
     dispatch(fetchPensionDeductionShow(id));
@@ -233,19 +236,19 @@ export default function PensionDeduction() {
               <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                 <Table>
                   <TableHead>
-                    <TableRow>
-                      <TableCell>Sr. No.</TableCell>
-                      <TableCell>Pensioner Name</TableCell>
-                      <TableCell>PPO No.</TableCell>
-                      <TableCell>Commutation Amount</TableCell>
-                      <TableCell>Income Tax</TableCell>
-                      <TableCell>Recovery</TableCell>
-                      <TableCell>Amount</TableCell>
-                      <TableCell>Net Amount</TableCell>
-                      <TableCell>Other</TableCell>
-                      <TableCell>Add By</TableCell>
-                      <TableCell>Edit By</TableCell>
-                      <TableCell>Action</TableCell>
+                    <TableRow style={{whiteSpace: "nowrap"}}>
+                      <TableCell style={{fontWeight: "900"}}>Sr. No.</TableCell>
+                      <TableCell style={{fontWeight: "900"}}>Pensioner Name</TableCell>
+                      <TableCell style={{fontWeight: "900"}}>PPO No.</TableCell>
+                      <TableCell style={{fontWeight: "900"}}>Commutation Amount</TableCell>
+                      <TableCell >Income Tax</TableCell>
+                      <TableCell >Recovery</TableCell>
+                      <TableCell >Amount</TableCell>
+                      <TableCell >Net Amount</TableCell>
+                      <TableCell >Other</TableCell>
+                      <TableCell >Add By</TableCell>
+                      <TableCell >Edit By</TableCell>
+                      <TableCell >Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

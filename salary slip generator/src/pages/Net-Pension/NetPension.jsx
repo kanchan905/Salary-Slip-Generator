@@ -31,7 +31,6 @@ export default function NetPension() {
     const navigate = useNavigate();
     const { name } = useSelector((state) => state.auth.user.role);
     const { netPension, netPensionData, loading } = useSelector((state) => state.netPension);
-    console.log('netPension', netPension)
     const totalCount = useSelector((state) => state.netPension?.totalCount) || 0;
     const { error } = useSelector((state) => state.netSalary)
     const [anchorEl, setAnchorEl] = useState(null);

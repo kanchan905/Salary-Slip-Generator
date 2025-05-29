@@ -207,7 +207,6 @@ function EmployeeDetail() {
 
   // Status History handlers
   const handleHistoryStatus = (employeeID) => {
-    console.log("Employee ID: ", employeeID);
     dispatch(fetchEmployeeStatus(employeeID));
   };
   

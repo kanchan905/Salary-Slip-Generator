@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Row, Col, Button, FormGroup, Label, Input } from "reactstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNetPension } from "../redux/slices/netPensionSlice";
 
 export default function PensionDeductionModal({
   formOpen,
@@ -27,6 +29,15 @@ export default function PensionDeductionModal({
     if (!values.description) errors.description = "Required"
     return errors;
   };
+  const dispatch = useDispatch();
+  const { netPension, netPensionData } = useSelector((state) => state.netPension);
+
+  
+  useEffect(() => {
+    dispatch(fetchNetPension({ page: 1, limit: 40}));
+  },[dispatch]);
+  
+  console.log("Net pension:", netPension);
 
   return (
     <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} scrollable>
@@ -41,6 +52,11 @@ export default function PensionDeductionModal({
                     <Label for="pension_id">Net Pension</Label>
                     <Field as={Input} id="net_pension_id" name="net_pension_id" type="select" disabled={ formMode === "edit" ? true : false }>
                       <option value="">Select</option>
+                    {
+                      netPension?.data?.map((data, idx) => (
+                        <option key={`netPension-${idx}`} value={data.id}>{data.net_pension}</option>
+                      ))
+                    }
                       
                     </Field>
                     <ErrorMessage name="net_pension_id" component="div" className="text-danger" />

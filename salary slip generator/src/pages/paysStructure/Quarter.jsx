@@ -1,19 +1,121 @@
-import { Box, Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
+import { 
+    Button, 
+    CircularProgress, 
+    IconButton, 
+    Table, 
+    TableBody, 
+    TableCell, 
+    TableContainer, 
+    TableHead, 
+    TablePagination, 
+    TableRow, 
+    TextField 
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import QuarterModal from 'Modal/QuarterModal';
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { 
+    useDispatch, 
+    useSelector 
+} from 'react-redux';
 import { toast } from 'react-toastify';
-import { Card, CardBody, CardHeader } from 'reactstrap';
-import { createQuarter, fetchQuarterList, updateQuarter } from '../../redux/slices/quarterSlice';
+import { 
+    Card, 
+    CardBody, 
+    CardHeader 
+} from 'reactstrap';
+import { 
+    createQuarter, 
+    fetchQuarterList, 
+    fetchQuarterShow, 
+    updateQuarter 
+} from '../../redux/slices/quarterSlice';
+import HistoryModal from 'Modal/HistoryModal';
+
+
+
 
 export default function Quarter() {
     const dispatch = useDispatch();
-    const { quarterList, totalCount, loading } = useSelector((state) => state.quarter);
+    const { 
+        quarterList, 
+        quarterShow,
+        totalCount, 
+        loading 
+    } = useSelector((state) => state.quarter);
     const [isOpen, setIsOpen] = React.useState(false);
     const [formMode, setFormMode] = React.useState('create');
     const [editId, setEditId] = React.useState(null);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [ renderFunction, setRenderFunction ] = React.useState(() => null);
+    const [historyRecord, setHistoryRecord] = React.useState([]);
+    const [tableHead, setTableHead] = React.useState([
+        "Sr. No.",
+        "Head 1",
+        "Head 2",
+        "Head 3",
+        "Head 4",
+        "Head 5",
+        "Head 6",
+    ]);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
+    const toggleHistoryModal = () => {
+        setIsHistoryModalOpen(!isHistoryModalOpen);
+        setHistoryRecord([]);
+    };
+    const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
+
+    const getTableConfig = (type) => {
+        switch (type) {
+            case "quarter":
+            return {
+                head: [
+                    "Sr. No.",
+                    "Quarter No.",
+                    "Type",
+                    "License Fee",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.quarter_no ?? "-"}</td>
+                    <td>{record?.type ?? "-"}</td>
+                    <td>{record?.license_fee ?? "-"}</td>
+                    <td>{record?.added_by?.name || "NA"}</td>
+                    <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+            // You can add more like designation, pay scale, etc.
+            default:
+                return null;
+        };
+    }
+
+    const handleHistoryShow = (id) => {
+        setHistoryRecord([]);
+        setShouldOpenHistory(true);
+        dispatch(fetchQuarterShow(id));
+    }
+
+
+    useEffect(() => {
+        if ( shouldOpenHistory && quarterShow?.history) {
+            const config = getTableConfig("quarter");
+            setHistoryRecord(quarterShow?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+            console.log("QuarterHistoryRecord: ", historyRecord);
+
+        } 
+    },[quarterShow, shouldOpenHistory]);
+
 
     const [formData, setFormData] = React.useState({
         quarter_no: '',
@@ -142,7 +244,9 @@ export default function Quarter() {
                                             <TableCell>{row.type}</TableCell>
                                             <TableCell>{row.license_fee}</TableCell>
                                             <TableCell align="right">
-                                                <Button
+                                                <IconButton 
+                                                    color="primary" 
+                                                    aria-label="edit" 
                                                     onClick={() => {
                                                         setFormData(row);
                                                         setEditId(row.id);
@@ -150,8 +254,11 @@ export default function Quarter() {
                                                         toggleModal('edit');
                                                     }}
                                                 >
-                                                    Edit
-                                                </Button>
+                                                    <EditIcon/>
+                                                </IconButton>
+                                                <IconButton color="warning" aria-label="history" onClick={() => handleHistoryShow(row.id)}>
+                                                    <HistoryIcon />
+                                                </IconButton>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -178,7 +285,13 @@ export default function Quarter() {
                     mode={formMode}
                 />
 
-
+                <HistoryModal
+                    isOpen={isHistoryModalOpen}
+                    toggle={toggleHistoryModal}
+                    tableHead={tableHead}
+                    historyRecord={historyRecord}
+                    renderRow={renderFunction}
+                />
             </div>
         </>
     );

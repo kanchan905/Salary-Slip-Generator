@@ -33,11 +33,17 @@ import {
     addTransport, 
     addUniform, 
     fetchDearnessAllowance, 
+    fetchDearnessAllowanceShow, 
     fetchGisEligibility, 
+    fetchGisEligibilityShow, 
     fetchHouseRent, 
+    fetchHouseRentShow, 
     fetchNonPracticing, 
+    fetchNonPracticingShow, 
     fetchTransport, 
+    fetchTransportShow, 
     fetchUniform, 
+    fetchUniformShow, 
     updateDearnessAllowance,
     updateGisEligibility,
     updateHouseRent,
@@ -45,6 +51,7 @@ import {
     updateTransport,
     updateUniform
 } from '../../redux/slices/allowenceSlice';
+import HistoryModal from 'Modal/HistoryModal';
 
 const ALLOWANCE_TYPES = [
     'Dearness',
@@ -84,7 +91,273 @@ export default function AllowanceForm() {
     const [editMode, setEditMode] = React.useState(false);
     const currentType = ALLOWANCE_TYPES[value].toLowerCase().replace(/\s/g, '');
     const allowence = useSelector((state) => state.allowence);
+    const dearnessAllowanceShow = useSelector((state) => state.allowence.dearnessAllowance.dearnessAllowanceShow);
+    const houseRentAllowanceShow = useSelector((state) => state.allowence.houseRent.houseRentAllowanceShow);
+    const gisEligibilityShow = useSelector((state) => state.allowence.gisEligibility.gisEligibilityShow);
+    const nonPracticingShow = useSelector((state) => state.allowence.nonPracticing.nonPracticingShow);
+    const transportShow = useSelector((state) => state.allowence.transport.transportShow);
+    const uniformShow = useSelector((state) => state.allowence.uniform.uniformShow);
     const { levels, totalCount } = useSelector((state) => state.levels);
+    const [ renderFunction, setRenderFunction ] = React.useState(() => null);
+    const [historyRecord, setHistoryRecord] = React.useState([]);
+    const [tableHead, setTableHead] = React.useState([
+        "Sr. No.",
+        "Head 1",
+        "Head 2",
+        "Head 3",
+        "Head 4",
+        "Head 5",
+        "Head 6",
+    ]);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
+    const toggleHistoryModal = () => {
+        setIsHistoryModalOpen(!isHistoryModalOpen);
+        setHistoryRecord([]);
+    };
+    const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
+    
+    const getTableConfig = (type) => {
+        switch (type) {
+            case "dearness":
+            return {
+                head: [
+                    "Sr. No.",
+                    "Rate %",
+                    "PWD Rate %",
+                    "Effective From",
+                    "Effective Till",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.rate_percentage ?? "-"}</td>
+                    <td>{record?.pwd_rate_percentage ?? "-"}</td>
+                    <td>{record?.effective_from ?? "-"}</td>
+                    <td>{record?.effective_till ?? "-"}</td>
+                    <td>{record?.added_by?.name || "NA"}</td>
+                    <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+
+            case "houserent":
+            return {
+                head: [
+                    "Sr. No.",
+                    "City Class",
+                    "Rate %",
+                    "Effective From",
+                    "Effective Till",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.city_class || "NA"}</td>
+                    <td>{record?.rate_percentage || "NA"}</td>
+                    <td>{record?.effective_from || "NA"}</td>
+                    <td>{record?.effective_till || "NA"}</td>
+                    <td>{record?.added_by?.name || "NA"}</td>
+                    <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+
+            case "nonpracticing":
+            return {
+                head: [
+                    "Sr. No.",
+                    "Applicable Post",
+                    "Rate %",
+                    "Effective From",
+                    "Effective Till",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.applicable_post || "-"}</td>
+                    <td>{record?.rate_percentage || "-"}</td>
+                    <td>{record?.effective_from || "-"}</td>
+                    <td>{record?.effective_till || "-"}</td>
+                    <td>{record?.added_by?.name || "NA"}</td>
+                    <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+      
+            case "transport":
+            return {
+                head: [
+                    "Sr. No.",
+                    "Pay level",
+                    "Amount",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.pay_matrix_level || "-"}</td>
+                    <td>{record?.amount || "-"}</td>
+                    <td>{record?.added_by?.name || "NA"}</td>
+                    <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+
+            case "uniform":
+            return {
+                head: [
+                    "Sr. No.",
+                    "Applicable Post",
+                    "Amount",
+                    "Effective From",
+                    "Effective Till",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{record?.applicable_post ?? "-"}</td>
+                        <td>{record?.amount || "NA"}</td>
+                        <td>{record?.effective_from || "NA"}</td>
+                        <td>{record?.effective_till || "NA"}</td>
+                        <td>{record?.added_by?.name || "NA"}</td>
+                        <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+
+            case "giseligibility":
+            return {
+                head: [
+                    "Sr. No.",
+                    "Pay level",
+                    "Scheme Category",
+                    "Amount",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{record?.pay_matrix_level || "NA"}</td>
+                        <td>{record?.scheme_category || "NA"}</td>
+                        <td>{record?.amount || "NA"}</td>
+                        <td>{record?.added_by?.name || "NA"}</td>
+                        <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+          
+          // You can add more like designation, pay scale, etc.
+          default:
+            return null;
+        };
+
+    }
+
+    const handleHistoryShow = (id) => {
+        setHistoryRecord([]);
+        setShouldOpenHistory(true);
+        console.log("__Id :", id);
+        switch (currentType) {
+            case "dearness" :
+                dispatch(fetchDearnessAllowanceShow(id));
+                break;
+
+            case "houserent" :
+                dispatch(fetchHouseRentShow(id));
+                break;
+
+            case "nonpracticing" :
+                dispatch(fetchNonPracticingShow(id));
+                break;
+
+            case "transport" :
+                dispatch(fetchTransportShow(id));
+                break;
+
+            case "uniform" :
+                dispatch(fetchUniformShow(id));
+                break;
+
+            case "giseligibility" :
+                dispatch(fetchGisEligibilityShow(id));
+                break;
+
+            default:
+                console.warn("Unknown type passed to handleHistoryShow:", currentType);
+                return;
+        }
+    }
+    console.log("History Record: ",historyRecord);
+
+    React.useEffect(() => {
+        if ( currentType === "dearness" && shouldOpenHistory && dearnessAllowanceShow?.data.history) {
+            const config = getTableConfig(currentType);
+            setHistoryRecord(dearnessAllowanceShow?.data.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+            console.log("Dearness Allowance HistoryRecord: ", historyRecord);
+
+        } else if(currentType === "houserent" && shouldOpenHistory && houseRentAllowanceShow?.history){
+            const config = getTableConfig(currentType);
+            setHistoryRecord(houseRentAllowanceShow?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+            console.log("HouseRent HistoryRecord: ", historyRecord);
+
+        } else if(currentType === "nonpracticing" && shouldOpenHistory && nonPracticingShow?.history){
+            const config = getTableConfig(currentType);
+            setHistoryRecord(nonPracticingShow?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+            console.log("Non Practicing HistoryRecord: ", historyRecord);
+
+        } else if(currentType === "transport" && shouldOpenHistory && transportShow?.history){
+            const config = getTableConfig(currentType);
+            setHistoryRecord(transportShow?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+            console.log("Transport HistoryRecord: ", historyRecord);
+
+        } else if(currentType === "uniform" && shouldOpenHistory && uniformShow?.history){
+            const config = getTableConfig(currentType);
+            setHistoryRecord(uniformShow?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+            console.log("Uniform HistoryRecord: ", historyRecord);
+
+        } else if(currentType === "giseligibility" && shouldOpenHistory && gisEligibilityShow?.history){
+            console.log("GIS Eligibility: ", allowence?.gisEligibility);
+            const config = getTableConfig(currentType);
+            setHistoryRecord(gisEligibilityShow?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+            console.log("GIS Eligibility HistoryRecord: ", historyRecord);
+        }
+
+    }, [ dearnessAllowanceShow, houseRentAllowanceShow, nonPracticingShow, transportShow, uniformShow, gisEligibilityShow, historyRecord, shouldOpenHistory]);
+    
 
     React.useEffect(() => {
         if (currentType === 'dearness') {
@@ -219,11 +492,6 @@ export default function AllowanceForm() {
         }));
     };
 
-
-    const handleHistoryShow = () => {
-        
-    }
-
     const renderFields = () => {
         switch (ALLOWANCE_TYPES[value]) {
             case 'Dearness':
@@ -351,7 +619,7 @@ export default function AllowanceForm() {
                                 <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                   <EditIcon/>
                                 </IconButton>
-                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                <IconButton color="warning" aria-label="history" onClick={() => handleHistoryShow(item.id)}>
                                   <HistoryIcon />
                                 </IconButton>
                             </TableCell>
@@ -411,7 +679,7 @@ export default function AllowanceForm() {
                                 <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                   <EditIcon/>
                                 </IconButton>
-                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                <IconButton color="warning" aria-label="history" onClick={() => handleHistoryShow(item.id)}>
                                   <HistoryIcon />
                                 </IconButton>
                             </TableCell>
@@ -471,7 +739,7 @@ export default function AllowanceForm() {
                                 <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                   <EditIcon/>
                                 </IconButton>
-                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                <IconButton color="warning" aria-label="history" onClick={() => handleHistoryShow(item.id)}>
                                   <HistoryIcon />
                                 </IconButton>
                             </TableCell>
@@ -527,7 +795,7 @@ export default function AllowanceForm() {
                                 <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                   <EditIcon/>
                                 </IconButton>
-                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                <IconButton color="warning" aria-label="history" onClick={() => handleHistoryShow(item.id)}>
                                   <HistoryIcon />
                                 </IconButton>
                             </TableCell>
@@ -587,7 +855,7 @@ export default function AllowanceForm() {
                                 <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                   <EditIcon/>
                                 </IconButton>
-                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                <IconButton color="warning" aria-label="history" onClick={() => handleHistoryShow(item.id)}>
                                   <HistoryIcon />
                                 </IconButton>
                             </TableCell>
@@ -645,7 +913,7 @@ export default function AllowanceForm() {
                                 <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                   <EditIcon/>
                                 </IconButton>
-                                <IconButton color="warning" aria-label="history" onClick={() => (item.id)}>
+                                <IconButton color="warning" aria-label="history" onClick={() => handleHistoryShow(item.id)}>
                                   <HistoryIcon />
                                 </IconButton>
                             </TableCell>
@@ -778,7 +1046,13 @@ export default function AllowanceForm() {
                 
                 </Paper>
             </Box>
-
+            <HistoryModal
+                isOpen={isHistoryModalOpen}
+                toggle={toggleHistoryModal}
+                tableHead={tableHead}
+                historyRecord={historyRecord}
+                renderRow={renderFunction}
+            />
         </>
     );
 }

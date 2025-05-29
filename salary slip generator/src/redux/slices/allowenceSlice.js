@@ -66,6 +66,21 @@ export const updateDearnessAllowance = createAsyncThunk(
     }
 );
 
+// Fetch Dearness Allowance Rate Show
+export const fetchDearnessAllowanceShow = createAsyncThunk(
+    "dearnessAllowanceShow/fetchDearnessAllowanceShow",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`dearness-allowance-rate/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch single dearness allowance");
+        }
+    }
+);
+
+
+
 // ------------------ HOUSE RENT ALLOWANCE ------------------
 
 // Fetch House Rent Allowance Rate
@@ -127,6 +142,21 @@ export const updateHouseRent = createAsyncThunk(
         }
     }
 );
+
+
+// Fetch House Rent Allowance Rate Show
+export const fetchHouseRentShow = createAsyncThunk(
+    "houseRentAllowanceShow/fetchHouseRentShow",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`house-rent-allowance-rate/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch house rent allowance show");
+        }
+    }
+);
+
 
 // ------------------ NON-PRACTICING ALLOWANCE ------------------
 
@@ -197,6 +227,20 @@ export const updateNonPracticing = createAsyncThunk(
 );
 
 
+// Fetch Non Practicing Allowance Rate
+export const fetchNonPracticingShow = createAsyncThunk(
+    "nonPracticingShow/fetchNonPracticingShow",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`non-practicing-allowance-rate/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch single non-practicing allowance rate");
+        }
+    }
+);
+
+
 // ------------------ TRANSPORT ALLOWANCE ------------------
 
 // Fetch Transport
@@ -254,7 +298,18 @@ export const updateTransport = createAsyncThunk(
     }
 );
 
-
+// Fetch Transport Show
+export const fetchTransportShow = createAsyncThunk(
+    "transportShow/fetchTransportShow",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`transport-allowance-rate/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch single transport");
+        }
+    }
+);
 
 
 // ------------------ UNIFORM ALLOWANCE ------------------
@@ -326,6 +381,20 @@ export const updateUniform = createAsyncThunk(
 );
 
 
+// Fetch Uniform Allowance
+export const fetchUniformShow = createAsyncThunk(
+    "uniformShow/fetchUniformShow",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`uniform-allowance-rate/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch uniform allowance show");
+        }
+    }
+);
+
+
 // ------------------ GIS ELIGIBILITY ------------------
 
 // Fetch GIS Eligibility
@@ -386,40 +455,58 @@ export const updateGisEligibility = createAsyncThunk(
     }
 );
 
+// Fetch GIS Eligibility
+export const fetchGisEligibilityShow = createAsyncThunk(
+    "gisEligibilityShow/fetchGisEligibilityShow",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`employee-gis/${id}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch GIS Eligibility show");
+        }
+    }
+);
 
 const initialState = {
     dearnessAllowance: {
         list: [],
+        dearnessAllowanceShow: null,
         loading: false,
         totalCount: 0,
         error: null,
     },
     houseRent: {
         list: [],
+        houseRentAllowanceShow: null,
         loading: false,
         totalCount: 0,
         error: null,
     },
     nonPracticing: {
         list: [],
+        nonPracticingShow: null,
         loading: false,
         totalCount: 0,
         error: null,
     },
     transport: {
         list: [],
+        transportShow: null,
         loading: false,
         totalCount: 0,
         error: null,
     },
     uniform: {
         list: [],
+        uniformShow: null,
         loading: false,
         totalCount: 0,
         error: null,
     },
     gisEligibility: {
         list: [],
+        gisEligibilityShow: null,
         loading: false,
         totalCount: 0,
         error: null,
@@ -455,7 +542,20 @@ const allowanceSlice = createSlice({
             const updated = action.payload.data;
             const index = state.dearnessAllowance.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.dearnessAllowance.list[index] = updated;
+        })
+        .addCase(fetchDearnessAllowanceShow.pending, (state) => {
+            state.dearnessAllowance.loading = true;
+            state.dearnessAllowance.error = null;
+        })
+        .addCase(fetchDearnessAllowanceShow.fulfilled, (state, action) => {
+            state.dearnessAllowance.loading = false;
+            state.dearnessAllowance.dearnessAllowanceShow = action.payload;
+        })
+        .addCase(fetchDearnessAllowanceShow.rejected, (state, action) => {
+            state.dearnessAllowance.loading = false;
+            state.dearnessAllowance.error = action.payload;
         });
+
 
     // House Rent Allowance
     builder
@@ -479,6 +579,18 @@ const allowanceSlice = createSlice({
             const updated = action.payload.data;
             const index = state.houseRent.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.houseRent.list[index] = updated;
+        })
+        .addCase(fetchHouseRentShow.pending, (state) => {
+            state.houseRent.loading = true;
+            state.houseRent.error = null;
+        })
+        .addCase(fetchHouseRentShow.fulfilled, (state, action) => {
+            state.houseRent.loading = false;
+            state.houseRent.houseRentAllowanceShow = action.payload.data || [];
+        })
+        .addCase(fetchHouseRentShow.rejected, (state, action) => {
+            state.houseRent.loading = false;
+            state.houseRent.error = action.payload;
         });
 
     // Non Practicing Allowance
@@ -503,6 +615,18 @@ const allowanceSlice = createSlice({
             const updated = action.payload.data;
             const index = state.nonPracticing.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.nonPracticing.list[index] = updated;
+        })
+        .addCase(fetchNonPracticingShow.pending, (state) => {
+            state.nonPracticing.loading = true;
+            state.nonPracticing.error = null;
+        })
+        .addCase(fetchNonPracticingShow.fulfilled, (state, action) => {
+            state.nonPracticing.loading = false;
+            state.nonPracticing.nonPracticingShow = action.payload.data || [];
+        })
+        .addCase(fetchNonPracticingShow.rejected, (state, action) => {
+            state.nonPracticing.loading = false;
+            state.nonPracticing.error = action.payload;
         });
         
     // Transport Allowance
@@ -527,6 +651,18 @@ const allowanceSlice = createSlice({
             const updated = action.payload.data;
             const index = state.transport.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.transport.list[index] = updated;
+        })
+        .addCase(fetchTransportShow.pending, (state) => {
+            state.transport.loading = true;
+            state.transport.error = null;
+        })
+        .addCase(fetchTransportShow.fulfilled, (state, action) => {
+            state.transport.loading = false;
+            state.transport.transportShow = action.payload.data || [];
+        })
+        .addCase(fetchTransportShow.rejected, (state, action) => {
+            state.transport.loading = false;
+            state.transport.error = action.payload;
         });
 
     // Uniform Allowance
@@ -551,6 +687,18 @@ const allowanceSlice = createSlice({
             const updated = action.payload.data;
             const index = state.uniform.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.uniform.list[index] = updated;
+        })
+        .addCase(fetchUniformShow.pending, (state) => {
+            state.uniform.loading = true;
+            state.uniform.error = null;
+        })
+        .addCase(fetchUniformShow.fulfilled, (state, action) => {
+            state.uniform.loading = false;
+            state.uniform.uniformShow = action.payload.data || [];
+        })
+        .addCase(fetchUniformShow.rejected, (state, action) => {
+            state.uniform.loading = false;
+            state.uniform.error = action.payload;
         });
 
     // GIS Eligibility
@@ -575,8 +723,19 @@ const allowanceSlice = createSlice({
             const updated = action.payload.data;
             const index = state.gisEligibility.list.findIndex((item) => item.id === updated.id);
             if (index !== -1) state.gisEligibility.list[index] = updated;
+        })
+        .addCase(fetchGisEligibilityShow.pending, (state) => {
+            state.gisEligibility.loading = true;
+            state.gisEligibility.error = null;
+        })
+        .addCase(fetchGisEligibilityShow.fulfilled, (state, action) => {
+            state.gisEligibility.loading = false;
+            state.gisEligibility.gisEligibilityShow = action.payload.data || [];
+        })
+        .addCase(fetchGisEligibilityShow.rejected, (state, action) => {
+            state.gisEligibility.loading = false;
+            state.gisEligibility.error = action.payload;
         });
-
     },
 });
 
