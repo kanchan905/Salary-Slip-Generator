@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { CardBody, CardHeader, Card } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { createEmployeeQuarter, fetchEmployeeQuarterList, fetchQuarterList, updateEmployeeQuarter } from '../../redux/slices/quarterSlice'
+import { createEmployeeQuarter, fetchEmployeeQuarterList, fetchEmployeeQuarterShow, fetchQuarterList, updateEmployeeQuarter } from '../../redux/slices/quarterSlice'
 import QuarterAllocateModal from 'Modal/QuarterAllocateModal';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
+import HistoryModal from 'Modal/HistoryModal';
 
 const PAGE_SIZE = 10;
 
@@ -14,6 +17,7 @@ function EmployeeQuarter() {
     const { id } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const quarters = useSelector((state) => state.quarter.employeeQuarterList) || [];
+    const employeeQuarterShow = useSelector((state) => state.quarter.employeeQuarterShow);
     const totalPages = Math.max(1, Math.ceil(quarters.length / PAGE_SIZE));
     const dispatch = useDispatch();
     const [modalOpen, setModalOpen] = useState(false);
@@ -26,6 +30,24 @@ function EmployeeQuarter() {
         is_occupied:'',
         is_current: false,
     });
+    const [ renderFunction, setRenderFunction ] = React.useState(() => null);
+    const [historyRecord, setHistoryRecord] = React.useState([]);
+    const [tableHead, setTableHead] = React.useState([
+        "Sr. No.",
+        "Head 1",
+        "Head 2",
+        "Head 3",
+        "Head 4",
+        "Head 5",
+        "Head 6",
+    ]);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
+    const toggleHistoryModal = () => {
+        setIsHistoryModalOpen(!isHistoryModalOpen);
+        setHistoryRecord([]);
+    };
+    const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
+    
     const updateStatus = useSelector((state) => state.quarter.updateStatus);
     const loading = useSelector((state) => state.quarter.loading);
     const error = useSelector((state) => state.quarter.error);
@@ -120,7 +142,52 @@ function EmployeeQuarter() {
         resetForm();
     };
 
+    const getTableConfig = (type) => {
+        switch (type) {
+            case "quarter":
+            return {
+                head: [
+                    "Sr. No.",
+                    "Quarter No.",
+                    "Allotment Date",
+                    "Occupation Date",
+                    "Leaving Date",
+                    "Added By",
+                    "Edited By"
+                ],
+                renderRow: (record, index) => (
+                    <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.quarter_no ?? "-"}</td>
+                    <td>{record?.date_of_allotment ?? "-"}</td>
+                    <td>{record?.date_of_occupation ?? "-"}</td>
+                    <td>{record?.date_of_leaving ?? "-"}</td>
+                    <td>{record?.added_by?.name || "NA"}</td>
+                    <td>{record?.edited_by?.name || "NA"}</td>
+                    </tr>
+                ),
+            };
+            // You can add more like designation, pay scale, etc.
+            default:
+                return null;
+        };
+    }
 
+    const handleHistoryStatus = (id) => {
+        setHistoryRecord([]);
+        setShouldOpenHistory(true);
+        dispatch(fetchEmployeeQuarterShow(id))
+        if ( shouldOpenHistory && employeeQuarterShow?.history) {
+            const config = getTableConfig("quarter");
+            setHistoryRecord(employeeQuarterShow?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+        } 
+    }
+
+    
 
     return (
         <>
@@ -148,30 +215,38 @@ function EmployeeQuarter() {
                                 <table className="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th>Quarter Number</th>
-                                            <th>Allotment Date</th>
-                                            <th>Occupatinon Date</th>
-                                            <th>Leaving Date</th>
-                                            <th>Status</th>
-                                            <th>Allocated To</th>
-                                            <th>Actions</th>
+                                            <th style={{fontWeight: "bolder"}}>Sr.No.</th>
+                                            <th style={{fontWeight: "bolder"}}>Quarter Number</th>
+                                            <th style={{fontWeight: "bolder"}}>Allotment Date</th>
+                                            <th style={{fontWeight: "bolder"}}>Occupation Date</th>
+                                            <th style={{fontWeight: "bolder"}}>Leaving Date</th>
+                                            <th style={{fontWeight: "bolder"}}>Status</th>
+                                            <th style={{fontWeight: "bolder"}}>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {paginatedQuarters?.map((q, idx) => (
                                             <tr key={idx}>
+                                                <td>{idx + 1}</td>
                                                 <td>{q.quarter_id}</td>
                                                 <td>{q.date_of_allotment}</td>
                                                 <td>{q.date_of_occupation}</td>
                                                 <td>{q.date_of_leaving}</td>
                                                 <td>{q.is_current ? 'Active' : 'Inctive'}</td>
-                                                <td>{q.addby?.name}</td>
                                                 <td>
                                                     <button
+                                                        title='Edit'
                                                         className="btn btn-sm btn-info"
                                                         onClick={() => handleUpdate(q.id)}
                                                     >
-                                                        Update
+                                                        <EditIcon/>
+                                                    </button>
+                                                    <button
+                                                        title='History'
+                                                        className="btn btn-sm btn-warning"
+                                                        onClick={() => handleHistoryStatus(q.id)}
+                                                    >
+                                                        <HistoryIcon/>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -217,6 +292,14 @@ function EmployeeQuarter() {
                 form={form}
                 onSubmit={handleFormSubmit}
                 quarterList={quarterList}
+            />
+
+            <HistoryModal
+                isOpen={isHistoryModalOpen}
+                toggle={toggleHistoryModal}
+                tableHead={tableHead}
+                historyRecord={historyRecord}
+                renderRow={renderFunction}
             />
         </>
     );
