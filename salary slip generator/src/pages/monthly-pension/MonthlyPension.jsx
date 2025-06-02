@@ -29,13 +29,13 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import { useNavigate } from 'react-router-dom';
 
+
 export default function MonthlyPension() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { monthlyPension, loading } = useSelector((state) => state.monthlypension);
   const totalCount = useSelector((state) => state.monthlypension.totalCount) || 0;
   const { error } = useSelector((state) => state.monthlypension);
-  const [formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     pension_related_info_id: '',
     dr_id: '',
@@ -70,8 +70,8 @@ export default function MonthlyPension() {
   const [modalOpen, setModalOpen] = useState(false);
   const { name } = useSelector((state) => state.auth.user.role);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [menuMothlyId, setMenuMonthlyId] = useState(null);
   const [mode, setMode] = useState('');
+  const [editingId, setEditingId] = useState(null);
 
   const getTableConfig = (type) => {
     switch (type) {
@@ -145,46 +145,55 @@ export default function MonthlyPension() {
     setPage(0);
   };
 
+
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
     if (mode === 'create') {
-      console.log('creating..');
       dispatch(createMonthlyPension(values))
         .unwrap()
         .then(() => {
           toast.success(`Monthly Pension added`);
           dispatch(monthlyPensionDetails());
+          resetForm();
+          setModalOpen(false);
         })
         .catch((err) => {
           const apiMsg = err?.response?.data?.message || err?.message || 'Failed to save Monthly Pension.';
           toast.error(apiMsg);
-        });
+        })
+        .finally(() => setSubmitting(false));
+    } else if (mode === 'edit') {
+      const {pension_related_info_id,dr_id, status, remarks, net_pension_id } = values;
+      dispatch(updateMonthlyPension({ id: editingId, values: {pension_related_info_id,dr_id, status, remarks, net_pension_id } }))
+        .unwrap()
+        .then(() => {
+          toast.success(`Monthly Pension updated`);
+          dispatch(monthlyPensionDetails());
+          resetForm();
+          setModalOpen(false);
+        })
+        .catch((err) => {
+          const apiMsg = err?.response?.data?.message || err?.message || 'Failed to update Monthly Pension.';
+          toast.error(apiMsg);
+        })
+        .finally(() => setSubmitting(false));
     }
-    console.log('updating...');
-    dispatch(updateMonthlyPension({ id: menuMothlyId, values }))
-      .unwrap()
-      .then(() => {
-        toast.success(`Monthly Pension updated`);
-        dispatch(monthlyPensionDetails());
-      })
-      .catch((err) => {
-        const apiMsg = err?.response?.data?.message || err?.message || 'Failed to save Monthly Pension.';
-        toast.error(apiMsg);
-      });
-    resetForm();
-    setFormOpen(false);
-    setSubmitting(false);
-
-    console.log('updating')
   };
 
   const handleToggleModal = (id = null) => {
     if (id) {
       const record = monthlyPension.find(item => item.id === id);
       if (record) {
-        setFormData(record);
+        setFormData({
+          pension_related_info_id: record.pension_rel_info_id || '',
+          dr_id: record.dr_id || '',
+          remarks: record.remarks || '',
+          status: record.status || '',
+          net_pension_id: record.net_pension_id || '',
+        }
+        );
         setMode("edit");
-        setModalOpen(true);
-        setMenuMonthlyId(id);
+        setEditingId(id);
+        console.log('setting id',id)
       } else {
         toast.error("Record not found");
       }
@@ -202,21 +211,20 @@ export default function MonthlyPension() {
         payment_date: '',
       });
       setMode("create");
-      setModalOpen(true);
-      setMenuMonthlyId(null);
+      setEditingId(null)
     }
-    handleMenuClose()
-    console.log('mode', mode)
+    setModalOpen(true);
+    handleMenuClose();
   };
+
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setMenuMonthlyId(null);
   };
 
   const handleMenuClick = (event, id) => {
     setAnchorEl(event.currentTarget);
-    setMenuMonthlyId(id);
+    setEditingId(id)
   };
 
   const handleView = (id) => {
@@ -252,14 +260,14 @@ export default function MonthlyPension() {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Pensioner Name</TableCell>
-                        <TableCell>PPO No.</TableCell>
-                        <TableCell>Basic Pension</TableCell>
-                        <TableCell>Net Pension</TableCell>
-                        <TableCell>Total Arrear</TableCell>
-                        <TableCell>Total Pension</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell>Action </TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Pensioner Name</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>PPO No.</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Basic Pension</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Total Arrear</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Total Pension</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Status</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Action </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -279,7 +287,7 @@ export default function MonthlyPension() {
                               </IconButton>
                               <Menu
                                 anchorEl={anchorEl}
-                                open={menuMothlyId === row.id}
+                                open={Boolean(anchorEl)}
                                 onClose={handleMenuClose}
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                               >
@@ -322,6 +330,7 @@ export default function MonthlyPension() {
           formOpen={modalOpen}
           toggleModal={handleToggleModal}
           formData={formData}
+          setFormData= {setFormData}
           handleSubmit={handleSubmit}
           setFormOpen={setModalOpen}
           mode={mode}

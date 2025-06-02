@@ -38,6 +38,7 @@ export const showDeduction = createAsyncThunk(
     async (id, { rejectWithValue }) => {
         try {
             const res = await axiosInstance.get(`/pension-deduction/${id}`);
+            console.log(res)
             return res.data.data;
         } catch (err) {
             return rejectWithValue(err.response?.data || "Failed to add deduction");

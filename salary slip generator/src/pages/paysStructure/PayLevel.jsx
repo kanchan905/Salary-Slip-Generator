@@ -230,9 +230,9 @@ function PayLevel() {
               <table className="table table-hover mb-0 align-middle text-center">
                 <thead className="table-light">
                   <tr className="text-uppercase small text-muted">
-                    <th>Level</th>
-                    <th>Description</th>
-                    <th>Actions</th>
+                    <th style={{ fontWeight: "900" }}>Level</th>
+                    <th style={{ fontWeight: "900" }}>Description</th>
+                    <th style={{ fontWeight: "900" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>

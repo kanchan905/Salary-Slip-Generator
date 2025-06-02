@@ -8,7 +8,8 @@ export default function DearnessReliefModal({
   formMode,
   formData,
   handleSubmit,
-  setFormOpen
+  setFormOpen,
+  dearness
 }) {
   const initialValues = {
     effective_from: formData.effective_from || "",
@@ -51,7 +52,14 @@ export default function DearnessReliefModal({
                 <Col md="6">
                   <FormGroup>
                     <Label for="dr_percentage">DR Percentage</Label>
-                    <Field as={Input} id="dr_percentage" name="dr_percentage" type="number" />
+                    <Field as={Input} type="select" id="dr_percentage" name="dr_percentage" >
+                      <option value="">Select DR</option>
+                      {dearness?.map(p => (
+                        <option key={p.id} value={p.dr_percentage}>
+                          {p.dr_percentage}%
+                        </option>
+                      ))}
+                    </Field>
                     <ErrorMessage name="dr_percentage" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>

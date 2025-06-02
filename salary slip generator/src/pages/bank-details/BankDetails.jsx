@@ -31,7 +31,7 @@ const statusChipColor = (status) => status ? "success" : "error";
 
 export default function BankDetails() {
   const dispatch = useDispatch();
-  const { bankdetails, bankShow, loading } = useSelector((state) => state.bankdetail);
+  const { bankdetails, loading } = useSelector((state) => state.bankdetail);
   const totalCount = useSelector((state) => state.bankdetail.totalCount) || 0;
   const { error } = useSelector((state) => state.bankdetail)
   const [formOpen, setFormOpen] = useState(false);
@@ -62,6 +62,7 @@ export default function BankDetails() {
     "Head 5",
     "Head 6",
   ]);
+  const {pensioners} = useSelector((state) => state.pensioner);
 
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => {
@@ -265,14 +266,14 @@ export default function BankDetails() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Pensioner ID</TableCell>
-                      <TableCell>Pensioner Name</TableCell>
-                      <TableCell>Bank Name</TableCell>
-                      <TableCell>Branch Name</TableCell>
-                      <TableCell>Account No</TableCell>
-                      <TableCell>IFSC</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Pensioner ID</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Pensioner Name</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Bank Name</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Branch Name</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Account No</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>IFSC</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Status</TableCell>
+                      <TableCell align="right" style={{ fontWeight: "900" }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -339,6 +340,7 @@ export default function BankDetails() {
           formData={formData}
           handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
           handleSubmit={handleSubmit}
+          pensioners={pensioners}
         />
 
         <HistoryModal

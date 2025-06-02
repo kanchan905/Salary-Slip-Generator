@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, TextField, TablePagination, Box
+  IconButton, TablePagination, Box
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -35,8 +35,7 @@ import { useNavigate } from 'react-router-dom';
 export default function PensionDeduction() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { pension, showPension, loading } = useSelector((state) => state.pensionDeduction);
-  const { netPension, netPensionData } = useSelector((state) => state.netPension);
+  const { pension, loading } = useSelector((state) => state.pensionDeduction);
   const totalCount = useSelector((state) => state.pensionDeduction.totalCount) || 0;
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
@@ -50,7 +49,6 @@ export default function PensionDeduction() {
     recovery: '',
     other: ''
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [renderFunction, setRenderFunction] = useState(() => null);
@@ -66,15 +64,17 @@ export default function PensionDeduction() {
   ]);
 
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
-  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
-    const { name } = useSelector((state) => state.auth.user.role);
-    // const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-      // const [menuRowId, setMenuRowId] = useState(null);
+  const toggleHistoryModal = () => {
+    setIsHistoryModalOpen(!isHistoryModalOpen)
+     if (isHistoryModalOpen) setHistoryRecord([]);
+    handleClose();
+  };
+  const { name } = useSelector((state) => state.auth.user.role);
+  
 
   const getTableConfig = (type) => {
     switch (type) {
-      case "bank":
+      case "deduction":
         return {
           head: [
             "Sr. No.",
@@ -114,23 +114,21 @@ export default function PensionDeduction() {
     }
   };
 
-
-
-  const handleHistoryStatus = (id) => {
-    setShouldOpenHistory(true); // only allow opening if this was user-triggered
-    dispatch(fetchPensionDeductionShow(id));
-  };
-
-  useEffect(() => {
-    if (shouldOpenHistory && showPension?.history) {
-      const config = getTableConfig("bank");
-      setHistoryRecord(showPension.history);
-      setTableHead(config.head);
-      setRenderFunction(() => config.renderRow);
-      setIsHistoryModalOpen(true);
-      setShouldOpenHistory(false); // reset the flag
-    }
-  }, [showPension, shouldOpenHistory]);
+   const handleHistoryStatus = (id) => {
+      handleClose();
+      dispatch(fetchPensionDeductionShow(id)).then((res) => {
+        const history = res.payload?.data.history || [];
+        if (Array.isArray(history)) {
+          const config = getTableConfig("deduction");
+          setHistoryRecord(history);
+          setTableHead(config.head);
+          setRenderFunction(() => config.renderRow);
+          toggleHistoryModal();
+        } else {
+          setHistoryRecord([]);
+        }
+      });
+    };
 
 
   useEffect(() => {

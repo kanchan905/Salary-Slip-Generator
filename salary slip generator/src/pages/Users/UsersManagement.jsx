@@ -201,12 +201,12 @@ export default function UserTable() {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Role ID</TableCell>
-                                            <TableCell>Name</TableCell>
-                                            <TableCell>Email</TableCell>
-                                            <TableCell>Institute</TableCell>
-                                            <TableCell>Status</TableCell>
-                                            <TableCell align="right">Actions</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Role ID</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Email</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Status</TableCell>
+                                            <TableCell align="right" style={{ fontWeight: "900" }}>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>

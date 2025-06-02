@@ -49,6 +49,7 @@ export const updateEmployeeStatus = createAsyncThunk(
     "employee/updateEmployeeStatus",
     async ({ employeeId, statusData }, { rejectWithValue }) => {
         try {
+            console.log(employeeId)
             const response = await axiosInstance.post(`/employee-status/${employeeId}?_method=PUT`, statusData);
             console.log(response.data.data);
             return response.data.data;
@@ -114,6 +115,7 @@ export const addBankdetails = createAsyncThunk(
     async (bankData, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post("/employee-bank", bankData);
+            console.log(response.data.data)
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to add employee bank status");
@@ -236,30 +238,20 @@ const employeeSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            .addCase(updateEmployeeStatus.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
             .addCase(updateEmployeeStatus.fulfilled, (state, action) => {
                 state.loading = false;
                 if (state.EmployeeDetail) {
-                    // Find the index of the status being updated
                     const index = state.EmployeeDetail.employee_status.findIndex(
                         (status) => status.id === action.payload.id
                     );
-
+                    console.log(index)
                     if (index !== -1) {
-                        // Update the specific status in the array
                         state.EmployeeDetail.employee_status[index] = action.payload;
                     } else {
-                        // If the status is not found, add it to the array (optional)
+                        console.warn("Status not found to update, pushing instead.");
                         state.EmployeeDetail.employee_status.push(action.payload);
                     }
                 }
-            })
-            .addCase(updateEmployeeStatus.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
             })
             .addCase(fetchEmployeeStatus.pending, (state) => {
                 state.loading = true;
@@ -267,8 +259,7 @@ const employeeSlice = createSlice({
             })
             .addCase(fetchEmployeeStatus.fulfilled, (state, action) => {
                 state.loading = false;
-                state.employeeStatus = action.payload; // ✅ Set the fetched data
-                // If you want to also set the history status, you can do so here
+                state.employeeStatus = action.payload; 
             })
             .addCase(fetchEmployeeStatus.rejected, (state, action) => {
                 state.loading = false;
@@ -294,7 +285,7 @@ const employeeSlice = createSlice({
             })
             .addCase(fetchEmployeeBankdetail.fulfilled, (state, action) => {
                 state.loading = false;
-                state.employeeBank = action.payload; // ✅ Set the fetched data
+                state.employeeBank = action.payload; 
             })
             .addCase(fetchEmployeeBankdetail.rejected, (state, action) => {
                 state.loading = false;
@@ -306,8 +297,7 @@ const employeeSlice = createSlice({
             })
             .addCase(fetchEmployeeBankdetailStatus.fulfilled, (state, action) => {
                 state.loading = false;
-                state.bankStatus = action.payload; // ✅ Set the fetched data
-                // If you want to also set the history status, you can do so here
+                state.bankStatus = action.payload; 
             })
             .addCase(fetchEmployeeBankdetailStatus.rejected, (state, action) => {
                 state.loading = false;
@@ -327,10 +317,6 @@ const employeeSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            .addCase(updateEmployeeBankdetail.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
             .addCase(updateEmployeeBankdetail.fulfilled, (state, action) => {
                 state.loading = false;
                 if (state.EmployeeDetail) {
@@ -347,10 +333,6 @@ const employeeSlice = createSlice({
                         state.EmployeeDetail.employee_bank.push(action.payload);
                     }
                 }
-            })
-            .addCase(updateEmployeeBankdetail.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
             })
             .addCase(fetchEmployeeDesignationStatus.pending, (state) => {
                 state.loading = true;
@@ -379,10 +361,6 @@ const employeeSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            .addCase(updateDesignation.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
             .addCase(updateDesignation.fulfilled, (state, action) => {
                 state.loading = false;
                 if (state.EmployeeDetail) {
@@ -399,10 +377,6 @@ const employeeSlice = createSlice({
                         state.EmployeeDetail.employee_designation.push(action.payload);
                     }
                 }
-            })
-            .addCase(updateDesignation.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
             })
             .addCase(UpdateEmployee.pending, (state) => {
                 state.loading = true;

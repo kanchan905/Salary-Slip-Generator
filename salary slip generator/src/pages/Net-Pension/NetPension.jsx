@@ -227,14 +227,14 @@ export default function NetPension() {
                                 <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                                     <Table>
                                         <TableHead>
-                                            <TableRow>
-                                                <TableCell>Pensioner Id</TableCell>
-                                                <TableCell>Month</TableCell>
-                                                <TableCell>Year</TableCell>
-                                                <TableCell>Net Pension</TableCell>
-                                                <TableCell>Payment Date</TableCell>
-                                                <TableCell>Verified</TableCell>
-                                                <TableCell>Action</TableCell>
+                                            <TableRow> 
+                                                <TableCell style={{ fontWeight: "900" }}>Pensioner Id</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>

@@ -260,12 +260,12 @@ export default function PensionDocuments() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Pensioner Id</TableCell>
-                      <TableCell>Document Type</TableCell>
-                      <TableCell>Document Number</TableCell>
-                      <TableCell>Issue Date</TableCell>
-                      <TableCell>Expiry Date</TableCell>
-                      <TableCell>Action</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Pensioner Id</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Document Type</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Document Number</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Issue Date</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Expiry Date</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

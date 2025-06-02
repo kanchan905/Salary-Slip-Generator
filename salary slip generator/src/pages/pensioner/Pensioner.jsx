@@ -131,10 +131,12 @@ const handleHistoryStatus = (id) => {
   
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuPensionerId, setMenuPensionerId] = useState(null);
+  // console.log(searchQuery)
 
   useEffect(() => {
+    // console.log(searchQuery)
     dispatch(fetchPensioners({page:page,limit:rowsPerPage,id:searchQuery}))
-  }, [dispatch, page, rowsPerPage])
+  }, [dispatch, page, rowsPerPage,searchQuery])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -206,14 +208,14 @@ const handleHistoryStatus = (id) => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Emp ID</TableCell>
-                        <TableCell>Name</TableCell>
-                        <TableCell>PPO NO.</TableCell>
-                        <TableCell>Pension Type</TableCell>                       
-                        <TableCell>DOR</TableCell>
-                        <TableCell>End Date</TableCell>
-                        <TableCell>Status</TableCell>                      
-                        <TableCell align="right">Actions</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Emp ID</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>PPO NO.</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Pension Type</TableCell>                       
+                        <TableCell style={{ fontWeight: "900" }}>DOR</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>End Date</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Status</TableCell>                      
+                        <TableCell align="right" style={{ fontWeight: "900" }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

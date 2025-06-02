@@ -8,7 +8,8 @@ export default function BankFormModal({
   formMode,
   formData,
   handleSubmit,
-  setFormOpen
+  setFormOpen,
+  pensioners
 }) {
   const initialValues = {
     pensioner_id: formData.pensioner_id || "",
@@ -52,12 +53,14 @@ export default function BankFormModal({
                 <Col md="6">
                   <FormGroup>
                     <Label for="pensioner_id">Pensioner ID</Label>
-                    <Field
-                      as={Input}
-                      id="pensioner_id"
-                      name="pensioner_id"
-                      type="text"
-                    />
+                    <Field as={Input} type="select" id="pensioner_id" name="pensioner_id" disabled={formMode == 'edit'}>
+                      <option value="">Select pensioner</option>
+                      {pensioners?.map(p => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}-{(p.ppo_no)}
+                        </option>
+                      ))}
+                    </Field>
                     <ErrorMessage
                       name="pensioner_id"
                       component="div"

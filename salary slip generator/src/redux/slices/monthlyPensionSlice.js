@@ -48,7 +48,10 @@ export const updateMonthlyPension = createAsyncThunk(
     'month/updateMonthlyPension',
     async ({ id, values }, { rejectWithValue }) => {
         try {
+            console.log(values)
+            console.log(id)
             const response = await axiosInstance.post(`/monthly-pension/${id}?_method=PUT`, values);
+            console.log(response)
             return response.data.data
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to fetch monthly pension");

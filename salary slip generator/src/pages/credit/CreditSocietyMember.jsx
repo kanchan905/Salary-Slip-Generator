@@ -201,13 +201,13 @@ export default function CreditSocietyMember() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>                                               
-                                                <TableCell>Society Name</TableCell>
-                                                <TableCell>Membership Number</TableCell>
-                                                <TableCell>Joining Date</TableCell>
-                                                <TableCell>Relieving Date</TableCell>
-                                                <TableCell>Monthly Subscription</TableCell>                                             
-                                                <TableCell>Status</TableCell>
-                                                <TableCell>Action</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Society Name</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Membership Number</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Joining Date</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Relieving Date</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Monthly Subscription</TableCell>                                             
+                                                <TableCell style={{ fontWeight: "900" }}>Status</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>

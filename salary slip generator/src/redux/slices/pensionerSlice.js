@@ -4,6 +4,7 @@ import axiosInstance from "global/AxiosSetting";
 export const fetchPensioners = createAsyncThunk(
     "pensioner/details",
     async ({page,limit,id}, { rejectWithValue }) => {
+        console.log(id)
         try {
             const response = await axiosInstance.get(`/pensioner?page=${page}&limit=${limit}&retired_employee_id=${id}`);
             return {

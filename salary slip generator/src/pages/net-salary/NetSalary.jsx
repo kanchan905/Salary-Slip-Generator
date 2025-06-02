@@ -250,14 +250,14 @@ export default function NetSalary() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Employee Id</TableCell>
-                                                <TableCell>Month</TableCell>
-                                                <TableCell>Year</TableCell>
-                                                <TableCell>Processing Date</TableCell>
-                                                <TableCell>Net Amount</TableCell>
-                                                <TableCell>Payment Date</TableCell>
-                                                <TableCell>Bank Id</TableCell>
-                                                <TableCell>Action</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Employee Id</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Bank Id</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>

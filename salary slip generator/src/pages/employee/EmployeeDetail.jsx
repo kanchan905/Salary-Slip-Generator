@@ -36,6 +36,7 @@ import BankModal from 'Modal/EmployeeBank';
 import DesignationModal from 'Modal/DesignationModal';
 import { Box, CircularProgress } from '@mui/material';
 import HistoryModal from 'Modal/HistoryModal';
+import { toast } from 'react-toastify';
 
 function EmployeeDetail() {
   const { id } = useParams();
@@ -43,7 +44,7 @@ function EmployeeDetail() {
   const historyStatus = useSelector((state) => state.employee.employeeStatus) || null;
   const historyBank = useSelector((state) => state.employee.bankStatus) || null;
   const historyDesignation = useSelector((state) => state.employee.designationStatus) || null;
-  const loading = useSelector((state) => state.employee.loading);
+  const {loading,error} = useSelector((state) => state.employee.loading);
   const dispatch = useDispatch();
 
 
@@ -56,7 +57,7 @@ function EmployeeDetail() {
     effective_till: '',
     remarks: '',
     order_reference: '',
-  }); 
+  });
 
   const [historyRecord, setHistoryRecord] = useState([]);
   const [tableHead, setTableHead] = useState([
@@ -82,7 +83,7 @@ function EmployeeDetail() {
 
   const [isDesignationModalOpen, setIsDesignationModalOpen] = useState(false);
   const [designationModalType, setDesignationModalType] = useState('create');
-  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [renderFunction, setRenderFunction] = useState(() => null);
   const [selectedDesignation, setSelectedDesignation] = useState({
     designation: '',
     cadre: '',
@@ -93,6 +94,7 @@ function EmployeeDetail() {
   });
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const [editId, setEditId] = useState(null);
 
   // Tab state
   const [activeTab, setActiveTab] = useState('1');
@@ -192,7 +194,7 @@ function EmployeeDetail() {
         };
 
       // You can add more like designation, pay scale, etc.
-      
+
       default:
         return { head: [], renderRow: () => null };
     }
@@ -203,13 +205,14 @@ function EmployeeDetail() {
     setModalType('update');
     setSelectedStatus(status);
     toggleModal();
+    setEditId(status.id)
   };
 
   // Status History handlers
   const handleHistoryStatus = (employeeID) => {
     dispatch(fetchEmployeeStatus(employeeID));
   };
-  
+
   useEffect(() => {
     if (historyStatus && historyStatus.history) {
       const config = getTableConfig("status");
@@ -229,23 +232,38 @@ function EmployeeDetail() {
     toggleHistoryModal();
   };
 
-const handleHistoryDesignation = (employeeID) => {
-  console.log("Employee ID for Designation History: ", historyDesignation);
-  dispatch(fetchEmployeeDesignationStatus(employeeID));
-  const config = getTableConfig("designation");
-  setHistoryRecord(historyDesignation?.history || []);
-  setTableHead(config.head);
-  setRenderFunction(() => config.renderRow);
-  toggleHistoryModal();
-};
+  const handleHistoryDesignation = (employeeID) => {
+    console.log("Employee ID for Designation History: ", historyDesignation);
+    dispatch(fetchEmployeeDesignationStatus(employeeID));
+    const config = getTableConfig("designation");
+    setHistoryRecord(historyDesignation?.history || []);
+    setTableHead(config.head);
+    setRenderFunction(() => config.renderRow);
+    toggleHistoryModal();
+  };
 
 
   const handleSave = () => {
     if (modalType === 'create') {
       const statusDataWithId = { ...selectedStatus, employee_id: id };
-      dispatch(addEmploeeStatus(statusDataWithId));
+      dispatch(addEmploeeStatus(statusDataWithId)).unwrap()
+        .then(() => {
+          toast.success("Sucessfully added")
+        }).catch((err) => {
+          const apiMsg =
+            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+          toast.error(apiMsg);
+        });
     } else if (modalType === 'update') {
-      dispatch(updateEmployeeStatus({ employeeId: id, statusData: selectedStatus }));
+      dispatch(updateEmployeeStatus({ employeeId: editId, statusData: selectedStatus })).unwrap()
+        .then(() => {
+          toast.success("Sucessfully Updated")
+        }).catch((err) => {
+          const apiMsg =
+            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+          toast.error(apiMsg);
+        });
+      setEditId(null)
     }
     toggleModal();
   };
@@ -268,13 +286,30 @@ const handleHistoryDesignation = (employeeID) => {
     setBankModalType('update');
     setSelectedBank(bank);
     toggleBankModal();
+    setEditId(bank.id)
   };
   const handleSaveBank = () => {
     if (bankModalType === 'create') {
       const newBankData = { ...selectedBank, is_active: selectedBank.is_active ? 1 : 0, employee_id: id };
-      dispatch(addBankdetails(newBankData));
+      console.log(newBankData)
+      dispatch(addBankdetails(newBankData)).unwrap()
+      .then(() => {
+          toast.success("Sucessfully added")
+        }).catch((err) => {
+          const apiMsg =
+            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+          toast.error(apiMsg);
+        });
     } else if (bankModalType === 'update') {
-      dispatch(updateEmployeeBankdetail({ bankData: selectedBank, employeeId: id }));
+      dispatch(updateEmployeeBankdetail({ bankData: selectedBank, employeeId: editId })).unwrap()
+      .then(() => {
+          toast.success("Sucessfully added")
+        }).catch((err) => {
+          const apiMsg =
+            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+          toast.error(apiMsg);
+        });
+      setEditId(null)
     }
     toggleBankModal();
   };
@@ -297,13 +332,29 @@ const handleHistoryDesignation = (employeeID) => {
     setDesignationModalType('update');
     setSelectedDesignation(designation);
     toggleDesignationModal();
+    setEditId(designation.id)
   };
   const handleSaveDesignation = () => {
     if (designationModalType === 'create') {
       const newDesignationData = { ...selectedDesignation, employee_id: id };
-      dispatch(addDesignation(newDesignationData));
+      dispatch(addDesignation(newDesignationData)).unwrap()
+      .then(() => {
+          toast.success("Sucessfully added")
+        }).catch((err) => {
+          const apiMsg =
+            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+          toast.error(apiMsg);
+        });
     } else if (designationModalType === 'update') {
-      dispatch(updateDesignation({ designationData: selectedDesignation, employeeId: id }));
+      dispatch(updateDesignation({ designationData: selectedDesignation, employeeId: editId })).unwrap()
+      .then(() => {
+          toast.success("Sucessfully added")
+        }).catch((err) => {
+          const apiMsg =
+            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+          toast.error(apiMsg);
+        });
+      setEditId(null);
     }
     toggleDesignationModal();
   };
@@ -354,7 +405,7 @@ const handleHistoryDesignation = (employeeID) => {
                     </h2>
                     <span className="badge bg-info text-white mb-2">{data.gender}</span>
                     <div className="text-gray-600 mb-2">{data.email}</div>
-                    <div className="flex flex-wrap justify-center mb-3" style={{gap:'3px'}}>
+                    <div className="flex flex-wrap justify-center mb-3" style={{ gap: '3px' }}>
                       <span className="badge bg-light text-dark mr-2">DOB: {data.date_of_birth}</span>
                       <span className="badge bg-light text-dark mr-2">DOJ: {data.date_of_joining}</span>
                       <span className="badge bg-light text-dark">Retirement: {data.date_of_retirement || "N/A"}</span>
@@ -380,7 +431,10 @@ const handleHistoryDesignation = (employeeID) => {
               </Col>
               {/* Tabbed Details */}
               <Col xl="8">
-                <Card className="shadow-lg border-0 rounded-3">
+                <Card className="shadow-lg border-0 rounded-3 custom-scrollbar" style={{
+                      maxHeight: '550px',
+                      overflowY: 'auto',
+                    }}>
                   <CardHeader className="bg-white border-0 pb-0">
                     <Nav tabs className="border-0">
                       <NavItem>

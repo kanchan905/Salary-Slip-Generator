@@ -32,7 +32,7 @@ const Section = ({ title, children }) => (
 const ShowPensionDeduction = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
-    const { deduction, loading } = useSelector((state) => state.pensionDeduction);
+    const { deduction, loading } = useSelector((state) => state.deduction);
 
     useEffect(() => {
         dispatch(showDeduction(id));

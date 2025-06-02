@@ -30,7 +30,7 @@ import HistoryModal from 'Modal/HistoryModal';
 
 export default function DearnessRelief() {
   const dispatch = useDispatch();
-  const { dearness, showDearness, loading } = useSelector((state) => state.dearnessRelief);
+  const { dearness, loading } = useSelector((state) => state.dearnessRelief);
   const totalCount = useSelector((state) => state.dearnessRelief.totalCount) || 0;
   const { error } = useSelector((state) => state.dearnessRelief)
   const [formOpen, setFormOpen] = useState(false);
@@ -224,14 +224,14 @@ export default function DearnessRelief() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Sr. No.</TableCell>
-                      <TableCell>Dearness Relief %</TableCell>
-                      <TableCell>Effective From</TableCell>
-                      <TableCell>Effective To</TableCell>
-                      <TableCell>Dr Percentage</TableCell>
-                      <TableCell>Added By</TableCell>
-                      <TableCell>Edited By</TableCell>
-                      <TableCell>Action</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Dearness Relief %</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Effective From</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Effective To</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Dr Percentage</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Added By</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Edited By</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -290,6 +290,7 @@ export default function DearnessRelief() {
           formData={formData}
           handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
           handleSubmit={handleSubmit}
+          dearness = {dearness}
         />
 
         <HistoryModal

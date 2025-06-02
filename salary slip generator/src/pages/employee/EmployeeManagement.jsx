@@ -115,13 +115,13 @@ export default function EmployeeManagement() {
                             ) : (<Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Full Name</TableCell>
-                                        <TableCell>Gender</TableCell>
-                                        <TableCell>DOB</TableCell>
-                                        <TableCell>Joining Date</TableCell>
-                                        <TableCell>Email</TableCell>
-                                        <TableCell>Pan Number</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
+                                        <TableCell style={{ fontWeight: "900" }}>Full Name</TableCell>
+                                        <TableCell style={{ fontWeight: "900" }}>Gender</TableCell>
+                                        <TableCell style={{ fontWeight: "900" }}>DOB</TableCell>
+                                        <TableCell style={{ fontWeight: "900" }}>Joining Date</TableCell>
+                                        <TableCell style={{ fontWeight: "900" }}>Email</TableCell>
+                                        <TableCell style={{ fontWeight: "900" }}>Pan Number</TableCell>
+                                        <TableCell align="right" style={{ fontWeight: "900" }}>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>

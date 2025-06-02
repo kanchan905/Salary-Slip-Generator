@@ -57,6 +57,7 @@ export default function PensionDocumentModal({
                       name="pensioner_id"
                       value={values.pensioner_id}
                       onChange={(e) => setFieldValue('pensioner_id', e.target.value)}
+                      disabled={formMode == 'edit'}
                     >
                       <option value="">Select Pensioner</option>
                       {pensionersData.map((p) => (

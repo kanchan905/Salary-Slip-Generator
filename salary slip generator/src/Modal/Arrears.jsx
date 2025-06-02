@@ -9,6 +9,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Input,
 } from "reactstrap";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -62,7 +63,7 @@ const validationSchema = Yup.object({
   edited_by: Yup.string(),
 });
 
-export default function ArrearsFormModal({ isOpen, toggle, id }) {
+export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearness }) {
   const dispatch = useDispatch();
   const arrears = useSelector((state) => state.arrears.arrears);
 
@@ -114,7 +115,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id }) {
         .unwrap()
         .then(() => {
           toggle();
-           dispatch(fetchArrears({ page: '', limit: '', id: '' }));
+          dispatch(fetchArrears({ page: '', limit: '', id: '' }));
           toast.success("Successfully added arrear");
         })
         .catch((err) => {
@@ -142,7 +143,15 @@ export default function ArrearsFormModal({ isOpen, toggle, id }) {
                 <Col md={6}>
                   <FormGroup>
                     <Label for="pensioner_id">Pensioner ID</Label>
-                    <Field name="pensioner_id" className="form-control" />
+                    {/* <Field name="pensioner_id" className="form-control" /> */}
+                    <Field as={Input} type="select" id="pensioner_id" name="pensioner_id" disabled={arrearToEdit !== id}>
+                      <option value="">Select Pensioner</option>
+                      {pensioners?.map(p => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}-{(p.ppo)}
+                        </option>
+                      ))}
+                    </Field>
                     <ErrorMessage
                       name="pensioner_id"
                       component="p"
@@ -230,11 +239,14 @@ export default function ArrearsFormModal({ isOpen, toggle, id }) {
                 <Col md={6}>
                   <FormGroup>
                     <Label for="dr_percentage">DR Percentage</Label>
-                    <Field
-                      name="dr_percentage"
-                      type="number"
-                      className="form-control"
-                    />
+                    <Field as={Input} type="select" id="dr_percentage" name="dr_percentage" >
+                      <option value="">Select DR</option>
+                      {dearness?.map(p => (
+                        <option key={p.id} value={p.dr_percentage}>
+                          {p.dr_percentage}%
+                        </option>
+                      ))}
+                    </Field>
                     <ErrorMessage
                       name="dr_percentage"
                       component="p"

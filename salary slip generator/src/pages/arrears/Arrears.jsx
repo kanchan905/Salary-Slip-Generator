@@ -24,6 +24,7 @@ import ViewIcon from '@mui/icons-material/Visibility';
 import { MenuItem } from '@mui/material';
 
 export default function Arrears() {
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -54,6 +55,8 @@ export default function Arrears() {
     if (isHistoryModalOpen) setHistoryRecord([]);
     handleMenuClose()
   }
+  const {pensioners} = useSelector((state) => state.pensioner);
+  const { dearness} = useSelector((state) => state.dearnessRelief);
   
 
   const getTableConfig = (type) => {
@@ -194,14 +197,14 @@ export default function Arrears() {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Pensioner ID</TableCell>
-                        <TableCell>From Month</TableCell>
-                        <TableCell>To Month</TableCell>
-                        <TableCell>Payment Month</TableCell>
-                        <TableCell>DR %</TableCell>
-                        <TableCell>DR Arrear</TableCell>
-                        <TableCell>Total Arrear</TableCell>
-                        <TableCell align="right">Actions</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Pensioner ID</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>From Month</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>To Month</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Payment Month</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>DR %</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>DR Arrear</TableCell>
+                        <TableCell style={{ fontWeight: "900" }}>Total Arrear</TableCell>
+                        <TableCell align="right" style={{ fontWeight: "900" }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -260,6 +263,8 @@ export default function Arrears() {
           isOpen={modalOpen}
           toggle={toggle}
           id={selectedArrearId}
+          pensioners={pensioners}
+          dearness={dearness}
         />
 
         <HistoryModal

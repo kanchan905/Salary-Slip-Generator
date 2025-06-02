@@ -189,14 +189,14 @@ export default function EmployeeLoan() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>                                              
-                                                <TableCell>Loan Type</TableCell>
-                                                <TableCell>Loan Amount</TableCell>
-                                                <TableCell>Interest Rate</TableCell>
-                                                <TableCell>Sanctioned Date</TableCell>
-                                                <TableCell>Total Installments</TableCell>
-                                                <TableCell>Current Installment</TableCell>                                               
-                                                <TableCell>Status</TableCell>                                              
-                                                <TableCell>Action</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Loan Type</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Loan Amount</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Interest Rate</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Sanctioned Date</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Total Installments</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Current Installment</TableCell>                                               
+                                                <TableCell style={{ fontWeight: "900" }}>Status</TableCell>                                              
+                                                <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
