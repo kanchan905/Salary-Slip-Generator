@@ -4,6 +4,7 @@ import axiosInstance from "global/AxiosSetting";
 // Initial State
 const initialState = {
     deductions: [],
+    deduction:{},
     loading: false,
     error: null,
 };
@@ -31,6 +32,19 @@ export const updateDeduction = createAsyncThunk(
         }
     }
 );
+
+export const showDeduction = createAsyncThunk(
+    'showDeduction/deduction',
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.get(`/pension-deduction/${id}`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data || "Failed to add deduction");
+        }
+    }
+);
+
 
 
 const deductionSlice = createSlice({
@@ -67,7 +81,19 @@ const deductionSlice = createSlice({
             .addCase(updateDeduction.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+           .addCase(showDeduction.pending, (state,action) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(showDeduction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deduction = action.payload
+            })
+            .addCase(showDeduction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     },
 });
 

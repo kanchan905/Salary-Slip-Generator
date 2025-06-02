@@ -21,7 +21,7 @@ import HistoryModal from "Modal/HistoryModal";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import ViewIcon from '@mui/icons-material/Visibility';
-import {  MenuItem } from '@mui/material';
+import { MenuItem } from '@mui/material';
 
 export default function Arrears() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,12 +32,11 @@ export default function Arrears() {
   const [modalOpen, setModalOpen] = useState(false);
   const toggle = () => setModalOpen(!modalOpen);
   const arrearsData = useSelector((state) => state.arrears.arrears || []);
-  const showArrear = useSelector((state) => state.arrears.showArrear);
   const totalCount = useSelector((state) => state.arrears.totalCount || 0);
   const [selectedArrearId, setSelectedArrearId] = useState(null);
   const loading = useSelector((state) => state.arrears.loading);
   const { name } = useSelector((state) => state.auth.user.role);
-  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [renderFunction, setRenderFunction] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
   const [tableHead, setTableHead] = useState([
     "Sr. No.",
@@ -48,15 +47,15 @@ export default function Arrears() {
     "Head 5",
     "Head 6",
   ]);
-    
+
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const toggleHistoryModal = () => 
-    {
-      setIsHistoryModalOpen(!isHistoryModalOpen)
-      handleMenuClose()
-    }
-  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
+  const toggleHistoryModal = () => {
+    setIsHistoryModalOpen(!isHistoryModalOpen)
+    if (isHistoryModalOpen) setHistoryRecord([]);
+    handleMenuClose()
+  }
   
+
   const getTableConfig = (type) => {
     switch (type) {
       case "arrear":
@@ -94,28 +93,28 @@ export default function Arrears() {
             </tr>
           ),
         };
-    // You can add more like designation, pay scale, etc.
-    default:
-      return { head: [], renderRow: () => null };
+      // You can add more like designation, pay scale, etc.
+      default:
+        return { head: [], renderRow: () => null };
     }
   };
 
-  // Status History handlers
+
   const handleHistoryStatus = (id) => {
-    setShouldOpenHistory(true); // only allow opening if this was user-triggered
-    dispatch(fetchArrearsShow(id));
+    handleMenuClose();
+    dispatch(fetchArrearsShow(id)).then((res) => {
+      const history = res.payload?.history || [];
+      if (Array.isArray(history)) {
+        const config = getTableConfig("arrear");
+        setHistoryRecord(history);
+        setTableHead(config.head);
+        setRenderFunction(() => config.renderRow);
+        toggleHistoryModal();
+      }else {
+      setHistoryRecord([]);
+    } 
+    });
   };
-          
-  useEffect(() => {
-    if (shouldOpenHistory && Array.isArray(showArrear?.history)) {
-      const config = getTableConfig("arrear");
-      setHistoryRecord(showArrear?.history);
-      setTableHead(config.head);
-      setRenderFunction(() => config.renderRow);
-      toggleHistoryModal();
-      setShouldOpenHistory(false); // reset the flag
-    }
-  }, [showArrear, shouldOpenHistory]);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuArrearId, setMenuArrearId] = useState(null);
@@ -185,13 +184,13 @@ export default function Arrears() {
             </div>
           </CardHeader>
           <CardBody>
-            <div className="custom-scrollbar">
+            <div>
               {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <CircularProgress />
                 </Box>
               ) : (
-                <TableContainer component={Paper} style={{ boxShadow: 'none'}}>
+                <TableContainer component={Paper} style={{ boxShadow: 'none' }}>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -232,7 +231,7 @@ export default function Arrears() {
                                 <EditIcon fontSize="small" /> Edit
                               </MenuItem>
                               <MenuItem onClick={() => handleHistoryStatus(a.id)}>
-                                <HistoryIcon fontSize="small"/> History
+                                <HistoryIcon fontSize="small" /> History
                               </MenuItem>
                             </Menu>
                           </TableCell>

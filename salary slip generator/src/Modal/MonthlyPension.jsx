@@ -7,28 +7,34 @@ export default function MonthlyPensionModal({
   toggleModal,
   formData,
   handleSubmit,
-  setFormOpen
+  setFormOpen,
+  mode
 }) {
   const initialValues = {
-    pensioner_id: formData.pensioner_id || '',
-    month: formData.month || '',
-    basic_pension: formData.basic_pension || '',
-    commutation_amount: formData.commutation_amount || '',
-    additional_pension: formData.additional_pension || '',
+    pension_related_info_id: formData.pension_related_info?.id || '',
     dr_id: formData.dr_id || '',
-    dr_amount: formData.dr_amount || '',
-    medical_allowance: formData.medical_allowance || '',
+    remarks: formData.remarks || '',
     status: formData.status || '',
-    remarks: formData.remarks || ''
+    pensioner_id: formData.pensioner_id || '',
+    pensioner_bank_id: formData.pensioner_bank_id || '',
+    month: formData.month || '',
+    year: formData.year || '',
+    processing_date: formData.processing_date || '',
+    payment_date: formData.payment_date || '',
+    net_pension_id: formData.net_pension?.id || '',
   };
 
   const validate = (values) => {
     const errors = {};
-    if (!values.pensioner_id) errors.pensioner_id = "Required";
-    if (!values.month) errors.month = "Required";
-    if (!values.basic_pension) errors.basic_pension = "Required";
+    if (!values.pension_related_info_id) errors.pension_related_info_id = "Required";
     if (!values.dr_id) errors.dr_id = "Required";
     if (!values.status) errors.status = "Required";
+    if (!values.pensioner_id) errors.pensioner_id = "Required";
+    if (!values.pensioner_bank_id) errors.pensioner_bank_id = "Required";
+    if (!values.month) errors.month = "Required";
+    if (!values.year) errors.year = "Required";
+    if (!values.processing_date) errors.processing_date = "Required";
+    if (!values.payment_date) errors.payment_date = "Required";
     return errors;
   };
 
@@ -36,8 +42,8 @@ export default function MonthlyPensionModal({
     <Modal
       className="modal-dialog-centered"
       isOpen={formOpen}
-      toggle={() => toggleModal("monthlyPensionModal")}
-      scrollable={true}
+      toggle={() => setFormOpen(!formOpen)}
+      size="lg"
     >
       <div className="pt-4 pb-4 px-4">
         <Formik
@@ -49,7 +55,7 @@ export default function MonthlyPensionModal({
           {({ isSubmitting }) => (
             <Form>
               <h4 className="mb-4">Add Monthly Pension</h4>
-              <Row>
+              {mode === 'create' ? (<Row>
                 <Col md="6">
                   <FormGroup>
                     <Label for="pensioner_id">Pensioner ID</Label>
@@ -59,32 +65,17 @@ export default function MonthlyPensionModal({
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="month">Month</Label>
-                    <Field as={Input} id="month" name="month" type="date" />
-                    <ErrorMessage name="month" component="div" className="text-danger" />
+                    <Label for="pensioner_bank_id">Pensioner Bank ID</Label>
+                    <Field as={Input} id="pensioner_bank_id" name="pensioner_bank_id" />
                   </FormGroup>
                 </Col>
-              </Row>
+              </Row>) : ""}
+
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="basic_pension">Basic Pension</Label>
-                    <Field as={Input} id="basic_pension" name="basic_pension" type="number" />
-                    <ErrorMessage name="basic_pension" component="div" className="text-danger" />
-                  </FormGroup>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="commutation_amount">Commutation Amount</Label>
-                    <Field as={Input} id="commutation_amount" name="commutation_amount" type="number" />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="additional_pension">Additional Pension</Label>
-                    <Field as={Input} id="additional_pension" name="additional_pension" type="number" />
+                    <Label for="pension_related_info_id">Pension Related Info ID</Label>
+                    <Field as={Input} id="pension_related_info_id" name="pension_related_info_id" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
@@ -95,26 +86,48 @@ export default function MonthlyPensionModal({
                   </FormGroup>
                 </Col>
               </Row>
-              <Row>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="dr_amount">DR Amount</Label>
-                    <Field as={Input} id="dr_amount" name="dr_amount" type="number" />
-                  </FormGroup>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="medical_allowance">Medical Allowance</Label>
-                    <Field as={Input} id="medical_allowance" name="medical_allowance" type="number" />
-                  </FormGroup>
-                </Col>
-              </Row>
+
+
+              {mode === 'create' ? (
+                <>
+                  <Row>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="month">Month</Label>
+                        <Field as={Input} id="month" name="month" placeholder="e.g., 05" />
+                      </FormGroup>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="year">Year</Label>
+                        <Field as={Input} id="year" name="year" placeholder="e.g., 2025" />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="processing_date">Processing Date</Label>
+                        <Field as={Input} id="processing_date" name="processing_date" type="date" />
+                      </FormGroup>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="payment_date">Payment Date</Label>
+                        <Field as={Input} id="payment_date" name="payment_date" type="date" />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </>
+              ) : ''}
+
               <Row>
                 <Col md="6">
                   <FormGroup>
                     <Label for="status">Status</Label>
                     <Field as={Input} type="select" id="status" name="status">
-                      <option value=" ">Select</option>
+                      <option value="">Select</option>
                       <option value="Pending">Pending</option>
                       <option value="Processed">Processed</option>
                       <option value="Paid">Paid</option>
@@ -129,13 +142,23 @@ export default function MonthlyPensionModal({
                   </FormGroup>
                 </Col>
               </Row>
+              {mode === 'edit' ? (
+                 <Row>
+                <Col md="6">
+                  <FormGroup>
+                    <Label for="net_pension_id">Net Pension Id</Label>
+                    <Field as={Input} id="net_pension_id" name="net_pension_id" />
+                  </FormGroup>
+                </Col>
+              </Row>
+              ) : ''}
               <Button
                 color="primary"
                 type="submit"
                 className="mt-3"
                 disabled={isSubmitting}
               >
-                Save
+                {mode === 'edit' ? 'Update' : 'Save'}
               </Button>
               <Button
                 color="secondary"

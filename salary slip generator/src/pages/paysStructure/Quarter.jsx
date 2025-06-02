@@ -66,6 +66,7 @@ export default function Quarter() {
         setHistoryRecord([]);
     };
     const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
+    
 
     const getTableConfig = (type) => {
         switch (type) {
@@ -94,7 +95,7 @@ export default function Quarter() {
             default:
                 return null;
         };
-    }
+    }    
 
     const handleHistoryShow = (id) => {
         setHistoryRecord([]);

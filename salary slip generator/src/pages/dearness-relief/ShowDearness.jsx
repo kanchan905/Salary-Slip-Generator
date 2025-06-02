@@ -30,12 +30,11 @@ const Section = ({ title, children }) => (
 const ShowDearness = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const data = useSelector((state) => state.dearnessRelief.showdearness); 
+  const data = useSelector((state) => state.dearnessRelief.showDearness); 
   const { loading } = useSelector((state) => state.dearnessRelief);
-  console.log(data)
 
   useEffect(() => {
-    dispatch(fetchDearnessReliefShow({id}));
+    dispatch(fetchDearnessReliefShow(id));
   }, [dispatch, id]);
 
   return (

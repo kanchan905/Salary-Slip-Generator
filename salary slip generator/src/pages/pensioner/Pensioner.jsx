@@ -25,6 +25,7 @@ import Menu from '@mui/material/Menu';
 
 
 
+
 export default function Pensioner() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
@@ -33,7 +34,6 @@ export default function Pensioner() {
   const { name } = useSelector((state) => state.auth.user.role);
   const dispatch = useDispatch();
   const pensionersData = useSelector((state) => state.pensioner.pensioners);
-  const pensionerShow = useSelector((state) => state.pensioner.pensionerShow);
   const totalCount = useSelector((state) => state.pensioner.totalCount) || 0;
   const loading = useSelector((state) => state.pensioner.loading);
   const [ renderFunction, setRenderFunction ] = useState(() => null);
@@ -49,7 +49,11 @@ export default function Pensioner() {
   ]);
   
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
+  const toggleHistoryModal = () => {
+    setIsHistoryModalOpen(!isHistoryModalOpen)
+    if (isHistoryModalOpen) setHistoryRecord([]);
+    handleMenuClose()
+  }
       
   const getTableConfig = (type) => {
     switch (type) {
@@ -108,38 +112,29 @@ export default function Pensioner() {
       return { head: [], renderRow: () => null };
     }
   };
-  
-  // Status History handlers
-  const handleHistoryStatus = (id) => {
-    dispatch(showPension(id));
-  };
-        
-  useEffect(() => {
-    console.log("Updated pensionerShow: ", pensionerShow);
-    if (pensionerShow && Array.isArray(pensionerShow.history)) {
-      const config = getTableConfig("pensioner");
-      setHistoryRecord(pensionerShow.history);
+
+const handleHistoryStatus = (id) => {
+    handleMenuClose();
+    dispatch(showPension(id)).then((res) => {
+      const history = res.payload?.history;
+        if (Array.isArray(history)) {
+       const config = getTableConfig("pensioner");
+      setHistoryRecord(history);
       setTableHead(config.head);
       setRenderFunction(() => config.renderRow);
       toggleHistoryModal();
-    }
-  }, [pensionerShow]);
+    }else {
+      setHistoryRecord([]);
+    } 
+    });
+};
+  
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuPensionerId, setMenuPensionerId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchPensioners({page:page,limit:rowsPerPage,id:searchQuery}))
   }, [dispatch, page, rowsPerPage])
-
-  // Filter pensioners based on search query
-  // const filteredPensioners = pensionersData.filter(p =>
-  //   p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //   p.ppo_no?.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-
-
-  // const paginatedPensioners = filteredPensioners.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -245,12 +240,6 @@ export default function Pensioner() {
                             <IconButton onClick={(e) => handleMenuClick(e, p.id)}>
                               <MoreVertIcon />
                             </IconButton>
-                            <IconButton onClick={() => navigate(`/${name.toLowerCase()}/pensioner/edit/${p.id}`)}>
-                              <EditIcon fontSize="small" color="primary"/>
-                            </IconButton>
-                            <IconButton onClick={() => handleHistoryStatus(p.id)}>
-                              <HistoryIcon fontSize="small" color="warning"/>
-                            </IconButton>
                             <Menu
                               anchorEl={anchorEl}
                               open={menuPensionerId === p.id}
@@ -263,6 +252,9 @@ export default function Pensioner() {
                               <MenuItem onClick={() => handleEdit(p.id)}>
                                 <EditIcon fontSize="small" /> Edit
                               </MenuItem>
+                              <MenuItem onClick={() => handleHistoryStatus(p.id)}>
+                              <HistoryIcon fontSize="small" color="warning"/> History
+                             </MenuItem>
                             </Menu>
                           </TableCell>
                         </TableRow>

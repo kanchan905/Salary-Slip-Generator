@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  TextField, TablePagination, Box,
+  TablePagination, Box,
   IconButton
 } from '@mui/material';
 import {
@@ -17,35 +17,40 @@ import {
   monthlyPensionDetails,
   createMonthlyPension,
   monthlyPensionDetailShow,
+  updateMonthlyPension,
 } from '../../redux/slices/monthlyPensionSlice';
 import MonthlyPensionModal from '../../Modal/MonthlyPension';
 import HistoryIcon from '@mui/icons-material/History';
 import HistoryModal from 'Modal/HistoryModal';
-
-
+import ViewIcon from '@mui/icons-material/Visibility';
+import { MenuItem } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import { useNavigate } from 'react-router-dom';
 
 export default function MonthlyPension() {
   const dispatch = useDispatch();
-  const { monthlyPension, showMonthyPension, loading } = useSelector((state) => state.monthlypension);
+  const navigate = useNavigate();
+  const { monthlyPension, loading } = useSelector((state) => state.monthlypension);
   const totalCount = useSelector((state) => state.monthlypension.totalCount) || 0;
-  const { error } = useSelector((state) => state.monthlypension)
+  const { error } = useSelector((state) => state.monthlypension);
   const [formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState({
-    pensioner_id: '',
-    month: '',
-    basic_pension: '',
-    commutation_amount: '',
-    additional_pension: '',
-    dr_id:'',
-    dr_amount: '',
-    medical_allowance: '',
-    status:'',
+    pension_related_info_id: '',
+    dr_id: '',
     remarks: '',
+    status: '',
+    pensioner_id: '',
+    pensioner_bank_id: '',
+    month: '',
+    year: '',
+    processing_date: '',
+    payment_date: '',
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [renderFunction, setRenderFunction] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
   const [tableHead, setTableHead] = useState([
     "Sr. No.",
@@ -57,12 +62,20 @@ export default function MonthlyPension() {
     "Head 6",
   ]);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
-  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
+  const toggleHistoryModal = () => {
+    setIsHistoryModalOpen(!isHistoryModalOpen);
+    if (isHistoryModalOpen) setHistoryRecord([]);
+    handleMenuClose();
+  };
+  const [modalOpen, setModalOpen] = useState(false);
+  const { name } = useSelector((state) => state.auth.user.role);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuMothlyId, setMenuMonthlyId] = useState(null);
+  const [mode, setMode] = useState('');
 
   const getTableConfig = (type) => {
     switch (type) {
-      case "bank":
+      case "monthly":
         return {
           head: [
             "Sr. No.",
@@ -101,46 +114,30 @@ export default function MonthlyPension() {
             </tr>
           ),
         };
-  
-      
-      // You can add more like designation, pay scale, etc.
       default:
         return null;
     }
   };
-  
-  const handleHistoryStatus = (id) => {
-    setShouldOpenHistory(true);
-    dispatch(monthlyPensionDetailShow(id));
-  };
-    
-  useEffect(() => {
-    if (shouldOpenHistory && showMonthyPension?.history) {
-      const config = getTableConfig("bank");
-      setHistoryRecord(showMonthyPension.history);
-      setTableHead(config.head);
-      setRenderFunction(() => config.renderRow);
-      setIsHistoryModalOpen(true);
-      setShouldOpenHistory(false);
-    }
-  }, [showMonthyPension, shouldOpenHistory]);
 
+  const handleHistoryStatus = (id) => {
+    handleMenuClose();
+    dispatch(monthlyPensionDetailShow(id)).then((res) => {
+      const history = res.payload?.data.history || [];
+      if (Array.isArray(history)) {
+        const config = getTableConfig("monthly");
+        setHistoryRecord(history);
+        setTableHead(config.head);
+        setRenderFunction(() => config.renderRow);
+        toggleHistoryModal();
+      } else {
+        setHistoryRecord([]);
+      }
+    });
+  };
 
   useEffect(() => {
     dispatch(monthlyPensionDetails());
   }, [dispatch]);
-
-  // const filteredData = monthlyPension.filter((item) =>
-  //   item.pensioner?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //   item.pensioner_id.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-  
-  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setPage(0);
-  };
 
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {
@@ -148,30 +145,88 @@ export default function MonthlyPension() {
     setPage(0);
   };
 
-
-  const toggleModal = () => {
-    setFormOpen(!formOpen);
-  };
-
-
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
-    console.log(values)
-    dispatch(createMonthlyPension(values))
+    if (mode === 'create') {
+      console.log('creating..');
+      dispatch(createMonthlyPension(values))
+        .unwrap()
+        .then(() => {
+          toast.success(`Monthly Pension added`);
+          dispatch(monthlyPensionDetails());
+        })
+        .catch((err) => {
+          const apiMsg = err?.response?.data?.message || err?.message || 'Failed to save Monthly Pension.';
+          toast.error(apiMsg);
+        });
+    }
+    console.log('updating...');
+    dispatch(updateMonthlyPension({ id: menuMothlyId, values }))
       .unwrap()
       .then(() => {
-        toast.success("Monthly Pension added");
+        toast.success(`Monthly Pension updated`);
         dispatch(monthlyPensionDetails());
       })
       .catch((err) => {
-        const apiMsg =
-          err?.response?.data?.message ||
-          err?.message ||
-          'Failed to save Monthly Pension.';
+        const apiMsg = err?.response?.data?.message || err?.message || 'Failed to save Monthly Pension.';
         toast.error(apiMsg);
       });
     resetForm();
     setFormOpen(false);
     setSubmitting(false);
+
+    console.log('updating')
+  };
+
+  const handleToggleModal = (id = null) => {
+    if (id) {
+      const record = monthlyPension.find(item => item.id === id);
+      if (record) {
+        setFormData(record);
+        setMode("edit");
+        setModalOpen(true);
+        setMenuMonthlyId(id);
+      } else {
+        toast.error("Record not found");
+      }
+    } else {
+      setFormData({
+        pension_related_info_id: '',
+        dr_id: '',
+        remarks: '',
+        status: '',
+        pensioner_id: '',
+        pensioner_bank_id: '',
+        month: '',
+        year: '',
+        processing_date: '',
+        payment_date: '',
+      });
+      setMode("create");
+      setModalOpen(true);
+      setMenuMonthlyId(null);
+    }
+    handleMenuClose()
+    console.log('mode', mode)
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuMonthlyId(null);
+  };
+
+  const handleMenuClick = (event, id) => {
+    setAnchorEl(event.currentTarget);
+    setMenuMonthlyId(id);
+  };
+
+  const handleView = (id) => {
+    handleMenuClose();
+    navigate(`/${name.toLowerCase()}/pensioner/monthly-pension/view/${id}`);
+  };
+
+  const handleEdit = (id) => {
+    handleMenuClose();
+    handleToggleModal(id);
   };
 
   return (
@@ -180,37 +235,29 @@ export default function MonthlyPension() {
       <div className="mt--7 mb-7 container-fluid">
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
-            <div className="d-flex justify-content-between align-items-center">
-              <TextField placeholder="Pensioner id & name" onChange={handleSearchChange} />
-              <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal()}>
+            <div className="d-flex justify-content-end align-items-center">
+              <Button style={{ background: "#004080", color: "#fff" }} onClick={() => handleToggleModal(null)}>
                 + Add
               </Button>
             </div>
           </CardHeader>
           <CardBody>
-            <div style={{ width: '100%', overflowX: 'auto' }} className="custom-scrollbar">
+            <div>
               {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <CircularProgress />
                 </Box>
               ) : (
-                <TableContainer component={Paper} style={{ boxShadow: "none", minWidth: 2000 }}>
+                <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Sr.No.</TableCell>
                         <TableCell>Pensioner Name</TableCell>
                         <TableCell>PPO No.</TableCell>
                         <TableCell>Basic Pension</TableCell>
-                        <TableCell>Commutation Amount</TableCell>
-                        <TableCell>Additional Pension</TableCell>
                         <TableCell>Net Pension</TableCell>
-                        <TableCell>DR %</TableCell>
-                        <TableCell>DR Amount</TableCell>
-                        <TableCell>Medical Allowance</TableCell>
                         <TableCell>Total Arrear</TableCell>
                         <TableCell>Total Pension</TableCell>
-                        <TableCell>Remarks</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell>Action </TableCell>
                       </TableRow>
@@ -219,24 +266,33 @@ export default function MonthlyPension() {
                       {monthlyPension && monthlyPension.length > 0 ? (
                         monthlyPension.map((row, idx) => (
                           <TableRow key={row.id}>
-                            <TableCell>{idx + 1}</TableCell>
                             <TableCell>{row?.net_pension?.pensioner?.name ?? "NA"}</TableCell>
                             <TableCell>{row?.net_pension?.pensioner?.ppo_no ?? "NA"}</TableCell>
                             <TableCell>{row.basic_pension ?? "NA"}</TableCell>
-                            <TableCell>{row.commutation_amount ?? "NA"}</TableCell>
-                            <TableCell>{row.additional_pension ?? "NA"}</TableCell>
                             <TableCell>{row.net_pension?.net_pension ?? "NA"}</TableCell>
-                            <TableCell>{row.dearness?.dr_percentage ?? "NA"}</TableCell>
-                            <TableCell>{row.dr_amount ?? "NA"}</TableCell>
-                            <TableCell>{row.medical_allowance ?? "NA"}</TableCell>
                             <TableCell>{row.total_arrear ?? "NA"}</TableCell>
                             <TableCell>{row.total_pension ?? "NA"}</TableCell>
-                            <TableCell>{row.remarks ?? "NA"}</TableCell>
                             <TableCell>{row.status ?? "NA"}</TableCell>
-                            <TableCell>
-                              <IconButton title='History' onClick={() => handleHistoryStatus(row.id)}>
-                                <HistoryIcon fontSize="small" color="warning" />
+                            <TableCell align="right">
+                              <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
+                                <MoreVertIcon />
                               </IconButton>
+                              <Menu
+                                anchorEl={anchorEl}
+                                open={menuMothlyId === row.id}
+                                onClose={handleMenuClose}
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                              >
+                                <MenuItem onClick={() => handleView(row.id)}>
+                                  <ViewIcon fontSize="small" /> View
+                                </MenuItem>
+                                <MenuItem onClick={() => handleEdit(row.id)}>
+                                  <EditIcon fontSize="small" /> Edit
+                                </MenuItem>
+                                <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                                  <HistoryIcon fontSize="small" /> History
+                                </MenuItem>
+                              </Menu>
                             </TableCell>
                           </TableRow>
                         ))
@@ -248,7 +304,6 @@ export default function MonthlyPension() {
                         </TableRow>
                       )}
                     </TableBody>
-
                   </Table>
                 </TableContainer>
               )}
@@ -264,11 +319,12 @@ export default function MonthlyPension() {
           </CardBody>
         </Card>
         <MonthlyPensionModal
-          setFormOpen={setFormOpen}
-          formOpen={formOpen}
-          toggleModal={toggleModal}
+          formOpen={modalOpen}
+          toggleModal={handleToggleModal}
           formData={formData}
           handleSubmit={handleSubmit}
+          setFormOpen={setModalOpen}
+          mode={mode}
         />
 
         <HistoryModal

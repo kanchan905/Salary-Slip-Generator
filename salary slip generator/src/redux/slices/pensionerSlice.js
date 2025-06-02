@@ -102,9 +102,6 @@ const pensionerSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            .addCase(updateStatus.pending, (state) => {
-                state.loading = true;
-            })
             .addCase(updateStatus.fulfilled, (state, action) => {
                 const updatedPensioner = action.payload;
                 const index = state.pensioners.findIndex(p => p.id === updatedPensioner.id);
@@ -114,11 +111,6 @@ const pensionerSlice = createSlice({
                         ...updatedPensioner
                     };
                 }
-                state.loading = false;
-            })
-            .addCase(updateStatus.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
             })
             .addCase(createPensioner.pending, (state) => {
                 state.loading = true;

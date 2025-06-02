@@ -22,29 +22,38 @@ import {
 import PensionDeductionModal from '../../Modal/PensionDeductionModal';
 import HistoryIcon from '@mui/icons-material/History';
 import HistoryModal from 'Modal/HistoryModal';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 
 export default function PensionDeduction() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { pension, showPension, loading } = useSelector((state) => state.pensionDeduction);
   const { netPension, netPensionData } = useSelector((state) => state.netPension);
-  const totalCount = useSelector((state)=> state.pensionDeduction.totalCount) || 0;
+  const totalCount = useSelector((state) => state.pensionDeduction.totalCount) || 0;
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuIndex, setMenuIndex] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState('create');
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
-    pension_id: '',
-    deduction_type: '',
-    amount: '',
-    description: ''
+    net_pension_id: '',
+    income_tax: '',
+    description: '',
+    recovery: '',
+    other: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [renderFunction, setRenderFunction] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
   const [tableHead, setTableHead] = useState([
     "Sr. No.",
@@ -55,47 +64,50 @@ export default function PensionDeduction() {
     "Head 5",
     "Head 6",
   ]);
-    
+
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
   const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
-  
+    const { name } = useSelector((state) => state.auth.user.role);
+    // const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+      // const [menuRowId, setMenuRowId] = useState(null);
+
   const getTableConfig = (type) => {
     switch (type) {
       case "bank":
         return {
-        head: [
-          "Sr. No.",
-          "Pension Name",
-          "PPO No.",
-          "Commutation Amount",
-          "Income Tax",
-          "Recovery",
-          "Amount",  
-          "Net Amount",
-          "Other",
-          "Description",
-          "Added By",
-          "Edited By"
-        ],
-        renderRow: (record, index) => (
-          <tr key={index}>
-            <td>{index + 1}</td>
-            <td>{record?.net_pension?.pensioner?.name ?? "NA"}</td>
-            <td>{record?.net_pension?.pensioner?.ppo_no ?? "NA"}</td>
-            <td>{record.commutation_amount ?? "NA"}</td>
-            <td>{record.income_tax || "NA"}</td>
-            <td>{record.recovery || "NA"}</td>
-            <td>{record.amount || "NA"}</td>
-            <td>{record.net_pension?.net_pension || "NA"}</td>
-            <td>{record.other || "NA"}</td>
-            <td>{record.description || "NA"}</td>
-            <td>{record.added_by?.name}</td>
-            <td>{record.edited_by?.name || "NA"}</td>
-          </tr>
-        ),
-      };
-    
+          head: [
+            "Sr. No.",
+            "Pension Name",
+            "PPO No.",
+            "Commutation Amount",
+            "Income Tax",
+            "Recovery",
+            "Amount",
+            "Net Amount",
+            "Other",
+            "Description",
+            "Added By",
+            "Edited By"
+          ],
+          renderRow: (record, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{record?.net_pension?.pensioner?.name ?? "NA"}</td>
+              <td>{record?.net_pension?.pensioner?.ppo_no ?? "NA"}</td>
+              <td>{record.commutation_amount ?? "NA"}</td>
+              <td>{record.income_tax || "NA"}</td>
+              <td>{record.recovery || "NA"}</td>
+              <td>{record.amount || "NA"}</td>
+              <td>{record.net_pension?.net_pension || "NA"}</td>
+              <td>{record.other || "NA"}</td>
+              <td>{record.description || "NA"}</td>
+              <td>{record.added_by?.name}</td>
+              <td>{record.edited_by?.name || "NA"}</td>
+            </tr>
+          ),
+        };
+
       // You can add more like designation, pay scale, etc.
       default:
         return { head: [], renderRow: () => null };
@@ -125,18 +137,6 @@ export default function PensionDeduction() {
     dispatch(fetchPensionDeduction());
   }, [dispatch]);
 
-  // const filteredData = pension.filter((item) =>
-  //    item.deduction_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //    item.pension_id.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setPage(0);
-  };
-
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
@@ -152,10 +152,11 @@ export default function PensionDeduction() {
   const toggleModal = (mode) => {
     if (mode === 'create') {
       setFormData({
-        pension_id: '',
-        deduction_type: '',
-        amount: '',
-        description: ''
+        net_pension_id: '',
+        income_tax: '',
+        description: '',
+        recovery: '',
+        other: ''
       });
       setFormMode('create');
     }
@@ -163,17 +164,17 @@ export default function PensionDeduction() {
   };
 
   const handleEdit = (row) => {
-    console.log("handleEdit: ",row);
+    console.log("handleEdit: ", row);
     setEditId(row.id);
     setFormMode('edit');
     setFormData({
       net_pension_id: row.net_pension_id,
       income_tax: row.income_tax,
       recovery: row.recovery,
-      amount: row.amount,
-      description:row.description,
+      description: row.description,
       other: row.other
     });
+    console.log('formdata', formData)
     setFormOpen(true);
     handleClose();
   };
@@ -214,14 +215,23 @@ export default function PensionDeduction() {
     setSubmitting(false);
   };
 
+   const handleView = (id) => {
+    handleClose();
+    navigate(`/${name.toLowerCase()}/pensioner/pension-deduction/view/${id}`);
+  };
+
+ const handleMenuClick = (event, id) => {
+    setAnchorEl(event.currentTarget);
+    setMenuIndex(id);
+  };
+
   return (
     <>
       <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
       <div className="mt--7 mb-7 container-fluid">
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
-            <div className="d-flex justify-content-between align-items-center">
-              <TextField placeholder="Id & Type" onChange={handleSearchChange} />
+            <div className="d-flex justify-content-end align-items-center">
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                 + Add
               </Button>
@@ -236,42 +246,47 @@ export default function PensionDeduction() {
               <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                 <Table>
                   <TableHead>
-                    <TableRow style={{whiteSpace: "nowrap"}}>
-                      <TableCell style={{fontWeight: "900"}}>Sr. No.</TableCell>
-                      <TableCell style={{fontWeight: "900"}}>Pensioner Name</TableCell>
-                      <TableCell style={{fontWeight: "900"}}>PPO No.</TableCell>
-                      <TableCell style={{fontWeight: "900"}}>Commutation Amount</TableCell>
-                      <TableCell >Income Tax</TableCell>
-                      <TableCell >Recovery</TableCell>
-                      <TableCell >Amount</TableCell>
-                      <TableCell >Net Amount</TableCell>
-                      <TableCell >Other</TableCell>
-                      <TableCell >Add By</TableCell>
-                      <TableCell >Edit By</TableCell>
-                      <TableCell >Action</TableCell>
+                    <TableRow style={{ whiteSpace: "nowrap" }}>
+                      <TableCell style={{ fontWeight: "900" }}>Pensioner Name</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>PPO No.</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Commutation Amount</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Income Tax</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Recovery</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Amount</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {pension.map((row, idx) => (
                       <TableRow key={row.id}>
-                        <TableCell>{idx + 1}</TableCell>
                         <TableCell>{row.net_pension?.pensioner?.name}</TableCell>
                         <TableCell>{row.net_pension?.pensioner?.ppo_no}</TableCell>
                         <TableCell>{row.commutation_amount ?? "NA"}</TableCell>
                         <TableCell>{row.income_tax ?? "NA"}</TableCell>
                         <TableCell>{row.recovery ?? "NA"}</TableCell>
-                        <TableCell>{row.amount ?? "NA" }</TableCell>
-                        <TableCell>{row.net_pension?.net_pension ?? "NA" }</TableCell>
-                        <TableCell>{row.other ?? "NA" }</TableCell>
-                        <TableCell>{row.added_by?.name ?? "NA"}</TableCell>
-                        <TableCell>{row.edited_by?.name ?? "NA"}</TableCell>
+                        <TableCell>{row.amount ?? "NA"}</TableCell>
+                        <TableCell>{row.net_pension?.net_pension ?? "NA"}</TableCell>
                         <TableCell align="left">
-                          <IconButton title='Edit' onClick={() => handleEdit(row)}>
-                            <EditIcon fontSize="small" color='primary'/>
+                          <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
+                            <MoreVertIcon />
                           </IconButton>
-                          <IconButton title='History View' onClick={() => handleHistoryStatus(row.id)}>
-                            <HistoryIcon fontSize="small" color='warning'/>
-                          </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={menuIndex === row.id}
+                            onClose={handleClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                          >
+                            <MenuItem onClick={() => handleEdit(row)}>
+                              <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => handleView(row.id)}>
+                              <VisibilityIcon fontSize="small" sx={{ mr: 1 }} /> View
+                            </MenuItem>
+                            <MenuItem  onClick={() => handleHistoryStatus(row.id)}>
+                              <HistoryIcon fontSize="small" color='warning' sx={{ mr: 1 }}/> History
+                            </MenuItem>
+                          </Menu>
                         </TableCell>
                       </TableRow>
                     ))}

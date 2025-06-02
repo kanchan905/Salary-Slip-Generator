@@ -44,7 +44,7 @@ export const toggleBankDetailStatus = createAsyncThunk(
     'bank/toggleBankDetailStatus',
     async ({ id }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/bank-account/${id}`);
+            const response = await axiosInstance.get(`/bank-account-status/${id}`);
             return response.data.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to update employee");
@@ -121,23 +121,15 @@ const bankSlice = createSlice(({
                 state.loading = false;
                 state.error = action.error.message;
             })
-            .addCase(toggleBankDetailStatus.pending, (state) => {
-                state.loading = true;
-            })
             .addCase(toggleBankDetailStatus.fulfilled, (state, action) => {
                 const updateBankStatus = action.payload;
-                const index = state.bankdetails.findIndex(bank => bank.id === action.payload.id);
+                const index = state.bankdetails.findIndex(bank => bank?.id === action.payload?.id);
                 if (index !== -1) {
                     state.bankdetails[index] = {
                         ...state.bankdetails[index],
                         ...updateBankStatus
                     };
                 }
-                state.loading = false;
-            })
-            .addCase(toggleBankDetailStatus.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message;
             })
             .addCase(fetchBankShow.pending, (state) => {
                 state.loading = true;

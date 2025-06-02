@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Modal, Row, Col, Button, FormGroup, Label, Input } from "reactstrap";
 import { Formik, Form, ErrorMessage } from "formik";
-import { Autocomplete, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPensioners } from "../redux/slices/pensionerSlice";
 
@@ -29,11 +28,11 @@ export default function PensionDocumentModal({
     if (!values.document_number) errors.document_number = "Required";
     if (!values.issue_date) errors.issue_date = "Required";
     if (!values.expiry_date) errors.expiry_date = "Required";
-    if (!formData.id && !values.file) errors.file = "Required"; // Required on create
+    if (!formData.id && !values.file) errors.file = "Required"; 
     return errors;
   };
 
-  const pensionersData = useSelector((state) => state.pensioner.pensioners)
+  const pensionersData = useSelector((state) => state.pensionDocument.document)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -61,8 +60,8 @@ export default function PensionDocumentModal({
                     >
                       <option value="">Select Pensioner</option>
                       {pensionersData.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} - ({p.id})
+                        <option key={p.id} value={p.pensioner_id}>
+                          {p.pensioner_id}
                         </option>
                       ))}
                     </Input>

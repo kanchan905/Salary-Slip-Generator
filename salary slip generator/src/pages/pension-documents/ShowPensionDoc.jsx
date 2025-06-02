@@ -27,10 +27,10 @@ const ShowPensionDoc = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
     const { showPensionerDocument, loading } = useSelector((state) => state.pensionDocument);
-
-
+    
+    
     useEffect(() => {
-        dispatch(fetchPensionDocumentShow({ id }));
+        dispatch(fetchPensionDocumentShow(id));
     }, [dispatch, id]);
 
     return (

@@ -12,7 +12,6 @@ import {
 } from "reactstrap";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createArrear,
@@ -64,11 +63,8 @@ const validationSchema = Yup.object({
 });
 
 export default function ArrearsFormModal({ isOpen, toggle, id }) {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const { id } = useParams();
   const arrears = useSelector((state) => state.arrears.arrears);
-  const { name } = useSelector((state) => state.auth.user.role);
 
   useEffect(() => {
     dispatch(fetchArrears());
@@ -105,8 +101,8 @@ export default function ArrearsFormModal({ isOpen, toggle, id }) {
         .unwrap()
         .then(() => {
           toggle();
+          dispatch(fetchArrears({ page: '', limit: '', id: '' }));
           toast.success("Successfully updated arrear");
-          // navigate(`/${name.toLowerCase()}/arrears`);
         })
         .catch((err) => {
           const apiMsg =
@@ -118,8 +114,8 @@ export default function ArrearsFormModal({ isOpen, toggle, id }) {
         .unwrap()
         .then(() => {
           toggle();
+           dispatch(fetchArrears({ page: '', limit: '', id: '' }));
           toast.success("Successfully added arrear");
-          // navigate(`/${name.toLowerCase()}/arrears`);
         })
         .catch((err) => {
           const apiMsg =

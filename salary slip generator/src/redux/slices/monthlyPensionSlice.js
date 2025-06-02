@@ -44,6 +44,19 @@ export const monthlyPensionDetailShow = createAsyncThunk(
     }
 );
 
+export const updateMonthlyPension = createAsyncThunk(
+    'month/updateMonthlyPension',
+    async ({ id, values }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`/monthly-pension/${id}?_method=PUT`, values);
+            return response.data.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to fetch monthly pension");
+        }
+    }
+);
+
+
 
 const initialState = {
     monthlyPension: [],
@@ -70,9 +83,6 @@ const monthlyPensionSlice = createSlice(({
                 state.loading = false;
                 state.error = action.error.message;
             })
-            // .addCase(createMonthlyPension.pending, (state) => {
-            //     state.loading = true;
-            // })
             .addCase(createMonthlyPension.fulfilled, (state, action) => {
                 state.loading = false;
                 state.monthlyPension.push(action.payload);
@@ -87,12 +97,22 @@ const monthlyPensionSlice = createSlice(({
             .addCase(monthlyPensionDetailShow.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
+            })
+            .addCase(updateMonthlyPension.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateMonthlyPension.fulfilled, (state, action) => {
+                state.loading = false;
+                const updatedMonthlyPension = action.payload;
+                const index = state.monthlyPension.findIndex(p => p.id === updatedMonthlyPension.id);
+                if (index !== -1) {
+                    state.monthlyPension[index] = updatedMonthlyPension;
+                }
+            })
+            .addCase(updateMonthlyPension.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
             });
-
-        // .addCase(createMonthlyPension.rejected, (state, action) => {
-        //     state.loading = false;
-        //     state.error = action.error.message;
-        // })
     }
 }));
 

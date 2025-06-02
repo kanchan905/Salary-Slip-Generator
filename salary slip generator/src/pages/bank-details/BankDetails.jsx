@@ -34,7 +34,6 @@ export default function BankDetails() {
   const { bankdetails, bankShow, loading } = useSelector((state) => state.bankdetail);
   const totalCount = useSelector((state) => state.bankdetail.totalCount) || 0;
   const { error } = useSelector((state) => state.bankdetail)
-  const [menuIndex, setMenuIndex] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState('create');
   const [editId, setEditId] = useState(null);
@@ -52,7 +51,7 @@ export default function BankDetails() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuBankDetailId, setMenuBankDetailId] = useState(null);
-  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [renderFunction, setRenderFunction] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
   const [tableHead, setTableHead] = useState([
     "Sr. No.",
@@ -63,13 +62,13 @@ export default function BankDetails() {
     "Head 5",
     "Head 6",
   ]);
-  
+
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => {
     setIsHistoryModalOpen(!isHistoryModalOpen);
+    if (isHistoryModalOpen) setHistoryRecord([]);
     handleMenuClose();
   }
-  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
 
   const getTableConfig = (type) => {
     switch (type) {
@@ -78,7 +77,7 @@ export default function BankDetails() {
           head: [
             "Sr. No.",
             "Bank Name",
-            "Branch Name",  
+            "Branch Name",
             "Account No",
             "IFSC Code",
             "Status",
@@ -105,7 +104,7 @@ export default function BankDetails() {
             </tr>
           ),
         };
-  
+
       // You can add more like designation, pay scale, etc.
       default:
         return { head: [], renderRow: () => null };
@@ -113,31 +112,24 @@ export default function BankDetails() {
   };
 
   const handleHistoryStatus = (id) => {
-    setShouldOpenHistory(true); // only allow opening if this was user-triggered
-    dispatch(fetchBankShow(id));
+    handleMenuClose();
+    dispatch(fetchBankShow(id)).then((res) => {
+      const history = res.payload?.history || [];
+      if (Array.isArray(history)) {
+        const config = getTableConfig("bank");
+        setHistoryRecord(history);
+        setTableHead(config.head);
+        setRenderFunction(() => config.renderRow);
+        toggleHistoryModal();
+      } else {
+        setHistoryRecord([]);
+      }
+    });
   };
-
-  useEffect(() => {
-    if (shouldOpenHistory && bankShow?.history) {
-      const config = getTableConfig("bank");
-      setHistoryRecord(bankShow?.history || []);
-      setTableHead(config.head);
-      setRenderFunction(() => config.renderRow); // <- use useState to hold render function
-      toggleHistoryModal();
-      setShouldOpenHistory(false); // reset the flag
-    }
-  }, [bankShow, shouldOpenHistory]);
 
   useEffect(() => {
     dispatch(fetchBankDetails({ page: page, limit: rowsPerPage, id: searchQuery }));
   }, [dispatch, page, rowsPerPage, searchQuery]);
-
-  // const filteredData = bankdetails.filter((item) =>
-  //   String(item.pensioner_id).toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //   item.pensioner?.name.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -174,7 +166,7 @@ export default function BankDetails() {
   };
 
 
-  
+
 
   const handleEdit = (row) => {
     setEditId(row.id);
@@ -196,26 +188,28 @@ export default function BankDetails() {
       dispatch(updateBankDetail({ id: editId, values: values }))
         .unwrap()
         .then(() => {
+          dispatch(fetchBankDetails({ page: '', limit: '', id: '' }));
           toast.success("Bank detail updated successfully");
         })
         .catch((err) => {
           const apiMsg =
             err?.response?.data?.message ||
             err?.message ||
-            'Failed to save pensioner.';
+            'Bank detail updatation failed.';
           toast.error(apiMsg);
         });
     } else {
       dispatch(createBankDetail(values))
         .unwrap()
         .then(() => {
+          dispatch(fetchBankDetails({ page: '', limit: '', id: '' }));
           toast.success("Bank detail added");
         })
         .catch((err) => {
           const apiMsg =
             err?.response?.data?.message ||
             err?.message ||
-            'Failed to save pensioner.';
+            'Failed to add bank detail.';
           toast.error(apiMsg);
         });
     }
@@ -226,7 +220,19 @@ export default function BankDetails() {
   };
 
   const handleToggleStatus = async (row) => {
-    await dispatch(toggleBankDetailStatus({ id: row.id }));
+    console.log(row.id)
+    dispatch(toggleBankDetailStatus({ id: row?.id })).unwrap()
+      .then(() => {
+        dispatch(fetchBankDetails({ page: '', limit: '', id: '' }));
+        toast.success("Bank status updated");
+      })
+      .catch((err) => {
+        const apiMsg =
+          err?.response?.data?.message ||
+          err?.message ||
+          'Bank status Updatation Failed.';
+        toast.error(apiMsg);
+      });;
   };
 
   const handleView = (id) => {
@@ -277,7 +283,7 @@ export default function BankDetails() {
                         <TableCell>{row.bank_name}</TableCell>
                         <TableCell>{row.branch_name}</TableCell>
                         <TableCell>{row.account_no}</TableCell>
-                        <TableCell>{row.ifsc_code}</TableCell>                     
+                        <TableCell>{row.ifsc_code}</TableCell>
                         <TableCell>
                           <Chip
                             label={row.is_active ? 'Active' : 'Inactive'}
@@ -299,10 +305,10 @@ export default function BankDetails() {
                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                           >
                             <MenuItem onClick={() => handleEdit(row)}>
-                              <EditIcon fontSize="small" color='primary'/> Edit
+                              <EditIcon fontSize="small" color='primary' /> Edit
                             </MenuItem>
                             <MenuItem onClick={() => handleHistoryStatus(row.id)}>
-                              <HistoryIcon fontSize="small" color='warning'/> History
+                              <HistoryIcon fontSize="small" color='warning' /> History
                             </MenuItem>
                             <MenuItem onClick={() => handleView(row.pensioner_id)}>
                               <ViewIcon fontSize="small" /> View

@@ -36,6 +36,8 @@ import ShowEmployee from "pages/employee-loan/ShowEmployee";
 import ShowPensionDoc from "pages/pension-documents/ShowPensionDoc";
 import NetPension from "pages/Net-Pension/NetPension";
 import NetPensionCard from "pages/Net-Pension/NetPensionCard";
+import ShowMonthlyPension from "pages/monthly-pension/ShowMonthlyPension";
+import ShowPensionDeduction from "pages/pension-deduction/ShowPensionDeduction";
 
 const getAdminRoutes = (role) => (
    {
@@ -266,6 +268,22 @@ const getAdminRoutes = (role) => (
       name: "Pension Documents",
       icon: "fa-solid fa-receipt",
       component: ShowPensionDoc,
+      layout: role,
+      showInSidebar: false,
+    },
+     {
+     path: "/pensioner/monthly-pension/view/:id",
+      name: "Monthly Pension",
+      icon: "fa-solid fa-hand-holding-dollar", 
+      component: ShowMonthlyPension,
+      layout: role,
+      showInSidebar: false,
+    },
+    {
+     path: "/pensioner/pension-deduction/view/:id",
+      name: "Pension Deduction",
+      icon: "fa-solid fa-money-bill-transfer", 
+      component: ShowPensionDeduction,
       layout: role,
       showInSidebar: false,
     },

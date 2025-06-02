@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, TextField, TablePagination, Box,
+  IconButton, TablePagination, Box,
   Chip,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -28,14 +28,14 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import HistoryIcon from '@mui/icons-material/History';
 import HistoryModal from 'Modal/HistoryModal';
-import { FileCopyOutlined, GetApp } from '@mui/icons-material';
+import { GetApp } from '@mui/icons-material';
 import { BASE_URL } from 'utils/helpers';
 
 
 
 export default function PensionDocuments() {
   const dispatch = useDispatch();
-  const { document, showPensionerDocument, loading } = useSelector((state) => state.pensionDocument);
+  const { document, loading } = useSelector((state) => state.pensionDocument);
   const totalCount = useSelector((state) => state.pensionDocument.totalCount) || 0;
   const { error } = useSelector((state) => state.pensionDocument)
   const [formOpen, setFormOpen] = useState(false);
@@ -71,9 +71,9 @@ export default function PensionDocuments() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => {
     setIsHistoryModalOpen(!isHistoryModalOpen);
+    if (isHistoryModalOpen) setHistoryRecord([]);
     handleClose();
   }
-  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
     
 
   const getTableConfig = (type) => {
@@ -133,28 +133,21 @@ export default function PensionDocuments() {
     dispatch(fetchPensionDocument());
   }, [dispatch]);
   
-  
   const handleHistoryStatus = (id) => {
-    setShouldOpenHistory(true);
-    dispatch(fetchPensionDocumentShow(id));
-  };
-    
-  useEffect(() => {
-    if ( showPensionerDocument && showPensionerDocument?.history) {
-      const config = getTableConfig("document");
-      setHistoryRecord(showPensionerDocument.history);
-      setTableHead(config.head);
-      setRenderFunction(() => config.renderRow);
-      setIsHistoryModalOpen(true);
-      setShouldOpenHistory(false);
-    }
-  }, [showPensionerDocument, shouldOpenHistory]);
-  
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setPage(0);
-  };
+      handleClose();
+      dispatch(fetchPensionDocumentShow(id)).then((res) => {
+        const history = res.payload?.history || [];
+        if (Array.isArray(history)) {
+          const config = getTableConfig("document");
+          setHistoryRecord(history);
+          setTableHead(config.head);
+          setRenderFunction(() => config.renderRow);
+          toggleHistoryModal();
+        }else {
+        setHistoryRecord([]);
+      } 
+      });
+    };
 
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {
@@ -252,7 +245,6 @@ export default function PensionDocuments() {
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
             <div className="d-flex justify-content-end align-items-center">
-              {/* <TextField placeholder="Id & Type" onChange={handleSearchChange} /> */}
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                 + Add
               </Button>
@@ -301,7 +293,7 @@ export default function PensionDocuments() {
                               <VisibilityIcon fontSize="small" sx={{ mr: 1 }} /> View
                             </MenuItem>
                             <MenuItem onClick={() => handleHistoryStatus(row.id)}>
-                              <HistoryIcon fontSize="small" color='warning'/> History
+                              <HistoryIcon fontSize="small" color='warning' sx={{ mr: 1 }}/> History
                             </MenuItem>
                           </Menu>
                         </TableCell>

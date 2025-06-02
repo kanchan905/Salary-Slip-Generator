@@ -45,7 +45,7 @@ export const fetchArrearsShow = createAsyncThunk(
   "showArrear/fetchArrearsShow",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/arrears/${id}`);
+      const response = await axiosInstance.get(`/arrears?page&limit&pensioner_id=${id}`);
       return response.data.data
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch arrear");
@@ -56,7 +56,7 @@ export const showArrear = createAsyncThunk(
   "arrears/showArrear",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/arrears?pensioner_id=${id}`);
+      const response = await axiosInstance.get(`/arrears?page&limit&pensioner_id=${id}`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);

@@ -41,7 +41,6 @@ export default function DearnessRelief() {
     effective_to: '',
     dr_percentage: '',
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -63,13 +62,14 @@ export default function DearnessRelief() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const toggleHistoryModal = () => {
     setIsHistoryModalOpen(!isHistoryModalOpen);
+    if (isHistoryModalOpen) setHistoryRecord([]);
     handleMenuClose();
   }
-  const [shouldOpenHistory, setShouldOpenHistory] = useState(false);
+
   
   const getTableConfig = (type) => {
     switch (type) {
-    case "bank":
+    case "dear":
       return {
         head: [
           "Sr. No.",
@@ -99,36 +99,25 @@ export default function DearnessRelief() {
   };
 
   const handleHistoryStatus = (id) => {
-    setShouldOpenHistory(true);
-    dispatch(fetchDearnessReliefShow(id));
-  };
-  
-  useEffect(() => {
-    if (shouldOpenHistory && showDearness?.history) {
-      const config = getTableConfig("bank");
-      setHistoryRecord(showDearness.history);
-      setTableHead(config.head);
-      setRenderFunction(() => config.renderRow);
-      setIsHistoryModalOpen(true);
-      setShouldOpenHistory(false);
-    }
-  }, [showDearness, shouldOpenHistory]);
+      handleMenuClose();
+      dispatch(fetchDearnessReliefShow(id)).then((res) => {
+        const history = res.payload?.history || [];
+        if (Array.isArray(history)) {
+          const config = getTableConfig("dear");
+          setHistoryRecord(history);
+          setTableHead(config.head);
+          setRenderFunction(() => config.renderRow);
+          toggleHistoryModal();
+        }else {
+        setHistoryRecord([]);
+      } 
+      });
+    };
 
 
   useEffect(() => {
     dispatch(fetchDearnessRelief());
   }, [dispatch]);
-
-  // const filteredData = dearness.filter((item) =>
-  //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  // const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setPage(0);
-  };
 
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {
@@ -220,7 +209,6 @@ export default function DearnessRelief() {
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
             <div className="d-flex justify-content-end align-items-center">
-              {/* <TextField placeholder="dr percentage" onChange={handleSearchChange} /> */}
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                 + Add
               </Button>

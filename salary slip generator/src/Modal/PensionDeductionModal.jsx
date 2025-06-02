@@ -39,7 +39,7 @@ export default function PensionDeductionModal({
   
 
   return (
-    <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} scrollable>
+    <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} >
       <div className="pt-4 pb-4 px-4">
         <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit} enableReinitialize>
           {({ isSubmitting }) => (
@@ -52,7 +52,7 @@ export default function PensionDeductionModal({
                     <Field as={Input} id="net_pension_id" name="net_pension_id" type="select" disabled={ formMode === "edit" ? true : false }>
                       <option value="">Select</option>
                     {
-                      netPension.map((data, idx) => (
+                      netPension?.map((data, idx) => (
                         <option key={`netPension-${idx}`} value={data.id}>{data.net_pension}</option>
                       ))
                     }

@@ -34,7 +34,8 @@ export default function NetPension() {
     const totalCount = useSelector((state) => state.netPension?.totalCount) || 0;
     const { error } = useSelector((state) => state.netSalary)
     const [anchorEl, setAnchorEl] = useState(null);
-    const [menuIndex, setMenuIndex] = useState(null);
+    // const [menuIndex, setMenuIndex] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState('create');
     const [editId, setEditId] = useState(null);
@@ -80,28 +81,47 @@ export default function NetPension() {
     });
 
     // Status History handlers
+    // const handleHistoryPension = (id) => {
+    //     setShowHistory(true);
+    //     dispatch(showNetPension({ id }));
+    // };
+
     const handleHistoryPension = (id) => {
-        setShowHistory(true);
-        dispatch(showNetPension({ id }));
+        handleClose();
+        dispatch(showNetPension({ id })).then((res) => {
+            const history = res.payload?.history;
+            if (Array.isArray(history) && history.length > 0) {
+                const config = getPensionHistoryTableConfig();
+                setTableHead(config.head);
+                setRenderFunction(() => config.renderRow);
+                setHistoryRecord(history);
+                setShowHistory(true);
+                setIsHistoryModalOpen(true);
+            } else {
+                toast.info("No history available.");
+            }
+        });
     };
 
 
-    useEffect(() => {
-        if (showHistory && netPensionData?.history?.length) {
-            const config = getPensionHistoryTableConfig();
-            setTableHead(config.head);
-            setRenderFunction(() => config.renderRow);
-            setHistoryRecord(netPensionData.history);
-            setIsHistoryModalOpen(true);
-            handleClose()
-            setShowHistory(false);
-        }
-    }, [netPensionData, showHistory]);
+    // useEffect(() => {
+    //     if (showHistory && netPensionData?.history?.length) {
+    //         const config = getPensionHistoryTableConfig();
+    //         setTableHead(config.head);
+    //         setRenderFunction(() => config.renderRow);
+    //         setHistoryRecord(netPensionData.history);
+    //         setIsHistoryModalOpen(true);
+    //         handleClose()
+    //         setShowHistory(false);
+    //     }
+    // }, [netPensionData, showHistory]);
 
 
     useEffect(() => {
+       if (!isHistoryModalOpen) {
         dispatch(fetchNetPension({ page, limit: rowsPerPage }));
-    }, [dispatch, searchQuery]);
+      }
+    }, [dispatch, isHistoryModalOpen]);
 
 
     const handleSearchChange = (e) => {
@@ -118,7 +138,7 @@ export default function NetPension() {
 
     const handleClose = () => {
         setAnchorEl(null);
-        setMenuIndex(null);
+        setSelectedRow(null);
     };
 
     const toggleModal = (mode) => {
@@ -171,9 +191,9 @@ export default function NetPension() {
         setSubmitting(false);
     };
 
-    const handleMenuClick = (event, index) => {
+    const handleMenuClick = (event, row) => {
         setAnchorEl(event.currentTarget);
-        setMenuIndex(index);
+        setSelectedRow(row);
     };
 
     const handleView = (id) => {
@@ -227,7 +247,7 @@ export default function NetPension() {
                                                     <TableCell>{row.payment_date}</TableCell>
                                                     <TableCell>{row.is_verified}</TableCell>
                                                     <TableCell align="left">
-                                                        <IconButton onClick={(e) => handleMenuClick(e, idx)}>
+                                                        <IconButton onClick={(e) => handleMenuClick(e, row)}>
                                                             <MoreVertIcon />
                                                         </IconButton>
                                                         <Menu
