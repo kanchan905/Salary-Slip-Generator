@@ -265,8 +265,7 @@ export default function BankDetails() {
               <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                 <Table>
                   <TableHead>
-                    <TableRow>
-                      <TableCell style={{ fontWeight: "900" }}>Pensioner ID</TableCell>
+                    <TableRow>                    
                       <TableCell style={{ fontWeight: "900" }}>Pensioner Name</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Bank Name</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Branch Name</TableCell>
@@ -278,8 +277,7 @@ export default function BankDetails() {
                   </TableHead>
                   <TableBody>
                     {bankdetails.map((row, idx) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.pensioner_id}</TableCell>
+                      <TableRow key={row.id}>                   
                         <TableCell>{row.pensioner?.name}</TableCell>
                         <TableCell>{row.bank_name}</TableCell>
                         <TableCell>{row.branch_name}</TableCell>

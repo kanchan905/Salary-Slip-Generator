@@ -19,6 +19,8 @@ import { changeUserStatus, createUserData, fetchUserData, updateUserData } from 
 import UserFormModal from "../../Modal/UserFormModal";
 import CircularProgress from '@mui/material/CircularProgress';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const statusChipColor = (status) => {
@@ -30,12 +32,13 @@ const statusChipColor = (status) => {
 };
 
 export default function UserTable() {
+    const navigate = useNavigate();
+    const { name } = useSelector((state) => state.auth.user.role);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
     const [formOpen, setFormOpen] = React.useState(false);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [searchQuery, setSearchQuery] = React.useState("");
     const dispatch = useDispatch();
     const users = useSelector((state) => state.user.users);
     const totalCount = useSelector((state) => state.user.totalCount);
@@ -47,19 +50,7 @@ export default function UserTable() {
         dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
     }, [dispatch, page, rowsPerPage]);
 
-    // Filter users based on search query
-    // const filteredUsers = users.filter((user) =>
-    //     user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())
-    // );
-
-    // const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-    // const paginatedUsers = users;
     const [formMode, setFormMode] = React.useState('create');
-
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-        setPage(0);
-    };
 
     const handlePageChange = (event, newPage) => {
         setPage(newPage);
@@ -101,16 +92,6 @@ export default function UserTable() {
         }
         setFormOpen(!formOpen);
     };
-
-    const roles = [
-        { id: '1', label: 'IT Admin' },
-        { id: '2', label: 'Administrative Officer' },
-        { id: '3', label: 'Accounts Officer' },
-        { id: '4', label: 'Salary Coordinator - NIOH' },
-        { id: '5', label: 'Salary Coordinator - ROHC' },
-        { id: '6', label: 'Pension Coordinator' },
-        { id: '7', label: 'End Users' }
-    ];
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -180,12 +161,12 @@ export default function UserTable() {
             <div className="mt--7 mb-7 container-fluid">
                 <Card className="card-stats mb-4 mb-lg-0" >
                     <CardHeader>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <TextField placeholder="Search user..." onChange={handleSearchChange} />
+                        <div className="d-flex justify-content-end align-items-center">
                             <Button
                                 style={{ background: "#004080", color: '#fff' }}
                                 type="button"
-                                onClick={() => toggleModal("create")}
+                                // onClick={() => toggleModal("create")}
+                                onClick={()=> navigate(`/${name.toLowerCase()}/user`)}
                             >
                                 + Add User
                             </Button>
@@ -201,7 +182,7 @@ export default function UserTable() {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell style={{ fontWeight: "900" }}>Role ID</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Role Name</TableCell>
                                             <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
                                             <TableCell style={{ fontWeight: "900" }}>Email</TableCell>
                                             <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>
@@ -212,7 +193,7 @@ export default function UserTable() {
                                     <TableBody>
                                         {users.map((user, idx) => (
                                             <TableRow key={idx}>
-                                                <TableCell>{user.role_id}</TableCell>
+                                                <TableCell>{user?.role?.name}</TableCell>
                                                 <TableCell>{user.name}</TableCell>
                                                 <TableCell>{user.email}</TableCell>
                                                 <TableCell>{user.institute}</TableCell>
@@ -266,7 +247,6 @@ export default function UserTable() {
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}
                     setFormOpen={setFormOpen}
-                    roles={roles}
                 />
             </div>
         </>

@@ -222,12 +222,11 @@ export default function Quarter() {
                         <TableContainer>
                             <Table>
                                 <TableHead>
-                                    <TableRow>
-                                        <TableCell>Sr. No.</TableCell>
+                                    <TableRow>                                      
                                         <TableCell>Quarter No</TableCell>
                                         <TableCell>Type</TableCell>
                                         <TableCell>License Fee</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
+                                        <TableCell align="left">Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -239,12 +238,11 @@ export default function Quarter() {
                                     </TableRow>
                                     ) :
                                     quarterList.map((row, index) => (
-                                        <TableRow key={row.id}>
-                                            <TableCell>{index + 1}</TableCell>
+                                        <TableRow key={row.id}>                                          
                                             <TableCell>{row.quarter_no}</TableCell>
                                             <TableCell>{row.type}</TableCell>
                                             <TableCell>{row.license_fee}</TableCell>
-                                            <TableCell align="right">
+                                            <TableCell align="left">
                                                 <IconButton 
                                                     color="primary" 
                                                     aria-label="edit" 

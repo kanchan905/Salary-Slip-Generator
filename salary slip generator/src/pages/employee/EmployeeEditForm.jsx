@@ -44,6 +44,7 @@ function EmployeeEditForm() {
         uniform_allowance_eligibility: false,
         hra_eligibility: false,
         npa_eligibility: false,
+        institute: 'Select institute'
     });
 
     useEffect(() => {
@@ -63,9 +64,9 @@ function EmployeeEditForm() {
                 uniform_allowance_eligibility: !!employeeDetail.uniform_allowance_eligibility,
                 hra_eligibility: !!employeeDetail.hra_eligibility,
                 npa_eligibility: !!employeeDetail.npa_eligibility,
+                institute: !!employeeDetail.institute || 'Select institute',
             });
         }
-        // eslint-disable-next-line
     }, [employeeDetail]);
 
     const validationSchema = Yup.object({
@@ -85,32 +86,16 @@ function EmployeeEditForm() {
         date_of_retirement: Yup.date()
             .nullable()
             .min(Yup.ref('date_of_joining'), 'Date of Retirement must be after Date of Joining'),
-        pwd_status: Yup.boolean()
-            .required('PWD Status is required'),
         pension_scheme: Yup.string().oneOf(['GPF', 'NPS'], 'Pension Scheme is required')
             .required('Pension Scheme is required'),
-        pension_number: Yup.string()
-            .max(50, 'Pension Number cannot exceed 50 characters'),
-        gis_eligibility: Yup.boolean()
-            .required('GIS Eligibility is required'),
-        gis_no: Yup.string()
-            .max(50, 'GIS Number cannot exceed 50 characters'),
-        credit_society_member: Yup.boolean()
-            .required('credit_society_member is required'),
         email: Yup.string()
             .email('Invalid email format')
             .required('Email is required'),
+        institute: Yup.string().oneOf(['NIOH', 'ROHC'], 'institute required')
+            .required('Institute is reuired'),
         pancard: Yup.string()
             .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN Card format')
             .required('PAN Card is required'),
-        increment_month: Yup.string()
-            .required('Increment Month is required'),
-        uniform_allowance_eligibility: Yup.boolean()
-            .required('Uniform Allowance Eligibility is required'),
-        hra_eligibility: Yup.boolean()
-            .required('HRA Eligibility is required'),
-        npa_eligibility: Yup.boolean()
-            .required('NPA Eligibility is required'),
     });
 
     const onSubmit = async (values, { setSubmitting }) => {
@@ -143,11 +128,12 @@ function EmployeeEditForm() {
                 uniform_allowance_eligibility: processedValues.uniform_allowance_eligibility,
                 hra_eligibility: processedValues.hra_eligibility,
                 npa_eligibility: processedValues.npa_eligibility,
+                institute: processedValues.institute || 'Select institute',
             };
-            // console.log("Processed Values:", apiData);
             await dispatch(UpdateEmployee({ employeeId: id, employeeData: apiData })).unwrap()
                 .then(() => {
                     toast.success("Employee updated successfully");
+
                 })
         } catch (err) {
             const apiMsg =
@@ -177,11 +163,21 @@ function EmployeeEditForm() {
                         >
                             {({ isSubmitting }) => (
                                 <Form>
-                                    <h4 className="mb-4">{'Edit Employee'}</h4>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <h4 className="mb-4">{'Edit Employee'}</h4>
+                                        <NavLink to={`/${name.toLowerCase()}/employee-management`}>
+                                            <Button
+                                                style={{ background: "#004080", color: '#fff' }}
+                                                type="button"
+                                            >
+                                                Back
+                                            </Button>
+                                        </NavLink>
+                                    </div>
                                     <Row>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="first_name">First Name</Label>
+                                                <Label for="first_name">First Name*</Label>
                                                 <Field
                                                     id="first_name"
                                                     name="first_name"
@@ -193,7 +189,7 @@ function EmployeeEditForm() {
                                         </Col>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="last_name">Last Name</Label>
+                                                <Label for="last_name">Last Name*</Label>
                                                 <Field
                                                     id="last_name"
                                                     name="last_name"
@@ -207,7 +203,7 @@ function EmployeeEditForm() {
                                     <Row>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="pension_scheme">Pension Scheme</Label>
+                                                <Label for="pension_scheme">Pension Scheme*</Label>
                                                 <Field
                                                     as="select"
                                                     id="pension_scheme"
@@ -237,7 +233,7 @@ function EmployeeEditForm() {
                                     <Row>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="email">Email</Label>
+                                                <Label for="email">Email*</Label>
                                                 <Field
                                                     id="email"
                                                     name="email"
@@ -249,7 +245,7 @@ function EmployeeEditForm() {
                                         </Col>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="pancard">PAN Card</Label>
+                                                <Label for="pancard">PAN Card*</Label>
                                                 <Field
                                                     id="pancard"
                                                     name="pancard"
@@ -288,7 +284,7 @@ function EmployeeEditForm() {
                                     <Row>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="gender">Gender</Label>
+                                                <Label for="gender">Gender*</Label>
                                                 <Field
                                                     as="select"
                                                     id="gender"
@@ -303,11 +299,27 @@ function EmployeeEditForm() {
                                                 </Field>
                                             </FormGroup>
                                         </Col>
+                                        <Col md={6}>
+                                            <FormGroup>
+                                                <Label for="institute">Institute*</Label>
+                                                <Field
+                                                    as="select"
+                                                    id="institute"
+                                                    name="institute"
+                                                    type="select"
+                                                    className="form-control"
+                                                >
+                                                    <option value="Select institute">Select institute</option>
+                                                    <option value="NIOH">NIOH</option>
+                                                    <option value="ROHC">ROHC</option>
+                                                </Field>
+                                            </FormGroup>
+                                        </Col>
                                     </Row>
                                     <Row>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="date_of_joining">Date of Joining</Label>
+                                                <Label for="date_of_joining">Date of Joining*</Label>
                                                 <Field
                                                     id="date_of_joining"
                                                     name="date_of_joining"
@@ -319,7 +331,7 @@ function EmployeeEditForm() {
                                         </Col>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="date_of_retirement">Date of Retirement</Label>
+                                                <Label for="date_of_retirement">Date of Retirement*</Label>
                                                 <Field
                                                     id="date_of_retirement"
                                                     name="date_of_retirement"
@@ -333,7 +345,7 @@ function EmployeeEditForm() {
                                     <Row>
                                         <Col md={6}>
                                             <FormGroup>
-                                                <Label for="date_of_birth">Date of Birth</Label>
+                                                <Label for="date_of_birth">Date of Birth*</Label>
                                                 <Field
                                                     id="date_of_birth"
                                                     name="date_of_birth"

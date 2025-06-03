@@ -259,8 +259,7 @@ export default function PensionDocuments() {
               <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                 <Table>
                   <TableHead>
-                    <TableRow>
-                      <TableCell style={{ fontWeight: "900" }}>Pensioner Id</TableCell>
+                    <TableRow>                   
                       <TableCell style={{ fontWeight: "900" }}>Document Type</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Document Number</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Issue Date</TableCell>
@@ -270,8 +269,7 @@ export default function PensionDocuments() {
                   </TableHead>
                   <TableBody>
                     {document.map((row, idx) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.pensioner_id}</TableCell>
+                      <TableRow key={row.id}>                       
                         <TableCell>{row.document_type}</TableCell>
                         <TableCell>{row.document_number}</TableCell>
                         <TableCell>{row.issue_date}</TableCell>

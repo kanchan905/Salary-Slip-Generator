@@ -41,12 +41,6 @@ export default function EmployeeManagement() {
     }, [page, rowsPerPage, searchQuery, dispatch]);
 
 
-    // Filter users based on search query
-    // const filteredEmployees = employees.filter(emp => emp.first_name && emp.first_name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-
-    // const paginatedEmployees = filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
     const handlePageChange = (event, value) => {
         setPage(value);
     };
@@ -57,8 +51,8 @@ export default function EmployeeManagement() {
     };
 
     const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value); // Update search query
-        setPage(0); // Reset to the first page when searching
+        setSearchQuery(event.target.value); 
+        setPage(0); 
     };
 
 
@@ -128,7 +122,7 @@ export default function EmployeeManagement() {
                                     {employees.map((emp, idx) => (
                                         <TableRow key={emp.id}>
                                             <TableCell>{emp.first_name + " " + emp.last_name}</TableCell>
-                                            <TableCell>{emp.gender}</TableCell>
+                                            <TableCell sx={{ textTransform: 'capitalize' }}>{emp.gender}</TableCell>
                                             <TableCell>{emp.date_of_birth}</TableCell>
                                             <TableCell>{emp.date_of_joining}</TableCell>
                                             <TableCell>{emp.email}</TableCell>

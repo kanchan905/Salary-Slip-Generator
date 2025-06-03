@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import HistoryModal from 'Modal/HistoryModal';
+import { Row } from 'reactstrap';
 
 const PayMatrixCell = () => {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ const PayMatrixCell = () => {
   const [editedPay, setEditedPay] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [ renderFunction, setRenderFunction ] = useState(() => null);
+  const [renderFunction, setRenderFunction] = useState(() => null);
   const [tableHead, setTableHead] = useState([
     "Sr. No.",
     "Head 1",
@@ -76,23 +77,23 @@ const PayMatrixCell = () => {
   };
 
 
- const refreshCells = () => {
-  if (selectedLevelId) {
-    dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
-  }
-};
+  const refreshCells = () => {
+    if (selectedLevelId) {
+      dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
+    }
+  };
 
-// Fetch levels once
-useEffect(() => {
-  dispatch(fetchPayLevel({ page: 1, limit: 100 }));
-}, [dispatch]);
+  // Fetch levels once
+  useEffect(() => {
+    dispatch(fetchPayLevel({ page: 1, limit: 100 }));
+  }, [dispatch]);
 
-// Fetch matrix cells based on selection & pagination
-useEffect(() => {
-  if (selectedLevelId) {
-    dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
-  }
-}, [dispatch, selectedLevelId, page, rowsPerPage]);
+  // Fetch matrix cells based on selection & pagination
+  useEffect(() => {
+    if (selectedLevelId) {
+      dispatch(fetchPayCell({ matrix_level_id: selectedLevelId, page: page + 1, limit: rowsPerPage }));
+    }
+  }, [dispatch, selectedLevelId, page, rowsPerPage]);
 
 
 
@@ -100,17 +101,17 @@ useEffect(() => {
   // Status History handlers
   const handleHistoryStatus = (id) => {
     dispatch(showCellToAPI(id));
-    toggleHistoryModal(); 
+    toggleHistoryModal();
   };
-  
-  
+
+
   useEffect(() => {
     if (showCells && showCells.history) {
       const config = getTableConfig("cell");
       setHistoryRecord(showCells.history);
       setTableHead(config.head);
       setRenderFunction(() => config.renderRow);
-   }
+    }
   }, [showCells]);
 
   const handleSaveEdit = async (cellId) => {
@@ -140,7 +141,7 @@ useEffect(() => {
     setEditingCellId(null);
   };
 
-  
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -151,30 +152,30 @@ useEffect(() => {
   };
 
 
-const paginatedCells = matrixCells;
-  
+  const paginatedCells = matrixCells;
+
   return (
-    <Paper sx={{ p: 3, boxShadow: 'none' }}>
-      <Typography variant="h6" mb={2}>Pay Matrix Cells</Typography>
+    <Paper sx={{ boxShadow: 'none' }}>
+      {/* <Typography variant="h6" mb={2}>Pay Matrix Cells</Typography> */}
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Select Pay Level</InputLabel>
-        <Select
-          value={selectedLevelId}
-          label="Select Pay Level"
-          onChange={(e) => setSelectedLevelId(e.target.value)}
-        >
-          {levels.map((level) => (
-            <MenuItem key={level.id} value={level.id}>
-              {level.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
 
-      {selectedLevelId && (
+      <Row className='p-3'>
+        <FormControl sx={{marginRight:'1em'}}>
+          <InputLabel>Level</InputLabel>
+          <Select
+            value={selectedLevelId}
+            label="Select Pay Level"
+            onChange={(e) => setSelectedLevelId(e.target.value)}
+          >
+            {levels.map((level) => (
+              <MenuItem key={level.id} value={level.id}>
+                {level.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {selectedLevelId && (
         <>
-          {/* Formik Form Start */}
           <Formik
             initialValues={{ cellIndex: '', basicPay: '' }}
             validationSchema={Yup.object({
@@ -238,8 +239,12 @@ const paginatedCells = matrixCells;
               </Form>
             )}
           </Formik>
-          {/* Formik Form End */}
+        </>
+        )}
+      </Row>
 
+      {selectedLevelId && (
+        <>
           <TableContainer component={Paper} variant="outlined">
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
@@ -257,7 +262,7 @@ const paginatedCells = matrixCells;
                 ) : (
                   paginatedCells?.map((cell, index) => (
                     <TableRow key={cell.id}>
-                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell>
                         {editingCellId === cell.id ? (
                           <Select

@@ -22,6 +22,7 @@ import paySlipSlice from './slices/paySlipSlice';
 import deductionReducer from './slices/deductionSlice'
 import bulkReducer from './slices/bulkSlice'
 import netPensionReducer from './slices/netPensionSlice'
+import informationReducer from './slices/pensionRelatedSlice'
 
 const store = configureStore({
   reducer: {
@@ -48,6 +49,7 @@ const store = configureStore({
     deduction:deductionReducer,
     bulk:bulkReducer,
     netPension:netPensionReducer,
+    info:informationReducer
   },
 });
 

@@ -10,7 +10,7 @@ export default function UserFormModal({
     formMode,
     formData,
     handleSubmit,
-    setFormOpen
+    setFormOpen,
 }) {
     const roles = [
         { id: 1, name: 'IT Admin' },
@@ -60,7 +60,7 @@ export default function UserFormModal({
                             <Row>
                                 <Col md="6">
                                     <FormGroup>
-                                        <Label for="name">Name</Label>
+                                        <Label for="name">Name*</Label>
                                         <Field
                                             as={Input}
                                             id="name"
@@ -72,7 +72,7 @@ export default function UserFormModal({
                                 </Col>
                                  <Col md="6">
                                     <FormGroup>
-                                        <Label for="role_id">Role</Label>
+                                        <Label for="role_id">Role*</Label>
                                         <Field
                                             as={Input}
                                             id="role_id"
@@ -93,7 +93,7 @@ export default function UserFormModal({
                             <Row>
                                 <Col md="6">
                                     <FormGroup>
-                                        <Label for="email">Email</Label>
+                                        <Label for="email">Email*</Label>
                                         <Field
                                             as={Input}
                                             id="email"
@@ -105,7 +105,7 @@ export default function UserFormModal({
                                 </Col>
                                 <Col md="6">
                                     <FormGroup>
-                                        <Label for="institute">Institute</Label>
+                                        <Label for="institute">Institute*</Label>
                                         <Field
                                             as={Input}
                                             id="institute"
@@ -124,7 +124,7 @@ export default function UserFormModal({
                                 {formMode === 'create' && (
                                     <Col md="6">
                                         <FormGroup>
-                                            <Label for="password">Password</Label>
+                                            <Label for="password">Password*</Label>
                                             <Field
                                                 as={Input}
                                                 id="password"

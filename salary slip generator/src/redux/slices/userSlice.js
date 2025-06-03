@@ -102,9 +102,6 @@ const userSlice = createSlice({
                 // state.loading = false;
                 state.error = action.error.message;
             })
-            .addCase(changeUserStatus.pending, (state) => {
-                // state.loading = true;
-            })
             .addCase(changeUserStatus.fulfilled, (state, action) => {
                 state.loading = false;
                 const index = state.users.findIndex(user => user.id === action.payload.id);
@@ -112,10 +109,6 @@ const userSlice = createSlice({
                     state.users[index] = action.payload;
                 }
             })
-            .addCase(changeUserStatus.rejected, (state, action) => {
-                // state.loading = false;
-                state.error = action.error.message;
-            });
     }
 });
 

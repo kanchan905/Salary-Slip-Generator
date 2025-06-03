@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Row, Col, Button, FormGroup, Label, Input } from "reactstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { fetchPensioners } from "../redux/slices/pensionerSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBankDetails, fetchBankShow } from "../redux/slices/bankSlice";
+import { fetchBankDetails } from "../redux/slices/bankSlice";
+import { fetchPensionRelated } from "../redux/slices/pensionRelatedSlice";
+import { fetchDearnessRelief } from "../redux/slices/dearnessRelief";
 
 
 export default function MonthlyPensionModal({
   formOpen,
-  setFormData,
   formData,
   handleSubmit,
   setFormOpen,
@@ -36,19 +37,28 @@ export default function MonthlyPensionModal({
     return errors;
   };
 
+
+  const [selectedPensionerId, setSelectedPensionerId] = useState(formData?.pensioner_id || initialValues.pensioner_id || '');
   const { pensioners } = useSelector((state) => state.pensioner);
-  const { bankShow } = useSelector((state) => state.bankdetail);
-  console.log(bankShow)
-  const filterBankdetail = bankShow.filter((b)=> b?.pensioner_id === formData?.pensioner_id)
-  console.log('bankShow', bankShow)
+  const { bankdetails } = useSelector((state) => state.bankdetail);
+  const { pensionRelated } = useSelector((state) => state.info)
+  const { dearness } = useSelector((state) => state.dearnessRelief);
+  const filterBankdetail = bankdetails.filter((b) => b?.pensioner_id == selectedPensionerId) || []
+  const filterPensionRelated = pensionRelated.filter((b) => b?.pensioner_id == selectedPensionerId) || []
   const dispatch = useDispatch()
 
+
   useEffect(() => {
-    dispatch(fetchPensioners({ page: '', limit: 1000, id: '' }));
-    if (formData?.pensioner_id) {
-      dispatch(fetchBankDetails({page: '', limit: 1000, id: formData?.pensioner_id }));
+    if(initialValues?.pensioner_id){
+      setSelectedPensionerId(initialValues.pensioner_id);
     }
-  }, [dispatch, formData.pensioner_id]);
+    dispatch(fetchPensioners({ page: '1', limit: 1000, id: '' }));
+    if (selectedPensionerId) {
+      dispatch(fetchBankDetails({ page: '1', limit: 1000, id: selectedPensionerId }));
+      dispatch(fetchPensionRelated({ page: '1', limit: 1000 }))
+      dispatch(fetchDearnessRelief({ page: '1', limit: 1000 }))
+    }
+  }, [dispatch, selectedPensionerId]);
 
 
   return (
@@ -66,15 +76,14 @@ export default function MonthlyPensionModal({
           enableReinitialize
         >
           {({ isSubmitting }) => (
-
             <Form>
               <h4 className="mb-4">Add Monthly Pension</h4>
               {mode === 'create' ? (
                 <Row >
                   <Col md="6">
                     <FormGroup>
-                      <Label for="pensioner_id">Pensioner ID</Label>
-                      <Field as={Input} type="select" id="pensioner_id" name="pensioner_id" >
+                      <Label for="pensioner_id">Pensioner</Label>
+                      <Field as={Input} type="select" id="pensioner_id" name="pensioner_id" onClick={(e) => { setSelectedPensionerId(e.target.value) }}>
                         <option value="">Select Pensioner</option>
                         {pensioners?.map(p => (
                           <option key={p.id} value={p.id}>
@@ -87,12 +96,12 @@ export default function MonthlyPensionModal({
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <Label for="pensioner_bank_id">Pensioner Bank ID</Label>
+                      <Label for="pensioner_bank_id">Pensioner Bank</Label>
                       <Field as={Input} type="select" id="pensioner_bank_id" name="pensioner_bank_id" >
                         <option value="">Select Bank</option>
                         {filterBankdetail?.map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name}-({p.ppo_no})
+                            {p.bank_name} - ({p.branch_name})
                           </option>
                         ))}
                       </Field>
@@ -104,14 +113,28 @@ export default function MonthlyPensionModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="pension_related_info_id">Pension Related Info ID</Label>
-                    <Field as={Input} id="pension_related_info_id" name="pension_related_info_id" />
+                    <Label for="pension_related_info_id">Pension Related Info</Label>
+                    <Field as={Input} type="select" id="pension_related_info_id" name="pension_related_info_id" >
+                      <option value="">Select Arrears</option>
+                      {filterPensionRelated?.map(p => (
+                        <option key={p.id} value={p.id}>
+                          Arrears - {p.basic_pension}
+                        </option>
+                      ))}
+                    </Field>
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="dr_id">DR ID</Label>
-                    <Field as={Input} id="dr_id" name="dr_id" />
+                    <Label for="dr_id">DR</Label>
+                    <Field as={Input} type="select" id="dr_id" name="dr_id" >
+                      <option value="">Select Arrears</option>
+                      {dearness?.map(p => (
+                        <option key={p.id} value={p.id}>
+                            {p.dr_percentage}%
+                        </option>
+                      ))}
+                    </Field>
                     <ErrorMessage name="dr_id" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
@@ -198,6 +221,7 @@ export default function MonthlyPensionModal({
                 Cancel
               </Button>
             </Form>
+
           )}
         </Formik>
       </div>

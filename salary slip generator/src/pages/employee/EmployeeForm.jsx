@@ -63,48 +63,22 @@ function EmployeeForm() {
         date_of_retirement: Yup.date()
             .nullable()
             .min(Yup.ref('date_of_joining'), 'Date of Retirement must be after Date of Joining'),
-        pwd_status: Yup.boolean()
-            .required('PWD Status is required'),
         pension_scheme: Yup.string().oneOf(['GPF', 'NPS'], 'Pension Scheme is required')
             .required('Pension Scheme is required'),
-        pension_number: Yup.string()
-            .max(50, 'Pension Number cannot exceed 50 characters'),
-        gis_eligibility: Yup.boolean()
-            .required('GIS Eligibility is required'),
-        gis_no: Yup.string()
-            .max(50, 'GIS Number cannot exceed 50 characters'),
-        credit_society_member: Yup.boolean()
-            .required('credit_society_member is required'),
         email: Yup.string()
             .email('Invalid email format')
             .required('Email is required'),
         pancard: Yup.string()
             .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN Card format')
             .required('PAN Card is required'),
-        increment_month: Yup.string()
-            .required('Increment Month is required'),
-        uniform_allowance_eligibility: Yup.boolean()
-            .required('Uniform Allowance Eligibility is required'),
-        hra_eligibility: Yup.boolean()
-            .required('HRA Eligibility is required'),
-        npa_eligibility: Yup.boolean()
-            .required('NPA Eligibility is required'),
         status: Yup.string()
             .required('Status is required'),
         effective_from: Yup.date()
             .required('Effective From date is required'),
-        effective_till: Yup.date()
-            .nullable()
-            .min(Yup.ref('effective_from'), 'Effective Till must be after Effective From'),
-        remark: Yup.string()
-            .max(200, 'Remark cannot exceed 200 characters'),
-        order_reference: Yup.string()
-            .max(100, 'Order Reference cannot exceed 100 characters'),
     });
 
-    const onSubmit = async (values, { setSubmitting }) => {
+    const onSubmit = async (values, { setSubmitting , resetForm }) => {
         try {
-            // console.log("Form submitted" , values);
             const processedValues = {
                 ...values,
                 pwd_status: values.pwd_status ? 1 : 0,
@@ -117,6 +91,7 @@ function EmployeeForm() {
             await dispatch(storeEmployee(processedValues)).unwrap()
                 .then(() => {
                     toast.success("Employee created successfully");
+                    resetForm();
                 });
         } catch (err) {
             const apiMsg =
@@ -146,11 +121,21 @@ function EmployeeForm() {
                             {({ isSubmitting, errors }) => {
                                 return (
                                     <Form>
-                                        <h4 className="mb-4">{'Create Employee'}</h4>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <h4 className="mb-4">{'Create Employee'}</h4>
+                                            <NavLink to={`/${name.toLowerCase()}/employee-management`}>
+                                                <Button
+                                                    style={{ background: "#004080", color: '#fff' }}
+                                                    type="button"
+                                                >
+                                                    Back
+                                                </Button>
+                                            </NavLink>
+                                        </div>
                                         <Row>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="first_name">First Name</Label>
+                                                    <Label for="first_name">First Name*</Label>
                                                     <Field
                                                         id="first_name"
                                                         name="first_name"
@@ -162,7 +147,7 @@ function EmployeeForm() {
                                             </Col>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="last_name">Last Name</Label>
+                                                    <Label for="last_name">Last Name*</Label>
                                                     <Field
                                                         id="last_name"
                                                         name="last_name"
@@ -176,7 +161,7 @@ function EmployeeForm() {
                                         <Row>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="pension_scheme">Pension Scheme</Label>
+                                                    <Label for="pension_scheme">Pension Scheme*</Label>
                                                     <Field
                                                         as="select"
                                                         id="pension_scheme"
@@ -206,7 +191,7 @@ function EmployeeForm() {
                                         <Row>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="email">Email</Label>
+                                                    <Label for="email">Email*</Label>
                                                     <Field
                                                         id="email"
                                                         name="email"
@@ -218,7 +203,7 @@ function EmployeeForm() {
                                             </Col>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="pancard">PAN Card</Label>
+                                                    <Label for="pancard">PAN Card*</Label>
                                                     <Field
                                                         id="pancard"
                                                         name="pancard"
@@ -283,7 +268,7 @@ function EmployeeForm() {
                                         <Row>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="gender">Gender</Label>
+                                                    <Label for="gender">Gender*</Label>
                                                     <Field
                                                         as="select"
                                                         id="gender"
@@ -300,7 +285,7 @@ function EmployeeForm() {
                                             </Col>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="status">Status</Label>
+                                                    <Label for="status">Status*</Label>
                                                     <Field
                                                         as="select"
                                                         id="status"
@@ -321,7 +306,7 @@ function EmployeeForm() {
                                         <Row>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="date_of_joining">Date of Joining</Label>
+                                                    <Label for="date_of_joining">Date of Joining*</Label>
                                                     <Field
                                                         id="date_of_joining"
                                                         name="date_of_joining"
@@ -333,7 +318,7 @@ function EmployeeForm() {
                                             </Col>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="date_of_retirement">Date of Retirement</Label>
+                                                    <Label for="date_of_retirement">Date of Retirement*</Label>
                                                     <Field
                                                         id="date_of_retirement"
                                                         name="date_of_retirement"
@@ -347,7 +332,7 @@ function EmployeeForm() {
                                         <Row>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="effective_from">Effective From</Label>
+                                                    <Label for="effective_from">Effective From*</Label>
                                                     <Field
                                                         id="effective_from"
                                                         name="effective_from"
@@ -373,7 +358,7 @@ function EmployeeForm() {
                                         <Row>
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label for="date_of_birth">Date of Birth</Label>
+                                                    <Label for="date_of_birth">Date of Birth*</Label>
                                                     <Field
                                                         id="date_of_birth"
                                                         name="date_of_birth"

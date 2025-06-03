@@ -208,7 +208,6 @@ const handleHistoryStatus = (id) => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell style={{ fontWeight: "900" }}>Emp ID</TableCell>
                         <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
                         <TableCell style={{ fontWeight: "900" }}>PPO NO.</TableCell>
                         <TableCell style={{ fontWeight: "900" }}>Pension Type</TableCell>                       
@@ -221,7 +220,6 @@ const handleHistoryStatus = (id) => {
                     <TableBody>
                       {pensionersData.map((p) => (
                         <TableRow key={p.id}>
-                          <TableCell>{p.retired_employee_id}</TableCell>
                           <TableCell>{p.name}</TableCell>
                           <TableCell>{p.ppo_no}</TableCell>
                           <TableCell>{p.type_of_pension}</TableCell>                         

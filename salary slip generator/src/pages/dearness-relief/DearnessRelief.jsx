@@ -223,8 +223,7 @@ export default function DearnessRelief() {
               <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                 <Table>
                   <TableHead>
-                    <TableRow>
-                      <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>
+                    <TableRow>                   
                       <TableCell style={{ fontWeight: "900" }}>Dearness Relief %</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Effective From</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Effective To</TableCell>
@@ -237,7 +236,6 @@ export default function DearnessRelief() {
                   <TableBody>
                     {dearness.map((row, idx) => (
                       <TableRow key={row.id}>
-                        <TableCell>{idx + 1}</TableCell>
                         <TableCell>{row.dr_percentage ?? "NA"}</TableCell>
                         <TableCell>{row.effective_from || "NA"}</TableCell>
                         <TableCell>{row.effective_to || "NA"}</TableCell>

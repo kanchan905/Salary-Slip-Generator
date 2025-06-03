@@ -179,7 +179,7 @@ const EmployeePayStructures = () => {
 
   return (
     <>
-      <Typography variant="h6" mb={2}>Employee Pay Structure</Typography>
+      {/* <Typography variant="h6" mb={2}>Employee Pay Structure</Typography> */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, boxShadow: 'none' }}>
         <FormControl fullWidth margin="normal" className='mb-3'>
           <InputLabel>Select Pay Level</InputLabel>
@@ -292,7 +292,7 @@ const EmployeePayStructures = () => {
           )}
         </Formik>
 
-        <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+        <Typography variant="h4"  sx={{ mt: 4, mb:2 , fontWeight:800 }}>
           Existing Employee Pay Structures
         </Typography>
 

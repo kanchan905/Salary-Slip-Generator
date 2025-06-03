@@ -38,7 +38,7 @@ import {
     Autocomplete,
 } from '@mui/material';
 import { Alert } from 'reactstrap';
-import { fetchEmployeeBankdetail, fetchEmployees } from '../../redux/slices/employeeSlice';
+import { fetchEmployeeBankdetail, fetchEmployeeById, fetchEmployees } from '../../redux/slices/employeeSlice';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { fetchPayStructure } from '../../redux/slices/payStructureSlice';
@@ -97,10 +97,10 @@ const SalaryProcessing = () => {
     const isHraEligible = filterPayStructure.length > 0 && filterPayStructure[0]?.employee?.hra_eligibility;
     const isUniformEligible = filterPayStructure.length > 0 && filterPayStructure[0]?.employee?.uniform_allowance_eligibility;
     const { error } = useSelector((state) => state.bulk);
-
+    const { EmployeeDetail } = useSelector((state) => state.employee);
+    const [employeeId, setEmployeeId] = useState(null);
 
     const handleChange = (e) => {
-        setmode(e.target.value);
         if (activeStep === 1) {
             dispatch(updateField({ name: e.target.name, value: e.target.value }));
         }
@@ -114,7 +114,9 @@ const SalaryProcessing = () => {
         dispatch(fetchPaySlips({ page: 1, limit: 40, search: "" }));
         dispatch(fetchPayStructure({ page: 1, limit: 10, search: "" }));
         if (formData.employee_id) {
+            setEmployeeId(formData.employee_id)
             dispatch(fetchEmployeeBankdetail({ employeeId: formData.employee_id }));
+            dispatch(fetchEmployeeById(employeeId))
         }
         dispatch(fetchNpaData({ page: 1, limit: 100 }));
         dispatch(fetchHraData({ page: 1, limit: 100 }))
@@ -226,7 +228,6 @@ const SalaryProcessing = () => {
                         dispatch(resetBulkState());
                     })
                     .catch((err) => {
-                        console.log(error)
                         const apiMsg = err?.data?.message || err?.message || err?.errorMsg || 'Failed to submit bulk deductions.';
                         toast.error(apiMsg);
                     });
@@ -261,7 +262,7 @@ const SalaryProcessing = () => {
 
 
     const handleNext = () => {
-        if (activeStep === 0 && mode === 'bulk') {
+        if (activeStep === 0 && mode == 'bulk') {
             handleSubmit();
             return;
         }
@@ -271,7 +272,7 @@ const SalaryProcessing = () => {
                 toast.error(result.message);
                 return;
             }
-            if (mode === 'individual') {
+            if (mode == 'individual') {
                 dispatch(nextStep());
             }
         }
@@ -603,9 +604,8 @@ const SalaryProcessing = () => {
                 );
 
             case 3:
-                const employee = filterPayStructure.find(p => p.employee?.id === formData.employee_id)?.employee;
                 const matrix = filterPayStructure.find(p => p.employee?.id === formData.employee_id)?.pay_matrix_cell;
-                const monthLabel = months.find(m => m.value === formData.month)?.label || formData.month;
+                const monthLabel = months.find(m => m.value === formData.month)?.label || formData.month; 
 
                 const earnings = [
                     ['Basic Pay', basic_pay],
@@ -700,16 +700,27 @@ const SalaryProcessing = () => {
                         <Grid container sx={{ justifyContent: 'space-between' }}>
                             <Grid item xs={6}>
                                 <Typography fontWeight="bold" gutterBottom>Employee Details</Typography>
-                                <Typography><strong>Employee Id:</strong> {employee?.id || 'N/A'}</Typography>
-                                <Typography><strong>Name:</strong> {employee?.first_name} {employee?.last_name}</Typography>
-                                <Typography><strong>Gender:</strong> {employee?.gender}</Typography>
-                                <Typography><strong>Date of Birth:</strong> {employee?.date_of_birth || 'N/A'}</Typography>
-                                <Typography><strong>Date of Joining:</strong> {employee?.date_of_joining || 'N/A'}</Typography>
+                                <Typography><strong>Name:</strong> {EmployeeDetail?.first_name} {EmployeeDetail?.last_name}</Typography>
+                                <Typography>
+                                    <strong>Designation:</strong>
+                                    {EmployeeDetail?.employee_designation?.map((des, index) => (
+                                        <span key={index}> {des.designation}, </span>
+                                    ))}
+                                </Typography>
+                                 <Typography>
+                                    <strong>Cadre:</strong>
+                                    {EmployeeDetail?.employee_designation?.map((des, index) => (
+                                        <span key={index}> {des.cadre}, </span>
+                                    ))}
+                                </Typography>
+                                <Typography><strong>Gender:</strong> {EmployeeDetail?.gender}</Typography>
+                                <Typography><strong>Date of Birth:</strong> {EmployeeDetail?.date_of_birth || 'N/A'}</Typography>
+                                <Typography><strong>Date of Joining:</strong> {EmployeeDetail?.date_of_joining || 'N/A'}</Typography>
                             </Grid>
                             <Grid item xs={6}>
                                 <Typography fontWeight="bold" gutterBottom>Payroll Details</Typography>
-                                <Typography><strong>Institute:</strong> {employee?.institute || 'N/A'}</Typography>
-                                <Typography><strong>Email:</strong> {employee?.email || 'N/A'}</Typography>
+                                <Typography><strong>Institute:</strong> {EmployeeDetail?.institute || 'N/A'}</Typography>
+                                <Typography><strong>Email:</strong> {EmployeeDetail?.email || 'N/A'}</Typography>
                                 <Typography><strong>Bank A/C:</strong> {formData.employee_bank_id || 'N/A'}</Typography>
                                 <Typography><strong>Pay Level:</strong> {matrix?.pay_matrix_level?.name || 'N/A'}</Typography>
                                 <Typography><strong>Pay Index:</strong> {matrix?.index} | ₹{matrix?.amount}</Typography>

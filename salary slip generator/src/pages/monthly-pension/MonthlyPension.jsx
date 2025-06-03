@@ -162,8 +162,8 @@ export default function MonthlyPension() {
         })
         .finally(() => setSubmitting(false));
     } else if (mode === 'edit') {
-      const {pension_related_info_id,dr_id, status, remarks, net_pension_id } = values;
-      dispatch(updateMonthlyPension({ id: editingId, values: {pension_related_info_id,dr_id, status, remarks, net_pension_id } }))
+      const { pension_related_info_id, dr_id, status, remarks, net_pension_id } = values;
+      dispatch(updateMonthlyPension({ id: editingId, values: { pension_related_info_id, dr_id, status, remarks, net_pension_id } }))
         .unwrap()
         .then(() => {
           toast.success(`Monthly Pension updated`);
@@ -189,11 +189,11 @@ export default function MonthlyPension() {
           remarks: record.remarks || '',
           status: record.status || '',
           net_pension_id: record.net_pension_id || '',
+          pensioner_id:record.pension_related_info.pensioner_id || '',
         }
         );
         setMode("edit");
         setEditingId(id);
-        console.log('setting id',id)
       } else {
         toast.error("Record not found");
       }
@@ -290,6 +290,12 @@ export default function MonthlyPension() {
                                 open={Boolean(anchorEl)}
                                 onClose={handleMenuClose}
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                PaperProps={{
+                                  style: {
+                                    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)', 
+                                    border: '1px solid #e0e0e0',               
+                                  },
+                                }}
                               >
                                 <MenuItem onClick={() => handleView(row.id)}>
                                   <ViewIcon fontSize="small" /> View
@@ -330,7 +336,7 @@ export default function MonthlyPension() {
           formOpen={modalOpen}
           toggleModal={handleToggleModal}
           formData={formData}
-          setFormData= {setFormData}
+          setFormData={setFormData}
           handleSubmit={handleSubmit}
           setFormOpen={setModalOpen}
           mode={mode}

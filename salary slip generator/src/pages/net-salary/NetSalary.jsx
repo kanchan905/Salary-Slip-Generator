@@ -250,7 +250,6 @@ export default function NetSalary() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell style={{ fontWeight: "900" }}>Employee Id</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell>
@@ -262,8 +261,7 @@ export default function NetSalary() {
                                         </TableHead>
                                         <TableBody>
                                             {netSalary.map((row, idx) => (
-                                                <TableRow key={row.id}>
-                                                    <TableCell>{row.employee_id}</TableCell>
+                                                <TableRow key={row.id}>                                           
                                                     <TableCell>{row.month}</TableCell>
                                                     <TableCell>{row.year}</TableCell>
                                                     <TableCell>{row.processing_date}</TableCell>

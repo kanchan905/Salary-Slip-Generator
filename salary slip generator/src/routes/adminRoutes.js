@@ -38,6 +38,7 @@ import NetPension from "pages/Net-Pension/NetPension";
 import NetPensionCard from "pages/Net-Pension/NetPensionCard";
 import ShowMonthlyPension from "pages/monthly-pension/ShowMonthlyPension";
 import ShowPensionDeduction from "pages/pension-deduction/ShowPensionDeduction";
+import UserStepper from "pages/member-store/UserStepper";
 
 const getAdminRoutes = (role) => (
    {
@@ -52,6 +53,14 @@ const getAdminRoutes = (role) => (
   ],
   
   management: [
+    {
+      path: "/user",
+      name: "User",
+      icon: "ni ni-single-02 text-yellow",
+      component: UserStepper,
+      layout: role,
+      showInSidebar: false,
+    },
     {
       path: "/user-management",
       name: "User",
@@ -296,15 +305,15 @@ const getAdminRoutes = (role) => (
       component: SalaryProcessing,
       layout: role,
       showInSidebar: true,
-    },{
-      path: "/pension",
-      name: "Pension",
-      icon: "ni ni-settings-gear-65 text-info",
-      component: PensionProcessing,
-      layout: role,
-      showInSidebar: true,
-    }
-
+    },
+    // {
+    //   path: "/pension",
+    //   name: "Pension",
+    //   icon: "ni ni-settings-gear-65 text-info",
+    //   component: PensionProcessing,
+    //   layout: role,
+    //   showInSidebar: true,
+    // }
   ],
   report: [
     {

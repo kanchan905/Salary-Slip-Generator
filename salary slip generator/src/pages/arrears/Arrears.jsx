@@ -196,8 +196,7 @@ export default function Arrears() {
                 <TableContainer component={Paper} style={{ boxShadow: 'none' }}>
                   <Table>
                     <TableHead>
-                      <TableRow>
-                        <TableCell style={{ fontWeight: "900" }}>Pensioner ID</TableCell>
+                      <TableRow>                       
                         <TableCell style={{ fontWeight: "900" }}>From Month</TableCell>
                         <TableCell style={{ fontWeight: "900" }}>To Month</TableCell>
                         <TableCell style={{ fontWeight: "900" }}>Payment Month</TableCell>
@@ -209,8 +208,7 @@ export default function Arrears() {
                     </TableHead>
                     <TableBody>
                       {arrearsData?.map((a) => (
-                        <TableRow key={a.id}>
-                          <TableCell>{a.pensioner_id}</TableCell>
+                        <TableRow key={a.id}>                        
                           <TableCell>{a.from_month}</TableCell>
                           <TableCell>{a.to_month}</TableCell>
                           <TableCell>{a.payment_month}</TableCell>

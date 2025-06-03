@@ -228,7 +228,6 @@ export default function NetPension() {
                                     <Table>
                                         <TableHead>
                                             <TableRow> 
-                                                <TableCell style={{ fontWeight: "900" }}>Pensioner Id</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
@@ -240,7 +239,6 @@ export default function NetPension() {
                                         <TableBody>
                                             {netPension?.map((row, idx) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell>{row.pensioner_id}</TableCell>
                                                     <TableCell>{row.month}</TableCell>
                                                     <TableCell>{row.year}</TableCell>
                                                     <TableCell>{row.net_pension}</TableCell>
