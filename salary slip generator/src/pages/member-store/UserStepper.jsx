@@ -1,64 +1,64 @@
-import React, { useState } from "react";
-import { Container, Card, CardBody, Button } from "reactstrap";
-import UserCreation from "./UserCreation";
-// import NextStepComponent from "./NextStepComponent"; // Placeholder for step 2
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Box, Stepper, Step, StepLabel, Button, Typography, Paper } from '@mui/material';
+import UserCreation from './UserCreation';
+import PersonalInfoForm from './PersonalInfoForm';
+import PensionAndBenefits from './PensionAndBenefits';
+import { nextUserStep, prevUserStep, resetUserForm } from '../../redux/slices/memberStoreSlice';
+import EmploymentDetails from './EmploymentDetails';
+import BankAccountDetails from './BankAccountDetails';
+import AdditionalInformation from './AdditionalInformation';
 
-const UserStepper = () => {
-    const [step, setStep] = useState(0);
-    const [userData, setUserData] = useState({});
+const steps = ['User Details', 'Personal Info', 'Employee Detail', ' Pension & Benefits', 'Bank Details', 'Additional'];
 
-    const handleNext = (dataFromStep) => {
-        setUserData((prev) => ({ ...prev, ...dataFromStep }));
-        setStep((prevStep) => prevStep + 1);
-    };
+const UserCreationStepper = () => {
+    const dispatch = useDispatch();
+    const { activeStep} = useSelector((state) => state.memeberStore);
 
-    const handleBack = () => {
-        setStep((prevStep) => prevStep - 1);
-    };
+    const handleNext = () => dispatch(nextUserStep());
+    const handleBack = () => dispatch(prevUserStep());
+    const handleReset = () => dispatch(resetUserForm());
 
-    const handleReset = () => {
-        setStep(0);
-        setUserData({});
-    };
-
-    const renderStep = () => {
+    const renderStepContent = (step) => {
         switch (step) {
             case 0:
-                console.log('userData', userData);
-                return <UserCreation onNext={handleNext} defaultData={userData} />;
-            // case 1:
-            //   return <NextStepComponent onBack={handleBack} onNext={handleNext} data={userData} />;
-            // case 2:
-            //   return <FinalStep data={userData} onBack={handleBack} onReset={handleReset} />;
+                return <UserCreation onNext={handleNext} />;
+            case 1:
+                return <PersonalInfoForm onNext={handleNext} />;
+            case 3:
+                return <EmploymentDetails onNext={handleNext} />;
+            case 4:
+                return <PensionAndBenefits onNext={handleNext} />
+            case 5:
+                return <BankAccountDetails onNext={handleNext} />
+            case 6:
+                return <AdditionalInformation onNext={handleNext} />
             default:
-                return (
-                    <div>
-                        <h5>All steps completed!</h5>
-                        <pre>{JSON.stringify(userData, null, 2)}</pre>
-                        <Button color="secondary" onClick={handleReset}>Reset</Button>
-                    </div>
-                );
+                return null;
         }
     };
 
     return (
         <>
         <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
-            <Container className="mt-4">
-                <Card>
-                    <CardBody>
-                        <h3 className="mb-4">Create User - Step {step + 1}</h3>
-                        {renderStep()}
-                        {step > 0 && (
-                            <Button color="secondary" className="mt-3" onClick={handleBack}>
-                                Back
-                            </Button>
-                        )}
-                    </CardBody>
-                </Card>
-            </Container>
+            <Box sx={{ width: '100%', maxWidth: 900, mx: 'auto', mt: 4 }}>
+                <Paper sx={{ p: 3 }}>
+                    <Typography variant="h5" gutterBottom>User Onboarding</Typography>
+                    <Stepper activeStep={activeStep} alternativeLabel>
+                        {steps.map((label) => (
+                            <Step key={label}><StepLabel>{label}</StepLabel></Step>
+                        ))}
+                    </Stepper>
+
+                    <Box sx={{ mt: 4 }}>{renderStepContent(activeStep)}</Box>
+
+                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                        <Button disabled={activeStep === 0} onClick={handleBack}>Back</Button>
+                    </Box>
+                </Paper>
+            </Box>
         </>
     );
 };
 
-export default UserStepper;
+export default UserCreationStepper;
