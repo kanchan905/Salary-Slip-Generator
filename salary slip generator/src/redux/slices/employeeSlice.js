@@ -188,7 +188,6 @@ const initialState = {
     employeeStatus: [],
     employeeBank: [],
     bankStatus: [],
-    employeeBank: [],
     designationStatus: [],
     totalCount: 0,
     EmployeeDetail: null,

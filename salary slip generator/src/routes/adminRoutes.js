@@ -39,6 +39,7 @@ import NetPensionCard from "pages/Net-Pension/NetPensionCard";
 import ShowMonthlyPension from "pages/monthly-pension/ShowMonthlyPension";
 import ShowPensionDeduction from "pages/pension-deduction/ShowPensionDeduction";
 import UserStepper from "pages/member-store/UserStepper";
+import PensionerStepper from "pages/pensionerStore/PensionerStepper";
 
 const getAdminRoutes = (role) => (
    {
@@ -183,6 +184,14 @@ const getAdminRoutes = (role) => (
       layout: role,
     },
     {
+      path: "/pensioner/add",
+      name: "Add-Pensioners",
+      icon: "ni ni-circle-08 text-red",
+      component: PensionerStepper,
+      layout: role,
+      showInSidebar: false,
+    },
+    {
      path: "/arrears",
       name: "Arrears",
       icon: "fa-solid fa-dollar-sign",
@@ -224,14 +233,14 @@ const getAdminRoutes = (role) => (
       component: PensionDocuments,
       layout: role,
     },
-    {
-      path: "/pensioner/add",
-      name: "Add-Pensioners",
-      icon: "ni ni-circle-08 text-red",
-      component: PensionerForm,
-      layout: role,
-      showInSidebar: false,
-    },
+    // {
+    //   path: "/pensioner/add",
+    //   name: "Add-Pensioners",
+    //   icon: "ni ni-circle-08 text-red",
+    //   component: PensionerForm,
+    //   layout: role,
+    //   showInSidebar: false,
+    // },
     {
       path: "/pensioner/edit/:id",
       name: "Id-Pensioners",
@@ -305,15 +314,7 @@ const getAdminRoutes = (role) => (
       component: SalaryProcessing,
       layout: role,
       showInSidebar: true,
-    },
-    // {
-    //   path: "/pension",
-    //   name: "Pension",
-    //   icon: "ni ni-settings-gear-65 text-info",
-    //   component: PensionProcessing,
-    //   layout: role,
-    //   showInSidebar: true,
-    // }
+    }
   ],
   report: [
     {

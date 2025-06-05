@@ -24,6 +24,8 @@ import bulkReducer from './slices/bulkSlice'
 import netPensionReducer from './slices/netPensionSlice'
 import informationReducer from './slices/pensionRelatedSlice'
 import memberStoreReducer from './slices/memberStoreSlice'
+import pensionerStoreReducer from './slices/pensionerStoreSlice'
+import payCommisionReducer from './slices/payCommision'
 
 const store = configureStore({
   reducer: {
@@ -51,7 +53,9 @@ const store = configureStore({
     bulk:bulkReducer,
     netPension:netPensionReducer,
     info:informationReducer,
-    memeberStore:memberStoreReducer
+    memeberStore:memberStoreReducer,
+    pensionerStore:pensionerStoreReducer,
+    payCommision:payCommisionReducer,
   },
 });
 

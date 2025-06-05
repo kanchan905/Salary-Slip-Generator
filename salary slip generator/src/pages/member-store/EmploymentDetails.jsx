@@ -14,7 +14,6 @@ const Cadree = ['Technical','Administrative'];
 const EmploymentDetails = ({ onNext }) => {
     const dispatch = useDispatch();
     const { employeeForm, designationList } = useSelector((state) => state.memeberStore);
-    console.log('list', designationList)
 
     useEffect(() => {
         dispatch(fetchDesignationList());
@@ -25,22 +24,17 @@ const EmploymentDetails = ({ onNext }) => {
         if (!values.date_of_joining) errors.date_of_joining = 'Required';
         if (values.designation == 'Select Designation') errors.designation = 'Required';
         if (values.job_group == 'Select Group') errors.job_group = 'Required';
+        if (values.cadre == 'Select Cadre') errors.cadre = 'Required';
         if (values.status == 'Select Status') errors.status = 'Required';
         if (values.increment_month == 'Select Month') errors.status = 'Required';
-        if (values.cadre == 'Select Cadre') errors.status = 'Required';
-        if (values.increment_month == '') errors.increment_month = 'Required';
+        if (values.increment_month == 'Select Month') errors.increment_month = 'Required';
         return errors;
     };
 
-    const handleSubmit = async (values) => {
+    const handleSubmit = () => {
         try {
-            Object.entries(values).forEach(([key, value]) => {
-                dispatch(updateEmployeeField({ name: key, value }));
-            });
             toast.success('Employment details saved');
             onNext();
-            console.log(employeeForm)
-            dispatch(nextUserStep());
         } catch (err) {
             const apiMsg =
                 err?.response?.data?.message ||
@@ -50,9 +44,14 @@ const EmploymentDetails = ({ onNext }) => {
         }
     };
 
+
+    const handleChange = (e) => {
+        dispatch(updateEmployeeField({ name: e.target.name, value: e.target.value }));
+      }
+
     return (
-        <Formik initialValues={employeeForm} validate={validate} onSubmit={handleSubmit}>
-            {({ handleChange, values, errors, touched }) => (
+        <Formik initialValues={employeeForm} enableReinitialize validate={validate} onSubmit={handleSubmit}>
+            {({ values, errors, touched }) => (
                 <Form>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
@@ -63,7 +62,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 label="Date of Joining"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.date_of_joining}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.date_of_joining && Boolean(errors.date_of_joining)}
                                 helperText={touched.date_of_joining && errors.date_of_joining}
                             />
@@ -77,7 +76,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 label="Date of Retirement"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.date_of_retirement}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                             />
                         </Grid>
 
@@ -88,7 +87,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 name="designation"
                                 label="Designation"
                                 value={values.designation}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.designation && Boolean(errors.designation)}
                                 helperText={touched.designation && errors.designation}
                             >
@@ -111,7 +110,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 name="cadre"
                                 label="Cadre"
                                 value={values.cadre}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.cadre && Boolean(errors.cadre)}
                                 helperText={touched.cadre && errors.cadre}
                             >
@@ -129,7 +128,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 name="job_group"
                                 label="Job Group"
                                 value={values.job_group}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.job_group && Boolean(errors.job_group)}
                                 helperText={touched.job_group && errors.job_group}
                             >
@@ -147,7 +146,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 name="status"
                                 label="Employee Status"
                                 value={values.status}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.status && Boolean(errors.status)}
                                 helperText={touched.status && errors.status}
                             >
@@ -165,13 +164,13 @@ const EmploymentDetails = ({ onNext }) => {
                                 name="increment_month"
                                 label="Increment Month"
                                 value={values.increment_month}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.increment_month && Boolean(errors.increment_month)}
                                 helperText={touched.increment_month && errors.increment_month}
                             >
                                 <MenuItem value="Select Month">Select Month</MenuItem>
                                 {months.map((month) => (
-                                    <MenuItem key={month} value={month.value}>{month.label}</MenuItem>
+                                    <MenuItem key={month} value={month.label}>{month.label}</MenuItem>
                                 ))}
                             </TextField>
                         </Grid>

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, TextField, MenuItem, Button } from '@mui/material';
 import { Formik, Form } from 'formik';
-import { updateEmployeeField, nextUserStep } from '../../redux/slices/memberStoreSlice';
+import { updateEmployeeField } from '../../redux/slices/memberStoreSlice';
 import { toast } from 'react-toastify';
 
 
@@ -10,45 +10,30 @@ const prefixes = ['Mr.', 'Ms.', 'Mrs.', 'Dr.'];
 
 const PersonalInfoForm = ({ onNext }) => {
     const dispatch = useDispatch();
-    const { user, employeeForm } = useSelector((state) => state.memeberStore);
-    const { name, email } = user;
-
-    const splitName = (fullName) => {
-        const parts = fullName?.trim().split(" ");
-
-        return {
-            firstName: parts[0] || "",
-            middleName: parts.length > 2 ? parts.slice(1, -1).join(" ") : "",
-            lastName: parts.length > 1 ? parts[parts.length - 1] : ""
-        };
-    };
-
-    const { firstName, middleName, lastName } = splitName(name);
-
-    const initialValues = {
-        ...employeeForm,
-        email: user.email || '',
-        first_name:firstName,
-        middle_name:middleName,
-        last_name:lastName,
-    };
+    const { employeeForm } = useSelector((state) => state.memeberStore);
 
     const validate = (values) => {
         const errors = {};
-        if (!values.employee_code) errors.employee_code = 'Required';
+        if (!values.employee_code) {
+            errors.employee_code = 'Required';
+        } else if (values.employee_code.length < 4) {
+            errors.employee_code = 'The employee code field must be at least 4 characters.';
+        }
         if (!values.last_name) errors.last_name = 'Required';
-        if (!values.prefix) errors.prefix = 'Required';
-        if (!values.gender) errors.gender = 'Required';
+        if (!values.middle_name) errors.middle_name = 'Required';
+        if (values.prefix == 'Select Prefix') errors.prefix = 'Required';
+        if (values.gender == 'Select Gender') errors.gender = 'Required';
         if (!values.date_of_birth) errors.date_of_birth = 'Required';
-        if (!values.pancard) errors.pancard = 'Required';
+        if (!values.pancard) {
+            errors.pancard = 'Required';
+        } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(values.pancard)) {
+            errors.pancard = 'Invalid PAN, format is 5 letters + 4 digits + 1 letter';
+        }
         return errors;
     };
 
-    const handleSubmit = async (values) => {
+    const handleSubmit = () => {
         try {
-            Object.entries(values).forEach(([key, value]) => {
-                dispatch(updateEmployeeField({ name: key, value }))
-            });
             toast.success('Employee info saved');
             onNext();
         }
@@ -60,21 +45,24 @@ const PersonalInfoForm = ({ onNext }) => {
                 'Failed to save info.';
             toast.error(apiMsg);
         }
-        dispatch(nextUserStep());
     };
 
+    const handleChange = (e) => {
+        dispatch(updateEmployeeField({ name: e.target.name, value: e.target.value }));
+    }
+
     return (
-        <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
-            {({ handleChange, values, errors, touched }) => (
+        <Formik initialValues={employeeForm} enableReinitialize validate={validate} onSubmit={handleSubmit}>
+            {({ values, errors, touched }) => (
                 <Form>
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <TextField
                                 fullWidth
                                 name="employee_code"
                                 label="Employee Code"
-                                value={employeeForm.employee_code || values.employee_code}
-                                onChange={handleChange}
+                                value={values.employee_code}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.employee_code && Boolean(errors.employee_code)}
                                 helperText={touched.employee_code && errors.employee_code}
                             />
@@ -85,12 +73,12 @@ const PersonalInfoForm = ({ onNext }) => {
                                 select
                                 name="prefix"
                                 label="Prefix"
-                                value={employeeForm.prefix || values.prefix}
-                                onChange={handleChange}
+                                value={values.prefix}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.prefix && Boolean(errors.prefix)}
                                 helperText={touched.prefix && errors.prefix}
                             >
-                                <MenuItem value="">Select Prefix</MenuItem>
+                                <MenuItem value="Select Prefix">Select Prefix</MenuItem>
                                 {prefixes.map((prefix) => (
                                     <MenuItem key={prefix} value={prefix}>{prefix}</MenuItem>
                                 ))}
@@ -101,8 +89,8 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 name="first_name"
                                 label="First Name"
-                                value={firstName || employeeForm.prefix || values.first_name}
-                                onChange={handleChange}
+                                value={values.first_name}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.first_name && Boolean(errors.first_name)}
                                 helperText={touched.first_name && errors.first_name}
                             />
@@ -112,8 +100,10 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 name="middle_name"
                                 label="Middle Name"
-                                value={middleName || employeeForm.middle_name || values.middle_name}
-                                onChange={handleChange}
+                                value={values.middle_name}
+                                onChange={(e) => handleChange(e)}
+                                error={touched.middle_name && Boolean(errors.middle_name)}
+                                helperText={touched.middle_name && errors.middle_name}
                             />
                         </Grid>
                         <Grid item xs={6}>
@@ -121,8 +111,8 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 name="last_name"
                                 label="Last Name"
-                                value={lastName || employeeForm.last_name || values.last_name}
-                                onChange={handleChange}
+                                value={values.last_name}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.last_name && Boolean(errors.last_name)}
                                 helperText={touched.last_name && errors.last_name}
                             />
@@ -133,12 +123,12 @@ const PersonalInfoForm = ({ onNext }) => {
                                 select
                                 name="gender"
                                 label="Gender"
-                                value={employeeForm.gender || values.gender}
-                                onChange={handleChange}
+                                value={values.gender}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.gender && Boolean(errors.gender)}
                                 helperText={touched.gender && errors.gender}
                             >
-                                <MenuItem value="">Select Gender</MenuItem>
+                                <MenuItem value="Select Gender">Select Gender</MenuItem>
                                 <MenuItem value="male">Male</MenuItem>
                                 <MenuItem value="female">Female</MenuItem>
                                 <MenuItem value="other">Other</MenuItem>
@@ -151,8 +141,8 @@ const PersonalInfoForm = ({ onNext }) => {
                                 name="date_of_birth"
                                 label="Date of Birth"
                                 InputLabelProps={{ shrink: true }}
-                                value={employeeForm.date_of_birth || values.date_of_birth}
-                                onChange={handleChange}
+                                value={values.date_of_birth}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.date_of_birth && Boolean(errors.date_of_birth)}
                                 helperText={touched.date_of_birth && errors.date_of_birth}
                             />
@@ -162,8 +152,8 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 name="email"
                                 label="Email Address"
-                                value={email || employeeForm.email || values.email}
-                                onChange={handleChange}
+                                value={values.email}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.email && Boolean(errors.email)}
                                 helperText={touched.email && errors.email}
                             />
@@ -173,8 +163,8 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 name="pancard"
                                 label="PAN Card Number"
-                                value={employeeForm.pancard || values.pancard}
-                                onChange={handleChange}
+                                value={values.pancard}
+                                onChange={(e) => handleChange(e)}
                                 error={touched.pancard && Boolean(errors.pancard)}
                                 helperText={touched.pancard && errors.pancard}
                             />

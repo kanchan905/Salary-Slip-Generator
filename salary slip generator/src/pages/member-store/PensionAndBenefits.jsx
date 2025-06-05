@@ -13,37 +13,38 @@ const yesNoOptions = [
 
 const PensionAndBenefits = ({ onNext }) => {
     const dispatch = useDispatch();
-    const { employeeForm } = useSelector((state) => state.memeberStore);
+    const { employeeForm,user } = useSelector((state) => state.memeberStore);
 
 
     const validate = (values) => {
         const errors = {};
         if (values.pension_scheme == 'Select Scheme') errors.pension_scheme = 'Required';
-        if (!values.pension_number) errors.pension_number = 'Required';        
+        if (!values.pension_number) errors.pension_number = 'Required';
         if (values.hra_eligibility == 'Select hra') errors.hra_eligibility = 'Required';
         if (values.npa_eligibility == 'Select npa') errors.npa_eligibility = 'Required';
         if (values.gis_eligibility == 'Select gis') errors.gis_eligibility = 'Required';
         if (values.uniform_allowance_eligibility == 'Select uniform') errors.uniform_allowance_eligibility = 'Required';
         if (values.credit_society_member == 'Select credit') errors.credit_society_member = 'Required';
+        if (values.pwd_status == 'Select pwd') errors.pwd_status = 'Required';
         return errors;
     };
 
     const handleSubmit = async (values) => {
         try {
-            Object.entries(values).forEach(([key, value]) => {
-                dispatch(updateEmployeeField({ name: key, value }));
-            });
             toast.success('Pension & Benefits details saved');
             onNext();
-            dispatch(nextUserStep());
         } catch (err) {
             toast.error('Failed to save pension & benefits');
         }
     };
 
+    const handleChange = (e) => {
+        dispatch(updateEmployeeField({ name: e.target.name, value: e.target.value }));
+    }
+
     return (
-        <Formik initialValues={employeeForm} onSubmit={handleSubmit} validate={validate}>
-            {({ values, handleChange, setFieldValue, errors, touched }) => (
+        <Formik initialValues={employeeForm} enableReinitialize onSubmit={handleSubmit} validate={validate}>
+            {({ values, errors, touched }) => (
                 <Form>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
@@ -53,7 +54,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 name="pension_scheme"
                                 label="Pension Scheme"
                                 value={values.pension_scheme}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.pension_scheme && Boolean(errors.pension_scheme)}
                                 helperText={touched.pension_scheme && errors.pension_scheme}
                             >
@@ -70,7 +71,9 @@ const PensionAndBenefits = ({ onNext }) => {
                                 name="pension_number"
                                 label="Pension Number"
                                 value={values.pension_number}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
+                                error={touched.pension_number && Boolean(errors.pension_number)}
+                                helperText={touched.pension_number && errors.pension_number}
                             />
                         </Grid>
 
@@ -78,10 +81,10 @@ const PensionAndBenefits = ({ onNext }) => {
                             <TextField
                                 select
                                 fullWidth
-                                name= "hra_eligibility"
-                                label= "hra_eligibility"
+                                name="hra_eligibility"
+                                label="hra_eligibility"
                                 value={values.hra_eligibility}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.hra_eligibility && Boolean(errors.hra_eligibility)}
                                 helperText={touched.hra_eligibility && errors.hra_eligibility}
 
@@ -94,13 +97,13 @@ const PensionAndBenefits = ({ onNext }) => {
                         </Grid>
 
                         <Grid item xs={6}>
-                             <TextField
+                            <TextField
                                 select
                                 fullWidth
-                                name= "npa_eligibility"
-                                label= "npa_eligibility"
+                                name="npa_eligibility"
+                                label="npa_eligibility"
                                 value={values.npa_eligibility}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.npa_eligibility && Boolean(errors.npa_eligibility)}
                                 helperText={touched.npa_eligibility && errors.npa_eligibility}
 
@@ -116,10 +119,10 @@ const PensionAndBenefits = ({ onNext }) => {
                             <TextField
                                 select
                                 fullWidth
-                                name= "gis_eligibility"
-                                label= "gis_eligibility"
+                                name="gis_eligibility"
+                                label="gis_eligibility"
                                 value={values.gis_eligibility}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.gis_eligibility && Boolean(errors.gis_eligibility)}
                                 helperText={touched.gis_eligibility && errors.gis_eligibility}
 
@@ -137,7 +140,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 name="gis_no"
                                 label="GIS Number"
                                 value={values.gis_no}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.gis_no && Boolean(errors.gis_no)}
                                 helperText={touched.gis_no && errors.gis_no}
                                 disabled={!values.gis_eligibility}
@@ -145,13 +148,13 @@ const PensionAndBenefits = ({ onNext }) => {
                         </Grid>
 
                         <Grid item xs={6}>
-                           <TextField
+                            <TextField
                                 select
                                 fullWidth
-                                name= "uniform_allowance_eligibility"
-                                label= "uniform_allowance_eligibility"
+                                name="uniform_allowance_eligibility"
+                                label="uniform_allowance_eligibility"
                                 value={values.uniform_allowance_eligibility}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.uniform_allowance_eligibility && Boolean(errors.uniform_allowance_eligibility)}
                                 helperText={touched.uniform_allowance_eligibility && errors.uniform_allowance_eligibility}
 
@@ -167,15 +170,34 @@ const PensionAndBenefits = ({ onNext }) => {
                             <TextField
                                 select
                                 fullWidth
-                                name= "credit_society_member"
-                                label= "credit_society_member"
+                                name="credit_society_member"
+                                label="credit_society_member"
                                 value={values.credit_society_member}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.credit_society_member && Boolean(errors.credit_society_member)}
                                 helperText={touched.credit_society_member && errors.credit_society_member}
 
                             >
                                 <MenuItem value="Select credit">Select credit</MenuItem>
+                                {yesNoOptions.map((opt) => (
+                                    <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+
+                        <Grid item xs={6}>
+                            <TextField
+                                select
+                                fullWidth
+                                name="pwd_status"
+                                label="pwd_status"
+                                value={values.pwd_status}
+                                onChange={(e)=> handleChange(e)}
+                                error={touched.pwd_status && Boolean(errors.pwd_status)}
+                                helperText={touched.pwd_status && errors.pwd_status}
+
+                            >
+                                <MenuItem value="Select pwd">Select pwd</MenuItem>
                                 {yesNoOptions.map((opt) => (
                                     <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
                                 ))}

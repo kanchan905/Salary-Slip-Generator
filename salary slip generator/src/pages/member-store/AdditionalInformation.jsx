@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, TextField, Button } from '@mui/material';
 import { Formik, Form } from 'formik';
 import { toast } from 'react-toastify';
-import { updateEmployeeField, nextUserStep } from '../../redux/slices/memberStoreSlice';
+import { resetUserForm, updateEmployeeField } from '../../redux/slices/memberStoreSlice';
 import { storeEmployee } from '../../redux/slices/employeeSlice';
 import { addDesignation } from '../../redux/slices/employeeSlice';
 import { addBankdetails } from '../../redux/slices/employeeSlice';
 
-const AdditionalInformation = ({ onNext }) => {
+const AdditionalInformation = () => {
     const dispatch = useDispatch();
-    const { employeeForm } = useSelector((state) => state.memeberStore);
+    const { employeeForm,activeStep } = useSelector((state) => state.memeberStore);
     const {
         employee_code,
         prefix,
@@ -47,6 +47,8 @@ const AdditionalInformation = ({ onNext }) => {
         cadre,
         job_group,
         promotion_order_no,
+        institute,
+        is_active,
     } = employeeForm
 
 
@@ -78,7 +80,8 @@ const AdditionalInformation = ({ onNext }) => {
         effective_from,
         effective_till,
         remark,
-        order_reference
+        order_reference,
+        institute,
     }
 
     const BankData = {
@@ -87,6 +90,7 @@ const AdditionalInformation = ({ onNext }) => {
         account_number,
         ifsc_code,
         effective_from,
+        is_active 
     }
 
     const DesignationData = {
@@ -101,7 +105,7 @@ const AdditionalInformation = ({ onNext }) => {
 
     const validate = (values) => {
         const errors = {};
-        if(!values.promotion_order_no) errors.promotion_order_no = 'Required'
+        if (!values.promotion_order_no) errors.promotion_order_no = 'Required'
         if (!values.effective_from) errors.effective_from = 'Required';
         if (values.effective_till && values.effective_from) {
             const fromDate = new Date(values.effective_from);
@@ -113,22 +117,18 @@ const AdditionalInformation = ({ onNext }) => {
         return errors;
     };
 
-    const handleSubmit = (values) => {
+    const handleSubmit = () => {
+        toast.success('Additional information saved');
         try {
-            Object.entries(values).forEach(([key, value]) => {
-                dispatch(updateEmployeeField({ name: key, value }));
-            });
-            toast.success('Additional information saved');
             dispatch(storeEmployee(employeeData)).unwrap()
                 .then((res) => {
                     toast.success('Employee Added');
-                    console.log(res)
-                    const bankData = { ...BankData, employee_id: res.id }
+                    const bankData = { ...BankData, employee_id: res[1]?.employee_id }
                     dispatch(addBankdetails(bankData)).unwrap()
                         .then(() => {
                             toast.success('Bank Detail of Employee Added');
                         })
-                    const designationData = { ...DesignationData, employee_id: res.id }
+                    const designationData = { ...DesignationData, employee_id: res[1]?.employee_id }
                     dispatch(addDesignation(designationData)).unwrap()
                         .then(() => {
                             toast.success('Designation of Employee Added');
@@ -138,25 +138,29 @@ const AdditionalInformation = ({ onNext }) => {
                     const apiMsg = err?.data?.message || err?.message || err?.errorMsg || 'Failed to add employee.';
                     toast.error(apiMsg);
                 });
-
-            console.log(employeeForm);
+          dispatch(resetUserForm());
         } catch (err) {
             toast.error('Failed to save additional information');
         }
     };
 
+
+    const handleChange = (e) => {
+        dispatch(updateEmployeeField({ name: e.target.name, value: e.target.value }));
+    }
+
     return (
-        <Formik initialValues={employeeForm} onSubmit={handleSubmit} validate={validate}>
-            {({ values, handleChange, errors, touched }) => (
+        <Formik initialValues={employeeForm} enableReinitialize onSubmit={handleSubmit} validate={validate}>
+            {({ values, errors, touched }) => (
                 <Form>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
                                 name="promotion_order_no"
-                                label="Order promotion_order_no"
+                                label="promotion_order_no"
                                 value={values.promotion_order_no}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.promotion_order_no && Boolean(errors.promotion_order_no)}
                                 helperText={touched.promotion_order_no && errors.promotion_order_no}
                             />
@@ -170,7 +174,7 @@ const AdditionalInformation = ({ onNext }) => {
                                 label="Effective From"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.effective_from}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.effective_from && Boolean(errors.effective_from)}
                                 helperText={touched.effective_from && errors.effective_from}
                             />
@@ -184,7 +188,7 @@ const AdditionalInformation = ({ onNext }) => {
                                 label="Effective Till"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.effective_till}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                                 error={touched.effective_till && Boolean(errors.effective_till)}
                                 helperText={touched.effective_till && errors.effective_till}
                             />
@@ -196,7 +200,7 @@ const AdditionalInformation = ({ onNext }) => {
                                 name="order_reference"
                                 label="Order Reference"
                                 value={values.order_reference}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                             />
                         </Grid>
 
@@ -208,7 +212,7 @@ const AdditionalInformation = ({ onNext }) => {
                                 name="remark"
                                 label="Remark"
                                 value={values.remark}
-                                onChange={handleChange}
+                                onChange={(e)=> handleChange(e)}
                             />
                         </Grid>
                     </Grid>

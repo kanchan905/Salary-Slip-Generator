@@ -14,6 +14,17 @@ export const fetchDesignationList = createAsyncThunk(
     }
 );
 
+const splitName = (fullName) => {
+    const parts = fullName?.trim().split(" ");
+
+    return {
+        firstName: parts[0] || "",
+        middleName: parts.length > 2 ? parts.slice(1, -1).join(" ") : "",
+        lastName: parts.length > 1 ? parts[parts.length - 1] : ""
+    };
+};
+
+
 const initialState = {
     activeStep: 0,
     userForm: {
@@ -26,16 +37,15 @@ const initialState = {
     user: {},
     employeeForm: {
         employee_code: '',
-        prefix: '',
+        prefix: 'Select Prefix',
         user_id: '',
         first_name: '',
         middle_name: '',
         last_name: '',
-        gender: '',
+        gender: 'Select Gender',
         date_of_birth: '',
         date_of_joining: '',
         date_of_retirement: '',
-        pwd_status: '',
         pension_scheme: 'Select Scheme',
         pension_number: '',
         gis_eligibility: 'Select gis',
@@ -47,6 +57,7 @@ const initialState = {
         uniform_allowance_eligibility: 'Select uniform',
         hra_eligibility: 'Select hra',
         npa_eligibility: 'Select npa',
+        pwd_status: 'Select pwd',
         status: 'Select Status',
         effective_from: '',
         effective_till: '',
@@ -58,7 +69,10 @@ const initialState = {
         bank_name: '',
         branch_name: '',
         account_number: '',
-        ifsc_code: ''
+        ifsc_code: '',
+        is_active:'Select status',
+        promotion_order_no: '',
+        institute:''
     },
     designationList: []
 };
@@ -85,7 +99,13 @@ const memberStoreSlice = createSlice({
         setCreatedUser: (state, action) => {
             const user = action.payload;
             state.user = user;
+            const { firstName, middleName, lastName } = splitName(user?.name);
             state.employeeForm.user_id = user?.id || '';
+            state.employeeForm.email = user?.email || '';
+            state.employeeForm.first_name = firstName;
+            state.employeeForm.middle_name = middleName;
+            state.employeeForm.last_name = lastName;
+            state.employeeForm.institute = user?.institute;
         }
     },
     extraReducers: (builder) => {

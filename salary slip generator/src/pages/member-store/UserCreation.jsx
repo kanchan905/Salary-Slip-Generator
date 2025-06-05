@@ -34,17 +34,12 @@ const UserCreation = ({ onNext }) => {
   };
 
   const handleSubmit = async (values) => {
-    // Save form fields to Redux
-    Object.entries(values).forEach(([key, value]) => {
-      dispatch(updateUserField({ name: key, value }));
-    });
-
     try {
       const response = await dispatch(createUserData(values)).unwrap();
       dispatch(setCreatedUser(response.data));
       toast.success('User created successfully');
       onNext();
-    }catch (err) {
+    } catch (err) {
       const apiMsg =
         err?.response?.data?.message ||
         err?.message ||
@@ -54,27 +49,32 @@ const UserCreation = ({ onNext }) => {
     }
   };
 
+  const handleChange = (e) => {
+    dispatch(updateUserField({ name: e.target.name, value: e.target.value }));
+  }
+
+
   return (
     <Formik
       initialValues={userForm}
+      enableReinitialize
       validate={validate}
       onSubmit={handleSubmit}
-      enableReinitialize
     >
-      {({ handleChange, values, errors, touched }) => (
+      {({values, errors, touched}) => (
         <Form>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} justifyContent={'center'}>
             <Grid item xs={6}>
-              <TextField fullWidth name="name" label="Name" value={values.name} onChange={handleChange} error={touched.name && Boolean(errors.name)} helperText={touched.name && errors.name} />
+              <TextField fullWidth name="name" label="Name" value={values.name}  onChange={(e)=> handleChange(e)} error={touched.name && Boolean(errors.name)} helperText={touched.name && errors.name} />
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth name="email" label="Email" value={values.email} onChange={handleChange} error={touched.email && Boolean(errors.email)} helperText={touched.email && errors.email} />
+              <TextField fullWidth name="email" label="Email" value={values.email}  onChange={(e)=> handleChange(e)} error={touched.email && Boolean(errors.email)} helperText={touched.email && errors.email} />
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth name="password" type="password" label="Password" value={values.password} onChange={handleChange} error={touched.password && Boolean(errors.password)} helperText={touched.password && errors.password} />
+              <TextField fullWidth name="password" type="password" label="Password" value={values.password}  onChange={(e)=> handleChange(e)} error={touched.password && Boolean(errors.password)} helperText={touched.password && errors.password} />
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth select name="role_id" label="Role" value={values.role_id} onChange={handleChange} error={touched.role_id && Boolean(errors.role_id)} helperText={touched.role_id && errors.role_id}>
+              <TextField fullWidth select name="role_id" label="Role" value={values.role_id}  onChange={(e)=> handleChange(e)} error={touched.role_id && Boolean(errors.role_id)} helperText={touched.role_id && errors.role_id}>
                 <MenuItem value="Select Role">Select Role</MenuItem>
                 {roles.map((role) => (
                   <MenuItem key={role.id} value={role.id}>{role.name}</MenuItem>
@@ -82,10 +82,11 @@ const UserCreation = ({ onNext }) => {
               </TextField>
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth select name="institute" label="Institute" value={values.institute} onChange={handleChange} error={touched.institute && Boolean(errors.institute)} helperText={touched.institute && errors.institute}>
+              <TextField fullWidth select name="institute" label="Institute" value={values.institute}  onChange={(e)=> handleChange(e)} error={touched.institute && Boolean(errors.institute)} helperText={touched.institute && errors.institute}>
                 <MenuItem value="Select Institute">Select Institute</MenuItem>
                 <MenuItem value="NIOH">NIOH</MenuItem>
                 <MenuItem value="ROHC">ROHC</MenuItem>
+                <MenuItem value="BOTH">BOTH</MenuItem>
               </TextField>
             </Grid>
           </Grid>
