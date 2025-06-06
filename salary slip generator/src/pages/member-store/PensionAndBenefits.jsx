@@ -52,7 +52,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 select
                                 fullWidth
                                 name="pension_scheme"
-                                label="Pension Scheme"
+                                label="Pension Scheme*"
                                 value={values.pension_scheme}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.pension_scheme && Boolean(errors.pension_scheme)}
@@ -69,7 +69,7 @@ const PensionAndBenefits = ({ onNext }) => {
                             <TextField
                                 fullWidth
                                 name="pension_number"
-                                label="Pension Number"
+                                label="Pension Number*"
                                 value={values.pension_number}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.pension_number && Boolean(errors.pension_number)}
@@ -82,7 +82,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 select
                                 fullWidth
                                 name="hra_eligibility"
-                                label="hra_eligibility"
+                                label="Hra Eligibility*"
                                 value={values.hra_eligibility}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.hra_eligibility && Boolean(errors.hra_eligibility)}
@@ -101,7 +101,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 select
                                 fullWidth
                                 name="npa_eligibility"
-                                label="npa_eligibility"
+                                label="Npa Eligibility*"
                                 value={values.npa_eligibility}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.npa_eligibility && Boolean(errors.npa_eligibility)}
@@ -120,7 +120,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 select
                                 fullWidth
                                 name="gis_eligibility"
-                                label="gis_eligibility"
+                                label="Gis Eligibility*"
                                 value={values.gis_eligibility}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.gis_eligibility && Boolean(errors.gis_eligibility)}
@@ -152,7 +152,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 select
                                 fullWidth
                                 name="uniform_allowance_eligibility"
-                                label="uniform_allowance_eligibility"
+                                label="Uniform Allowance Eligibility*"
                                 value={values.uniform_allowance_eligibility}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.uniform_allowance_eligibility && Boolean(errors.uniform_allowance_eligibility)}
@@ -171,7 +171,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 select
                                 fullWidth
                                 name="credit_society_member"
-                                label="credit_society_member"
+                                label="Credit Society Member*"
                                 value={values.credit_society_member}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.credit_society_member && Boolean(errors.credit_society_member)}
@@ -190,7 +190,7 @@ const PensionAndBenefits = ({ onNext }) => {
                                 select
                                 fullWidth
                                 name="pwd_status"
-                                label="pwd_status"
+                                label="Pwd Status*"
                                 value={values.pwd_status}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.pwd_status && Boolean(errors.pwd_status)}

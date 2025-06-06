@@ -61,7 +61,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="ppo_no"
-                label="PPO No"
+                label="PPO No*"
                 value={values.ppo_no}
                 onChange={handleChange}
                 error={touched.ppo_no && Boolean(errors.ppo_no)}
@@ -72,7 +72,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="first_name"
-                label="First Name"
+                label="First Name*"
                 value={values.first_name}
                 onChange={handleChange}
                 error={touched.first_name && Boolean(errors.first_name)}
@@ -83,7 +83,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="middle_name"
-                label="Middle Name"
+                label="Middle Name*"
                 value={values.middle_name}
                 onChange={handleChange}
                 error={touched.middle_name && Boolean(errors.middle_name)}
@@ -94,7 +94,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="last_name"
-                label="Last Name"
+                label="Last Name*"
                 value={values.last_name}
                 onChange={handleChange}
                 error={touched.last_name && Boolean(errors.last_name)}
@@ -106,7 +106,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
                 select
                 fullWidth
                 name="relation"
-                label="Relation"
+                label="Relation*"
                 value={values.relation}
                 onChange={handleChange}
                 error={touched.relation && Boolean(errors.relation)}
@@ -121,7 +121,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
                 type="date"
                 fullWidth
                 name="dob"
-                label="Date of Birth"
+                label="Date of Birth*"
                 InputLabelProps={{ shrink: true }}
                 value={values.dob}
                 onChange={handleChange}
@@ -133,7 +133,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="pan_number"
-                label="PAN Number"
+                label="PAN Number*"
                 value={values.pan_number}
                 onChange={handleChange}
                 error={touched.pan_number && Boolean(errors.pan_number)} 
@@ -144,7 +144,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="mobile_no"
-                label="Contact No"
+                label="Mobile No*"
                 value={values.mobile_no}
                 onChange={handleChange}
                 error={touched.mobile_no && Boolean(errors.mobile_no)} 
@@ -155,7 +155,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="email"
-                label="Email"
+                label="Email*"
                 value={values.email}
                 onChange={handleChange}
                 error={touched.email && Boolean(errors.email)} 

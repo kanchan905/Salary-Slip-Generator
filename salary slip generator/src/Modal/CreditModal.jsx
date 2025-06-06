@@ -56,14 +56,14 @@ export default function CreditSocietyMemberModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="employee_id">Employee ID</Label>
+                    <Label for="employee_id">Employee ID*</Label>
                     <Field as={Input} id="employee_id" name="employee_id" type="number" />
                     <ErrorMessage name="employee_id" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="society_name">Society Name</Label>
+                    <Label for="society_name">Society Name*</Label>
                     <Field as={Input} id="society_name" name="society_name" />
                     <ErrorMessage name="society_name" component="div" className="text-danger" />
                   </FormGroup>
@@ -72,14 +72,14 @@ export default function CreditSocietyMemberModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="membership_number">Membership Number</Label>
+                    <Label for="membership_number">Membership Number*</Label>
                     <Field as={Input} id="membership_number" name="membership_number" />
                     <ErrorMessage name="membership_number" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="joining_date">Joining Date</Label>
+                    <Label for="joining_date">Joining Date*</Label>
                     <Field as={Input} id="joining_date" name="joining_date" type="date" />
                     <ErrorMessage name="joining_date" component="div" className="text-danger" />
                   </FormGroup>
@@ -88,13 +88,13 @@ export default function CreditSocietyMemberModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="relieving_date">Relieving Date</Label>
+                    <Label for="relieving_date">Relieving Date (if any)</Label>
                     <Field as={Input} id="relieving_date" name="relieving_date" type="date" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="monthly_subscription">Monthly Subscription</Label>
+                    <Label for="monthly_subscription">Monthly Subscription*</Label>
                     <Field as={Input} id="monthly_subscription" name="monthly_subscription" type="number" />
                     <ErrorMessage name="monthly_subscription" component="div" className="text-danger" />
                   </FormGroup>
@@ -103,14 +103,14 @@ export default function CreditSocietyMemberModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="entrance_fee">Entrance Fee</Label>
+                    <Label for="entrance_fee">Entrance Fee*</Label>
                     <Field as={Input} id="entrance_fee" name="entrance_fee" type="number" />
                     <ErrorMessage name="entrance_fee" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="is_active">Active Status</Label>
+                    <Label for="is_active">Active Status (if applicable)</Label>
                     <Field as={Input} type="select" id="is_active" name="is_active">
                       <option value={1}>Active</option>
                       <option value={0}>Inactive</option>
@@ -121,20 +121,20 @@ export default function CreditSocietyMemberModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="effective_from">Effective From</Label>
+                    <Label for="effective_from">Effective From*</Label>
                     <Field as={Input} id="effective_from" name="effective_from" type="date" />
                     <ErrorMessage name="effective_from" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="effective_till">Effective Till</Label>
+                    <Label for="effective_till">Effective Till (if applicable)</Label>
                     <Field as={Input} id="effective_till" name="effective_till" type="date" />
                   </FormGroup>
                 </Col>
               </Row>
               <FormGroup>
-                <Label for="remark">Remark</Label>
+                <Label for="remark">Remark (if applicable)</Label>
                 <Field as={Input} id="remark" name="remark" />
               </FormGroup>
               <Button

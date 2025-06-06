@@ -220,7 +220,7 @@ const handleHistoryStatus = (id) => {
                     <TableBody>
                       {pensionersData.map((p) => (
                         <TableRow key={p.id}>
-                          <TableCell>{p.name}</TableCell>
+                          <TableCell>{p.first_name}</TableCell>
                           <TableCell>{p.ppo_no}</TableCell>
                           <TableCell>{p.type_of_pension}</TableCell>                         
                           <TableCell>{p.dor}</TableCell>

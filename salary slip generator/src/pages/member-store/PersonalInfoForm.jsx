@@ -60,7 +60,7 @@ const PersonalInfoForm = ({ onNext }) => {
                             <TextField
                                 fullWidth
                                 name="employee_code"
-                                label="Employee Code"
+                                label="Employee Code*"
                                 value={values.employee_code}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.employee_code && Boolean(errors.employee_code)}
@@ -72,7 +72,7 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 select
                                 name="prefix"
-                                label="Prefix"
+                                label="Prefix*"
                                 value={values.prefix}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.prefix && Boolean(errors.prefix)}
@@ -88,7 +88,7 @@ const PersonalInfoForm = ({ onNext }) => {
                             <TextField
                                 fullWidth
                                 name="first_name"
-                                label="First Name"
+                                label="First Name*"
                                 value={values.first_name}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.first_name && Boolean(errors.first_name)}
@@ -99,7 +99,7 @@ const PersonalInfoForm = ({ onNext }) => {
                             <TextField
                                 fullWidth
                                 name="middle_name"
-                                label="Middle Name"
+                                label="Middle Name*"
                                 value={values.middle_name}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.middle_name && Boolean(errors.middle_name)}
@@ -110,7 +110,7 @@ const PersonalInfoForm = ({ onNext }) => {
                             <TextField
                                 fullWidth
                                 name="last_name"
-                                label="Last Name"
+                                label="Last Name*"
                                 value={values.last_name}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.last_name && Boolean(errors.last_name)}
@@ -122,7 +122,7 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 select
                                 name="gender"
-                                label="Gender"
+                                label="Gender*"
                                 value={values.gender}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.gender && Boolean(errors.gender)}
@@ -139,7 +139,7 @@ const PersonalInfoForm = ({ onNext }) => {
                                 fullWidth
                                 type="date"
                                 name="date_of_birth"
-                                label="Date of Birth"
+                                label="Date of Birth*"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.date_of_birth}
                                 onChange={(e) => handleChange(e)}
@@ -151,7 +151,7 @@ const PersonalInfoForm = ({ onNext }) => {
                             <TextField
                                 fullWidth
                                 name="email"
-                                label="Email Address"
+                                label="Email Address*"
                                 value={values.email}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.email && Boolean(errors.email)}
@@ -162,7 +162,7 @@ const PersonalInfoForm = ({ onNext }) => {
                             <TextField
                                 fullWidth
                                 name="pancard"
-                                label="PAN Card Number"
+                                label="PAN Card Number*"
                                 value={values.pancard}
                                 onChange={(e) => handleChange(e)}
                                 error={touched.pancard && Boolean(errors.pancard)}

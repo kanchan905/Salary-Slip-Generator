@@ -59,7 +59,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 fullWidth
                                 type="date"
                                 name="date_of_joining"
-                                label="Date of Joining"
+                                label="Date of Joining*"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.date_of_joining}
                                 onChange={(e)=> handleChange(e)}
@@ -73,7 +73,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 fullWidth
                                 type="date"
                                 name="date_of_retirement"
-                                label="Date of Retirement"
+                                label="Date of Retirement(if applicable)"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.date_of_retirement}
                                 onChange={(e)=> handleChange(e)}
@@ -85,7 +85,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 fullWidth
                                 select
                                 name="designation"
-                                label="Designation"
+                                label="Designation*"
                                 value={values.designation}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.designation && Boolean(errors.designation)}
@@ -108,7 +108,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 fullWidth
                                 select
                                 name="cadre"
-                                label="Cadre"
+                                label="Cadre*"
                                 value={values.cadre}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.cadre && Boolean(errors.cadre)}
@@ -126,7 +126,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 fullWidth
                                 select
                                 name="job_group"
-                                label="Job Group"
+                                label="Job Group*"
                                 value={values.job_group}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.job_group && Boolean(errors.job_group)}
@@ -144,7 +144,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 fullWidth
                                 select
                                 name="status"
-                                label="Employee Status"
+                                label="Employee Status*"
                                 value={values.status}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.status && Boolean(errors.status)}
@@ -162,7 +162,7 @@ const EmploymentDetails = ({ onNext }) => {
                                 fullWidth
                                 select
                                 name="increment_month"
-                                label="Increment Month"
+                                label="Increment Month*"
                                 value={values.increment_month}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.increment_month && Boolean(errors.increment_month)}

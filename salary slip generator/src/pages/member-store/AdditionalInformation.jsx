@@ -158,7 +158,7 @@ const AdditionalInformation = () => {
                             <TextField
                                 fullWidth
                                 name="promotion_order_no"
-                                label="promotion_order_no"
+                                label="Promotion Order No*"
                                 value={values.promotion_order_no}
                                 onChange={(e)=> handleChange(e)}
                                 error={touched.promotion_order_no && Boolean(errors.promotion_order_no)}
@@ -171,7 +171,7 @@ const AdditionalInformation = () => {
                                 fullWidth
                                 type="date"
                                 name="effective_from"
-                                label="Effective From"
+                                label="Effective From*"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.effective_from}
                                 onChange={(e)=> handleChange(e)}
@@ -185,7 +185,7 @@ const AdditionalInformation = () => {
                                 fullWidth
                                 type="date"
                                 name="effective_till"
-                                label="Effective Till"
+                                label="Effective Till(if applicable)"
                                 InputLabelProps={{ shrink: true }}
                                 value={values.effective_till}
                                 onChange={(e)=> handleChange(e)}
@@ -198,7 +198,7 @@ const AdditionalInformation = () => {
                             <TextField
                                 fullWidth
                                 name="order_reference"
-                                label="Order Reference"
+                                label="Order Reference(if applicable)"
                                 value={values.order_reference}
                                 onChange={(e)=> handleChange(e)}
                             />
@@ -210,7 +210,7 @@ const AdditionalInformation = () => {
                                 multiline
                                 rows={3}
                                 name="remark"
-                                label="Remark"
+                                label="Remark(if applicable)"
                                 value={values.remark}
                                 onChange={(e)=> handleChange(e)}
                             />

@@ -50,7 +50,7 @@ const BankAccountDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="bank_name"
-                label="Bank Name"
+                label="Bank Name*"
                 value={values.bank_name}
                 onChange={(e) => handleChange(e)}
                 error={touched.bank_name && Boolean(errors.bank_name)}
@@ -62,7 +62,7 @@ const BankAccountDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="branch_name"
-                label="Branch Name"
+                label="Branch Name*"
                 value={values.branch_name}
                 onChange={(e) => handleChange(e)}
                 error={touched.branch_name && Boolean(errors.branch_name)}
@@ -74,7 +74,7 @@ const BankAccountDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="account_number"
-                label="Account Number"
+                label="Account Number*"
                 value={values.account_number}
                 onChange={(e) => handleChange(e)}
                 error={touched.account_number && Boolean(errors.account_number)}
@@ -86,7 +86,7 @@ const BankAccountDetails = ({ onNext }) => {
               <TextField
                 fullWidth
                 name="ifsc_code"
-                label="IFSC Code"
+                label="IFSC Code*"
                 value={values.ifsc_code}
                 onChange={(e) => handleChange(e)}
                 error={touched.ifsc_code && Boolean(errors.ifsc_code)}
@@ -98,7 +98,7 @@ const BankAccountDetails = ({ onNext }) => {
               <TextField
                 select
                 name="is_active"
-                label="is_active"
+                label="Is Active*"
                 value={values.is_active}
                 onChange={(e) => handleChange(e)}
                 error={touched.is_active && Boolean(errors.is_active)}

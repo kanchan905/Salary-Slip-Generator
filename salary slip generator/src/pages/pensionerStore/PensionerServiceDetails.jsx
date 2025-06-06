@@ -40,7 +40,6 @@ const PensionerServiceDetails = ({ onNext }) => {
       const apiMsg =
         err?.response?.data?.message ||
         err?.message ||
-        err?.message ||
         'Failed to save info.';
       toast.error(apiMsg);
     }
@@ -65,14 +64,14 @@ const PensionerServiceDetails = ({ onNext }) => {
                 select
                 fullWidth               
                 name="retired_employee_id"
-                label="Retired Employee ID"
+                label="Retired Employee ID*"
                 value={values.retired_employee_id}
                 onChange={handleChange}
                 error={touched.retired_employee_id && Boolean(errors.retired_employee_id)}
                 helperText={touched.retired_employee_id && errors.retired_employee_id}
               >
                 <MenuItem value="Select Retired">Select Retired</MenuItem>
-                {retired.map((ret) => <MenuItem key={ret} value={ret.id}>{ret.first_name}{ret.last_name}</MenuItem>)}
+                {retired.map((ret) => <MenuItem key={ret.id} value={ret.id}>{ret.first_name}{ret.last_name}</MenuItem>)}
               </TextField>
             </Grid>
             <Grid item xs={4}>
@@ -80,7 +79,7 @@ const PensionerServiceDetails = ({ onNext }) => {
                 type="date"
                 fullWidth
                 name="doj"
-                label="Date of Joining"
+                label="Date of Joining*"
                 InputLabelProps={{ shrink: true }}
                 value={values.doj}
                 onChange={handleChange}
@@ -93,7 +92,7 @@ const PensionerServiceDetails = ({ onNext }) => {
                 type="date"
                 fullWidth
                 name="dor"
-                label="Date of Retirement"
+                label="Date of Retirement*"
                 InputLabelProps={{ shrink: true }}
                 value={values.dor}
                 onChange={handleChange}
@@ -106,7 +105,7 @@ const PensionerServiceDetails = ({ onNext }) => {
                 type="date"
                 fullWidth
                 name="start_date"
-                label="Pension Start Date"
+                label="Pension Start Date*"
                 InputLabelProps={{ shrink: true }}
                 value={values.start_date}
                 onChange={handleChange}
@@ -123,8 +122,6 @@ const PensionerServiceDetails = ({ onNext }) => {
                 InputLabelProps={{ shrink: true }}
                 value={values.end_date}
                 onChange={handleChange}
-                error={touched.end_date && Boolean(errors.end_date)}
-                helperText={touched.end_date && errors.end_date}
               />
             </Grid>
             <Grid item xs={3}>
@@ -132,7 +129,7 @@ const PensionerServiceDetails = ({ onNext }) => {
                 select
                 fullWidth
                 name="type_of_pension"
-                label="Type of Pension"
+                label="Type of Pension*"
                 value={values.type_of_pension}
                 onChange={handleChange}
                 error={touched.type_of_pension && Boolean(errors.type_of_pension)}
@@ -147,7 +144,7 @@ const PensionerServiceDetails = ({ onNext }) => {
                 select
                 fullWidth
                 name="status"
-                label="Status"
+                label="Status*"
                 value={values.status}
                 onChange={handleChange}
                 error={touched.status && Boolean(errors.status)}
