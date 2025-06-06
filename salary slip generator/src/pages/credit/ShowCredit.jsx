@@ -8,8 +8,8 @@ import {
   Divider,
   CircularProgress,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { NavLink, useParams } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
 import { showCredit } from '../../redux/slices/creditSlice';
 
 const LabelValue = ({ label, value }) => (
@@ -30,8 +30,9 @@ const Section = ({ title, children }) => (
 const ShowCredit = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const data = useSelector((state) => state.societyMember.showcredit[0]); 
+  const data = useSelector((state) => state.societyMember.showcredit[0]);
   const { loading } = useSelector((state) => state.societyMember);
+  const { name } = useSelector((state) => state.auth.user.role);
 
   useEffect(() => {
     dispatch(showCredit({ id }));
@@ -48,9 +49,19 @@ const ShowCredit = () => {
             </Box>
           ) : (
             <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-              <Typography variant="h4" fontWeight={600} mb={3}>
-                Credit Society Member Detail (ID: {data?.id})
-              </Typography>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <Typography variant="h4" fontWeight={600} mb={3}>
+                  Credit Society Member Detail (ID: {data?.id})
+                </Typography>
+                <NavLink to={`/${name.toLowerCase()}/credit-society-member`}>
+                  <Button
+                    style={{ background: "#004080", color: '#fff' }}
+                    type="button"
+                  >
+                    Back
+                  </Button>
+                </NavLink>
+              </div>
 
               <Section title="Membership Info">
                 <LabelValue label="Society Name" value={data?.society_name} />

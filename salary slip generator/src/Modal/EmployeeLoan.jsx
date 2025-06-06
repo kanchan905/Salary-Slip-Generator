@@ -56,14 +56,14 @@ export default function EmployeeLoanModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="employee_id">Employee ID</Label>
+                    <Label for="employee_id">Employee ID*</Label>
                     <Field as={Input} id="employee_id" name="employee_id" />
                     <ErrorMessage name="employee_id" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="loan_type">Loan Type</Label>
+                    <Label for="loan_type">Loan Type*</Label>
                     <Field as={Input} type="select" id="loan_type" name="loan_type">
                       <option value="">Select</option>
                       <option value="Computer">Computer</option>
@@ -79,14 +79,14 @@ export default function EmployeeLoanModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="loan_amount">Loan Amount</Label>
+                    <Label for="loan_amount">Loan Amount*</Label>
                     <Field as={Input} type="number" id="loan_amount" name="loan_amount" />
                     <ErrorMessage name="loan_amount" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="interest_rate">Interest Rate (%)</Label>
+                    <Label for="interest_rate">Interest Rate* (%)</Label>
                     <Field as={Input} type="number" id="interest_rate" name="interest_rate" />
                     <ErrorMessage name="interest_rate" component="div" className="text-danger" />
                   </FormGroup>
@@ -95,14 +95,14 @@ export default function EmployeeLoanModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="sanctioned_date">Sanctioned Date</Label>
+                    <Label for="sanctioned_date">Sanctioned Date*</Label>
                     <Field as={Input} type="date" id="sanctioned_date" name="sanctioned_date" />
                     <ErrorMessage name="sanctioned_date" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="total_installments">Total Installments</Label>
+                    <Label for="total_installments">Total Installments*</Label>
                     <Field as={Input} type="number" id="total_installments" name="total_installments" />
                     <ErrorMessage name="total_installments" component="div" className="text-danger" />
                   </FormGroup>
@@ -111,14 +111,14 @@ export default function EmployeeLoanModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="current_installment">Current Installment</Label>
+                    <Label for="current_installment">Current Installment*</Label>
                     <Field as={Input} type="number" id="current_installment" name="current_installment" />
                     <ErrorMessage name="current_installment" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="remaining_balance">Remaining Balance</Label>
+                    <Label for="remaining_balance">Remaining Balance*</Label>
                     <Field as={Input} type="number" id="remaining_balance" name="remaining_balance" />
                     <ErrorMessage name="remaining_balance" component="div" className="text-danger" />
                   </FormGroup>

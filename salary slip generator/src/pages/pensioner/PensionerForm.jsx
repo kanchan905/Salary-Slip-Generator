@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createPensioner, fetchPensioners, updatePensioner } from "../../redux/slices/pensionerSlice";
 import { toast } from "react-toastify";
@@ -42,7 +42,7 @@ const initialValues = {
 
 const validationSchema = Yup.object({
   ppo_no: Yup.string().required("PPO No is required"),
-  name: Yup.string().required("Name is required"),
+  first_name: Yup.string().required("first_name is required"),
   type_of_pension: Yup.string()
     .oneOf(["Regular", "Family"], "Select a valid pension")
     .required("Type of Pension is required"),
@@ -97,16 +97,16 @@ export default function PensionerForm() {
 
   // Use pensioner data as initial values if editing, otherwise use default
   const pickFields = (source, keys) =>
-  keys.reduce((obj, key) => {
-    obj[key] = source[key] || "";
-    return obj;
-  }, {});
-  const allowedFields = ["ppo_no", "name", "type_of_pension", "retired_employee_id","relation","dob","doj","dor","end_date","status","pan_number","pay_level","pay_commission","equivalent_level","address","city","state","pin_code","mobile_no","email"];
+    keys.reduce((obj, key) => {
+      obj[key] = source[key] || "";
+      return obj;
+    }, {});
+  const allowedFields = ["ppo_no", "first_name", "type_of_pension", "retired_employee_id", "relation", "dob", "doj", "dor", "end_date", "status", "pan_number", "pay_level", "pay_commission", "equivalent_level", "address", "city", "state", "pin_code", "mobile_no", "email"];
   const formInitialValues = pensionerToEdit
     ? { ...initialValues, ...pickFields(pensionerToEdit, allowedFields) }
     : initialValues;
 
-  
+
 
   const onSubmit = (values, { setSubmitting }) => {
     if (id) {
@@ -145,7 +145,17 @@ export default function PensionerForm() {
       <div className="container mt-5">
         <Card className="shadow border-0">
           <CardHeader>
-            <h3>{id ? "Edit Pensioner" : "Add Pensioner"}</h3>
+            <div className='d-flex justify-content-between align-items-center'>
+              <h3>{id ? "Edit Pensioner" : "Add Pensioner"}</h3>
+              <NavLink to={`/${name.toLowerCase()}/pensioners`}>
+                <Button
+                  style={{ background: "#004080", color: '#fff' }}
+                  type="button"
+                >
+                  Back
+                </Button>
+              </NavLink>
+            </div>
           </CardHeader>
           <CardBody>
             <Formik
@@ -166,9 +176,9 @@ export default function PensionerForm() {
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="name">Name</Label>
-                        <Field name="name" className="form-control" />
-                        <ErrorMessage name="name" component="p" className="text-danger" />
+                        <Label for="name">First Name</Label>
+                        <Field name="first_name" className="form-control" />
+                        <ErrorMessage name="first_name" component="p" className="text-danger" />
                       </FormGroup>
                     </Col>
                   </Row>

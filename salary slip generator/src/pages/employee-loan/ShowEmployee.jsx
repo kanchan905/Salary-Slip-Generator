@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect} from 'react';
 import {
   Box,
   Typography,
@@ -6,16 +6,10 @@ import {
   Paper,
   Divider,
   CircularProgress,
-  IconButton,
-  Menu,
-  MenuItem
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import EditIcon from '@mui/icons-material/Edit';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { useParams, NavLink } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
 import { showEmployeeLoan } from '../../redux/slices/employeeLoanSlice';
 
 const LabelValue = ({ label, value }) => (
@@ -38,6 +32,7 @@ const ShowEmployee = () => {
   const { id } = useParams();
   const data = useSelector((state) => state.employeeLoan.showloan[0]);
   const { loading } = useSelector((state) => state.employeeLoan);
+  const { name } = useSelector((state) => state.auth.user.role);
 
   useEffect(() => {
     dispatch(showEmployeeLoan({ id }));
@@ -54,9 +49,19 @@ const ShowEmployee = () => {
             </Box>
           ) : (
             <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-              <Typography variant="h4" fontWeight={600}>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <Typography variant="h4" fontWeight={600}>
                   Employee Loan Detail (ID: {data?.id})
                 </Typography>
+                <NavLink to={`/${name.toLowerCase()}/employee-loan`}>
+                  <Button
+                    style={{ background: "#004080", color: '#fff' }}
+                    type="button"
+                  >
+                    Back
+                  </Button>
+                </NavLink>
+              </div>
 
               <Section title="Loan Information">
                 <LabelValue label="Loan Type" value={data?.loan_type} />

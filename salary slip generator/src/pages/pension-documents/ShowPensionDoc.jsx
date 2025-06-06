@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import { Container } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { fetchPensionDocumentShow } from '../../redux/slices/pensionDocumentSlice';
 
 
@@ -27,8 +27,9 @@ const ShowPensionDoc = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
     const { showPensionerDocument, loading } = useSelector((state) => state.pensionDocument);
-    
-    
+    const { name } = useSelector((state) => state.auth.user.role);
+
+
     useEffect(() => {
         dispatch(fetchPensionDocumentShow(id));
     }, [dispatch, id]);
@@ -44,9 +45,19 @@ const ShowPensionDoc = () => {
                         </Box>
                     ) : (
                         <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-                            <Typography variant="h4" fontWeight={600} mb={3}>
-                                Pension Document Detail (ID: {showPensionerDocument?.id})
-                            </Typography>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <Typography variant="h4" fontWeight={600} mb={3}>
+                                    Pension Document Detail (ID: {showPensionerDocument?.id})
+                                </Typography>
+                                <NavLink to={`/${name.toLowerCase()}/pensioner/pension-documents`}>
+                                    <Button
+                                        style={{ background: "#004080", color: '#fff' }}
+                                        type="button"
+                                    >
+                                        Back
+                                    </Button>
+                                </NavLink>
+                            </div>
 
                             <Section title="Document Info">
                                 <LabelValue label="Pensioner ID" value={showPensionerDocument?.pensioner_id} />

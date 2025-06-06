@@ -51,7 +51,7 @@ export default function NetSalary() {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [ renderFunction, setRenderFunction ] = useState(() => null);
+    const [renderFunction, setRenderFunction] = useState(() => null);
     const [historyRecord, setHistoryRecord] = useState([]);
     const [tableHead, setTableHead] = useState([
         "Sr. No.",
@@ -66,12 +66,13 @@ export default function NetSalary() {
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
     const toggleHistoryModal = () => {
         setIsHistoryModalOpen(!isHistoryModalOpen)
+        if (isHistoryModalOpen) setHistoryRecord([]);
         handleClose();
     };
-    
+
     const getTableConfig = (type) => {
         switch (type) {
-            case "status":
+            case "NetSalary":
                 return {
                     head: [
                         "Sr. No.",
@@ -100,32 +101,33 @@ export default function NetSalary() {
                 };
 
             // You can add more like designation, pay scale, etc.
-            
+
             default:
                 return { head: [], renderRow: () => null };
         }
     };
 
-    // Status History handlers
+
     const handleHistoryStatus = (id) => {
-        console.log("Salary ID: ", id);
-        dispatch(viewNetSalary({id}));
+        handleClose();
+        dispatch(viewNetSalary(id)).then((res) => {
+          const history = res.payload?.history;
+            if (Array.isArray(history)) {
+          const config = getTableConfig("NetSalary");
+          setHistoryRecord(history);
+          setTableHead(config.head);
+          setRenderFunction(() => config.renderRow);
+          toggleHistoryModal();
+        }else {
+          setHistoryRecord([]);
+        } 
+        });
     };
-      
-    useEffect(() => {
-        if (netSalaryData && netSalaryData.history) {
-            const config = getTableConfig("status");
-            setHistoryRecord(netSalaryData?.history || []);
-            setTableHead(config.head);
-            setRenderFunction(() => config.renderRow); // <- use useState to hold render function
-            toggleHistoryModal();
-        }
-    }, [netSalaryData]);
-    
+
 
     useEffect(() => {
-        dispatch(fetchNetSalary({id: searchQuery, page, limit: rowsPerPage }));
-    }, [dispatch,searchQuery]);
+        dispatch(fetchNetSalary({ id: searchQuery, page, limit: rowsPerPage }));
+    }, [dispatch, searchQuery]);
 
 
     const handleSearchChange = (e) => {
@@ -215,7 +217,7 @@ export default function NetSalary() {
 
     const handleMenuClick = (event, row) => {
         setAnchorEl(event.currentTarget);
-       setSelectedRow(row);
+        setSelectedRow(row);
     };
 
     const handleView = (id) => {
@@ -225,7 +227,7 @@ export default function NetSalary() {
 
     const isValidAnchorEl = document.body.contains(anchorEl);
 
-   
+
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
@@ -261,7 +263,7 @@ export default function NetSalary() {
                                         </TableHead>
                                         <TableBody>
                                             {netSalary.map((row, idx) => (
-                                                <TableRow key={row.id}>                                           
+                                                <TableRow key={row.id}>
                                                     <TableCell>{row.month}</TableCell>
                                                     <TableCell>{row.year}</TableCell>
                                                     <TableCell>{row.processing_date}</TableCell>
@@ -274,7 +276,7 @@ export default function NetSalary() {
                                                         </IconButton>
                                                         <Menu
                                                             anchorEl={anchorEl}
-                                                            open={Boolean(anchorEl)}
+                                                            open={selectedRow === row}
                                                             onClose={handleClose}
                                                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                         >
@@ -283,7 +285,7 @@ export default function NetSalary() {
                                                             >
                                                                 <ViewIcon fontSize="small" /> View
                                                             </MenuItem>
-                                                            <MenuItem onClick={() =>  handleEdit(selectedRow)}>
+                                                            <MenuItem onClick={() => handleEdit(selectedRow)}>
                                                                 <EditIcon fontSize="small" /> Edit
                                                             </MenuItem>
                                                             <MenuItem onClick={() => handleHistoryStatus(row.id)}>

@@ -8,8 +8,8 @@ import {
   Divider,
   CircularProgress,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { NavLink, useParams } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
 import { fetchDearnessReliefShow } from '../../redux/slices/dearnessRelief';
 
 const LabelValue = ({ label, value }) => (
@@ -30,8 +30,10 @@ const Section = ({ title, children }) => (
 const ShowDearness = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const data = useSelector((state) => state.dearnessRelief.showDearness); 
+  const data = useSelector((state) => state.dearnessRelief.showDearness);
   const { loading } = useSelector((state) => state.dearnessRelief);
+  const { name } = useSelector((state) => state.auth.user.role);
+  
 
   useEffect(() => {
     dispatch(fetchDearnessReliefShow(id));
@@ -48,9 +50,19 @@ const ShowDearness = () => {
             </Box>
           ) : (
             <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-              <Typography variant="h4" fontWeight={600} mb={3}>
-                Dearness Relief Detail (ID: {data?.id})
-              </Typography>
+              <div className='d-flex justify-content-between align-items-center'>
+                <Typography variant="h4" fontWeight={600} >
+                  Dearness Relief Detail (ID: {data?.id})
+                </Typography>
+                <NavLink to={`/${name.toLowerCase()}/pensioner/dearness-relief`}>
+                  <Button
+                    style={{ background: "#004080", color: '#fff' }}
+                    type="button"
+                  >
+                    Back
+                  </Button>
+                </NavLink>
+              </div>
 
               <Section title="DR Information">
                 <LabelValue label="Effective From" value={data?.effective_from} />

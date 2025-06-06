@@ -258,7 +258,7 @@ export default function PensionDeduction() {
                   <TableBody>
                     {pension.map((row, idx) => (
                       <TableRow key={row.id}>
-                        <TableCell>{row.net_pension?.pensioner?.name}</TableCell>
+                        <TableCell>{row.net_pension?.pensioner?.first_name}</TableCell>
                         <TableCell>{row.net_pension?.pensioner?.ppo_no}</TableCell>
                         <TableCell>{row.commutation_amount ?? "NA"}</TableCell>
                         <TableCell>{row.income_tax ?? "NA"}</TableCell>

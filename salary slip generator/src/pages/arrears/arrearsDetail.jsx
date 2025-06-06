@@ -8,8 +8,8 @@ import {
     Divider,
     CircularProgress,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { NavLink, useParams } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
 import { showArrear } from '../../redux/slices/arrearsSlice';
 
 const LabelValue = ({ label, value }) => (
@@ -32,7 +32,7 @@ const ArrearsDetail = () => {
     const { id } = useParams();
     const data = useSelector((state) => state.arrears.arrear[0]);
     const { loading } = useSelector((state) => state.arrears);
-    
+    const { name } = useSelector((state) => state.auth.user.role);
 
     useEffect(() => {
         dispatch(showArrear(id));
@@ -49,9 +49,20 @@ const ArrearsDetail = () => {
                         </Box>
                     ) : (
                         <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-                            <Typography variant="h4" fontWeight={600} mb={3}>
-                                Arrear Details (Pensioner ID: {data?.pensioner_id})
-                            </Typography>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <Typography variant="h4" fontWeight={600} >
+                                    Arrear Details (Pensioner ID: {data?.pensioner_id})
+                                </Typography>
+
+                                <NavLink to={`/${name.toLowerCase()}/arrears`}>
+                                    <Button
+                                        style={{ background: "#004080", color: '#fff' }}
+                                        type="button"
+                                    >
+                                        Back
+                                    </Button>
+                                </NavLink>
+                            </div>
 
                             <Section title="Arrear Period">
                                 <LabelValue label="From Month" value={data?.from_month} />

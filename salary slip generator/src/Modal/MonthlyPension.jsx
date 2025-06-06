@@ -31,9 +31,15 @@ export default function MonthlyPensionModal({
 
   const validate = (values) => {
     const errors = {};
+    if (!values.pensioner_id) errors.pensioner_id = "Required";
     if (!values.pension_related_info_id) errors.pension_related_info_id = "Required";
+    if (!values.pensioner_bank_id) errors.pensioner_bank_id = "Required";
     if (!values.dr_id) errors.dr_id = "Required";
     if (!values.status) errors.status = "Required";
+    if (!values.month) errors.month = "Required";
+    if (!values.year) errors.year = "Required";
+    if (!values.processing_date) errors.processing_date = "Required";
+    if (!values.payment_date) errors.payment_date = "Required";
     return errors;
   };
 
@@ -82,12 +88,12 @@ export default function MonthlyPensionModal({
                 <Row >
                   <Col md="6">
                     <FormGroup>
-                      <Label for="pensioner_id">Pensioner</Label>
+                      <Label for="pensioner_id">Pensioner*</Label>
                       <Field as={Input} type="select" id="pensioner_id" name="pensioner_id" onClick={(e) => { setSelectedPensionerId(e.target.value) }}>
                         <option value="">Select Pensioner</option>
                         {pensioners?.map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name}-({p.ppo_no})
+                            {p.first_name}-({p.ppo_no})
                           </option>
                         ))}
                       </Field>
@@ -96,7 +102,7 @@ export default function MonthlyPensionModal({
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <Label for="pensioner_bank_id">Pensioner Bank</Label>
+                      <Label for="pensioner_bank_id">Pensioner Bank*</Label>
                       <Field as={Input} type="select" id="pensioner_bank_id" name="pensioner_bank_id" >
                         <option value="">Select Bank</option>
                         {filterBankdetail?.map(p => (
@@ -105,6 +111,7 @@ export default function MonthlyPensionModal({
                           </option>
                         ))}
                       </Field>
+                      <ErrorMessage name="pensioner_bank_id" component="div" className="text-danger" />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -113,7 +120,7 @@ export default function MonthlyPensionModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="pension_related_info_id">Pension Related Info</Label>
+                    <Label for="pension_related_info_id">Pension Related Info*</Label>
                     <Field as={Input} type="select" id="pension_related_info_id" name="pension_related_info_id" >
                       <option value="">Select Arrears</option>
                       {filterPensionRelated?.map(p => (
@@ -122,13 +129,14 @@ export default function MonthlyPensionModal({
                         </option>
                       ))}
                     </Field>
+                    <ErrorMessage name="pension_related_info_id" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
                     <Label for="dr_id">DR</Label>
                     <Field as={Input} type="select" id="dr_id" name="dr_id" >
-                      <option value="">Select Arrears</option>
+                      <option value="">Select Arrears*</option>
                       {dearness?.map(p => (
                         <option key={p.id} value={p.id}>
                             {p.dr_percentage}%
@@ -146,14 +154,16 @@ export default function MonthlyPensionModal({
                   <Row>
                     <Col md="6">
                       <FormGroup>
-                        <Label for="month">Month</Label>
+                        <Label for="month">Month*</Label>
                         <Field as={Input} id="month" name="month" placeholder="e.g., 05" />
+                        <ErrorMessage name="month" component="div" className="text-danger" />
                       </FormGroup>
                     </Col>
                     <Col md="6">
                       <FormGroup>
-                        <Label for="year">Year</Label>
+                        <Label for="year">Year*</Label>
                         <Field as={Input} id="year" name="year" placeholder="e.g., 2025" />
+                        <ErrorMessage name="year" component="div" className="text-danger" />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -161,14 +171,16 @@ export default function MonthlyPensionModal({
                   <Row>
                     <Col md="6">
                       <FormGroup>
-                        <Label for="processing_date">Processing Date</Label>
+                        <Label for="processing_date">Processing Date*</Label>
                         <Field as={Input} id="processing_date" name="processing_date" type="date" />
+                        <ErrorMessage name="processing_date" component="div" className="text-danger" />
                       </FormGroup>
                     </Col>
                     <Col md="6">
                       <FormGroup>
-                        <Label for="payment_date">Payment Date</Label>
+                        <Label for="payment_date">Payment Date*</Label>
                         <Field as={Input} id="payment_date" name="payment_date" type="date" />
+                        <ErrorMessage name="payment_date" component="div" className="text-danger" />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -178,7 +190,7 @@ export default function MonthlyPensionModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="status">Status</Label>
+                    <Label for="status">Status*</Label>
                     <Field as={Input} type="select" id="status" name="status">
                       <option value="">Select</option>
                       <option value="Pending">Pending</option>
@@ -190,7 +202,7 @@ export default function MonthlyPensionModal({
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="remarks">Remarks</Label>
+                    <Label for="remarks">Remarks (if any)</Label>
                     <Field as={Input} id="remarks" name="remarks" />
                   </FormGroup>
                 </Col>

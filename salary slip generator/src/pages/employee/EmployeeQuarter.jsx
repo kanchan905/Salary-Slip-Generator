@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { CardBody, CardHeader, Card } from 'reactstrap';
+import { CardBody, CardHeader, Card, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { createEmployeeQuarter, fetchEmployeeQuarterList, fetchEmployeeQuarterShow, fetchQuarterList, updateEmployeeQuarter } from '../../redux/slices/quarterSlice'
 import QuarterAllocateModal from 'Modal/QuarterAllocateModal';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/material';
@@ -27,10 +27,10 @@ function EmployeeQuarter() {
         date_of_allotment: '',
         date_of_occupation: '',
         date_of_leaving: '',
-        is_occupied:'',
+        is_occupied: '',
         is_current: false,
     });
-    const [ renderFunction, setRenderFunction ] = React.useState(() => null);
+    const [renderFunction, setRenderFunction] = React.useState(() => null);
     const [historyRecord, setHistoryRecord] = React.useState([]);
     const [tableHead, setTableHead] = React.useState([
         "Sr. No.",
@@ -47,17 +47,18 @@ function EmployeeQuarter() {
         setHistoryRecord([]);
     };
     const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
-    
+
     const updateStatus = useSelector((state) => state.quarter.updateStatus);
     const loading = useSelector((state) => state.quarter.loading);
     const error = useSelector((state) => state.quarter.error);
-    const { quarterList} = useSelector((state) => state.quarter);
-    
+    const { quarterList } = useSelector((state) => state.quarter);
+    const { name } = useSelector((state) => state.auth.user.role);
+
 
 
     useEffect(() => {
         dispatch(fetchEmployeeQuarterList({ page: currentPage, limit: PAGE_SIZE }));
-        dispatch(fetchQuarterList({page:'',limit:''}))
+        dispatch(fetchQuarterList({ page: '', limit: '' }))
     }, [updateStatus, dispatch, currentPage,]);
 
 
@@ -69,7 +70,7 @@ function EmployeeQuarter() {
                 date_of_allotment: selectedQuarter.date_of_allotment || '',
                 date_of_occupation: selectedQuarter.date_of_occupation || '',
                 date_of_leaving: selectedQuarter.date_of_leaving || '',
-                is_occupied:selectedQuarter.is_occupied || '',
+                is_occupied: selectedQuarter.is_occupied || '',
                 is_current: !!selectedQuarter.is_current,
             });
             setEditId(id);
@@ -89,7 +90,7 @@ function EmployeeQuarter() {
             date_of_allotment: '',
             date_of_occupation: '',
             date_of_leaving: '',
-            is_occupied:'',
+            is_occupied: '',
             is_current: false,
         });
         setModalOpen(true);
@@ -145,28 +146,28 @@ function EmployeeQuarter() {
     const getTableConfig = (type) => {
         switch (type) {
             case "quarter":
-            return {
-                head: [
-                    "Sr. No.",
-                    "Quarter No.",
-                    "Allotment Date",
-                    "Occupation Date",
-                    "Leaving Date",
-                    "Added By",
-                    "Edited By"
-                ],
-                renderRow: (record, index) => (
-                    <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{record?.quarter_no ?? "-"}</td>
-                    <td>{record?.date_of_allotment ?? "-"}</td>
-                    <td>{record?.date_of_occupation ?? "-"}</td>
-                    <td>{record?.date_of_leaving ?? "-"}</td>
-                    <td>{record?.added_by?.name || "NA"}</td>
-                    <td>{record?.edited_by?.name || "NA"}</td>
-                    </tr>
-                ),
-            };
+                return {
+                    head: [
+                        "Sr. No.",
+                        "Quarter No.",
+                        "Allotment Date",
+                        "Occupation Date",
+                        "Leaving Date",
+                        "Added By",
+                        "Edited By"
+                    ],
+                    renderRow: (record, index) => (
+                        <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{record?.quarter_no ?? "-"}</td>
+                            <td>{record?.date_of_allotment ?? "-"}</td>
+                            <td>{record?.date_of_occupation ?? "-"}</td>
+                            <td>{record?.date_of_leaving ?? "-"}</td>
+                            <td>{record?.added_by?.name || "NA"}</td>
+                            <td>{record?.edited_by?.name || "NA"}</td>
+                        </tr>
+                    ),
+                };
             // You can add more like designation, pay scale, etc.
             default:
                 return null;
@@ -177,17 +178,17 @@ function EmployeeQuarter() {
         setHistoryRecord([]);
         setShouldOpenHistory(true);
         dispatch(fetchEmployeeQuarterShow(id))
-        if ( shouldOpenHistory && employeeQuarterShow?.history) {
+        if (shouldOpenHistory && employeeQuarterShow?.history) {
             const config = getTableConfig("quarter");
             setHistoryRecord(employeeQuarterShow?.history);
             setTableHead(config.head);
             setRenderFunction(() => config.renderRow);
             setIsHistoryModalOpen(true);
             setShouldOpenHistory(false);
-        } 
+        }
     }
 
-    
+
 
     return (
         <>
@@ -197,12 +198,22 @@ function EmployeeQuarter() {
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h3>Quarter Details</h3>
-                            <button
-                                style={{ background: "#004080" }}
-                                className="btn btn-primary"
-                                onClick={handleCreate}>
-                                Allocate
-                            </button>
+                            <div>
+                                <button
+                                    style={{ background: "#004080" }}
+                                    className="btn btn-primary"
+                                    onClick={handleCreate}>
+                                    Allocate
+                                </button>
+                                <NavLink to={`/${name.toLowerCase()}/employee-management`}>
+                                    <Button
+                                        style={{ background: "#004080", color: '#fff' }}
+                                        type="button"
+                                    >
+                                        Back
+                                    </Button>
+                                </NavLink>
+                            </div>
                         </div>
                     </CardHeader>
                     <CardBody>
@@ -215,13 +226,13 @@ function EmployeeQuarter() {
                                 <table className="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th style={{fontWeight: "bolder"}}>Sr.No.</th>
-                                            <th style={{fontWeight: "bolder"}}>Quarter Number</th>
-                                            <th style={{fontWeight: "bolder"}}>Allotment Date</th>
-                                            <th style={{fontWeight: "bolder"}}>Occupation Date</th>
-                                            <th style={{fontWeight: "bolder"}}>Leaving Date</th>
-                                            <th style={{fontWeight: "bolder"}}>Status</th>
-                                            <th style={{fontWeight: "bolder"}}>Actions</th>
+                                            <th style={{ fontWeight: "bolder" }}>Sr.No.</th>
+                                            <th style={{ fontWeight: "bolder" }}>Quarter Number</th>
+                                            <th style={{ fontWeight: "bolder" }}>Allotment Date</th>
+                                            <th style={{ fontWeight: "bolder" }}>Occupation Date</th>
+                                            <th style={{ fontWeight: "bolder" }}>Leaving Date</th>
+                                            <th style={{ fontWeight: "bolder" }}>Status</th>
+                                            <th style={{ fontWeight: "bolder" }}>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -239,14 +250,14 @@ function EmployeeQuarter() {
                                                         className="btn btn-sm btn-info"
                                                         onClick={() => handleUpdate(q.id)}
                                                     >
-                                                        <EditIcon/>
+                                                        <EditIcon />
                                                     </button>
                                                     <button
                                                         title='History'
                                                         className="btn btn-sm btn-warning"
                                                         onClick={() => handleHistoryStatus(q.id)}
                                                     >
-                                                        <HistoryIcon/>
+                                                        <HistoryIcon />
                                                     </button>
                                                 </td>
                                             </tr>

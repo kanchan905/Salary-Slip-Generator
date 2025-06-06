@@ -80,12 +80,7 @@ export default function NetPension() {
         )
     });
 
-    // Status History handlers
-    // const handleHistoryPension = (id) => {
-    //     setShowHistory(true);
-    //     dispatch(showNetPension({ id }));
-    // };
-
+    
     const handleHistoryPension = (id) => {
         handleClose();
         dispatch(showNetPension({ id })).then((res) => {
@@ -103,18 +98,6 @@ export default function NetPension() {
         });
     };
 
-
-    // useEffect(() => {
-    //     if (showHistory && netPensionData?.history?.length) {
-    //         const config = getPensionHistoryTableConfig();
-    //         setTableHead(config.head);
-    //         setRenderFunction(() => config.renderRow);
-    //         setHistoryRecord(netPensionData.history);
-    //         setIsHistoryModalOpen(true);
-    //         handleClose()
-    //         setShowHistory(false);
-    //     }
-    // }, [netPensionData, showHistory]);
 
 
     useEffect(() => {
@@ -250,9 +233,10 @@ export default function NetPension() {
                                                         </IconButton>
                                                         <Menu
                                                             anchorEl={anchorEl}
-                                                            open={Boolean(anchorEl)}
+                                                            open={selectedRow === row}
                                                             onClose={handleClose}
                                                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                                            
                                                         >
                                                             <MenuItem
                                                                 onClick={() => handleView(row.id)}

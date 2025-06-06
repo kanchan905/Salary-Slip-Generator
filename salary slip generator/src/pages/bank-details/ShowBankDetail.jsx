@@ -8,8 +8,8 @@ import {
     Divider,
     CircularProgress,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { NavLink, useParams } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
 import { fetchBankShow } from '../../redux/slices/bankSlice';
 
 
@@ -31,8 +31,9 @@ const Section = ({ title, children }) => (
 const ShowBankDetail = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
-    const data = useSelector((state) => state.bankdetail.bankShow); 
+    const data = useSelector((state) => state.bankdetail.bankShow);
     const { loading } = useSelector((state) => state.bankdetail);
+    const { name } = useSelector((state) => state.auth.user.role);
 
     useEffect(() => {
         dispatch(fetchBankShow(id));
@@ -49,10 +50,20 @@ const ShowBankDetail = () => {
                         </Box>
                     ) : (
                         <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-                            <Typography variant="h4" fontWeight={600} mb={3}>
-                                Bank Details (Pensioner ID: {data?.pensioner_id})
-                            </Typography>
+                            <div className='d-flex justify-content-between align-items-center'>
+                                <Typography variant="h4" fontWeight={600} >
+                                    Bank Details (Pensioner ID: {data?.pensioner_id})
+                                </Typography>
 
+                                <NavLink to={`/${name.toLowerCase()}/pensioner/bank-detail`}>
+                                    <Button
+                                        style={{ background: "#004080", color: '#fff' }}
+                                        type="button"
+                                    >
+                                        Back
+                                    </Button>
+                                </NavLink>
+                            </div>
                             <Section title="Bank Information">
                                 <LabelValue label="Bank Name" value={data?.bank_name} />
                                 <LabelValue label="Branch Name" value={data?.branch_name} />

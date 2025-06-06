@@ -401,21 +401,25 @@ const SalaryProcessing = () => {
                             </Grid>
 
                             <Grid size={{ xs: 4 }}>
+                                <TextField name="year" label="Year*" value={formData.year} fullWidth onChange={handleChange} />
+                            </Grid>
+
+                            <Grid size={{ xs: 4 }}>
                                 {
                                     filterPayStructure.length > 0 && filterPayStructure[0]?.employee?.npa_eligibility ? (
-                                        <TextField select required name="npa_rate_id" className='text-capitalize' label="NPA RATE" value={formData.npa_rate_id} fullWidth onChange={handleChange} >
+                                        <TextField select required name="npa_rate_id" className='text-capitalize' label="NPA RATE%" value={formData.npa_rate_id} fullWidth onChange={handleChange} >
                                             {
                                                 Array.isArray(npaList)
                                                     ? npaList.map((npa) => (
                                                         <MenuItem key={npa.id} value={npa.id}>
-                                                            Rate {npa.rate_percentage}%
+                                                            {npa.rate_percentage}
                                                         </MenuItem>
                                                     ))
                                                     : <MenuItem value="">No NPA Details Available</MenuItem>
                                             }
                                         </TextField>
                                     ) : (
-                                        <TextField name="npa_rate_id" label="NPA RATE" value={formData.npa_rate_id} fullWidth onChange={handleChange} />
+                                        <TextField name="npa_rate_id" label="NPA RATE*" value={formData.npa_rate_id} fullWidth onChange={handleChange} />
                                     )
                                 }
                             </Grid>
@@ -423,12 +427,12 @@ const SalaryProcessing = () => {
                             <Grid size={{ xs: 4 }}>
                                 {
                                     filterPayStructure.length > 0 && filterPayStructure[0]?.employee?.hra_eligibility ? (
-                                        <TextField select required name="hra_rate_id" className='text-capitalize' label="HRA RATE" value={formData.hra_rate_id} fullWidth onChange={handleChange} >
+                                        <TextField select required name="hra_rate_id" className='text-capitalize' label="HRA RATE%*" value={formData.hra_rate_id} fullWidth onChange={handleChange} >
                                             {
                                                 Array.isArray(hraList)
                                                     ? hraList.map((hra) => (
                                                         <MenuItem key={hra.id} value={hra.id}>
-                                                            City_class {hra.city_class} && Rate {hra.rate_percentage}%
+                                                            {hra.rate_percentage}
                                                         </MenuItem>
                                                     ))
                                                     : <MenuItem value="">No hra Details Available</MenuItem>
@@ -441,12 +445,12 @@ const SalaryProcessing = () => {
                             </Grid>
 
                             <Grid size={{ xs: 4 }}>
-                                <TextField select required name="da_rate_id" className='text-capitalize' label="DA RATE" value={formData.da_rate_id} fullWidth onChange={handleChange} >
+                                <TextField select required name="da_rate_id" className='text-capitalize' label="DA RATE%" value={formData.da_rate_id} fullWidth onChange={handleChange} >
                                     {
                                         Array.isArray(daList)
                                             ? daList.map((da) => (
                                                 <MenuItem key={da.id} value={da.id}>
-                                                    Rate {da.rate_percentage}%
+                                                     {da.rate_percentage}
                                                 </MenuItem>
                                             ))
                                             : <MenuItem value="">No da Details Available</MenuItem>
@@ -457,7 +461,7 @@ const SalaryProcessing = () => {
                             <Grid size={{ xs: 4 }}>
                                 {
                                     filterPayStructure.length > 0 && filterPayStructure[0]?.employee?.uniform_allowance_eligibility ? (
-                                        <TextField select required name="uniform_rate_id" className='text-capitalize' label="UNIFORM RATE" value={formData.uniform_rate_id} fullWidth onChange={handleChange} >
+                                        <TextField select required name="uniform_rate_id" className='text-capitalize' label="UNIFORM RATE*" value={formData.uniform_rate_id} fullWidth onChange={handleChange} >
                                             {
                                                 Array.isArray(uniformList)
                                                     ? uniformList.map((uniform) => (
@@ -474,9 +478,6 @@ const SalaryProcessing = () => {
                                 }
                             </Grid>
 
-                            <Grid size={{ xs: 4 }}>
-                                <TextField name="year" label="Year" value={formData.year} fullWidth onChange={handleChange} />
-                            </Grid>
                             <Grid size={{ xs: 4 }}>
                                 <TextField name="pay_plus_npa" label="PAY PLUS NPA Amount" value={formData.pay_plus_npa} fullWidth onChange={handleChange} />
                             </Grid>
@@ -501,7 +502,7 @@ const SalaryProcessing = () => {
                             <Grid item xs={4}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker
-                                        label="Processing Date"
+                                        label="Processing Date*"
                                         name="processing_date"
                                         value={formData.processing_date ? dayjs(formData.processing_date) : null}
                                         onChange={(date) => {
@@ -516,7 +517,7 @@ const SalaryProcessing = () => {
                             <Grid item xs={4}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker
-                                        label="Payment Date"
+                                        label="Payment Date*"
                                         name="payment_date"
                                         value={formData.payment_date ? dayjs(formData.payment_date) : null}
                                         onChange={(date) => {
@@ -536,58 +537,58 @@ const SalaryProcessing = () => {
                 return (
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="income_tax" label="Income Tax" fullWidth onChange={handleChange} value={deductionForm.income_tax ?? ''} />
+                            <TextField name="income_tax" label="Income Tax (if any)" fullWidth onChange={handleChange} value={deductionForm.income_tax ?? ''} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="professional_tax" label="Professional Tax" fullWidth onChange={handleChange} value={deductionForm.professional_tax} />
+                            <TextField name="professional_tax" label="Professional Tax (if any)" fullWidth onChange={handleChange} value={deductionForm.professional_tax} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="license_fee" label="License Fee" fullWidth onChange={handleChange} value={deductionForm.license_fee} />
+                            <TextField name="license_fee" label="License Fee (if any)" fullWidth onChange={handleChange} value={deductionForm.license_fee} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="nfch_donation" label="NFCH Donation" fullWidth onChange={handleChange} value={deductionForm.nfch_donation} />
+                            <TextField name="nfch_donation" label="NFCH Donation (if any)" fullWidth onChange={handleChange} value={deductionForm.nfch_donation} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="gpf" label="gpf" fullWidth onChange={handleChange} value={deductionForm.gpf} />
+                            <TextField name="gpf" label="gpf (if any)" fullWidth onChange={handleChange} value={deductionForm.gpf} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="transport_allowance_recovery" label="Transport Allowance Recovery" fullWidth onChange={handleChange} value={deductionForm.transport_allowance_recovery} />
+                            <TextField name="transport_allowance_recovery" label="Transport Allowance Recovery (if any)" fullWidth onChange={handleChange} value={deductionForm.transport_allowance_recovery} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="hra_recovery" label="HRA Recovery" fullWidth onChange={handleChange} value={deductionForm.hra_recovery} />
+                            <TextField name="hra_recovery" label="HRA Recovery (if any)" fullWidth onChange={handleChange} value={deductionForm.hra_recovery} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="computer_advance" label="Computer Advance" fullWidth onChange={handleChange} value={deductionForm.computer_advance} />
+                            <TextField name="computer_advance" label="Computer Advance (if any)" fullWidth onChange={handleChange} value={deductionForm.computer_advance} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="computer_advance_installment" label="computer Advance Installment" fullWidth onChange={handleChange} value={deductionForm.computer_advance_installment} />
+                            <TextField name="computer_advance_installment" label="computer Advance Installment (if any)" fullWidth onChange={handleChange} value={deductionForm.computer_advance_installment} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="computer_advance_inst_no" label="Computer Advance Inst No" fullWidth onChange={handleChange} value={deductionForm.computer_advance_inst_no} />
+                            <TextField name="computer_advance_inst_no" label="Computer Advance Inst No (if any)" fullWidth onChange={handleChange} value={deductionForm.computer_advance_inst_no} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="computer_advance_balance" label="computer_advance_balance" fullWidth onChange={handleChange} value={deductionForm.computer_advance_balance} />
+                            <TextField name="computer_advance_balance" label="computer_advance_balance (if any)" fullWidth onChange={handleChange} value={deductionForm.computer_advance_balance} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="employee_contribution_10" label="Employee Contribution_10" fullWidth onChange={handleChange} value={deductionForm.employee_contribution_10} />
+                            <TextField name="employee_contribution_10" label="Employee Contribution_10 (if any)" fullWidth onChange={handleChange} value={deductionForm.employee_contribution_10} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="govt_contribution_14_recovery" label="GOVT Contribution_14 Recovery" fullWidth onChange={handleChange} value={deductionForm.govt_contribution_14_recovery} />
+                            <TextField name="govt_contribution_14_recovery" label="GOVT Contribution_14 Recovery (if any)" fullWidth onChange={handleChange} value={deductionForm.govt_contribution_14_recovery} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="dies_non_recovery" label="Dies NON Recovery" fullWidth onChange={handleChange} value={deductionForm.dies_non_recovery} />
+                            <TextField name="dies_non_recovery" label="Dies NON Recovery (if any)" fullWidth onChange={handleChange} value={deductionForm.dies_non_recovery} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="computer_advance_interest" label="Computer Advance Interest" fullWidth onChange={handleChange} value={deductionForm.computer_advance_interest} />
+                            <TextField name="computer_advance_interest" label="Computer Advance Interest (if any)" fullWidth onChange={handleChange} value={deductionForm.computer_advance_interest} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="pay_recovery" label="Pay Recovery" fullWidth onChange={handleChange} value={deductionForm.pay_recovery} />
+                            <TextField name="pay_recovery" label="Pay Recovery (if any)" fullWidth onChange={handleChange} value={deductionForm.pay_recovery} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="nps_recovery" label="NPS Recovery" fullWidth onChange={handleChange} value={deductionForm.nps_recovery} />
+                            <TextField name="nps_recovery" label="NPS Recovery (if any)" fullWidth onChange={handleChange} value={deductionForm.nps_recovery} />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField name="lic" label="lic" fullWidth onChange={handleChange} value={deductionForm.lic} />
+                            <TextField name="lic" label="lic (if any)" fullWidth onChange={handleChange} value={deductionForm.lic} />
                         </Grid>
                         {
                             filterPayStructure.length > 0 && filterPayStructure[0].employee?.credit_society_member ? (

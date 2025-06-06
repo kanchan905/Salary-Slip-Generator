@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import { showPensioner } from '../../redux/slices/pensionerSlice';
-import { useParams } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { NavLink, useParams } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
 
 const LabelValue = ({ label, value }) => (
     <Grid item xs={12} sm={6} md={4}>
@@ -36,6 +36,7 @@ const PensionerDetail = () => {
     const { id } = useParams();
     const data = useSelector((state) => state.pensioner.pensioner);
     const { loading } = useSelector((state) => state.pensioner);
+    const { name } = useSelector((state) => state.auth.user.role);
 
     useEffect(() => {
         dispatch(showPensioner(id));
@@ -45,21 +46,31 @@ const PensionerDetail = () => {
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
             <Container className="mt--7 mb-7" fluid>
-                 <Box sx={{ position: 'relative', mt: -15, p: 3 }}>
+                <Box sx={{ position: 'relative', mt: -15, p: 3 }}>
                     {loading ? (
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <CircularProgress />
                         </Box>
                     ) : (
                         <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-                            <Box display="flex" alignItems="center" gap={2} mb={3}>
-                                <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56 }}>
+                            <Box display="flex" alignItems="center" gap={2} mb={3} justifyContent={'space-between'}>
+                                <Box className='d-flex justify-content-between align-items-center'>
+                                <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56,marginRight:4 }}>
                                     <PersonIcon fontSize="large" />
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="h4" fontWeight={600}>{data?.name}</Typography>
+                                    <Typography variant="h4" fontWeight={600}>{data?.first_name}</Typography>
                                     <Typography variant="subtitle1" color="text.secondary">PPO No: {data?.ppo_no}</Typography>
                                 </Box>
+                                </Box>
+                                <NavLink to={`/${name.toLowerCase()}/pensioners`}>
+                                    <Button
+                                        style={{ background: "#004080", color: '#fff' }}
+                                        type="button"
+                                    >
+                                        Back
+                                    </Button>
+                                </NavLink>
                             </Box>
 
                             <Section title="Basic Information">

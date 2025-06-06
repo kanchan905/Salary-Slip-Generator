@@ -10,9 +10,9 @@ import {
     CircularProgress,
 } from '@mui/material';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { useParams } from 'react-router-dom';
-import { Container } from 'reactstrap';
-import { monthlyPensionDetailShow } from '../../redux/slices/monthlyPensionSlice';  
+import { NavLink, useParams } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
+import { monthlyPensionDetailShow } from '../../redux/slices/monthlyPensionSlice';
 
 const LabelValue = ({ label, value }) => (
     <Grid item xs={12} sm={6} md={4}>
@@ -34,6 +34,7 @@ const ShowMonthlyPension = () => {
     const { id } = useParams();
     const data = useSelector((state) => state.monthlypension.showMonthyPension);
     const loading = useSelector((state) => state.monthlypension.loading);
+    const { name } = useSelector((state) => state.auth.user.role);
 
     useEffect(() => {
         dispatch(monthlyPensionDetailShow(id));
@@ -50,14 +51,22 @@ const ShowMonthlyPension = () => {
                         </Box>
                     ) : (
                         <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-                            <Box display="flex" alignItems="center" gap={2} mb={3}>
-                                <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56 }}>
+                            <Box display="flex" alignItems="center" gap={2} mb={3} justifyContent={'end'}>
+                                {/* <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56 }}>
                                     <MonetizationOnIcon fontSize="large" />
                                 </Avatar>
                                 <Box>
                                     <Typography variant="h4" fontWeight={600}>Monthly Pension Details</Typography>
                                     <Typography variant="subtitle1" color="text.secondary">Status: {data?.status}</Typography>
-                                </Box>
+                                </Box> */}
+                                <NavLink to={`/${name.toLowerCase()}/pensioner/monthly-pension`}>
+                                    <Button
+                                        style={{ background: "#004080", color: '#fff' }}
+                                        type="button"
+                                    >
+                                        Back
+                                    </Button>
+                                </NavLink>
                             </Box>
 
                             <Section title="Pension Components">

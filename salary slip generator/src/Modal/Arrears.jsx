@@ -142,13 +142,13 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="pensioner_id">Pensioner ID</Label>
+                    <Label for="pensioner_id">Pensioner ID*</Label>
                     {/* <Field name="pensioner_id" className="form-control" /> */}
                     <Field as={Input} type="select" id="pensioner_id" name="pensioner_id" disabled={arrearToEdit !== id}>
                       <option value="">Select Pensioner</option>
                       {pensioners?.map(p => (
                         <option key={p.id} value={p.id}>
-                          {p.name}-{(p.ppo)}
+                          {p.first_name}-{(p.ppo_no)}
                         </option>
                       ))}
                     </Field>
@@ -161,7 +161,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="from_month">From Month</Label>
+                    <Label for="from_month">From Month*</Label>
                     <Field name="from_month" type="date" className="form-control" />
                     <ErrorMessage
                       name="from_month"
@@ -175,7 +175,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="to_month">To Month</Label>
+                    <Label for="to_month">To Month*</Label>
                     <Field name="to_month" type="date" className="form-control" />
                     <ErrorMessage
                       name="to_month"
@@ -186,7 +186,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="payment_month">Payment Month</Label>
+                    <Label for="payment_month">Payment Month*</Label>
                     <Field
                       name="payment_month"
                       type="date"
@@ -204,7 +204,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="basic_arrear">Basic Arrear</Label>
+                    <Label for="basic_arrear">Basic Arrear*</Label>
                     <Field
                       name="basic_arrear"
                       type="number"
@@ -220,7 +220,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
 
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="additional_arrear">Additional Arrear</Label>
+                    <Label for="additional_arrear">Additional Arrear*</Label>
                     <Field
                       name="additional_arrear"
                       type="number"
@@ -238,7 +238,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="dr_percentage">DR Percentage</Label>
+                    <Label for="dr_percentage">DR Percentage*</Label>
                     <Field as={Input} type="select" id="dr_percentage" name="dr_percentage" >
                       <option value="">Select DR</option>
                       {dearness?.map(p => (
@@ -257,7 +257,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
 
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="dr_arrear">DR Arrear</Label>
+                    <Label for="dr_arrear">DR Arrear*</Label>
                     <Field
                       name="dr_arrear"
                       type="number"
@@ -275,7 +275,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="total_arrear">Total Arrear</Label>
+                    <Label for="total_arrear">Total Arrear*</Label>
                     <Field
                       name="total_arrear"
                       type="number"
@@ -290,7 +290,7 @@ export default function ArrearsFormModal({ isOpen, toggle, id, pensioners, dearn
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="remarks">Remarks</Label>
+                    <Label for="remarks">Remarks (if applicable)</Label>
                     <Field name="remarks" className="form-control" />
                     <ErrorMessage
                       name="remarks"

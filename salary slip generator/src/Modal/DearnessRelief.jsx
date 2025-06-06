@@ -35,14 +35,14 @@ export default function DearnessReliefModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="effective_from">Effective From</Label>
+                    <Label for="effective_from">Effective From*</Label>
                     <Field as={Input} id="effective_from" name="effective_from" type="date" />
                     <ErrorMessage name="effective_from" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="effective_to">Effective To</Label>
+                    <Label for="effective_to">Effective To*</Label>
                     <Field as={Input} id="effective_to" name="effective_to" type="date" />
                     <ErrorMessage name="effective_to" component="div" className="text-danger" />
                   </FormGroup>
@@ -51,7 +51,7 @@ export default function DearnessReliefModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="dr_percentage">DR Percentage</Label>
+                    <Label for="dr_percentage">DR Percentage*</Label>
                     <Field as={Input} type="select" id="dr_percentage" name="dr_percentage" >
                       <option value="">Select DR</option>
                       {dearness?.map(p => (

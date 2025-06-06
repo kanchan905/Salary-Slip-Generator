@@ -278,7 +278,7 @@ export default function BankDetails() {
                   <TableBody>
                     {bankdetails.map((row, idx) => (
                       <TableRow key={row.id}>                   
-                        <TableCell>{row.pensioner?.name}</TableCell>
+                        <TableCell>{row.pensioner?.first_name}</TableCell>
                         <TableCell>{row.bank_name}</TableCell>
                         <TableCell>{row.branch_name}</TableCell>
                         <TableCell>{row.account_no}</TableCell>

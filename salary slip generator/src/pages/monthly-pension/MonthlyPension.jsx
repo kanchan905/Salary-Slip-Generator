@@ -274,7 +274,7 @@ export default function MonthlyPension() {
                       {monthlyPension && monthlyPension.length > 0 ? (
                         monthlyPension.map((row, idx) => (
                           <TableRow key={row.id}>
-                            <TableCell>{row?.net_pension?.pensioner?.name ?? "NA"}</TableCell>
+                            <TableCell>{row?.net_pension?.pensioner?.first_name ?? "NA"}</TableCell>
                             <TableCell>{row?.net_pension?.pensioner?.ppo_no ?? "NA"}</TableCell>
                             <TableCell>{row.basic_pension ?? "NA"}</TableCell>
                             <TableCell>{row.net_pension?.net_pension ?? "NA"}</TableCell>

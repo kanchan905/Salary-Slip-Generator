@@ -10,8 +10,8 @@ import {
     CircularProgress,
 } from '@mui/material';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { useParams } from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { NavLink, useParams } from 'react-router-dom';
+import { Button, Container } from 'reactstrap';
 import { showDeduction } from '../../redux/slices/deductionSlice';
 
 const LabelValue = ({ label, value }) => (
@@ -33,11 +33,13 @@ const ShowPensionDeduction = () => {
     const dispatch = useDispatch();
     const { id } = useParams();
     const { deduction, loading } = useSelector((state) => state.deduction);
+    const { name } = useSelector((state) => state.auth.user.role);
 
     useEffect(() => {
         dispatch(showDeduction(id));
     }, [dispatch, id]);
 
+    console.log(deduction)
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
@@ -49,14 +51,24 @@ const ShowPensionDeduction = () => {
                         </Box>
                     ) : (
                         <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
-                            <Box display="flex" alignItems="center" gap={2} mb={3}>
-                                <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56 }}>
-                                    <MonetizationOnIcon fontSize="large" />
-                                </Avatar>
-                                <Box>
-                                    <Typography variant="h4" fontWeight={600}>Pension Deduction ID: {deduction?.id}</Typography>
-                                    <Typography variant="subtitle1" color="text.secondary">Net Pension ID: {deduction?.net_pension_id}</Typography>
-                                </Box>
+                            <Box display="flex" alignItems="center" gap={2} mb={3} justifyContent={'end'}>
+                                {/* <div className='d-flex justify-content-between align-items-center'>
+                                    <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56 }}>
+                                        <MonetizationOnIcon fontSize="large" />
+                                    </Avatar>
+                                    <Box>
+                                        <Typography variant="h4" fontWeight={600}>{deduction?.net_pension?.pensioner?.first_name}</Typography>
+                                        <Typography variant="subtitle1" color="text.secondary">PPO No: {deduction?.net_pension?.pensioner?.ppo_no}</Typography>
+                                    </Box>
+                                </div> */}
+                                <NavLink to={`/${name.toLowerCase()}/pensioner/pension-deduction`}>
+                                    <Button
+                                        style={{ background: "#004080", color: '#fff' }}
+                                        type="button"
+                                    >
+                                        Back
+                                    </Button>
+                                </NavLink>
                             </Box>
 
                             <Section title="Deduction Breakdown">

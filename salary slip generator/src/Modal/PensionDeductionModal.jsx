@@ -23,10 +23,6 @@ export default function PensionDeductionModal({
   const validate = (values) => {
     const errors = {};
     if (!values.net_pension_id) errors.net_pension_id = "Required";
-    if (!values.income_tax) errors.income_tax = "Required";
-    if (!values.recovery) errors.recovery = "Required";
-    if (!values.other) errors.other = "Required";
-    if (!values.description) errors.description = "Required"
     return errors;
   };
   const dispatch = useDispatch();
@@ -48,7 +44,7 @@ export default function PensionDeductionModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="net_pension_id">Net Pension</Label>
+                    <Label for="net_pension_id">Net Pension*</Label>
                     <Field as={Input} id="net_pension_id" name="net_pension_id" type="select" disabled={ formMode === "edit" ? true : false }>
                       <option value="">Select</option>
                     {
@@ -63,7 +59,7 @@ export default function PensionDeductionModal({
                 </Col>
                 <Col md="6">
                  <FormGroup>
-                    <Label for="income_tax">Income Tax</Label>
+                    <Label for="income_tax">Income Tax (if any)</Label>
                     <Field as={Input} type="number" name="income_tax" id="income_tax"/>
                     <ErrorMessage name="income_tax" component="div" className="text-danger" />
                   </FormGroup>
@@ -72,21 +68,21 @@ export default function PensionDeductionModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="recovery">Recovery</Label>
+                    <Label for="recovery">Recovery (if any)</Label>
                     <Field as={Input} id="recovery" name="recovery" type="number" />
                     <ErrorMessage name="recovery" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="other">Other</Label>
+                    <Label for="other">Other (if any)</Label>
                     <Field as={Input} id="other" name="other" type="number" />
                     <ErrorMessage name="other" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="12">
                   <FormGroup>
-                    <Label for="description">Description</Label>
+                    <Label for="description">Description (if any)</Label>
                     <Field as={Input} id="description" name="description" type="text"/>
                     <ErrorMessage name="description" component="div" className="text-danger" />
                   </FormGroup>

@@ -51,7 +51,7 @@ export default function PensionDocumentModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="pensioner_id">Pensioner</Label>
+                    <Label for="pensioner_id">Pensioner*</Label>
                     <Input
                       type="select"
                       name="pensioner_id"
@@ -71,7 +71,7 @@ export default function PensionDocumentModal({
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="document_type">Document Type</Label>
+                    <Label for="document_type">Document Type*</Label>
                     <Input type="select" name="document_type" value={values.document_type} onChange={(e) => setFieldValue("document_type", e.target.value)}>
                       <option value="">Select</option>
                       <option value="PAN Card">PAN Card</option>
@@ -87,14 +87,14 @@ export default function PensionDocumentModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="document_number">Document Number</Label>
+                    <Label for="document_number">Document Number*</Label>
                     <Input name="document_number" value={values.document_number} onChange={(e) => setFieldValue("document_number", e.target.value)} />
                     <ErrorMessage name="document_number" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="issue_date">Issue Date</Label>
+                    <Label for="issue_date">Issue Date*</Label>
                     <Input type="date" name="issue_date" value={values.issue_date} onChange={(e) => setFieldValue("issue_date", e.target.value)} />
                     <ErrorMessage name="issue_date" component="div" className="text-danger" />
                   </FormGroup>
@@ -103,7 +103,7 @@ export default function PensionDocumentModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="expiry_date">Expiry Date</Label>
+                    <Label for="expiry_date">Expiry Date*</Label>
                     <Input type="date" name="expiry_date" value={values.expiry_date} onChange={(e) => setFieldValue("expiry_date", e.target.value)} />
                     <ErrorMessage name="expiry_date" component="div" className="text-danger" />
                   </FormGroup>

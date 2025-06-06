@@ -52,7 +52,7 @@ export default function BankFormModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="pensioner_id">Pensioner ID</Label>
+                    <Label for="pensioner_id">Pensioner ID*</Label>
                     <Field as={Input} type="select" id="pensioner_id" name="pensioner_id" disabled={formMode == 'edit'}>
                       <option value="">Select pensioner</option>
                       {pensioners?.map(p => (
@@ -70,7 +70,7 @@ export default function BankFormModal({
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="bank_name">Bank Name</Label>
+                    <Label for="bank_name">Bank Name*</Label>
                     <Field
                       as={Input}
                       id="bank_name"
@@ -88,7 +88,7 @@ export default function BankFormModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="branch_name">Branch Name</Label>
+                    <Label for="branch_name">Branch Name*</Label>
                     <Field
                       as={Input}
                       id="branch_name"
@@ -104,7 +104,7 @@ export default function BankFormModal({
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="account_no">Account Number</Label>
+                    <Label for="account_no">Account Number*</Label>
                     <Field
                       as={Input}
                       id="account_no"
@@ -122,7 +122,7 @@ export default function BankFormModal({
               <Row>
                 <Col md="6">
                   <FormGroup>
-                    <Label for="ifsc_code">IFSC Code</Label>
+                    <Label for="ifsc_code">IFSC Code*</Label>
                     <Field
                       as={Input}
                       id="ifsc_code"
@@ -145,7 +145,7 @@ export default function BankFormModal({
                         checked={values.is_active}
                         onChange={() => setFieldValue("is_active", !values.is_active)}
                       />
-                      {" "} Status
+                      {" "} Status 
                     </Label>
                   </FormGroup>
                 </Col>
