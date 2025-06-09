@@ -31,7 +31,7 @@ const App = () => {
           <>
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUpPage />} />
-            <Route path="/" element={<Navigate to={`/${name.toLowerCase()}/index`} replace />} />
+            <Route path="/" element={<Navigate to={`/${name.replace(/\s+/g, '-').toLowerCase()}/index`} replace />} />
             <Route path="/*"  element={
               <PrivateRoute>
                 <AdminLayout />
