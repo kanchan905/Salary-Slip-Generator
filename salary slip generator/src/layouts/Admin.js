@@ -16,6 +16,7 @@ const AdminLayout = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
   const { role } = useSelector((state) => state.auth.user) ||  getCookie('user');
+  console.log('role', role);
   let roleRoutes = [];
 
 

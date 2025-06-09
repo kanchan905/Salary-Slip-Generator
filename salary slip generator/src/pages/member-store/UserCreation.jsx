@@ -14,9 +14,9 @@ const roles = [
   { id: 2, name: 'Administrative Officer' },
   { id: 3, name: 'Accounts Officer' },
   { id: 4, name: 'Salary Coordinator - NIOH' },
-  // { id: 5, name: 'Salary Coordinator - ROHC' },
-  // { id: 6, name: 'Pension Coordinator' },
-  { id: 5, name: 'End User' }
+  { id: 5, name: 'Salary Coordinator - ROHC' },
+  { id: 6, name: 'Pension Coordinator' },
+  { id: 7, name: 'End User' }
 ];
 
 const UserCreation = ({ onNext }) => {

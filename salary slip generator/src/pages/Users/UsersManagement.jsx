@@ -72,7 +72,10 @@ export default function UserTable() {
     };
 
     const [formData, setFormData] = React.useState({
-        name: '',
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        employee_code: '',
         password: '',
         email: '',
         institute: '',
@@ -82,7 +85,10 @@ export default function UserTable() {
     const toggleModal = (mode) => {
         if (mode === "create") {
             setFormData({
-                name: '',
+                first_name: '',
+                middle_name: '',
+                last_name: '',
+                employee_code: '',
                 password: '',
                 email: '',
                 institute: '',
@@ -140,7 +146,10 @@ export default function UserTable() {
         setEditId(user.id);
         handleClose();
         setFormData({
-            name: user.name || '',
+            first_name: user.first_name || '',
+            middle_name: user.middle_name || '',
+            last_name: user.last_name || '',
+            employee_code: user.employee_code || '',
             password: '',
             email: user.email || '',
             institute: user.institute || 'NIOH',
@@ -165,8 +174,8 @@ export default function UserTable() {
                             <Button
                                 style={{ background: "#004080", color: '#fff' }}
                                 type="button"
-                                // onClick={() => toggleModal("create")}
-                                onClick={()=> navigate(`/${name.toLowerCase()}/user`)}
+                                onClick={() => toggleModal("create")}
+                            // onClick={()=> navigate(`/${name.toLowerCase()}/user`)}
                             >
                                 + Add User
                             </Button>
@@ -194,7 +203,7 @@ export default function UserTable() {
                                         {users.map((user, idx) => (
                                             <TableRow key={idx}>
                                                 <TableCell>{user?.role?.name}</TableCell>
-                                                <TableCell>{user.name}</TableCell>
+                                                <TableCell>{user.first_name} {user.last_name}</TableCell>
                                                 <TableCell>{user.email}</TableCell>
                                                 <TableCell>{user.institute}</TableCell>
                                                 <TableCell>

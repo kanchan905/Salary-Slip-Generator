@@ -66,7 +66,7 @@ export default function NetSalary() {
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
     const toggleHistoryModal = () => {
         setIsHistoryModalOpen(!isHistoryModalOpen)
-        if (isHistoryModalOpen) setHistoryRecord([]);
+        if (isHistoryModalOpen) setHistoryRecord([]);  
         handleClose();
     };
 

@@ -23,7 +23,10 @@ export default function UserFormModal({
     ];
 
     const initialValues = {
-        name: formData.name || "",
+        first_name: formData.first_name || "",
+        middle_name: formData.middle_name || "",
+        last_name: formData.last_name || "",
+        employee_code: formData.employee_code || "",
         password: formData.password || "",
         email: formData.email || "",
         institute: formData.institute || "",
@@ -32,7 +35,9 @@ export default function UserFormModal({
 
     const validate = values => {
         const errors = {};
-        if (!values.name) errors.name = "required";
+        if (!values.first_name) errors.first_name = "required";
+        if (!values.last_name) errors.last_name = "required";
+        if (!values.employee_code) errors.employee_code = "required";
         if (formMode === 'create' && !values.password) errors.password = "required";
         if (!values.email) errors.email = "required";
         if (!values.institute) errors.institute = "required";
@@ -45,7 +50,7 @@ export default function UserFormModal({
             className="modal-dialog-centered"
             isOpen={formOpen}
             toggle={() => toggleModal("defaultModal")}
-            scrollable={true}
+        // scrollable={true}
         >
             <div className='pt-4 pb-4 px-4'>
                 <Formik
@@ -60,17 +65,57 @@ export default function UserFormModal({
                             <Row>
                                 <Col md="6">
                                     <FormGroup>
-                                        <Label for="name">Name*</Label>
+                                        <Label for="first_name">First Name*</Label>
                                         <Field
                                             as={Input}
-                                            id="name"
-                                            name="name"
+                                            id="first_name"
+                                            name="first_name"
                                             type="text"
                                         />
-                                        <ErrorMessage name="name" component="div" className="text-danger" />
+                                        <ErrorMessage name="first_name" component="div" className="text-danger" />
                                     </FormGroup>
                                 </Col>
-                                 <Col md="6">
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="middle_name">Middle Name</Label>
+                                        <Field
+                                            as={Input}
+                                            id="middle_name"
+                                            name="middle_name"
+                                            type="text"
+                                        />
+                                        <ErrorMessage name="middle_name" component="div" className="text-danger" />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="last_name">Last Name*</Label>
+                                        <Field
+                                            as={Input}
+                                            id="last_name"
+                                            name="last_name"
+                                            type="text"
+                                        />
+                                        <ErrorMessage name="last_name" component="div" className="text-danger" />
+                                    </FormGroup>
+                                </Col>
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="last_name">Employee Code*</Label>
+                                        <Field
+                                            as={Input}
+                                            id="employee_code"
+                                            name="employee_code"
+                                            type="text"
+                                        />
+                                        <ErrorMessage name="employee_code" component="div" className="text-danger" />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="6">
                                     <FormGroup>
                                         <Label for="role_id">Role*</Label>
                                         <Field
@@ -87,20 +132,6 @@ export default function UserFormModal({
                                             ))}
                                         </Field>
                                         <ErrorMessage name="role_id" component="div" className="text-danger" />
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="email">Email*</Label>
-                                        <Field
-                                            as={Input}
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                        />
-                                        <ErrorMessage name="email" component="div" className="text-danger" />
                                     </FormGroup>
                                 </Col>
                                 <Col md="6">
@@ -121,6 +152,18 @@ export default function UserFormModal({
                                 </Col>
                             </Row>
                             <Row>
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="email">Email*</Label>
+                                        <Field
+                                            as={Input}
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                        />
+                                        <ErrorMessage name="email" component="div" className="text-danger" />
+                                    </FormGroup>
+                                </Col>
                                 {formMode === 'create' && (
                                     <Col md="6">
                                         <FormGroup>

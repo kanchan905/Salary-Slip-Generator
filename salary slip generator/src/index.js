@@ -15,7 +15,9 @@ import PrivateRoute from "clientLayout";
 
 const App = () => {
   const { user } = useSelector((state) => state.auth) || null;
-  const { name } = user || {} ;
+  console.log('user',user)
+  const name = user?.role?.name || '';
+  console.log('name', name);
 
   return (
     <BrowserRouter>

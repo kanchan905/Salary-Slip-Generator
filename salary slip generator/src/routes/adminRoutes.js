@@ -87,7 +87,7 @@ const getAdminRoutes = (role) => (
     {
       path:'/employee/add',
       name:"Add-Employee",
-      component: EmployeeForm,
+      component: UserStepper,
       layout: role,
       showInSidebar: false,
     },
