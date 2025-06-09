@@ -68,17 +68,17 @@ export default function EmployeeManagement() {
 
     const handleEdit = (emp) => {
         handleClose();
-        navigate(`/${name.toLowerCase()}/employee/edit/${emp.id}`);
+        navigate(`/employee/edit/${emp.id}`);
     };
 
     const handleView = (id) => {
         handleClose();
-        navigate(`/${name.toLowerCase()}/employee/${id}`);
+        navigate(`/employee/${id}`);
     }
 
     const handleQuarter = (id) => {
         handleClose();
-        navigate(`/${name.toLowerCase()}/employee/${id}/quarter`);
+        navigate(`/employee/${id}/quarter`);
     }
 
 
@@ -90,7 +90,7 @@ export default function EmployeeManagement() {
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
                             <TextField placeholder="Search employee..." onChange={handleSearchChange} />
-                            <NavLink to={`/${name.toLowerCase()}/employee/add`}>
+                            <NavLink to={`/employee/add`}>
                                 <Button
                                     style={{ background: "#004080",color:'#fff' }}
                                     type="button"

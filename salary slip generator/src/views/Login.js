@@ -51,7 +51,7 @@ const Login = () => {
         const role = data.role.name.toLowerCase();
         
         setTimeout(() => {
-          navigate(`/${role}/index`);
+          navigate(`/index`);
         }, 100);
 
         console.log('Login successful');

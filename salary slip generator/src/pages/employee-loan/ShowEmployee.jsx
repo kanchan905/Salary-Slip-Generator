@@ -53,7 +53,7 @@ const ShowEmployee = () => {
                 <Typography variant="h4" fontWeight={600}>
                   Employee Loan Detail (ID: {data?.id})
                 </Typography>
-                <NavLink to={`/${name.toLowerCase()}/employee-loan`}>
+                <NavLink to={`/employee-loan`}>
                   <Button
                     style={{ background: "#004080", color: '#fff' }}
                     type="button"

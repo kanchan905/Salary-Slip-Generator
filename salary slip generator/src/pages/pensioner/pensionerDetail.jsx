@@ -63,7 +63,7 @@ const PensionerDetail = () => {
                                     <Typography variant="subtitle1" color="text.secondary">PPO No: {data?.ppo_no}</Typography>
                                 </Box>
                                 </Box>
-                                <NavLink to={`/${name.toLowerCase()}/pensioners`}>
+                                <NavLink to={`/pensioners`}>
                                     <Button
                                         style={{ background: "#004080", color: '#fff' }}
                                         type="button"

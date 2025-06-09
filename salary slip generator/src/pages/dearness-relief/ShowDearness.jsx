@@ -54,7 +54,7 @@ const ShowDearness = () => {
                 <Typography variant="h4" fontWeight={600} >
                   Dearness Relief Detail (ID: {data?.id})
                 </Typography>
-                <NavLink to={`/${name.toLowerCase()}/pensioner/dearness-relief`}>
+                <NavLink to={`/pensioner/dearness-relief`}>
                   <Button
                     style={{ background: "#004080", color: '#fff' }}
                     type="button"

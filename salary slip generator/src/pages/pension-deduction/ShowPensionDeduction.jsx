@@ -61,7 +61,7 @@ const ShowPensionDeduction = () => {
                                         <Typography variant="subtitle1" color="text.secondary">PPO No: {deduction?.net_pension?.pensioner?.ppo_no}</Typography>
                                     </Box>
                                 </div> */}
-                                <NavLink to={`/${name.toLowerCase()}/pensioner/pension-deduction`}>
+                                <NavLink to={`/pensioner/pension-deduction`}>
                                     <Button
                                         style={{ background: "#004080", color: '#fff' }}
                                         type="button"

@@ -161,7 +161,7 @@ export default function Arrears() {
 
   const handleView = (id) => {
     handleMenuClose();
-    navigate(`/${name.toLowerCase()}/arrears/view/${id}`);
+    navigate(`/arrears/view/${id}`);
   };
 
   return (

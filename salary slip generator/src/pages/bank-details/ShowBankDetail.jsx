@@ -55,7 +55,7 @@ const ShowBankDetail = () => {
                                     Bank Details (Pensioner ID: {data?.pensioner_id})
                                 </Typography>
 
-                                <NavLink to={`/${name.toLowerCase()}/pensioner/bank-detail`}>
+                                <NavLink to={`/pensioner/bank-detail`}>
                                     <Button
                                         style={{ background: "#004080", color: '#fff' }}
                                         type="button"

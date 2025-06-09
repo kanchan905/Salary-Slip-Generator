@@ -59,7 +59,7 @@ const ShowMonthlyPension = () => {
                                     <Typography variant="h4" fontWeight={600}>Monthly Pension Details</Typography>
                                     <Typography variant="subtitle1" color="text.secondary">Status: {data?.status}</Typography>
                                 </Box> */}
-                                <NavLink to={`/${name.toLowerCase()}/pensioner/monthly-pension`}>
+                                <NavLink to={`/pensioner/monthly-pension`}>
                                     <Button
                                         style={{ background: "#004080", color: '#fff' }}
                                         type="button"

@@ -162,7 +162,7 @@ export default function EmployeeLoan() {
 
     const handleView = (id) => {
         handleClose();
-        navigate(`/${name.toLowerCase()}/employee-loan/view/${id}`);
+        navigate(`/employee-loan/view/${id}`);
     };
 
     return (

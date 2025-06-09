@@ -123,7 +123,7 @@ function EmployeeForm() {
                                     <Form>
                                         <div className="d-flex justify-content-between align-items-center">
                                             <h4 className="mb-4">{'Create Employee'}</h4>
-                                            <NavLink to={`/${name.toLowerCase()}/employee-management`}>
+                                            <NavLink to={`/employee-management`}>
                                                 <Button
                                                     style={{ background: "#004080", color: '#fff' }}
                                                     type="button"
@@ -447,7 +447,7 @@ function EmployeeForm() {
                                         <Button color="primary" type="submit" disabled={isSubmitting} className="mt-2">
                                             {isSubmitting ? 'Submitting...' : 'Submit'}
                                         </Button>
-                                        <NavLink to={`/${name.toLowerCase()}/employee-management`}>
+                                        <NavLink to={`/employee-management`}>
                                             <Button color="secondary" className="mt-2 ml-4">
                                                 Cancel
                                             </Button>

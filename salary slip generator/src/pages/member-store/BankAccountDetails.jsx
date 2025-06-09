@@ -31,6 +31,7 @@ const BankAccountDetails = ({ onNext }) => {
     try {
       toast.success('Bank account details saved');
       onNext();
+      console.log(employeeForm)
     } catch (err) {
       toast.error('Failed to save bank account details');
     }

@@ -113,7 +113,7 @@ export default function PensionerForm() {
       dispatch(updatePensioner({ id, values })).unwrap()
         .then(() => {
           toast.success("Successfully updated");
-          navigate(`/${name.toLowerCase()}/pensioners`);
+          navigate(`/pensioners`);
         })
         .catch((err) => {
           const apiMsg =
@@ -126,7 +126,7 @@ export default function PensionerForm() {
       dispatch(createPensioner(values)).unwrap()
         .then(() => {
           toast.success("Successfully added");
-          navigate(`/${name.toLowerCase()}/pensioners`);
+          navigate(`/pensioners`);
         })
         .catch((err) => {
           const apiMsg =
@@ -147,7 +147,7 @@ export default function PensionerForm() {
           <CardHeader>
             <div className='d-flex justify-content-between align-items-center'>
               <h3>{id ? "Edit Pensioner" : "Add Pensioner"}</h3>
-              <NavLink to={`/${name.toLowerCase()}/pensioners`}>
+              <NavLink to={`/pensioners`}>
                 <Button
                   style={{ background: "#004080", color: '#fff' }}
                   type="button"

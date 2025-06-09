@@ -222,7 +222,7 @@ export default function NetSalary() {
 
     const handleView = (id) => {
         handleClose();
-        navigate(`/${name.toLowerCase()}/employee/net-salary/${id}`);
+        navigate(`/employee/net-salary/${id}`);
     }
 
     const isValidAnchorEl = document.body.contains(anchorEl);

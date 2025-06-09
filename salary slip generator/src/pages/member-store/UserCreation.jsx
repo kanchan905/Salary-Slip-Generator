@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, TextField, MenuItem, Button } from '@mui/material';
 import { Formik, Form } from 'formik';
 import {
-  updateUserField,
-  setCreatedUser,
+  updateEmployeeField,
 } from '../../redux/slices/memberStoreSlice';
-import { createUserData } from '../../redux/slices/userSlice';
 import { toast } from 'react-toastify';
+import { fetchEmployees } from '../../redux/slices/employeeSlice';
+import { fetchUserData } from '../../redux/slices/userSlice';
 
 const roles = [
   { id: 1, name: 'IT Admin' },
@@ -21,24 +21,30 @@ const roles = [
 
 const UserCreation = ({ onNext }) => {
   const dispatch = useDispatch();
-  const { userForm } = useSelector((state) => state.memeberStore);
+  const employees = useSelector((state) => state.employee.employees) || [];
+  const users = useSelector((state) => state.user.users);
+  const { employeeForm } = useSelector((state) => state.memeberStore);
+  const EmployeeCodes = employees.map(emp => emp?.user?.id);
+  const NotExistId = users.filter(user => !EmployeeCodes.includes(user.id));
+ 
+
+
+  useEffect(() => {
+    dispatch(fetchEmployees({ page: '1', limit: '1000', search: '' }));
+    dispatch(fetchUserData({ page: '1', limit: '1000' }));
+  }, [dispatch])
 
   const validate = (values) => {
     const errors = {};
-    if (!values.name) errors.name = 'Required';
-    if (!values.email) errors.email = 'Required';
-    if (!values.password) errors.password = 'Required';
-    if (values.institute == 'Select Institute') errors.institute = 'Required';
-    if (values.role_id == 'Select Role') errors.role_id = 'Required';
+    if (values.employee_code == 'Select Employee Code') errors.employee_code = 'Required';
     return errors;
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = () => {
     try {
-      const response = await dispatch(createUserData(values)).unwrap();
-      dispatch(setCreatedUser(response.data));
       toast.success('User created successfully');
       onNext();
+      console.log('User created successfully:', employeeForm);
     } catch (err) {
       const apiMsg =
         err?.response?.data?.message ||
@@ -50,39 +56,63 @@ const UserCreation = ({ onNext }) => {
   };
 
   const handleChange = (e) => {
-    dispatch(updateUserField({ name: e.target.name, value: e.target.value }));
+    dispatch(updateEmployeeField({ name: e.target.name, value: e.target.value }));
+    if (e.target.name === 'employee_code') {
+      const user = NotExistId.find((u) => u.id === e.target.value);
+      if (user) {
+        dispatch(updateEmployeeField({ name: 'first_name', value: user.first_name }));
+        dispatch(updateEmployeeField({ name: 'middle_name', value: user.middle_name }));
+        dispatch(updateEmployeeField({ name: 'last_name', value: user.last_name }));
+        dispatch(updateEmployeeField({ name: 'employee_code', value: user.employee_code }));
+        dispatch(updateEmployeeField({ name: 'user_id', value: user.id }));
+        dispatch(updateEmployeeField({ name: 'email', value: user.email }));
+        dispatch(updateEmployeeField({ name: 'institute', value: user.institute }));
+      }
+    }
   }
 
 
   return (
     <Formik
-      initialValues={userForm}
+      initialValues={employeeForm}
       enableReinitialize
       validate={validate}
       onSubmit={handleSubmit}
     >
-      {({values, errors, touched}) => (
+      {({ values, errors, touched }) => (
         <Form>
-          <Grid container spacing={2} justifyContent={'center'}>
+          <Grid container spacing={2} >
             <Grid item xs={6}>
-              <TextField fullWidth name="name" label="Name*" value={values.name}  onChange={(e)=> handleChange(e)} error={touched.name && Boolean(errors.name)} helperText={touched.name && errors.name} />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth name="email" label="Email*" value={values.email}  onChange={(e)=> handleChange(e)} error={touched.email && Boolean(errors.email)} helperText={touched.email && errors.email} />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth name="password" type="password" label="Password*" value={values.password}  onChange={(e)=> handleChange(e)} error={touched.password && Boolean(errors.password)} helperText={touched.password && errors.password} />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth select name="role_id" label="Role*" value={values.role_id}  onChange={(e)=> handleChange(e)} error={touched.role_id && Boolean(errors.role_id)} helperText={touched.role_id && errors.role_id}>
-                <MenuItem value="Select Role">Select Role</MenuItem>
-                {roles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>{role.name}</MenuItem>
+              <TextField
+                fullWidth
+                select
+                name="employee_code"
+                label="Employee Code*"
+                value={values.employee_code}
+                onChange={(e) => handleChange(e)}
+                error={touched.employee_code && Boolean(errors.employee_code)}
+                helperText={touched.employee_code && errors.employee_code}
+              >
+                <MenuItem value="Select Employee Code">Select Employee Code</MenuItem>
+                {NotExistId.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.employee_code} - {user.first_name} {user.last_name}
+                  </MenuItem>
                 ))}
               </TextField>
+
             </Grid>
             <Grid item xs={6}>
-              <TextField fullWidth select name="institute" label="Institute*" value={values.institute}  onChange={(e)=> handleChange(e)} error={touched.institute && Boolean(errors.institute)} helperText={touched.institute && errors.institute}>
+              <TextField fullWidth name="first_name" label="First Name*" value={values.first_name} disabled onChange={(e) => handleChange(e)} error={touched.first_name && Boolean(errors.first_name)} helperText={touched.first_name && errors.first_name} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField fullWidth name="last_name" label="Last Name*" value={values.last_name} disabled onChange={(e) => handleChange(e)} error={touched.last_name && Boolean(errors.last_name)} helperText={touched.last_name && errors.last_name} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField fullWidth name="email" label="Email*" value={values.email} disabled onChange={(e) => handleChange(e)} error={touched.email && Boolean(errors.email)} helperText={touched.email && errors.email} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField fullWidth select name="institute" label="Institute*" value={values.institute} disabled onChange={(e) => handleChange(e)} error={touched.institute && Boolean(errors.institute)} helperText={touched.institute && errors.institute}>
                 <MenuItem value="Select Institute">Select Institute</MenuItem>
                 <MenuItem value="NIOH">NIOH</MenuItem>
                 <MenuItem value="ROHC">ROHC</MenuItem>
@@ -92,7 +122,7 @@ const UserCreation = ({ onNext }) => {
           </Grid>
 
           <Grid container justifyContent="flex-end" sx={{ mt: 3 }}>
-            <Button type="submit" variant="contained">Create User</Button>
+            <Button type="submit" variant="contained">Next</Button>
           </Grid>
         </Form>
       )}

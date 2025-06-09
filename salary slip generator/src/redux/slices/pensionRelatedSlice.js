@@ -16,6 +16,42 @@ export const fetchPensionRelated = createAsyncThunk(
     }
 );
 
+export const CreatePensionRelated = createAsyncThunk(
+    'info/CreatePensionRelated',
+    async (values, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`/pension-related-information`,values);
+            return  response.data.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
+
+export const ShowPensionRelated = createAsyncThunk(
+    'info/ShowPensionRelated',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/pension-related-information/${id}`);
+            return  response.data.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
+
+export const UpdatePensionRelated = createAsyncThunk(
+    'info/UpdatePensionRelated',
+    async ({id,values}, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`/pension-related-information/${id}?_method=PUT`,values);
+            return  response.data.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
+
 
 const initialState = {
     pensionRelated: [],
@@ -41,6 +77,24 @@ const pensionSLice = createSlice({
             .addCase(fetchPensionRelated.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
+            })
+            .addCase(CreatePensionRelated.fulfilled, (state, action) => {
+                state.loading = false;
+                state.pensionRelated.push(action.payload);
+            })
+            .addCase(ShowPensionRelated.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.pensionRelated.findIndex(item => item.id === action.payload.id);
+                if (index !== -1) {
+                    state.pensionRelated[index] = action.payload;
+                }
+            })
+            .addCase(UpdatePensionRelated.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.pensionRelated.findIndex(item => item.id === action.payload.id);
+                if (index !== -1) {
+                    state.pensionRelated[index] = action.payload;
+                }
             })
     }
 })

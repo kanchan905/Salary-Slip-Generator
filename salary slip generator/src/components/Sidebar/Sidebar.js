@@ -57,7 +57,7 @@ const NewSidebar = ({ routes }) => {
                         {visibleRoutes.map((route, key) => (
                           <RouterNavLink
                             key={key}
-                            to={route.layout + route.path}
+                            to={route.path}
                             className={({ isActive }) => `submenu-link sidebar-link ${isActive ? "active" : ""}`}
                           >
                             <i className={`${route.icon} me-2`} />
@@ -75,7 +75,7 @@ const NewSidebar = ({ routes }) => {
                       {visibleRoutes.map((route, key) => (
                         <NavItem key={key}>
                           <RouterNavLink
-                            to={route.layout + route.path}
+                            to={route.path}
                             className={({ isActive }) =>
                               `sidebar-link ${isActive ? "active" : ""}`
                             }

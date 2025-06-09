@@ -229,7 +229,7 @@ export default function MonthlyPension() {
 
   const handleView = (id) => {
     handleMenuClose();
-    navigate(`/${name.toLowerCase()}/pensioner/monthly-pension/view/${id}`);
+    navigate(`/pensioner/monthly-pension/view/${id}`);
   };
 
   const handleEdit = (id) => {

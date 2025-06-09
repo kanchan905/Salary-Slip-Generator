@@ -205,7 +205,7 @@ function EmployeeQuarter() {
                                     onClick={handleCreate}>
                                     Allocate
                                 </button>
-                                <NavLink to={`/${name.toLowerCase()}/employee-management`}>
+                                <NavLink to={`/employee-management`}>
                                     <Button
                                         style={{ background: "#004080", color: '#fff' }}
                                         type="button"

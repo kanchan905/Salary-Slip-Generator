@@ -49,7 +49,7 @@ const ShowPensionDoc = () => {
                                 <Typography variant="h4" fontWeight={600} mb={3}>
                                     Pension Document Detail (ID: {showPensionerDocument?.id})
                                 </Typography>
-                                <NavLink to={`/${name.toLowerCase()}/pensioner/pension-documents`}>
+                                <NavLink to={`/pensioner/pension-documents`}>
                                     <Button
                                         style={{ background: "#004080", color: '#fff' }}
                                         type="button"

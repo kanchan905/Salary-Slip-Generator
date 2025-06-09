@@ -15,9 +15,6 @@ import PrivateRoute from "clientLayout";
 
 const App = () => {
   const { user } = useSelector((state) => state.auth) || null;
-  console.log('user',user)
-  const name = user?.role?.name || '';
-  console.log('name', name);
 
   return (
     <BrowserRouter>
@@ -31,7 +28,7 @@ const App = () => {
           <>
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUpPage />} />
-            <Route path="/" element={<Navigate to={`/${name.replace(/\s+/g, '-').toLowerCase()}/index`} replace />} />
+            <Route path="/" element={<Navigate to={`/index`} replace />} />
             <Route path="/*"  element={
               <PrivateRoute>
                 <AdminLayout />

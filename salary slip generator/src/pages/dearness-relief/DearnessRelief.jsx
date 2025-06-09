@@ -199,7 +199,7 @@ export default function DearnessRelief() {
 
   const handleView = (id) => {
     handleMenuClose();
-    navigate(`/${name.toLowerCase()}/pensioner/dearness-relief/view/${id}`);
+    navigate(`/pensioner/dearness-relief/view/${id}`);
   };
 
   return (

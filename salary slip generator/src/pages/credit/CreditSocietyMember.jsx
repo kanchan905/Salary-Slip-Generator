@@ -173,7 +173,7 @@ export default function CreditSocietyMember() {
 
     const handleView = (id) => {
     handleMenuClose();
-    navigate(`/${name.toLowerCase()}/employee/credit-society-member/view/${id}`);
+    navigate(`/employee/credit-society-member/view/${id}`);
   };
 
 

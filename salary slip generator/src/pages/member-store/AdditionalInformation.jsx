@@ -117,10 +117,11 @@ const AdditionalInformation = () => {
         return errors;
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         toast.success('Additional information saved');
+        console.log('Additional information saved:', employeeForm);
         try {
-            dispatch(storeEmployee(employeeData)).unwrap()
+           await dispatch(storeEmployee(employeeData)).unwrap()
                 .then((res) => {
                     toast.success('Employee Added');
                     const bankData = { ...BankData, employee_id: res[1]?.employee_id }

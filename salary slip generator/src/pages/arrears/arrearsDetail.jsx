@@ -54,7 +54,7 @@ const ArrearsDetail = () => {
                                     Arrear Details (Pensioner ID: {data?.pensioner_id})
                                 </Typography>
 
-                                <NavLink to={`/${name.toLowerCase()}/arrears`}>
+                                <NavLink to={`/arrears`}>
                                     <Button
                                         style={{ background: "#004080", color: '#fff' }}
                                         type="button"

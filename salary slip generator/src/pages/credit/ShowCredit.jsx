@@ -53,7 +53,7 @@ const ShowCredit = () => {
                 <Typography variant="h4" fontWeight={600} mb={3}>
                   Credit Society Member Detail (ID: {data?.id})
                 </Typography>
-                <NavLink to={`/${name.toLowerCase()}/credit-society-member`}>
+                <NavLink to={`/credit-society-member`}>
                   <Button
                     style={{ background: "#004080", color: '#fff' }}
                     type="button"

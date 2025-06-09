@@ -215,7 +215,7 @@ export default function PensionDeduction() {
 
    const handleView = (id) => {
     handleClose();
-    navigate(`/${name.toLowerCase()}/pensioner/pension-deduction/view/${id}`);
+    navigate(`/pensioner/pension-deduction/view/${id}`);
   };
 
  const handleMenuClick = (event, id) => {

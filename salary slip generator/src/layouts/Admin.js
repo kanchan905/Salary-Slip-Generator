@@ -4,7 +4,6 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import { accountOfficerRoutes } from "routes/accountOfficerRoutes";
 import { useSelector } from "react-redux";
 import { getCookie } from "cookies-next";
 import  getAdminRoutes  from "../routes/adminRoutes";
@@ -16,7 +15,6 @@ const AdminLayout = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
   const { role } = useSelector((state) => state.auth.user) ||  getCookie('user');
-  console.log('role', role);
   let roleRoutes = [];
 
 
@@ -26,19 +24,8 @@ const AdminLayout = (props) => {
     mainContent.current.scrollTop = 0;
   }, [location]);
 
-  // Select routes based on the user's role
-  switch (role?.name) {
-    case "Admin":
-      roleRoutes = getAdminRoutes(role?.name.toLowerCase());
-      break;
-    case "Accounts Officer":
-      roleRoutes = accountOfficerRoutes;
-      break;
-    case "finance":
-      roleRoutes = accountOfficerRoutes;
-      break;
-    default:
-      roleRoutes = [];
+  if(role?.name){
+    roleRoutes = getAdminRoutes();
   }
 
 
@@ -46,7 +33,7 @@ const AdminLayout = (props) => {
     const filteredRoutes = Object.values(routes).flat();
     return filteredRoutes.map((prop, key) => {
         return (
-          <Route path={prop.layout + prop.path} element={<prop.component />} key={key} />
+          <Route path={prop.path} element={<prop.component />} key={key} />
         );
       }
     );
@@ -55,7 +42,7 @@ const AdminLayout = (props) => {
   const getBrandText = (path) => {
     for (let i = 0; i < roleRoutes.length; i++) {
       if (
-        props?.location?.pathname.indexOf(roleRoutes[i].layout + roleRoutes[i].path) !==
+        props?.location?.pathname.indexOf( roleRoutes[i].path) !==
         -1
       ) {
         return roleRoutes[i].name;
@@ -71,7 +58,7 @@ const AdminLayout = (props) => {
         {...props}
         routes={roleRoutes}
         logo={{
-          innerLink: "/admin/index",
+          innerLink: "/index",
           // imgSrc: require("#"),
           imgAlt: "...",
         }}

@@ -16,7 +16,7 @@ export const fetchDesignationList = createAsyncThunk(
 
 const splitName = (fullName) => {
     const parts = fullName?.trim().split(" ");
-
+ 
     return {
         firstName: parts[0] || "",
         middleName: parts.length > 2 ? parts.slice(1, -1).join(" ") : "",
@@ -27,16 +27,8 @@ const splitName = (fullName) => {
 
 const initialState = {
     activeStep: 0,
-    userForm: {
-        name: '',
-        email: '',
-        password: '',
-        role_id: 'Select Role',
-        institute: 'Select Institute',
-    },
-    user: {},
     employeeForm: {
-        employee_code: '',
+        employee_code: 'Select Employee Code',
         prefix: 'Select Prefix',
         user_id: '',
         first_name: '',
@@ -72,7 +64,7 @@ const initialState = {
         ifsc_code: '',
         is_active:'Select status',
         promotion_order_no: '',
-        institute:''
+        institute:'Select Institute'
     },
     designationList: []
 };
@@ -81,10 +73,6 @@ const memberStoreSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
-        updateUserField: (state, action) => {
-            const { name, value } = action.payload;
-            state.userForm[name] = value;
-        },
         updateEmployeeField: (state, action) => {
             const { name, value } = action.payload;
             state.employeeForm[name] = value;
@@ -95,18 +83,7 @@ const memberStoreSlice = createSlice({
         prevUserStep: (state) => {
             state.activeStep -= 1;
         },
-        resetUserForm: () => initialState,
-        setCreatedUser: (state, action) => {
-            const user = action.payload;
-            state.user = user;
-            const { firstName, middleName, lastName } = splitName(user?.name);
-            state.employeeForm.user_id = user?.id || '';
-            state.employeeForm.email = user?.email || '';
-            state.employeeForm.first_name = firstName;
-            state.employeeForm.middle_name = middleName;
-            state.employeeForm.last_name = lastName;
-            state.employeeForm.institute = user?.institute;
-        }
+        resetemployeeForm: () => initialState,
     },
     extraReducers: (builder) => {
         builder
@@ -116,5 +93,5 @@ const memberStoreSlice = createSlice({
     }
 });
 
-export const { updateUserField, nextUserStep, prevUserStep, resetUserForm, setCreatedUser, updateEmployeeField } = memberStoreSlice.actions;
+export const { nextUserStep, prevUserStep, resetUserForm, setCreatedUser, updateEmployeeField } = memberStoreSlice.actions;
 export default memberStoreSlice.reducer;

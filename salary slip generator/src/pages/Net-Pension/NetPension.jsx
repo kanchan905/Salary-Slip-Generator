@@ -181,7 +181,7 @@ export default function NetPension() {
 
     const handleView = (id) => {
         handleClose();
-        navigate(`/${name.toLowerCase()}/net-pension/view/${id}`);
+        navigate(`/net-pension/view/${id}`);
     }
 
     const isValidAnchorEl = document.body.contains(anchorEl);

@@ -168,12 +168,12 @@ const handleHistoryStatus = (id) => {
 
   const handleEdit = (id) => {
     handleMenuClose();
-    navigate(`/${name.toLowerCase()}/pensioner/edit/${id}`);
+    navigate(`/pensioner/edit/${id}`);
   };
 
   const handleView = (id) => {
     handleMenuClose();
-    navigate(`/${name.toLowerCase()}/pensioner/view/${id}`);
+    navigate(`/pensioner/view/${id}`);
   };
 
   return (
@@ -191,7 +191,7 @@ const handleHistoryStatus = (id) => {
               <Button
                 style={{ background: "#004080", color: '#fff' }}
                 type="button"
-                onClick={() => navigate(`/${name.toLowerCase()}/pensioner/add`)}
+                onClick={() => navigate(`/pensioner/add`)}
               >
                 + Add
               </Button>

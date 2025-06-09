@@ -234,7 +234,7 @@ export default function PensionDocuments() {
 
   const handleView = (id) => {
     handleClose();
-    navigate(`/${name.toLowerCase()}/pension-documents/view/${id}`);
+    navigate(`/pension-documents/view/${id}`);
   };
 
 

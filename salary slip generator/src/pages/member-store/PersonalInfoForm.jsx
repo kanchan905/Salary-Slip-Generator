@@ -36,6 +36,7 @@ const PersonalInfoForm = ({ onNext }) => {
         try {
             toast.success('Employee info saved');
             onNext();
+            console.log(employeeForm)
         }
         catch (err) {
             const apiMsg =

@@ -238,7 +238,7 @@ export default function BankDetails() {
 
   const handleView = (id) => {
     handleMenuClose();
-    navigate(`/${name.toLowerCase()}/pensioner/bank-detail/view/${id}`);
+    navigate(`/pensioner/bank-detail/view/${id}`);
   };
 
 
