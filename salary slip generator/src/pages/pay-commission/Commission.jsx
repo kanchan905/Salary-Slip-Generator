@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  FormGroup,
-  Form,
-  Input,
   Row,
   Col,
 } from "reactstrap";
@@ -85,7 +82,7 @@ function Commission({selectedCommissionId, commissionName}) {
     setFormOpen(true);
   };
 
-
+  console.log("Selected Commission ID:", selectedCommissionId);
   return (
     <>
       {/* <Typography variant="h6" mb={2}>Pay Matrix Levels</Typography> */}
@@ -100,7 +97,9 @@ function Commission({selectedCommissionId, commissionName}) {
 
         <Col md={12}>
           <div className="container">
-            {loading ? (
+            {!selectedCommissionId ? (
+              <p className="text-center text-muted">Please select a commission to view levels.</p>
+            ) : loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <CircularProgress />
               </Box>
