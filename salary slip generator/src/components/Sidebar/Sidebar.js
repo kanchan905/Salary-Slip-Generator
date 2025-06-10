@@ -34,7 +34,7 @@ const NewSidebar = ({ routes }) => {
                 (route) => route.showInSidebar !== false
               );
               
-              const isDropdownCategory = ["pensioner_Management", "employee_masters"].includes(category);
+              const isDropdownCategory = ["pensioner_Management", "employee_masters", "commission"].includes(category);
 
               const isOpen = openDropdowns[category];
 

@@ -27,6 +27,19 @@ export const fetchPayLevelShow = createAsyncThunk(
   }
 );
 
+export const fetchPayLevelByCommission = createAsyncThunk(
+  "commissionLevels/fetchPayLevelByCommission",
+  async (commission_id, { rejectWithValue }) => {
+    try {
+      const { selectedCommissionId } = commission_id;
+      const response = await axiosInstance.get(`level-by-commission/${selectedCommissionId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch level by commission");
+    }
+  }
+);
+
 export const addLevelToAPI = createAsyncThunk(
   "levels/addLevelToAPI",
   async (newLevel, { rejectWithValue }) => {
@@ -46,12 +59,10 @@ export const updateLevelToAPI = createAsyncThunk(
   "levels/updateLevelToAPI",
   async (data, { rejectWithValue }) => {
     try {
-      console.log("Update Level Data:", data);
       const response = await axiosInstance.put(`/pay-matrix-levels/${data.id}`, {
         name: data.levelName,
         description: data.description
       });
-      console.log("Update Level Response:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to update level");
@@ -63,6 +74,7 @@ export const updateLevelToAPI = createAsyncThunk(
 const initialState = {
   levels: [],
   levelShow: {},
+  commissionLevels: [],
   totalCount: 0,
   employeePayStructures: [],
   loading: false,
@@ -171,6 +183,18 @@ const levelSlice = createSlice({
         state.levelShow = action.payload?.data || [];
       })
       .addCase(fetchPayLevelShow.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchPayLevelByCommission.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPayLevelByCommission.fulfilled, (state, action) => {
+        state.loading = false;
+        state.commissionLevels = action.payload?.data || [];
+      })
+      .addCase(fetchPayLevelByCommission.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
