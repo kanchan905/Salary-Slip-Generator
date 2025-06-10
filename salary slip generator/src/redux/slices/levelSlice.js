@@ -29,9 +29,8 @@ export const fetchPayLevelShow = createAsyncThunk(
 
 export const fetchPayLevelByCommission = createAsyncThunk(
   "commissionLevels/fetchPayLevelByCommission",
-  async (commission_id, { rejectWithValue }) => {
+  async (selectedCommissionId, { rejectWithValue }) => {
     try {
-      const { selectedCommissionId } = commission_id;
       const response = await axiosInstance.get(`level-by-commission/${selectedCommissionId}`);
       return response.data;
     } catch (error) {
@@ -45,6 +44,7 @@ export const addLevelToAPI = createAsyncThunk(
   async (newLevel, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/pay-matrix-levels", {
+        pay_commission_id: newLevel.pay_commission_id,
         name: newLevel.levelName,
         description: newLevel.description
       });
@@ -193,6 +193,7 @@ const levelSlice = createSlice({
       .addCase(fetchPayLevelByCommission.fulfilled, (state, action) => {
         state.loading = false;
         state.commissionLevels = action.payload?.data || [];
+        state.totalCount = action.payload?.total_count || 0;
       })
       .addCase(fetchPayLevelByCommission.rejected, (state, action) => {
         state.loading = false;

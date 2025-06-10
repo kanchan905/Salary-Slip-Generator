@@ -12,10 +12,20 @@ const PayComission = () => {
   const { payCommissions, loading, error } = useSelector((state) => state.payCommision);
 
   const [selectedCommissionId, setSelectedCommissionId] = useState("");
+  const [selectedCommission, setSelectedCommission] = useState(null);
 
   useEffect(() => {
     dispatch(fetchPayCommisions());
-  }, [dispatch]);
+    console.log("Fetching pay commissions...", payCommissions);
+    if(selectedCommissionId){
+      const commission = payCommissions.find((commission) => commission.id === selectedCommissionId);
+      if (commission) {
+        setSelectedCommission(commission?.name);
+      } else {
+        setSelectedCommission(null);
+      }
+    }
+  }, [selectedCommissionId, selectedCommission]);
 
 
   return (
@@ -42,7 +52,7 @@ const PayComission = () => {
             </div>
           </CardHeader>
           <CardBody>
-            <Commission selectedCommissionId={selectedCommissionId} />
+            <Commission selectedCommissionId={selectedCommissionId} commissionName={selectedCommission}/>
           </CardBody>
         </Card>
       </div>

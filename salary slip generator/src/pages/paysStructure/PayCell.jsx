@@ -160,7 +160,7 @@ const PayMatrixCell = () => {
 
 
       <Row className='p-3'>
-        <FormControl sx={{marginRight:'1em'}}>
+        <FormControl sx={{marginRight:'1em', width: '80px'}}>
           <InputLabel>Level</InputLabel>
           <Select
             value={selectedLevelId}
@@ -329,7 +329,7 @@ const PayMatrixCell = () => {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </TableContainer>
-
+                
           <HistoryModal
             isOpen={isHistoryModalOpen}
             toggle={toggleHistoryModal}

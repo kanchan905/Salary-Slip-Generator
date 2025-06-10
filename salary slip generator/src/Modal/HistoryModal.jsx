@@ -2,7 +2,6 @@ import React,{useState} from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 
 function HistoryModal({ isOpen, toggle, historyRecord, tableHead, renderRow }) {
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
       <ModalHeader toggle={toggle}>
@@ -12,15 +11,15 @@ function HistoryModal({ isOpen, toggle, historyRecord, tableHead, renderRow }) {
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              {tableHead.map((head, index) => (
+              {tableHead?.map((head, index) => (
                 <th key={index}>{head}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {historyRecord.length === 0 ? (
+            {historyRecord?.length === 0 ? (
               <tr>
-                <td colSpan={tableHead.length} className="text-center">No history available</td>
+                <td colSpan={tableHead?.length} className="text-center">No history available</td>
               </tr>
             ) : (
               historyRecord.map((record, index) => renderRow(record, index))

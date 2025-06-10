@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    IconButton, TextField, TablePagination, Box
+    IconButton, TextField, TablePagination, Box,
+    Chip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import {
     Button,
     Card,
@@ -13,25 +15,19 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import {
-    fetchEmployeeLoan,
-    createEmployeeLoan,
-    updateEmployeeLoan,
-} from '../../redux/slices/employeeLoanSlice';
-import EmployeeLoanModal from '../../Modal/EmployeeLoan';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
-import { fetchPayCommisions } from 'redux/slices/payCommision';
-
+import { addPayCommisions, fetchPayCommisions, fetchPayCommisionShow, updatePayCommisions } from '../../redux/slices/payCommision';
+import CommissionModal from 'Modal/CommissionModal';
+import HistoryModal from 'Modal/HistoryModal';
 
 
 export default function CommissionCreate() {
     const dispatch = useDispatch();
-    const { loans, loading } = useSelector((state) => state.employeeLoan);
-    const totalCount = useSelector((state) => state.employeeLoan.totalCount) || 0;
+    const { payCommissions, singleCommission, loading } = useSelector((state) => state.payCommision);
+    const totalCount = useSelector((state) => state.payCommision.totalCount) || 0;
     const { error } = useSelector((state) => state.employeeLoan)
     const [menuIndex, setMenuIndex] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
@@ -46,14 +42,67 @@ export default function CommissionCreate() {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);  // 👈 track which row is selected
     const navigate = useNavigate();
-    const { name } = useSelector((state) => state.auth.user.role);
-
+    const [ renderFunction, setRenderFunction ] = React.useState(() => null);
+    const [historyRecord, setHistoryRecord] = React.useState([]);
+    const [tableHead, setTableHead] = React.useState([
+        "Sr. No.",
+        "Head 1",
+        "Head 2",
+        "Head 3",
+        "Head 4",
+        "Head 5",
+        "Head 6",
+    ]);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
+    const toggleHistoryModal = () => {
+        setIsHistoryModalOpen(!isHistoryModalOpen);
+        setHistoryRecord([]);
+    };
+    const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
+    
+    
+    const getTableConfig = () => {
+        return {
+            head: [
+                "Sr. No.",
+                "Name",
+                "Year",
+                "Status",
+                "Added By",
+                "Edited By"
+            ],
+            renderRow: (record, index) => (
+                <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.name ?? "-"}</td>
+                    <td>{record?.year ?? "-"}</td>
+                    <td>{record?.is_active ? "Active" : "Inactive"}</td>
+                    <td>{ record?.added_by?.name || "NA" }</td>
+                    <td>{ record?.edited_by?.name }</td>
+                </tr>
+            ),
+        }
+    }
 
     useEffect(() => {
         dispatch(fetchPayCommisions({ id: searchQuery, page, limit: rowsPerPage }));
-    }, [dispatch, searchQuery]);
+    }, [dispatch, searchQuery, page, rowsPerPage]);
+
+    useEffect(() => {
+        if (shouldOpenHistory && singleCommission) {
+            const config = getTableConfig();
+            setHistoryRecord(singleCommission?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+        }
+    }, [singleCommission, shouldOpenHistory]);
+
+
 
     // const filteredData = dearness.filter((item) =>
     //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())
@@ -81,7 +130,6 @@ export default function CommissionCreate() {
     const toggleModal = (mode) => {
         if (mode === 'create') {
             setFormData({
-                commission_id: "",
                 name: "",
                 year: "",
                 is_active: ""
@@ -95,51 +143,44 @@ export default function CommissionCreate() {
         setEditId(row.id);
         setFormMode('edit');
         setFormData({
-            employee_id: row.employee_id || '',
-            loan_type: row.loan_type || '',
-            loan_amount: row.loan_amount || '',
-            interest_rate: row.interest_rate || '',
-            sanctioned_date: row.sanctioned_date || '',
-            total_installments: row.total_installments || '',
-            current_installment: row.current_installment || '',
-            remaining_balance: row.remaining_balance || '',
-            is_active: row.is_active ?? 1,
+            name: row.name || '',
+            year: row.year || '',
+            is_active: row.is_active ?? 1
         });
         setFormOpen(true);
         handleClose();
-        console.log(formData);
     };
 
     const handleSubmit = (values, { setSubmitting, resetForm }) => {
-        console.log(values)
         if (formMode === 'edit') {
-            dispatch(updateEmployeeLoan({ id: editId, values: values }))
+            console.log("Edit Values", values);
+            dispatch(updatePayCommisions({ id: editId, values: values }))
                 .unwrap()
                 .then(() => {
-                    toast.success("EmployeeLoan updated successfully");
-                    dispatch(fetchEmployeeLoan({ id: searchQuery, page, limit: rowsPerPage }));
+                    toast.success("Commission updated successfully");
+                    dispatch(fetchPayCommisions({ id: searchQuery, page, limit: rowsPerPage }));
                 })
                 .catch((err) => {
                     const apiMsg =
                         err?.response?.data?.message ||
                         err?.message ||
-                        'Failed to save pensioner.';
+                        'Failed to save commission.';
                     toast.error(apiMsg);
                 });
         } else {
-            dispatch(createEmployeeLoan(values))
-                .unwrap()
-                .then(() => {
-                    toast.success("EmployeeLoan added");
-                    dispatch(fetchEmployeeLoan({ id: searchQuery, page, limit: rowsPerPage }));
-                })
-                .catch((err) => {
-                    const apiMsg =
-                        err?.response?.data?.message ||
-                        err?.message ||
-                        'Failed to save pensioner.';
-                    toast.error(apiMsg);
-                });
+            dispatch(addPayCommisions(values))
+            .unwrap()
+            .then(() => {
+                toast.success("Commission added");
+                dispatch(fetchPayCommisions({ id: searchQuery, page, limit: rowsPerPage }));
+            })
+            .catch((err) => {
+                const apiMsg =
+                    err?.response?.data?.message ||
+                    err?.message ||
+                    'Failed to save commission.';
+                toast.error(apiMsg);
+            });
         }
         resetForm();
         setFormOpen(false);
@@ -147,14 +188,23 @@ export default function CommissionCreate() {
         setSubmitting(false);
     };
 
-    const handleMenuClick = (event) => {
+    const handleMenuClick = (event, row) => {
         setAnchorEl(event.currentTarget);
+        setSelectedRow(row);  // 👈 store the clicked row here
     };
 
-    const handleView = (id) => {
-        handleClose();
-        navigate(`/${name.toLowerCase()}/employee-loan/view/${id}`);
-    };
+
+    const handleHistoryShow = (id) => {
+        setHistoryRecord([]);
+        setIsHistoryModalOpen(true);
+        dispatch(fetchPayCommisionShow(id))
+        .unwrap()
+        .then(() => {
+            setShouldOpenHistory(true);
+        }); 
+    }
+
+
 
     return (
         <>
@@ -163,7 +213,7 @@ export default function CommissionCreate() {
                 <Card className="card-stats mb-4 mb-lg-0">
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
-                            <TextField placeholder="Employee Id" onChange={handleSearchChange} />
+                            <h5 className="mb-0">Pay Commission</h5>
                             <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                                 + Add
                             </Button>
@@ -188,17 +238,14 @@ export default function CommissionCreate() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {loans.map((row, idx) => (
+                                            {payCommissions.map((row, idx) => (
                                                 <TableRow key={row.id}>                                              
-                                                    <TableCell>{row.loan_type}</TableCell>
-                                                    <TableCell>{row.loan_amount}</TableCell>
-                                                    <TableCell>{row.interest_rate}</TableCell>
-                                                    <TableCell>{row.sanctioned_date}</TableCell>
-                                                    <TableCell>{row.total_installments}</TableCell>
-                                                    <TableCell>{row.current_installment}</TableCell>                                                  
-                                                    <TableCell>{row.is_active ? 'Active' : 'Inactive'}</TableCell>                                                  
+                                                    <TableCell>{idx + 1}</TableCell>
+                                                    <TableCell>{row.name}</TableCell>
+                                                    <TableCell>{row.year}</TableCell>
+                                                    <TableCell>{row.is_active ? <Chip label="Active" color='success' variant="outlined" size="small"/> : <Chip label="Inactive" color='error' variant="outlined" size="small" /> }</TableCell>                                                  
                                                     <TableCell align="left">
-                                                        <IconButton onClick={handleMenuClick}>
+                                                        <IconButton onClick={(e) => handleMenuClick(e, row)}>
                                                             <MoreVertIcon />
                                                         </IconButton>
                                                         <Menu
@@ -207,11 +254,11 @@ export default function CommissionCreate() {
                                                             onClose={handleClose}
                                                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                         >
-                                                            <MenuItem onClick={()=> handleEdit(row)}>
+                                                            <MenuItem onClick={() => { handleEdit(selectedRow); handleClose(); }}>
                                                                 <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
                                                             </MenuItem>
-                                                            <MenuItem onClick={()=> handleView(row.id)}>
-                                                                <VisibilityIcon fontSize="small" sx={{ mr: 1 }} /> View
+                                                            <MenuItem onClick={() => { handleHistoryShow(selectedRow.id); handleClose(); }}>
+                                                                <HistoryIcon fontSize="small" sx={{ mr: 1 }} /> History
                                                             </MenuItem>
                                                         </Menu>
                                                     </TableCell>
@@ -232,7 +279,7 @@ export default function CommissionCreate() {
                         />
                     </CardBody>
                 </Card>
-                <EmployeeLoanModal
+                <CommissionModal
                     setFormOpen={setFormOpen}
                     formOpen={formOpen}
                     toggleModal={toggleModal}
@@ -240,6 +287,14 @@ export default function CommissionCreate() {
                     formData={formData}
                     handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
                     handleSubmit={handleSubmit}
+                />
+
+                <HistoryModal
+                    isOpen={isHistoryModalOpen}
+                    toggle={toggleHistoryModal}
+                    tableHead={tableHead}
+                    historyRecord={historyRecord}
+                    renderRow={renderFunction}
                 />
             </div>
         </>

@@ -297,7 +297,6 @@ export default function AllowanceForm() {
                 return;
         }
     }
-    console.log("History Record: ",historyRecord);
 
     React.useEffect(() => {
         if ( currentType === "dearness" && shouldOpenHistory && dearnessAllowanceShow?.data.history) {
