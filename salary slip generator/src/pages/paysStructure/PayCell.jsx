@@ -329,7 +329,7 @@ const PayMatrixCell = () => {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </TableContainer>
-                
+
           <HistoryModal
             isOpen={isHistoryModalOpen}
             toggle={toggleHistoryModal}

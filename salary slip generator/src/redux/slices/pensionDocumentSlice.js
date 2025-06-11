@@ -3,9 +3,9 @@ import axiosInstance from 'global/AxiosSetting';
 
 export const fetchPensionDocument = createAsyncThunk(
   'document/fetchPensionDocument',
-  async (_, { rejectWithValue }) => {
+  async ({page,limit}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/pension-documents`);
+      const response = await axiosInstance.get(`/pension-documents?page=${page}&limit=${limit}`);
       return {
         data: response.data.data,
         totalCount: response.data.total_count

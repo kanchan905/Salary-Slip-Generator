@@ -200,6 +200,18 @@ const getAdminRoutes = () => (
       component: DearnessRelief,
     },
     {
+      path: "/pension-related-info",
+       name: "Pension Info",
+       component: PensionerInfoList,
+       icon: "fa-solid fa-info-circle",
+     },
+     {
+      path: "/pension-related-info/view/:id",
+       name: "Pension Info",
+       component: ShowPensionerRelatedInfo,
+       showInSidebar: false,
+     },
+    {
      path: "/pensioner/monthly-pension",
       name: "Monthly Pension",
       icon: "fa-solid fa-hand-holding-dollar", 
@@ -265,18 +277,6 @@ const getAdminRoutes = () => (
       component: ShowPensionDeduction,
       showInSidebar: false,
     },
-    {
-      path: "/pension-related-info",
-       name: "Pension Info",
-       component: PensionerInfoList,
-       icon: "fa-solid fa-info-circle",
-     },
-     {
-      path: "/pension-related-info/view/:id",
-       name: "Pension Info",
-       component: ShowPensionerRelatedInfo,
-       showInSidebar: false,
-     },
   ],
   processing: [
     {

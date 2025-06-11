@@ -49,8 +49,8 @@ export default function MonthlyPensionModal({
   const { bankdetails } = useSelector((state) => state.bankdetail);
   const { pensionRelated } = useSelector((state) => state.info)
   const { dearness } = useSelector((state) => state.dearnessRelief);
-  const filterBankdetail = bankdetails.filter((b) => b?.pensioner_id == selectedPensionerId) || []
-  const filterPensionRelated = pensionRelated.filter((b) => b?.pensioner_id == selectedPensionerId) || []
+  const filterBankdetail = bankdetails.filter((b) => b?.pensioner_id == selectedPensionerId && b.is_active) || []
+  const filterPensionRelated = pensionRelated.filter((b) => b?.pensioner_id == selectedPensionerId && b.is_active) || []
   const dispatch = useDispatch()
 
 
@@ -125,7 +125,7 @@ export default function MonthlyPensionModal({
                       <option value="">Select Arrears</option>
                       {filterPensionRelated?.map(p => (
                         <option key={p.id} value={p.id}>
-                          Arrears - {p.basic_pension}
+                          Basic Pay - {p.basic_pension}
                         </option>
                       ))}
                     </Field>
@@ -133,10 +133,10 @@ export default function MonthlyPensionModal({
                   </FormGroup>
                 </Col>
                 <Col md="6">
-                  <FormGroup>
-                    <Label for="dr_id">DR</Label>
+                  <FormGroup> 
+                    <Label for="dr_id">DR*</Label>
                     <Field as={Input} type="select" id="dr_id" name="dr_id" >
-                      <option value="">Select Arrears*</option>
+                      <option value="">Select Dr</option>
                       {dearness?.map(p => (
                         <option key={p.id} value={p.id}>
                             {p.dr_percentage}%

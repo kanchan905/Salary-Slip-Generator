@@ -73,6 +73,7 @@ export default function PensionerInfoList() {
             "Total Arrear",
             "Effective From",
             "Effective Till",
+            "Status",
         ],
         renderRow: (record, index) => (
             <tr key={index}>
@@ -84,13 +85,14 @@ export default function PensionerInfoList() {
                 <td>{record?.total_arrear ?? 'NA'}</td>
                 <td>{record?.effective_from ?? 'NA'}</td>
                 <td>{record?.effective_till ?? 'NA'}</td>
+                <td>{record?.is_active ? 'true' : 'false'}</td>
             </tr>
         ),
     });
 
     useEffect(() => {
-        dispatch(fetchPensionRelated({ page: '1', limit: '1000' }));
-    }, [dispatch]);
+        dispatch(fetchPensionRelated({ page: page, limit: rowsPerPage }));
+    }, [dispatch,page,rowsPerPage]);
 
     const handleMenuClick = (e, id) => {
         setMenuAnchorEl(e.currentTarget);
@@ -189,6 +191,7 @@ export default function PensionerInfoList() {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
+                                            <TableCell><b>Pensioner</b></TableCell>
                                             <TableCell><b>Basic Pension</b></TableCell>
                                             <TableCell><b>Commutation</b></TableCell>
                                             <TableCell><b>Additional</b></TableCell>
@@ -202,6 +205,7 @@ export default function PensionerInfoList() {
                                     <TableBody>
                                         {pensionRelated.map((row, idx) => (
                                             <TableRow key={row.id}>
+                                                <TableCell>{row.pensioner?.first_name}</TableCell>
                                                 <TableCell>{row.basic_pension}</TableCell>
                                                 <TableCell>{row.commutation_amount}</TableCell>
                                                 <TableCell>{row.additional_pension}</TableCell>

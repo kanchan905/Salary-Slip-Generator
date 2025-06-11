@@ -35,7 +35,6 @@ export default function BankFormModal({
       className="modal-dialog-centered"
       isOpen={formOpen}
       toggle={() => toggleModal("bankFormModal")}
-      scrollable={true}
     >
       <div className="pt-4 pb-4 px-4">
         <Formik
@@ -57,7 +56,7 @@ export default function BankFormModal({
                       <option value="">Select pensioner</option>
                       {pensioners?.map(p => (
                         <option key={p.id} value={p.id}>
-                          {p.name}-{(p.ppo_no)}
+                          {p.first_name}-{(p.ppo_no)}
                         </option>
                       ))}
                     </Field>

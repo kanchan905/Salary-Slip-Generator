@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Row, Col, Button, FormGroup, Label, Input } from "reactstrap";
 import { Formik, Form, ErrorMessage } from "formik";
 import { fetchPensioners } from "../redux/slices/pensionerSlice";
@@ -26,13 +26,17 @@ export default function PensionerInfoModal({
         is_active: formData.is_active ?? 1
     };
     const dispatch = useDispatch();
+    const [pensionerId, setPensionerId] = useState();
     const { pensioners } = useSelector((state) => state.pensioner);
-    const {arrears} = useSelector((state) => state.arrears);
+    const arrears = useSelector((state) => state.arrears.arrears);
+ 
 
     useEffect(() => {
         dispatch(fetchPensioners({ page: '1', limit: '1000', id: '' }))
-        dispatch(fetchArrears({ page: '1', limit: '1000', id: '' }));
-    }, [dispatch])
+        if(pensionerId){
+            dispatch(fetchArrears({ page: '1', limit: '1000', id: pensionerId }));
+        }
+    }, [dispatch, pensionerId])
 
     const validate = (values) => {
         const errors = {};
@@ -66,13 +70,16 @@ export default function PensionerInfoModal({
                                             type="select"
                                             name="pensioner_id"
                                             value={values.pensioner_id}
-                                            onChange={(e) => setFieldValue("pensioner_id", e.target.value)}
+                                            onChange={(e) => {
+                                                setPensionerId(e.target.value);
+                                                setFieldValue("pensioner_id", e.target.value)}
+                                            }
                                             disabled={formMode === 'edit'}
                                         >
                                             <option value="">Select Pensioner</option>
                                             {pensioners.map((pensioner) => (
                                                 <option key={pensioner.id} value={pensioner.id}>
-                                                    {pensioner.first_name} ({pensioner.ppo_no})
+                                                    {pensioner?.first_name} ({pensioner.ppo_no})
                                                 </option>
                                             ))}
                                         </Input>

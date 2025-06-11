@@ -52,13 +52,7 @@ export default function DearnessReliefModal({
                 <Col md="6">
                   <FormGroup>
                     <Label for="dr_percentage">DR Percentage*</Label>
-                    <Field as={Input} type="select" id="dr_percentage" name="dr_percentage" >
-                      <option value="">Select DR</option>
-                      {dearness?.map(p => (
-                        <option key={p.id} value={p.dr_percentage}>
-                          {p.dr_percentage}%
-                        </option>
-                      ))}
+                    <Field as={Input} type="text" id="dr_percentage" name="dr_percentage" >
                     </Field>
                     <ErrorMessage name="dr_percentage" component="div" className="text-danger" />
                   </FormGroup>

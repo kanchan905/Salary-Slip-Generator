@@ -127,7 +127,7 @@ export default function NetSalary() {
 
     useEffect(() => {
         dispatch(fetchNetSalary({ id: searchQuery, page, limit: rowsPerPage }));
-    }, [dispatch, searchQuery]);
+    }, [dispatch, searchQuery, page,rowsPerPage]);
 
 
     const handleSearchChange = (e) => {

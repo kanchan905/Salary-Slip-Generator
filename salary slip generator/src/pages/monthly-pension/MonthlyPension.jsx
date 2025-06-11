@@ -136,8 +136,8 @@ export default function MonthlyPension() {
   };
 
   useEffect(() => {
-    dispatch(monthlyPensionDetails());
-  }, [dispatch]);
+    dispatch(monthlyPensionDetails({page:page,limit:rowsPerPage}));
+  }, [dispatch,page,rowsPerPage]);
 
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {

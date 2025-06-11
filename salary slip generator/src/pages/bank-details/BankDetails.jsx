@@ -26,6 +26,7 @@ import BankFormModal from '../../Modal/BankFormModal';
 import ViewIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import HistoryModal from 'Modal/HistoryModal';
+import { fetchPensioners } from '../../redux/slices/pensionerSlice';
 
 const statusChipColor = (status) => status ? "success" : "error";
 
@@ -130,6 +131,7 @@ export default function BankDetails() {
 
   useEffect(() => {
     dispatch(fetchBankDetails({ page: page, limit: rowsPerPage, id: searchQuery }));
+    dispatch(fetchPensioners({page:'1',limit:'1000',id:''}))
   }, [dispatch, page, rowsPerPage, searchQuery]);
 
   const handleSearchChange = (e) => {

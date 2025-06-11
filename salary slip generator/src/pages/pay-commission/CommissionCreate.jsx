@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    IconButton, TextField, TablePagination, Box,
+    IconButton, TablePagination, Box,
     Chip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,7 +19,12 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
-import { addPayCommisions, fetchPayCommisions, fetchPayCommisionShow, updatePayCommisions } from '../../redux/slices/payCommision';
+import { 
+    addPayCommisions, 
+    fetchPayCommisions, 
+    fetchPayCommisionShow, 
+    updatePayCommisions 
+} from '../../redux/slices/payCommision';
 import CommissionModal from 'Modal/CommissionModal';
 import HistoryModal from 'Modal/HistoryModal';
 
@@ -28,7 +33,7 @@ export default function CommissionCreate() {
     const dispatch = useDispatch();
     const { payCommissions, singleCommission, loading } = useSelector((state) => state.payCommision);
     const totalCount = useSelector((state) => state.payCommision.totalCount) || 0;
-    const { error } = useSelector((state) => state.employeeLoan)
+    const { error } = useSelector((state) => state.employeeLoan);
     const [menuIndex, setMenuIndex] = useState(null);
     const [formOpen, setFormOpen] = useState(false);
     const [formMode, setFormMode] = useState('create');
@@ -153,7 +158,6 @@ export default function CommissionCreate() {
 
     const handleSubmit = (values, { setSubmitting, resetForm }) => {
         if (formMode === 'edit') {
-            console.log("Edit Values", values);
             dispatch(updatePayCommisions({ id: editId, values: values }))
                 .unwrap()
                 .then(() => {

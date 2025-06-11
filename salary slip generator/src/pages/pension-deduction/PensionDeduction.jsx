@@ -93,7 +93,7 @@ export default function PensionDeduction() {
           renderRow: (record, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{record?.net_pension?.pensioner?.name ?? "NA"}</td>
+              <td>{record?.net_pension?.pensioner?.first_name ?? "NA"}</td>
               <td>{record?.net_pension?.pensioner?.ppo_no ?? "NA"}</td>
               <td>{record.commutation_amount ?? "NA"}</td>
               <td>{record.income_tax || "NA"}</td>
@@ -132,8 +132,8 @@ export default function PensionDeduction() {
 
 
   useEffect(() => {
-    dispatch(fetchPensionDeduction());
-  }, [dispatch]);
+    dispatch(fetchPensionDeduction({page:page, limit:rowsPerPage}));
+  }, [dispatch,page, rowsPerPage]);
 
   const handlePageChange = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {

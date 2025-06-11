@@ -82,7 +82,6 @@ function Commission({selectedCommissionId, commissionName}) {
     setFormOpen(true);
   };
 
-  console.log("Selected Commission ID:", selectedCommissionId);
   return (
     <>
       {/* <Typography variant="h6" mb={2}>Pay Matrix Levels</Typography> */}

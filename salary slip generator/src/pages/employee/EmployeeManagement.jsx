@@ -109,6 +109,7 @@ export default function EmployeeManagement() {
                             ) : (<Table>
                                 <TableHead>
                                     <TableRow>
+                                        <TableCell style={{ fontWeight: "900" }}>Emp Code</TableCell>
                                         <TableCell style={{ fontWeight: "900" }}>Full Name</TableCell>
                                         <TableCell style={{ fontWeight: "900" }}>Gender</TableCell>
                                         <TableCell style={{ fontWeight: "900" }}>DOB</TableCell>
@@ -121,6 +122,7 @@ export default function EmployeeManagement() {
                                 <TableBody>
                                     {employees.map((emp, idx) => (
                                         <TableRow key={emp.id}>
+                                            <TableCell>{emp.employee_code}</TableCell>
                                             <TableCell>{emp.first_name + " " + emp.last_name}</TableCell>
                                             <TableCell sx={{ textTransform: 'capitalize' }}>{emp.gender}</TableCell>
                                             <TableCell>{emp.date_of_birth}</TableCell>

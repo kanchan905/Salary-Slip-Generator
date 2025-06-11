@@ -77,6 +77,11 @@ const memberStoreSlice = createSlice({
             const { name, value } = action.payload;
             state.employeeForm[name] = value;
         },
+        updateEmployeeFormFields: (state, action) => {
+            const obj = action.payload;
+            state.employeeForm = {...state.employeeForm, ...obj };
+            
+        },
         nextUserStep: (state) => {
             state.activeStep += 1;
         },
@@ -93,5 +98,5 @@ const memberStoreSlice = createSlice({
     }
 });
 
-export const { nextUserStep, prevUserStep, resetUserForm, setCreatedUser, updateEmployeeField } = memberStoreSlice.actions;
+export const { nextUserStep, prevUserStep, resetemployeeForm, setCreatedUser, updateEmployeeField, updateEmployeeFormFields } = memberStoreSlice.actions;
 export default memberStoreSlice.reducer;

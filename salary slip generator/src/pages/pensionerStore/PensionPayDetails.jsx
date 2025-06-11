@@ -14,14 +14,21 @@ const PensionPayDetails = ({ onNext }) => {
   const { pensionerForm } = useSelector((state) => state.pensionerStore);
   const { payCommissions } = useSelector((state) => state.payCommision);
   const { levels } = useSelector((state) => state.levels);
-  const [payCellId, SetPayCellId] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState(null);
 
 
   useEffect(() => {
     dispatch(fetchPayCommisions());
     dispatch(fetchPayLevel({ page: '1', limit: '1000' }));
-  }, [dispatch])
+  }, [dispatch,selectedLevel])
+
+  useEffect(() => {
+    if (levels?.length && pensionerForm?.pay_level) {
+      const levelObj = levels.find((level) => level.name === pensionerForm.pay_level);
+      setSelectedLevel(levelObj);
+    }
+  }, [pensionerForm, levels])
+  
 
   const validate = (values) => {
     const errors = {};
@@ -111,7 +118,7 @@ const PensionPayDetails = ({ onNext }) => {
               </TextField>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{ width: '80px' }}>
               <TextField
                 select
                 fullWidth
@@ -127,7 +134,7 @@ const PensionPayDetails = ({ onNext }) => {
               </TextField>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{ width: '80px' }}>
               <TextField
                 select
                 fullWidth

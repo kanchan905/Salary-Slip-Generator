@@ -100,7 +100,7 @@ export default function PensionDocuments() {
             <td>
               {record?.file_path ? (
                 <a
-                  href={`${BASE_URL}/${record.file_path}`}
+                  href={`${process.env.REACT_APP_IMAGE_FILAPI}/${record.file_path}`}
                   download
                   target="_blank"
                   rel="noopener noreferrer"
@@ -130,13 +130,13 @@ export default function PensionDocuments() {
   };
   
   useEffect(() => {
-    dispatch(fetchPensionDocument());
-  }, [dispatch]);
+    dispatch(fetchPensionDocument({page,limit:rowsPerPage}));
+  }, [dispatch,page,rowsPerPage]);
   
   const handleHistoryStatus = (id) => {
       handleClose();
-      dispatch(fetchPensionDocumentShow(id)).then((res) => {
-        const history = res.payload?.history || [];
+      dispatch(fetchPensionDocumentShow(id)).then((res) => {       
+        const history = res.payload?.data?.history || [];
         if (Array.isArray(history)) {
           const config = getTableConfig("document");
           setHistoryRecord(history);
@@ -259,7 +259,8 @@ export default function PensionDocuments() {
               <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                 <Table>
                   <TableHead>
-                    <TableRow>                   
+                    <TableRow>
+                    <TableCell style={{ fontWeight: "900" }}>Pensioner</TableCell>                   
                       <TableCell style={{ fontWeight: "900" }}>Document Type</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Document Number</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Issue Date</TableCell>
@@ -269,7 +270,8 @@ export default function PensionDocuments() {
                   </TableHead>
                   <TableBody>
                     {document.map((row, idx) => (
-                      <TableRow key={row.id}>                       
+                      <TableRow key={row.id}>      
+                        <TableCell>{row.pensioner?.first_name}</TableCell>                 
                         <TableCell>{row.document_type}</TableCell>
                         <TableCell>{row.document_number}</TableCell>
                         <TableCell>{row.issue_date}</TableCell>

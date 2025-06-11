@@ -22,7 +22,7 @@ const PensionerServiceDetails = ({ onNext }) => {
 
   const validate = (values) => {
     const errors = {};
-    if (values.retired_employee_id == 'Select Retired') errors.retired_employee_id = 'Required';
+    // if (values.retired_employee_id == 'Select Retired') errors.retired_employee_id = 'Required';
     if (!values.doj) errors.doj = 'Required';
     if (!values.dor) errors.dor = 'Required';
     if (!values.start_date) errors.start_date = 'Required';
@@ -35,7 +35,6 @@ const PensionerServiceDetails = ({ onNext }) => {
     try {
       toast.success('Pensioner Service Saved');
       onNext();
-      console.log(pensionerForm)
     } catch (err) {
       const apiMsg =
         err?.response?.data?.message ||
@@ -59,7 +58,7 @@ const PensionerServiceDetails = ({ onNext }) => {
       {({ values, errors, touched }) => (
         <Form>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <TextField
                 select
                 fullWidth               
@@ -73,7 +72,7 @@ const PensionerServiceDetails = ({ onNext }) => {
                 <MenuItem value="Select Retired">Select Retired</MenuItem>
                 {retired.map((ret) => <MenuItem key={ret.id} value={ret.id}>{ret.first_name}{ret.last_name}</MenuItem>)}
               </TextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={4}>
               <TextField
                 type="date"

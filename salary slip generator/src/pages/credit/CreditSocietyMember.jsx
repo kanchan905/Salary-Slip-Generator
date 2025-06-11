@@ -59,7 +59,7 @@ export default function CreditSocietyMember() {
 
     useEffect(() => {
         dispatch(fetchCredits({ id: searchQuery, page, limit: rowsPerPage }));
-    }, [dispatch, searchQuery]);
+    }, [dispatch, searchQuery, page,rowsPerPage]);
 
     // const filteredData = dearness.filter((item) =>
     //   String(item.dr_percentage).toLowerCase().includes(searchQuery.toLowerCase())

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, TextField, Button } from '@mui/material';
 import { Formik, Form } from 'formik';
 import { toast } from 'react-toastify';
-import { resetUserForm, updateEmployeeField } from '../../redux/slices/memberStoreSlice';
+import { resetemployeeForm, updateEmployeeField } from '../../redux/slices/memberStoreSlice';
 import { storeEmployee } from '../../redux/slices/employeeSlice';
 import { addDesignation } from '../../redux/slices/employeeSlice';
 import { addBankdetails } from '../../redux/slices/employeeSlice';
@@ -121,27 +121,33 @@ const AdditionalInformation = () => {
         toast.success('Additional information saved');
         console.log('Additional information saved:', employeeForm);
         try {
-           await dispatch(storeEmployee(employeeData)).unwrap()
-                .then((res) => {
-                    toast.success('Employee Added');
-                    const bankData = { ...BankData, employee_id: res[1]?.employee_id }
-                    dispatch(addBankdetails(bankData)).unwrap()
-                        .then(() => {
-                            toast.success('Bank Detail of Employee Added');
-                        })
-                    const designationData = { ...DesignationData, employee_id: res[1]?.employee_id }
-                    dispatch(addDesignation(designationData)).unwrap()
-                        .then(() => {
-                            toast.success('Designation of Employee Added');
-                        })
-                })
-                .catch((err) => {
-                    const apiMsg = err?.data?.message || err?.message || err?.errorMsg || 'Failed to add employee.';
-                    toast.error(apiMsg);
-                });
-          dispatch(resetUserForm());
+            // Step 1: Store the main employee data and wait for the result
+            const res = await dispatch(storeEmployee(employeeData)).unwrap();
+            toast.success('Employee Added Successfully');
+
+            const employeeId = res?.[1]?.employee_id;
+            if (!employeeId) {
+                // Throw an error if we don't get the ID we need for the next steps
+                throw new Error('Could not retrieve employee ID after creation.');
+            }
+
+            // Step 2: Add bank details using the new ID and wait for it to complete
+            const bankDataWithId = { ...BankData, employee_id: employeeId };
+            await dispatch(addBankdetails(bankDataWithId)).unwrap();
+            toast.success('Bank Details Added Successfully');
+
+            // Step 3: Add designation using the new ID and wait for it to complete
+            const designationDataWithId = { ...DesignationData, employee_id: employeeId };
+            await dispatch(addDesignation(designationDataWithId)).unwrap();
+            toast.success('Designation Added Successfully');
+
+            // Step 4: Only reset the form if all previous steps were successful
+            dispatch(resetemployeeForm());
+
         } catch (err) {
-            toast.error('Failed to save additional information');
+            // This single catch block will now correctly handle an error from ANY of the steps
+            const apiMsg = err?.data?.message || err?.message || 'An error occurred during submission.';
+            toast.error(apiMsg);
         }
     };
 

@@ -134,7 +134,6 @@ const handleHistoryStatus = (id) => {
   // console.log(searchQuery)
 
   useEffect(() => {
-    // console.log(searchQuery)
     dispatch(fetchPensioners({page:page,limit:rowsPerPage,id:searchQuery}))
   }, [dispatch, page, rowsPerPage,searchQuery])
 

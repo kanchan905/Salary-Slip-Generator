@@ -40,7 +40,7 @@ export default function PensionDocumentModal({
   }, [dispatch])
 
   return (
-    <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} scrollable>
+    <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} >
       <div className="pt-4 pb-4 px-4">
         <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit} enableReinitialize>
           {({ isSubmitting, values, setFieldValue }) => (
@@ -62,7 +62,7 @@ export default function PensionDocumentModal({
                       <option value="">Select Pensioner</option>
                       {pensionersData.map((p) => (
                         <option key={p.id} value={p.pensioner_id}>
-                          {p.pensioner_id}
+                          {p.pensioner.first_name}
                         </option>
                       ))}
                     </Input>

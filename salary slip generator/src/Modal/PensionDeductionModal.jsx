@@ -26,8 +26,9 @@ export default function PensionDeductionModal({
     return errors;
   };
   const dispatch = useDispatch();
-  const { netPension, netPensionData } = useSelector((state) => state.netPension);
-
+  const  netPensionData = useSelector((state) => state.netPension.netPension);
+  const netPension =  netPensionData.filter((data) => data.is_verified == "0");
+  
   
   useEffect(() => {
     dispatch(fetchNetPension({ page: 1, limit: 40}));
@@ -49,7 +50,7 @@ export default function PensionDeductionModal({
                       <option value="">Select</option>
                     {
                       netPension?.map((data, idx) => (
-                        <option key={`netPension-${idx}`} value={data.id}>{data.net_pension}</option>
+                        <option key={`netPension-${idx}`} value={data.id}>{data.pensioner.first_name}-{data.net_pension}</option>
                       ))
                     }
                       

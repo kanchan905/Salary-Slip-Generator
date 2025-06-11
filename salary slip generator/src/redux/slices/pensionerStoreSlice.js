@@ -12,7 +12,7 @@ const initialState = {
     pan_number: '',
     mobile_no: '',
     email: '',
-    retired_employee_id: 'Select Retired',
+    retired_employee_id: '1',
     doj: '',
     dor: '',
     start_date: '',

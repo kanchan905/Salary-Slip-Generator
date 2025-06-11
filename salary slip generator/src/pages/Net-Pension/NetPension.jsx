@@ -104,7 +104,7 @@ export default function NetPension() {
        if (!isHistoryModalOpen) {
         dispatch(fetchNetPension({ page, limit: rowsPerPage }));
       }
-    }, [dispatch, isHistoryModalOpen]);
+    }, [dispatch, isHistoryModalOpen, page,rowsPerPage]);
 
 
     const handleSearchChange = (e) => {
@@ -211,6 +211,7 @@ export default function NetPension() {
                                     <Table>
                                         <TableHead>
                                             <TableRow> 
+                                                <TableCell style={{ fontWeight: "900" }}>Pensioner</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
@@ -222,6 +223,7 @@ export default function NetPension() {
                                         <TableBody>
                                             {netPension?.map((row, idx) => (
                                                 <TableRow key={row.id}>
+                                                    <TableCell>{row.pensioner?.first_name}</TableCell>
                                                     <TableCell>{row.month}</TableCell>
                                                     <TableCell>{row.year}</TableCell>
                                                     <TableCell>{row.net_pension}</TableCell>

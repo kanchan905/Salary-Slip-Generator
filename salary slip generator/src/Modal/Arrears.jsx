@@ -37,27 +37,27 @@ const initialValues = {
 };
 
 const validationSchema = Yup.object({
-  pensioner_id: Yup.string().required("Pensioner ID is required"),
-  from_month: Yup.date().required("From Month is required"),
+  pensioner_id: Yup.string().required("Required"),
+  from_month: Yup.date().required("Required"),
   to_month: Yup.date()
     .min(Yup.ref("from_month"), "To Month cannot be before From Month")
-    .required("To Month is required"),
-  payment_month: Yup.date().required("Payment Month is required"),
+    .required("Required"),
+  payment_month: Yup.date().required("Required"),
   basic_arrear: Yup.number()
     .typeError("Basic Arrear must be a number")
-    .required("Basic Arrear is required"),
+    .required("Required"),
   additional_arrear: Yup.number()
     .typeError("Additional Arrear must be a number")
-    .required("Additional Arrear is required"),
+    .required("Required"),
   dr_percentage: Yup.number()
     .typeError("DR Percentage must be a number")
-    .required("DR Percentage is required"),
+    .required("Required"),
   dr_arrear: Yup.number()
     .typeError("DR Arrear must be a number")
-    .required("DR Arrear is required"),
+    .required("Required"),
   total_arrear: Yup.number()
     .typeError("Total Arrear must be a number")
-    .required("Total Arrear is required"),
+    .required("Required"),
   remarks: Yup.string(),
   added_by: Yup.string(),
   edited_by: Yup.string(),

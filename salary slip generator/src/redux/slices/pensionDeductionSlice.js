@@ -3,9 +3,9 @@ import axiosInstance from 'global/AxiosSetting';
 
 export const fetchPensionDeduction = createAsyncThunk(
     'pension/fetchPensionDeduction',
-    async (_, { rejectWithValue }) => {
+    async ({page,limit}, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/pension-deduction`);
+            const response = await axiosInstance.get(`/pension-deduction?page=${page}&limit=${limit}`);
             return {
                 data: response.data.data,
                 totalCount: response.data.total_count
