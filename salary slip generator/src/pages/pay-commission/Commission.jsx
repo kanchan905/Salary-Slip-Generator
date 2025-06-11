@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Row,
   Col,
+  Form,
 } from "reactstrap";
 import { Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +16,9 @@ import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import LevelFormModal from "Modal/LevelFormModal";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, IconButton, TextField } from "@mui/material";
+import { Cancel, Save } from "@mui/icons-material";
+import { updateCellToAPI } from "../../redux/slices/levelCellSlice";
 
 function Commission({selectedCommissionId, commissionName}) {
 
@@ -25,6 +28,9 @@ function Commission({selectedCommissionId, commissionName}) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [formOpen, setFormOpen] = useState(false);
+  const [editingCell, setEditingCell] = useState({ levelId: null, rowIndex: null });
+  const [cellValue, setCellValue] = useState('');
+  const [cellData, setCellData] = useState(null);
 
   const toggleModal = () => {
     setFormOpen(!formOpen);
@@ -82,6 +88,37 @@ function Commission({selectedCommissionId, commissionName}) {
     setFormOpen(true);
   };
 
+  const handleCellEdit = (levelId, rowIndex, cellData) => {
+    console.log("Editing cell:", cellData);
+    setEditingCell({ levelId, rowIndex });
+    setCellValue(cellData.amount || '');
+    setCellData(cellData);
+  };
+
+  const handleCellSave = async () => {
+    if (editingCell.levelId && editingCell.rowIndex !== null) {
+      try {
+        await dispatch(updateCellToAPI({
+          id: cellData.id,
+          index: cellData.index,
+          amount: cellData.amount,
+          matrix_level_id: cellData.matrix_level_id
+        })).unwrap();
+        toast.success("Cell updated successfully!");
+        setEditingCell({ levelId: null, rowIndex: null });
+        setCellValue("");
+      } catch (error) {
+        toast.error("Failed to update cell.");
+      }
+      
+    }
+  }
+
+  const handleEditClose = () => {
+    setEditingCell({ levelId: null, rowIndex: null });
+    setCellValue('');
+  }
+
   return (
     <>
       {/* <Typography variant="h6" mb={2}>Pay Matrix Levels</Typography> */}
@@ -138,8 +175,27 @@ function Commission({selectedCommissionId, commissionName}) {
                                     (c) => c.index === rowIndex + 1
                                   );
                                   return (
-                                    <td key={level.id + "-" + rowIndex}>
-                                      {cell ? cell.amount : "-"}
+                                    <td key={level.id + "-" + rowIndex} style={{ cursor: "pointer" }}>
+                                      {editingCell.levelId === level.id && editingCell.rowIndex === rowIndex ? (
+                                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <TextField
+                                              type="number"
+                                              value={cellValue}
+                                              onChange={(e) => setCellValue(cell)}
+                                              style={{ width: '100px', marginRight: '0.5rem' }}
+                                            />
+                                            <IconButton color="success" size="sm" onClick={() => handleCellSave()}>
+                                              <Save/>
+                                            </IconButton>
+                                            <IconButton color="error" size="sm" onClick={handleEditClose}>
+                                              <Cancel/>
+                                            </IconButton>
+                                          </div>
+                                      ) : (
+                                        <span onClick={() => handleCellEdit(level.id, rowIndex, cell ?? '')}>
+                                          {cell ? cell.amount : "-"}
+                                        </span>
+                                      )}
                                     </td>
                                   );
                                 })}
