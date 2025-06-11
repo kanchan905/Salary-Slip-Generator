@@ -45,10 +45,14 @@ export default function UserTable() {
     const loading = useSelector((state) => state.user.loading);
     const [editId, setEditId] = React.useState(null);
     const errror = useSelector((state) => state.user.error);
+   
 
     useEffect(() => {
         dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
     }, [dispatch, page, rowsPerPage]);
+
+    
+
 
     const [formMode, setFormMode] = React.useState('create');
 
@@ -257,6 +261,7 @@ export default function UserTable() {
                     handleSubmit={handleSubmit}
                     setFormOpen={setFormOpen}
                 />
+
             </div>
         </>
     );
