@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Row, Col, Button, FormGroup, Label, Input } from "reactstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { months } from "utils/helpers";
 
 export default function NetSalaryModal({
   formOpen,
@@ -22,15 +23,15 @@ export default function NetSalaryModal({
 
   const validate = (values) => {
     const errors = {};
-    if (!values.employee_id) errors.employee_id = "Required";
     if (!values.month) errors.month = "Required";
     if (!values.year) errors.year = "Required";
     if (!values.processing_date) errors.processing_date = "Required";
     if (!values.net_amount) errors.net_amount = "Required";
     if (!values.payment_date) errors.payment_date = "Required";
-    if (!values.employee_bank_id) errors.employee_bank_id = "Required";
     return errors;
   };
+
+
 
   return (
     <Modal
@@ -48,28 +49,18 @@ export default function NetSalaryModal({
         >
           {({ isSubmitting }) => (
             <Form>
-              <h4 className="mb-4">{formMode === 'edit'? 'Edit' : 'Add'} Net Salary</h4>
-              <Row>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="employee_id">Employee ID</Label>
-                    <Field as={Input} type="number" id="employee_id" name="employee_id" />
-                    <ErrorMessage name="employee_id" component="div" className="text-danger" />
-                  </FormGroup>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="employee_bank_id">Employee Bank ID</Label>
-                    <Field as={Input} type="number" id="employee_bank_id" name="employee_bank_id" />
-                    <ErrorMessage name="employee_bank_id" component="div" className="text-danger" />
-                  </FormGroup>
-                </Col>
-              </Row>
+              <h4 className="mb-4">{formMode === 'edit'? 'Edit' : 'Add'} Net Salary</h4>   
               <Row>
                 <Col md="6">
                   <FormGroup>
                     <Label for="month">Month</Label>
-                    <Field as={Input} type="number" id="month" name="month" />
+                    <Field as={Input} type="select" id="month" name="month" >
+                      {months.map((month) => (
+                        <option key={month.value} value={month.value}>
+                          {month.label}
+                        </option>
+                      ))}
+                    </Field>
                     <ErrorMessage name="month" component="div" className="text-danger" />
                   </FormGroup>
                 </Col>

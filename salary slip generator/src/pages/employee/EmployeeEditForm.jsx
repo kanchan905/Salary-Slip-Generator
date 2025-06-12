@@ -28,7 +28,7 @@ function EmployeeEditForm() {
     const [initialValues, setInitialValues] = useState({
         first_name: '',
         last_name: '',
-        gender: 'Select Gender',
+        gender: '',
         date_of_birth: '',
         date_of_joining: '',
         date_of_retirement: '',
@@ -44,7 +44,11 @@ function EmployeeEditForm() {
         uniform_allowance_eligibility: false,
         hra_eligibility: false,
         npa_eligibility: false,
-        institute: 'Select institute'
+        institute: '',
+        middle_name: '',
+        user_id: '',
+        prefix: '',
+        employee_code: '',
     });
 
     useEffect(() => {
@@ -53,10 +57,10 @@ function EmployeeEditForm() {
         }
     }, [id, dispatch]);
 
+   
     useEffect(() => {
         if (employeeDetail) {
             setInitialValues({
-                ...initialValues,
                 ...employeeDetail,
                 pwd_status: !!employeeDetail.pwd_status,
                 gis_eligibility: !!employeeDetail.gis_eligibility,
@@ -64,44 +68,40 @@ function EmployeeEditForm() {
                 uniform_allowance_eligibility: !!employeeDetail.uniform_allowance_eligibility,
                 hra_eligibility: !!employeeDetail.hra_eligibility,
                 npa_eligibility: !!employeeDetail.npa_eligibility,
-                institute: !!employeeDetail.institute || 'Select institute',
+                // date_of_birth: employeeDetail.date_of_birth,
+                // date_of_joining: employeeDetail.date_of_joining,
+                // date_of_retirement: employeeDetail.date_of_retirement,
+                // institute: employeeDetail.institute || '',
+                // prefix: employeeDetail.prefix || '',
+                // gender: employeeDetail.gender || '',
+                // pension_scheme: employeeDetail.pension_scheme || '',
             });
         }
-    }, [employeeDetail]);
+    }, [employeeDetail, dispatch]); 
 
     const validationSchema = Yup.object({
-        first_name: Yup.string()
-            .required('First Name is required')
-            .max(50, 'First Name cannot exceed 50 characters'),
-        last_name: Yup.string()
-            .required('Last Name is required')
-            .max(50, 'Last Name cannot exceed 50 characters'),
-        gender: Yup.string().oneOf(['male', 'female', 'other'], 'Gender is required')
-            .required('Gender is required'),
-        date_of_birth: Yup.date()
-            .required('Date of Birth is required')
-            .max(new Date(), 'Date of Birth cannot be in the future'),
-        date_of_joining: Yup.date()
-            .required('Date of Joining is required'),
-        date_of_retirement: Yup.date()
-            .nullable()
-            .min(Yup.ref('date_of_joining'), 'Date of Retirement must be after Date of Joining'),
-        pension_scheme: Yup.string().oneOf(['GPF', 'NPS'], 'Pension Scheme is required')
-            .required('Pension Scheme is required'),
-        email: Yup.string()
-            .email('Invalid email format')
-            .required('Email is required'),
-        institute: Yup.string().oneOf(['NIOH', 'ROHC'], 'institute required')
-            .required('Institute is reuired'),
-        pancard: Yup.string()
-            .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN Card format')
-            .required('PAN Card is required'),
+        first_name: Yup.string().required('First Name is required').max(50, 'First Name too long'),
+        last_name: Yup.string().required('Last Name is required').max(50, 'Last Name too long'),
+        gender: Yup.string().oneOf(['male', 'female', 'other'], 'Invalid Gender').required('Gender is required'),
+        date_of_birth: Yup.date().required('Date of Birth is required').max(new Date(), 'Date of Birth cannot be in the future'),
+        date_of_joining: Yup.date().required('Date of Joining is required'),
+        date_of_retirement: Yup.date().nullable().min(Yup.ref('date_of_joining'), 'Retirement must be after Joining'),
+        pension_scheme: Yup.string().oneOf(['GPF', 'NPS'], 'Invalid Pension Scheme').required('Pension Scheme is required'),
+        email: Yup.string().email('Invalid email format').required('Email is required'),
+        institute: Yup.string().oneOf(['NIOH', 'ROHC'], 'Invalid Institute').required('Institute is required'),
+        pancard: Yup.string().matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format').required('PAN Card is required'),
+        middle_name: Yup.string().max(50, 'Middle Name too long'),
+        user_id: Yup.string().max(50, 'User ID too long'),
+        prefix: Yup.string().oneOf(['Mr.', 'Mrs.', 'Ms.', 'Dr.'], 'Invalid prefix').required('Prefix is required'),
+        employee_code: Yup.string().max(50, 'Employee Code too long'),
     });
 
+    
     const onSubmit = async (values, { setSubmitting }) => {
         try {
-            const processedValues = {
+            const employeeData = {
                 ...values,
+                // Convert booleans to 1 or 0 for the API
                 pwd_status: values.pwd_status ? 1 : 0,
                 gis_eligibility: values.gis_eligibility ? 1 : 0,
                 credit_society_member: values.credit_society_member ? 1 : 0,
@@ -109,45 +109,17 @@ function EmployeeEditForm() {
                 hra_eligibility: values.hra_eligibility ? 1 : 0,
                 npa_eligibility: values.npa_eligibility ? 1 : 0,
             };
-            const apiData = {
-                first_name: processedValues.first_name,
-                last_name: processedValues.last_name,
-                gender: processedValues.gender,
-                date_of_birth: processedValues.date_of_birth,
-                date_of_joining: processedValues.date_of_joining,
-                date_of_retirement: processedValues.date_of_retirement,
-                pwd_status: processedValues.pwd_status,
-                pension_scheme: processedValues.pension_scheme,
-                pension_number: processedValues.pension_number,
-                gis_eligibility: processedValues.gis_eligibility,
-                gis_no: processedValues.gis_no,
-                credit_society_member: processedValues.credit_society_member,
-                email: processedValues.email,
-                pancard: processedValues.pancard,
-                increment_month: processedValues.increment_month,
-                uniform_allowance_eligibility: processedValues.uniform_allowance_eligibility,
-                hra_eligibility: processedValues.hra_eligibility,
-                npa_eligibility: processedValues.npa_eligibility,
-                institute: processedValues.institute || 'Select institute',
-            };
-            await dispatch(UpdateEmployee({ employeeId: id, employeeData: apiData })).unwrap()
-                .then(() => {
-                    toast.success("Employee updated successfully");
 
-                })
+            await dispatch(UpdateEmployee({ employeeId: id, employeeData })).unwrap();
+            toast.success("Employee updated successfully");
+
         } catch (err) {
-            const apiMsg =
-                err?.response?.data?.message ||
-                err?.message ||
-                err?.message ||
-                'Failed to update employee.';
+            const apiMsg = err?.response?.data?.message || err?.message || 'Failed to update employee.';
             toast.error(apiMsg);
         } finally {
             setSubmitting(false);
         }
-    }
-
-    const { name } = useSelector((state) => state.auth.user.role);
+    };
 
     return (
         <div>
@@ -197,6 +169,67 @@ function EmployeeEditForm() {
                                                     className="form-control"
                                                 />
                                                 <ErrorMessage name="last_name" component="p" className="text-red-600 text-sm mt-1" />
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={6}>
+                                            <FormGroup>
+                                                <Label for="middle_name">Middle Name</Label>
+                                                <Field
+                                                    id="middle_name"
+                                                    name="middle_name"
+                                                    type="text"
+                                                    className="form-control"
+                                                />
+                                                <ErrorMessage name="middle_name" component="p" className="text-red-600 text-sm mt-1" />
+                                            </FormGroup>
+                                        </Col>
+
+                                        <Col md={6}>
+                                            <FormGroup>
+                                                <Label for="prefix">Prefix*</Label>
+                                                <Field
+                                                    as="select"
+                                                    id="prefix"
+                                                    name="prefix"
+                                                    className="form-control"
+                                                >
+                                                    <option value=''>Select Prefix</option>
+                                                    <option value="Mr.">Mr.</option>
+                                                    <option value="Mrs.">Mrs.</option>
+                                                    <option value="Ms.">Ms.</option>
+                                                    <option value="Dr.">Dr.</option>
+                                                </Field>
+                                                <ErrorMessage name="prefix" component="p" className="text-red-600 text-sm mt-1" />
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+
+                                    <Row>
+                                        <Col md={6}>
+                                            <FormGroup>
+                                                <Label for="employee_code">Employee Code</Label>
+                                                <Field
+                                                    id="employee_code"
+                                                    name="employee_code"
+                                                    type="text"
+                                                    className="form-control"
+                                                />
+                                                <ErrorMessage name="employee_code" component="p" className="text-red-600 text-sm mt-1" />
+                                            </FormGroup>
+                                        </Col>
+
+                                        <Col md={6}>
+                                            <FormGroup>
+                                                <Label for="user_id">User ID</Label>
+                                                <Field
+                                                    id="user_id"
+                                                    name="user_id"
+                                                    type="text"
+                                                    className="form-control"
+                                                />
+                                                <ErrorMessage name="user_id" component="p" className="text-red-600 text-sm mt-1" />
                                             </FormGroup>
                                         </Col>
                                     </Row>
@@ -292,7 +325,7 @@ function EmployeeEditForm() {
                                                     type="select"
                                                     className="form-control"
                                                 >
-                                                    <option value="Select Gender">Select Gender</option>
+                                                    <option value=''>Select Gender</option>
                                                     <option value="male">Male</option>
                                                     <option value="female">Female</option>
                                                     <option value="other">Other</option>
@@ -309,7 +342,7 @@ function EmployeeEditForm() {
                                                     type="select"
                                                     className="form-control"
                                                 >
-                                                    <option value="Select institute">Select institute</option>
+                                                    <option value=''>Select institute</option>
                                                     <option value="NIOH">NIOH</option>
                                                     <option value="ROHC">ROHC</option>
                                                 </Field>

@@ -46,7 +46,7 @@ export default function BankDetails() {
     ifsc_code: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { name } = useSelector((state) => state.auth.user.role);
   const navigate = useNavigate();
@@ -186,7 +186,6 @@ export default function BankDetails() {
   };
 
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
-    console.log(values)
     if (formMode === 'edit') {
       dispatch(updateBankDetail({ id: editId, values: values }))
         .unwrap()
@@ -223,7 +222,6 @@ export default function BankDetails() {
   };
 
   const handleToggleStatus = async (row) => {
-    console.log(row.id)
     dispatch(toggleBankDetailStatus({ id: row?.id })).unwrap()
       .then(() => {
         dispatch(fetchBankDetails({ page: '', limit: '', id: '' }));
@@ -251,8 +249,8 @@ export default function BankDetails() {
       <div className="mt--7 mb-7 container-fluid">
         <Card className="card-stats mb-4 mb-lg-0">
           <CardHeader>
-            <div className="d-flex justify-content-between align-items-center">
-              <TextField placeholder="pensioner id" onChange={handleSearchChange} />
+            <div className="d-flex justify-content-end align-items-center">
+              {/* <TextField placeholder="pensioner id" onChange={handleSearchChange} /> */}
               <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                 + Add
               </Button>
@@ -280,7 +278,7 @@ export default function BankDetails() {
                   <TableBody>
                     {bankdetails.map((row, idx) => (
                       <TableRow key={row.id}>                   
-                        <TableCell>{row.pensioner?.first_name}</TableCell>
+                        <TableCell>{row.pensioner?.first_name} {row.pensioner?.middle_name} {row.pensioner?.last_name}</TableCell>
                         <TableCell>{row.bank_name}</TableCell>
                         <TableCell>{row.branch_name}</TableCell>
                         <TableCell>{row.account_no}</TableCell>

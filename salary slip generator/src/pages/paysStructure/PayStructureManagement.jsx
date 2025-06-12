@@ -8,15 +8,14 @@ import {
   Nav,
   TabContent,
   TabPane,
+  CardHeader,
 } from "reactstrap";
-import PayLevel from "./PayLevel";
-import PayMatrixCell from "./PayCell";
 // import AllowanceRates from "./PayRates";
 import EmployeePayStructures from "./EmployeePayStructure";
 
 class PaysStructure extends React.Component {
   state = {
-    tabs: 1
+    tabs: 3
   };
   toggleNavs = (e, state, index) => {
     e.preventDefault();
@@ -39,34 +38,6 @@ class PaysStructure extends React.Component {
           >
             <NavItem>
               <NavLink
-                aria-selected={this.state.tabs === 1}
-                className={classnames("mb-sm-3 mb-md-0 bg-white", {
-                  navactive: this.state.tabs === 1
-                })}
-                onClick={e => this.toggleNavs(e, "tabs", 1)}
-                href="#pablo"
-                role="tab"
-              >
-                <i className="ni ni-cloud-upload-96 mr-2" />
-                Pay Matrix Levels 
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                aria-selected={this.state.tabs === 2}
-                className={classnames("mb-sm-3 mb-md-0  bg-white", {
-                  navactive: this.state.tabs === 2
-                })}
-                onClick={e => this.toggleNavs(e, "tabs", 2)}
-                href="#pablo"
-                role="tab"
-              >
-                <i className="ni ni-bell-55 mr-2" />
-                Pay Matrix Cells 
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
                 aria-selected={this.state.tabs === 3}
                 className={classnames("mb-sm-3 mb-md-0 bg-white", {
                   navactive: this.state.tabs === 3
@@ -85,17 +56,7 @@ class PaysStructure extends React.Component {
 
         <Card className="shadow mt-7 mb-7">
           <CardBody>
-            <TabContent activeTab={"tabs" + this.state.tabs}>
-              <TabPane tabId="tabs1">
-                <PayLevel/>
-              </TabPane>
-              <TabPane tabId="tabs2">
-                <PayMatrixCell/>
-              </TabPane>
-              <TabPane tabId="tabs3">
-                <EmployeePayStructures/>
-              </TabPane>
-            </TabContent>
+            <EmployeePayStructures/>
           </CardBody>
         </Card>
         </div>

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchBankDetails } from "../redux/slices/bankSlice";
 import { fetchPensionRelated } from "../redux/slices/pensionRelatedSlice";
 import { fetchDearnessRelief } from "../redux/slices/dearnessRelief";
+import { months } from 'utils/helpers';
 
 
 export default function MonthlyPensionModal({
@@ -55,7 +56,7 @@ export default function MonthlyPensionModal({
 
 
   useEffect(() => {
-    if(initialValues?.pensioner_id){
+    if (initialValues?.pensioner_id) {
       setSelectedPensionerId(initialValues.pensioner_id);
     }
     dispatch(fetchPensioners({ page: '1', limit: 1000, id: '' }));
@@ -133,13 +134,13 @@ export default function MonthlyPensionModal({
                   </FormGroup>
                 </Col>
                 <Col md="6">
-                  <FormGroup> 
+                  <FormGroup>
                     <Label for="dr_id">DR*</Label>
                     <Field as={Input} type="select" id="dr_id" name="dr_id" >
                       <option value="">Select Dr</option>
                       {dearness?.map(p => (
                         <option key={p.id} value={p.id}>
-                            {p.dr_percentage}%
+                          {p.dr_percentage}%
                         </option>
                       ))}
                     </Field>
@@ -155,7 +156,12 @@ export default function MonthlyPensionModal({
                     <Col md="6">
                       <FormGroup>
                         <Label for="month">Month*</Label>
-                        <Field as={Input} id="month" name="month" placeholder="e.g., 05" />
+                        <Field as={Input} type="select" id="month" name="month" >
+                          <option value="">Select Month</option>
+                          {months.map((month) => (
+                            <option key={month} value={month.value}>{month.label}</option>
+                          ))}
+                        </Field>
                         <ErrorMessage name="month" component="div" className="text-danger" />
                       </FormGroup>
                     </Col>

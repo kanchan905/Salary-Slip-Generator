@@ -1,18 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, TextField, Button, MenuItem } from '@mui/material';
 import { Formik, Form } from 'formik';
-import { updatePensionerField } from '../../redux/slices/pensionerStoreSlice';
+import { updatePensionerField, updatePensionerFormFields } from '../../redux/slices/pensionerStoreSlice';
 import { toast } from 'react-toastify';
+import { fetchEmployees } from '../../redux/slices/employeeSlice';
+import { useEffect } from 'react';
 
 const relationOptions = ['Self', 'Spouse', 'Son', 'Daughter', 'Other'];
 
 const PensionerPersonalDetails = ({ onNext }) => {
   const dispatch = useDispatch();
   const { pensionerForm } = useSelector((state) => state.pensionerStore);
+  const { employees } = useSelector((state) => state.employee);
+  const [retired, setRetired] = useState([]);
+  const today = new Date();
+  
+  useEffect(() => {
+    if (employees.length > 0) {
+      const retire = employees.filter(emp =>
+        Array.isArray(emp?.employee_status) &&
+        emp.employee_status.some(emp => emp.status === 'Retired') &&
+        new Date(emp.date_of_retirement) <= today
+      );
+      setRetired(retire);
+    }
+  }, [employees])
+
+  useEffect(() => {
+    dispatch(fetchEmployees({ page: '1', limit: '1000', search: '' }))
+  }, [dispatch]);
 
   const validate = (values) => {
     const errors = {};
+    if (values.retired_employee_id == 'Select Retired') errors.retired_employee_id = 'Required';
     if (!values.ppo_no) errors.ppo_no = 'Required';
     if (!values.first_name) errors.first_name = 'Required';
     if (!values.last_name) errors.last_name = 'Required';
@@ -22,17 +43,15 @@ const PensionerPersonalDetails = ({ onNext }) => {
       errors.pan_number = 'Required';
     } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(values.pan_number)) {
       errors.pan_number = 'format should be 5 letters + 4 digits + 1 letter';
-    }    
-    if (!values.mobile_no) errors.mobile_no = 'Required';
-    if (!values.email) errors.email = 'Required';
+    }
+    // if (!values.mobile_no) errors.mobile_no = 'Required';
+    // if (!values.email) errors.email = 'Required';
     return errors;
   };
 
   const handleSubmit = () => {
     try {
-      toast.success('Pensioner Personal Detail Saved');
       onNext();
-      console.log(pensionerForm);
     } catch (err) {
       const apiMsg =
         err?.response?.data?.message ||
@@ -45,6 +64,24 @@ const PensionerPersonalDetails = ({ onNext }) => {
 
   const handleChange = (e) => {
     dispatch(updatePensionerField({ name: e.target.name, value: e.target.value }));
+    if (e.target.name === 'retired_employee_id') {
+      const employee = retired.find((r) => r.id === e.target.value);
+      if (employee) {
+        const data = {
+          first_name: employee.first_name || '',
+          middle_name: employee.middle_name || '',
+          last_name: employee.last_name || '',
+          dob: employee.date_of_birth || '',
+          email: employee.email || '',
+          institute: employee.user?.institute || '',
+          pan_number: employee.pancard || '',
+          doj: employee.date_of_joining || '',
+          dor: employee.employee_status[1]?.effective_from || '',
+          ppo_no: employee?.pension_number || '',
+        };
+        dispatch(updatePensionerFormFields(data));
+      }
+    }
   };
 
   return (
@@ -57,6 +94,21 @@ const PensionerPersonalDetails = ({ onNext }) => {
       {({ values, errors, touched }) => (
         <Form>
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                name="retired_employee_id"
+                label="Retired Employee ID*"
+                value={values.retired_employee_id}
+                onChange={handleChange}
+                error={touched.retired_employee_id && Boolean(errors.retired_employee_id)}
+                helperText={touched.retired_employee_id && errors.retired_employee_id}
+              >
+                <MenuItem value="Select Retired">Select Retired</MenuItem>
+                {retired.map((ret) => <MenuItem key={ret.id} value={ret.id}>{ret.first_name} {ret.middle_name} {ret.last_name}</MenuItem>)}
+              </TextField>
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -125,7 +177,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
                 InputLabelProps={{ shrink: true }}
                 value={values.dob}
                 onChange={handleChange}
-                error={touched.dob && Boolean(errors.dob)} 
+                error={touched.dob && Boolean(errors.dob)}
                 helperText={touched.dob && errors.dob}
               />
             </Grid>
@@ -136,32 +188,33 @@ const PensionerPersonalDetails = ({ onNext }) => {
                 label="PAN Number*"
                 value={values.pan_number}
                 onChange={handleChange}
-                error={touched.pan_number && Boolean(errors.pan_number)} 
+                error={touched.pan_number && Boolean(errors.pan_number)}
                 helperText={touched.pan_number && errors.pan_number}
               />
             </Grid>
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <TextField
                 fullWidth
                 name="mobile_no"
                 label="Mobile No*"
                 value={values.mobile_no}
                 onChange={handleChange}
-                error={touched.mobile_no && Boolean(errors.mobile_no)} 
+                error={touched.mobile_no && Boolean(errors.mobile_no)}
                 helperText={touched.mobile_no && errors.mobile_no}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid> */}
+            {/* <Grid item xs={12}>
               <TextField
                 fullWidth
                 name="email"
                 label="Email*"
                 value={values.email}
                 onChange={handleChange}
-                error={touched.email && Boolean(errors.email)} 
+                error={touched.email && Boolean(errors.email)}
                 helperText={touched.email && errors.email}
+                disabled
               />
-            </Grid>
+            </Grid> */}
           </Grid>
 
           <Grid container justifyContent="flex-end" sx={{ mt: 3 }}>

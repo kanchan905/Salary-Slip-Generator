@@ -28,7 +28,7 @@ import Menu from '@mui/material/Menu';
 
 export default function Pensioner() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const navigate = useNavigate();
   const { name } = useSelector((state) => state.auth.user.role);
@@ -181,12 +181,12 @@ const handleHistoryStatus = (id) => {
       <div className="mt--7 mb-7 container-fluid">
         <Card className="shadow border-0">
           <CardHeader>
-            <div className="d-flex justify-content-between align-items-center">
-              <TextField
+            <div className="d-flex justify-content-end align-items-center">
+              {/* <TextField
                 placeholder="pensioner "
                 onChange={handleSearchChange}
                 value={searchQuery}
-              />
+              /> */}
               <Button
                 style={{ background: "#004080", color: '#fff' }}
                 type="button"
@@ -219,7 +219,7 @@ const handleHistoryStatus = (id) => {
                     <TableBody>
                       {pensionersData.map((p) => (
                         <TableRow key={p.id}>
-                          <TableCell>{p.first_name}</TableCell>
+                          <TableCell>{p.first_name} {p.middle_name} {p.last_name}</TableCell>
                           <TableCell>{p.ppo_no}</TableCell>
                           <TableCell>{p.type_of_pension}</TableCell>                         
                           <TableCell>{p.dor}</TableCell>

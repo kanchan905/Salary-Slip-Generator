@@ -49,7 +49,7 @@ export default function NetSalary() {
         employee_bank_id: "",
     });
     const [searchQuery, setSearchQuery] = useState('');
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [renderFunction, setRenderFunction] = useState(() => null);
     const [historyRecord, setHistoryRecord] = useState([]);
@@ -180,12 +180,11 @@ export default function NetSalary() {
     };
 
     const handleSubmit = (values, { setSubmitting, resetForm }) => {
-        if (formMode === 'edit') {
             dispatch(updateNetSalary({ id: editId, values: values }))
                 .unwrap()
                 .then(() => {
                     toast.success("NetSalary updated successfully");
-                    dispatch(fetchNetSalary({ page, limit: rowsPerPage }));
+                    dispatch(fetchNetSalary({ page, limit: rowsPerPage,id:''}));
                 })
                 .catch((err) => {
                     const apiMsg =
@@ -194,21 +193,6 @@ export default function NetSalary() {
                         'Failed to save net salary.';
                     toast.error(apiMsg);
                 });
-        } else {
-            dispatch(createNetSalary(values))
-                .unwrap()
-                .then(() => {
-                    toast.success("NetSalary added");
-                    dispatch(fetchNetSalary({ page, limit: rowsPerPage }));
-                })
-                .catch((err) => {
-                    const apiMsg =
-                        err?.response?.data?.message ||
-                        err?.message ||
-                        'Failed to save net salary.';
-                    toast.error(apiMsg);
-                });
-        }
         resetForm();
         setFormOpen(false);
         setEditId(null);
@@ -235,7 +219,7 @@ export default function NetSalary() {
                 <Card className="card-stats mb-4 mb-lg-0">
                     <CardHeader>
                         <div className="d-flex justify-content-between align-items-center">
-                            <TextField placeholder="Employee Id" onChange={handleSearchChange} />
+                            {/* <TextField placeholder="Employee Id" onChange={handleSearchChange} /> */}
                             {/* <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                                 + Add
                             </Button> */}
@@ -252,24 +236,28 @@ export default function NetSalary() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
+                                                <TableCell style={{ fontWeight: "900" }}>Emp Code</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Bank Id</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>                                           
                                                 <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {netSalary.map((row, idx) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell>{row.month}</TableCell>
+                                                    <TableCell>{row.employee.employee_code}</TableCell>
+                                                    <TableCell>{row.employee.first_name} {row.employee.middle_name} {row.employee.last_name}</TableCell>
+                                                    <TableCell>
+                                                        {months.find((m) => m.value === row.month)?.label || 'NA'}
+                                                    </TableCell>
                                                     <TableCell>{row.year}</TableCell>
                                                     <TableCell>{row.processing_date}</TableCell>
                                                     <TableCell>{row.net_amount}</TableCell>
-                                                    <TableCell>{row.payment_date}</TableCell>
-                                                    <TableCell>{row.employee_bank_id}</TableCell>
+                                                    <TableCell>{row.payment_date}</TableCell>                                                  
                                                     <TableCell align="left">
                                                         <IconButton onClick={(e) => handleMenuClick(e, row)}>
                                                             <MoreVertIcon />

@@ -28,7 +28,7 @@ const splitName = (fullName) => {
 const initialState = {
     activeStep: 0,
     employeeForm: {
-        employee_code: 'Select Employee Code',
+        employee_code: 'Select User',
         prefix: 'Select Prefix',
         user_id: '',
         first_name: '',
@@ -62,7 +62,7 @@ const initialState = {
         branch_name: '',
         account_number: '',
         ifsc_code: '',
-        is_active:'Select status',
+        is_active:'1',
         promotion_order_no: '',
         institute:'Select Institute'
     },

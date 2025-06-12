@@ -48,7 +48,7 @@ export default function MonthlyPension() {
     processing_date: '',
     payment_date: '',
   });
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [renderFunction, setRenderFunction] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
@@ -274,7 +274,7 @@ export default function MonthlyPension() {
                       {monthlyPension && monthlyPension.length > 0 ? (
                         monthlyPension.map((row, idx) => (
                           <TableRow key={row.id}>
-                            <TableCell>{row?.net_pension?.pensioner?.first_name ?? "NA"}</TableCell>
+                            <TableCell>{row?.net_pension?.pensioner?.first_name} {row?.net_pension?.pensioner?.middle_name} {row?.net_pension?.pensioner?.last_name}</TableCell>
                             <TableCell>{row?.net_pension?.pensioner?.ppo_no ?? "NA"}</TableCell>
                             <TableCell>{row.basic_pension ?? "NA"}</TableCell>
                             <TableCell>{row.net_pension?.net_pension ?? "NA"}</TableCell>

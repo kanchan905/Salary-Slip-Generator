@@ -37,7 +37,7 @@ export default function PensionerInfoList() {
     const [editId, setEditId] = useState(null);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
     const [menuRowId, setMenuRowId] = useState(null);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [formData, setFormData] = useState({
         pensioner_id: '',
@@ -205,7 +205,7 @@ export default function PensionerInfoList() {
                                     <TableBody>
                                         {pensionRelated.map((row, idx) => (
                                             <TableRow key={row.id}>
-                                                <TableCell>{row.pensioner?.first_name}</TableCell>
+                                                <TableCell>{row.pensioner?.first_name} {row.pensioner?.middle_name} {row.pensioner?.last_name}</TableCell>
                                                 <TableCell>{row.basic_pension}</TableCell>
                                                 <TableCell>{row.commutation_amount}</TableCell>
                                                 <TableCell>{row.additional_pension}</TableCell>

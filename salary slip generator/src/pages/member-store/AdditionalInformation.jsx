@@ -118,8 +118,6 @@ const AdditionalInformation = () => {
     };
 
     const handleSubmit = async () => {
-        toast.success('Additional information saved');
-        console.log('Additional information saved:', employeeForm);
         try {
             // Step 1: Store the main employee data and wait for the result
             const res = await dispatch(storeEmployee(employeeData)).unwrap();

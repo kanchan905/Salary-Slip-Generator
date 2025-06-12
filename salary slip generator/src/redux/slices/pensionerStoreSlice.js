@@ -12,7 +12,7 @@ const initialState = {
     pan_number: '',
     mobile_no: '',
     email: '',
-    retired_employee_id: '1',
+    retired_employee_id: 'Select Retired',
     doj: '',
     dor: '',
     start_date: '',
@@ -43,6 +43,11 @@ const pensionerSlice = createSlice({
       const { name, value } = action.payload;
       state.pensionerForm[name] = value;
     },
+    updatePensionerFormFields: (state, action) => {
+      const obj = action.payload;
+      console.log(action.payload)
+      state.pensionerForm = { ...state.pensionerForm, ...obj };
+    },
     nextPensionerStep: (state) => {
       state.activeStep += 1;
     },
@@ -58,6 +63,7 @@ export const {
   nextPensionerStep,
   prevPensionerStep,
   resetPensionerForm,
+  updatePensionerFormFields
 } = pensionerSlice.actions;
 
 export default pensionerSlice.reducer;

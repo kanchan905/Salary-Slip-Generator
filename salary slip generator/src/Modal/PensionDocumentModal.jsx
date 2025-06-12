@@ -62,7 +62,7 @@ export default function PensionDocumentModal({
                       <option value="">Select Pensioner</option>
                       {pensionersData.map((p) => (
                         <option key={p.id} value={p.pensioner_id}>
-                          {p.pensioner.first_name}
+                          {p.pensioner.first_name} {p.pensioner.middle_name} {p.pensioner.last_name}
                         </option>
                       ))}
                     </Input>

@@ -26,7 +26,7 @@ export default function DearnessReliefModal({
   };
 
   return (
-    <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} scrollable>
+    <Modal className="modal-dialog-centered" isOpen={formOpen} toggle={() => toggleModal()} >
       <div className="pt-4 pb-4 px-4">
         <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit} enableReinitialize>
           {({ isSubmitting }) => (

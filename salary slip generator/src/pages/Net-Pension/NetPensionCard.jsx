@@ -1,8 +1,9 @@
 import { Box, CircularProgress, Grid, Typography, Paper, Divider, Chip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { showNetPension } from '../../redux/slices/netPensionSlice'; // Adjust path as needed
+import { Button } from 'reactstrap';
 
 function NetPensionCard() {
     const dispatch = useDispatch();
@@ -30,26 +31,36 @@ function NetPensionCard() {
             ) : (
                 <Box className='container-fluid mt-4 mb-4'>
                     <Paper elevation={3} sx={{ borderRadius: 3, p: 4, background: '#fff' }}>
-                        <Typography align="center" fontWeight="bold" variant="h2" gutterBottom>
-                            Net Pension
-                        </Typography>
+                        <div className='d-flex justify-content-between align-items-center mb-4' >
+                            <Typography align="center" fontWeight="bold" variant="h2" gutterBottom sx={{ width: '90%' }}>
+                                Net Pension
+                            </Typography>
+                            <NavLink to={`/net-pension`} sx={{ width: '10%' }}>
+                                <Button
+                                    style={{ background: "#004080", color: '#fff' }}
+                                    type="button"
+                                >
+                                    Back
+                                </Button>
+                            </NavLink>
+                        </div>
 
                         <Grid container justifyContent={'space-between'} mb={2}>
                             <Grid item xs={6}>
-                                <Typography variant="body1">Pensioner ID: {netPensionData?.pensioner_id || 'N/A'}</Typography>
+                                <Typography variant="body1">Emp Code: {netPensionData?.employee_code || 'N/A'}</Typography>
+                                <Typography variant="body1">Name: {netPensionData?.pensioner.first_name} {netPensionData?.pensioner.middle_name} {netPensionData?.pensioner.last_name}</Typography>
                                 <Typography variant="body1">Month: {netPensionData?.month}/{netPensionData?.year}</Typography>
                                 <Typography variant="body1">Processing Date: {netPensionData?.processing_date}</Typography>
                                 <Typography variant="body1">Payment Date: {netPensionData?.payment_date}</Typography>
+                                <Typography variant="body1">DOR: {netPensionData?.pensioner?.dor || 'N/A'}</Typography>
                             </Grid>
-                            <Grid item xs={12} md={4} textAlign="right">
-                                <Chip
-                                    label={netPensionData?.is_verified ? "Verified" : "Not Verified"}
-                                    color={netPensionData?.is_verified ? "success" : "warning"}
-                                    sx={{ fontWeight: 'bold', mb: 1 }}
-                                />
-                                <Typography variant="body2" color="text.secondary">
-                                    Created: {new Date(netPensionData?.created_at).toLocaleDateString()}
-                                </Typography>
+
+                            <Grid item xs={6}>
+                                <Typography variant="body1">Mobile No.: {netPensionData?.pensioner.mobile_no}</Typography>
+                                <Typography variant="body1">Bank Name: {netPensionData?.pensioner_bank.bank_name}</Typography>
+                                <Typography variant="body1">Branch Name: {netPensionData?.pensioner_bank.branch_name}</Typography>
+                                <Typography variant="body1">Account No.: {netPensionData?.pensioner_bank.account_no}</Typography>
+                                <Typography variant="body1">IFSC Code: {netPensionData?.pensioner_bank.ifsc_code}</Typography>
                             </Grid>
                         </Grid>
 
@@ -86,16 +97,28 @@ function NetPensionCard() {
 
                         <Divider sx={{ my: 3 }} />
 
-                        {/* Net Pension Summary */}
-                        <Box display="flex" justifyContent="flex-end" alignItems="center" mt={2}>
-                            <Typography variant="h6" fontWeight="bold" sx={{ mr: 2 }}>
-                                Net Pension:
-                            </Typography>
-                            <Chip
-                                label={`₹${netPensionData?.net_pension?.toLocaleString() || 0}`}
-                                color="success"
-                                sx={{ fontSize: 18, height: 40, px: 2 }}
-                            />
+                    
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                            <Box display="flex" justifyContent={"space-between"} alignItems="center">
+                                <Typography variant="h6" fontWeight="bold" sx={{ mr: 2 }}>
+                                    Added by: {netPensionData?.added_by?.name || 'N/A'}
+                                </Typography>
+                                <Chip
+                                    label={netPensionData?.is_verified ? "Verified" : "Not Verified"}
+                                    color={netPensionData?.is_verified ? "success" : "warning"}
+                                    sx={{ fontWeight: 'bold', mb: 1 }}
+                                />
+                            </Box>
+                            <Box display="flex" justifyContent={"space-between"} alignItems="center">
+                                <Typography variant="h6" fontWeight="bold" sx={{ mr: 2 }}>
+                                    Net Pension:
+                                </Typography>
+                                <Chip
+                                    label={`₹${netPensionData?.net_pension?.toLocaleString() || 0}`}
+                                    color="success"
+                                    sx={{ fontSize: 18, height: 40, px: 2 }}
+                                />
+                            </Box>
                         </Box>
                     </Paper>
                 </Box>

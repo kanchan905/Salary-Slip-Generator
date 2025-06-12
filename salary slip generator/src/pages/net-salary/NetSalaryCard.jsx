@@ -2,7 +2,7 @@ import { Box, CircularProgress, Grid, Typography, Paper, Divider, Chip, Avatar }
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { viewNetSalary } from '../../redux/slices/netSalarySlice';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import PaySlipEditModal from '../../Modal/PaySlipEditModal';
 import DeductionEditModal from '../../Modal/DeductionEditModal';
 import { Button } from 'reactstrap';
@@ -64,29 +64,34 @@ function NetSalaryCard() {
             ) : (
                 <Box className='container-fluid mt-4 mb-4'>
                     <Paper elevation={3} sx={{ borderRadius: 3, p: 4, background: '#fff' }}>
-                        <Typography align="center" fontWeight="bold" variant="h2" gutterBottom>
-                            Net Salary
-                        </Typography>
+                        <div className='d-flex justify-content-between align-items-center mb-4' >
+                            <Typography align="center" fontWeight="bold" variant="h2" gutterBottom sx={{ width: '90%' }}>
+                                Net Salary
+                            </Typography>
+                            <NavLink to={`/net-salary`} sx={{ width: '10%' }}>
+                                <Button
+                                    style={{ background: "#004080", color: '#fff' }}
+                                    type="button"
+                                >
+                                    Back
+                                </Button>
+                            </NavLink>
+                        </div>
 
                         <Grid container justifyContent={'space-between'} mb={2}>
                             <Grid item xs={6}>
-                                <Typography variant="body1">Employee ID: {netSalaryData?.employee_id || 'N/A'}</Typography>
+                                <Typography variant="body1">Emp code: {netSalaryData?.employee.employee_code || 'N/A'}</Typography>
+                                <Typography variant="body1">Name: {netSalaryData?.employee.first_name} {netSalaryData?.employee.middle_name} {netSalaryData?.employee.last_name}</Typography>
                                 <Typography variant="body1">Month: {netSalaryData?.month}/{netSalaryData?.year}</Typography>
                                 <Typography variant="body1">Processing Date: {netSalaryData?.processing_date}</Typography>
                                 <Typography variant="body1">Payment Date: {netSalaryData?.payment_date}</Typography>
+                                <Typography variant="body1">Institute: {netSalaryData?.employee.institute}</Typography>
                             </Grid>
-                            <Grid item xs={12} md={4} textAlign="right">
-                                <Chip
-                                    label={netSalaryData?.is_verified ? "Verified" : "Not Verified"}
-                                    color={netSalaryData?.is_verified ? "success" : "warning"}
-                                    sx={{ fontWeight: 'bold', mb: 1 }}
-                                />
-                                <Typography variant="body2" color="text.secondary">
-                                    Added by: {netSalaryData?.added_by?.name || 'N/A'}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Created: {new Date(netSalaryData?.created_at).toLocaleDateString()}
-                                </Typography>
+                            <Grid item xs={6}>
+                                <Typography variant="body1">Bank Name: {netSalaryData?.employee_bank.bank_name}</Typography>
+                                <Typography variant="body1">Branch Name: {netSalaryData?.employee_bank.branch_name}</Typography>
+                                <Typography variant="body1">Account No.: {netSalaryData?.employee_bank.account_no}</Typography>
+                                <Typography variant="body1">IFSC Code: {netSalaryData?.employee_bank.ifsc_code}</Typography>
                             </Grid>
                         </Grid>
 
@@ -190,16 +195,27 @@ function NetSalaryCard() {
 
                         <Divider sx={{ my: 3 }} />
 
-                        {/* Net Pay Summary */}
-                        <Box display="flex" justifyContent="flex-end" alignItems="center" mt={2}>
-                            <Typography variant="h6" fontWeight="bold" sx={{ mr: 2 }}>
-                                Net Pay:
-                            </Typography>
-                            <Chip
-                                label={netSalaryData?.net_amount ? `₹${netSalaryData.net_amount.toLocaleString()}` : '₹0'}
-                                color="success"
-                                sx={{ fontSize: 18, height: 40, px: 2 }}
-                            />
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                            <Box display="flex" justifyContent={"space-between"} alignItems="center">
+                                <Typography variant="h6" fontWeight="bold" sx={{ mr: 2 }}>
+                                    Added by: {netSalaryData?.added_by?.name || 'N/A'}
+                                </Typography>
+                                <Chip
+                                    label={netSalaryData?.is_verified ? "Verified" : "Not Verified"}
+                                    color={netSalaryData?.is_verified ? "success" : "warning"}
+                                    sx={{ fontWeight: 'bold', mb: 1 }}
+                                />
+                            </Box>
+                            <Box display="flex" justifyContent={"space-between"} alignItems="center">
+                                <Typography variant="h6" fontWeight="bold" sx={{ mr: 2 }}>
+                                    Net Pay:
+                                </Typography>
+                                <Chip
+                                    label={netSalaryData?.net_amount ? `₹${netSalaryData.net_amount.toLocaleString()}` : '₹0'}
+                                    color="success"
+                                    sx={{ fontSize: 18, height: 40, px: 2 }}
+                                />
+                            </Box>
                         </Box>
                     </Paper>
                 </Box>

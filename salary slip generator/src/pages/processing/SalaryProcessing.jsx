@@ -350,7 +350,7 @@ const SalaryProcessing = () => {
                                 <Autocomplete
                                     options={employees}
                                     getOptionLabel={(option) =>
-                                        `${option.first_name} ${option.last_name} - (${option.id})`
+                                        `${option.first_name} ${option?.middle_name} ${option.last_name} - (${option.id})`
                                     }
                                     value={employees.find(emp => emp.id === formData.employee_id) || null}
                                     onChange={(_, newValue) => {
@@ -701,7 +701,7 @@ const SalaryProcessing = () => {
                         <Grid container sx={{ justifyContent: 'space-between' }}>
                             <Grid item xs={6}>
                                 <Typography fontWeight="bold" gutterBottom>Employee Details</Typography>
-                                <Typography><strong>Name:</strong> {EmployeeDetail?.first_name} {EmployeeDetail?.last_name}</Typography>
+                                <Typography><strong>Name:</strong> {EmployeeDetail?.first_name} {EmployeeDetail?.middle_name} {EmployeeDetail?.last_name}</Typography>
                                 <Typography>
                                     <strong>Designation:</strong>
                                     {EmployeeDetail?.employee_designation?.map((des, index) => (

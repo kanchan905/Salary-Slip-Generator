@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, TextField, Button, MenuItem } from '@mui/material';
 import { Formik, Form } from 'formik';
 import { updatePensionerField } from '../../redux/slices/pensionerStoreSlice';
 import { toast } from 'react-toastify';
-import { fetchEmployees } from '../../redux/slices/employeeSlice';
+
 
 const pensionTypes = ['Regular', 'Family'];
 const statuses = ['Active', 'Deceased'];
@@ -12,17 +12,10 @@ const statuses = ['Active', 'Deceased'];
 const PensionerServiceDetails = ({ onNext }) => {
   const dispatch = useDispatch();
   const { pensionerForm } = useSelector((state) => state.pensionerStore);
-  const { employees } = useSelector((state) => state.employee);
-  const retired = employees.filter(emp => emp?.date_of_retirement !== null);
 
-
-  useEffect(() => {
-    dispatch(fetchEmployees({ page: '1', limit: '1000', search: '' }))
-  }, [dispatch])
 
   const validate = (values) => {
     const errors = {};
-    // if (values.retired_employee_id == 'Select Retired') errors.retired_employee_id = 'Required';
     if (!values.doj) errors.doj = 'Required';
     if (!values.dor) errors.dor = 'Required';
     if (!values.start_date) errors.start_date = 'Required';
@@ -33,7 +26,6 @@ const PensionerServiceDetails = ({ onNext }) => {
 
   const handleSubmit = () => {
     try {
-      toast.success('Pensioner Service Saved');
       onNext();
     } catch (err) {
       const apiMsg =
@@ -58,21 +50,6 @@ const PensionerServiceDetails = ({ onNext }) => {
       {({ values, errors, touched }) => (
         <Form>
           <Grid container spacing={2}>
-            {/* <Grid item xs={12}>
-              <TextField
-                select
-                fullWidth               
-                name="retired_employee_id"
-                label="Retired Employee ID*"
-                value={values.retired_employee_id}
-                onChange={handleChange}
-                error={touched.retired_employee_id && Boolean(errors.retired_employee_id)}
-                helperText={touched.retired_employee_id && errors.retired_employee_id}
-              >
-                <MenuItem value="Select Retired">Select Retired</MenuItem>
-                {retired.map((ret) => <MenuItem key={ret.id} value={ret.id}>{ret.first_name}{ret.last_name}</MenuItem>)}
-              </TextField>
-            </Grid> */}
             <Grid item xs={4}>
               <TextField
                 type="date"
@@ -83,7 +60,7 @@ const PensionerServiceDetails = ({ onNext }) => {
                 value={values.doj}
                 onChange={handleChange}
                 error={touched.doj && Boolean(errors.doj)}
-                helperText={touched.doj && errors.doj}
+                helperText={touched.doj && errors.doj}               
               />
             </Grid>
             <Grid item xs={4}>

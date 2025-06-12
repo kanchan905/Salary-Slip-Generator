@@ -26,7 +26,7 @@ import { useNavigate } from 'react-router-dom';
 const statusChipColor = (status) => {
     switch (status) {
         case "Active": return "success";
-        case "Banned": return "error";
+        case "Inactive": return "error";
         default: return "default";
     }
 };
@@ -37,7 +37,7 @@ export default function UserTable() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
     const [formOpen, setFormOpen] = React.useState(false);
-    const [page, setPage] = React.useState(0);
+    const [page, setPage] = React.useState(1);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const dispatch = useDispatch();
     const users = useSelector((state) => state.user.users);
@@ -45,10 +45,14 @@ export default function UserTable() {
     const loading = useSelector((state) => state.user.loading);
     const [editId, setEditId] = React.useState(null);
     const errror = useSelector((state) => state.user.error);
+   
 
     useEffect(() => {
         dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
     }, [dispatch, page, rowsPerPage]);
+
+    
+
 
     const [formMode, setFormMode] = React.useState('create');
 
@@ -115,7 +119,7 @@ export default function UserTable() {
                 .catch((err) => {
                     const apiMsg =
                         err?.response?.data?.message ||
-                        err?.message ||
+                        err?.errorMsg ||
                         err?.message ||
                         'Failed to update user.';
                     toast.error(apiMsg);
@@ -130,7 +134,7 @@ export default function UserTable() {
                 .catch((err) => {
                     const apiMsg =
                         err?.response?.data?.message ||
-                        err?.message ||
+                        err?.errorMsg ||
                         err?.message ||
                         'Failed to create user.';
                     toast.error(apiMsg);
@@ -160,7 +164,19 @@ export default function UserTable() {
     };
 
     const handleToggleStatus = async (user) => {
-        await dispatch(changeUserStatus({ id: user.id }));
+        await dispatch(changeUserStatus({ id: user.id })).unwrap()
+                .then(() => {
+                    toast.success('User updated successfully');
+                    dispatch(fetchUserData({ page: page, limit: rowsPerPage }))
+                })
+                .catch((err) => {
+                    const apiMsg =
+                        err?.response?.data?.message ||
+                        err?.errorMsg ||
+                        err?.message ||
+                        'Failed to update user.';
+                    toast.error(apiMsg);
+                });
         dispatch(fetchUserData({ page, limit: rowsPerPage }));
     };
 
@@ -191,31 +207,22 @@ export default function UserTable() {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell style={{ fontWeight: "900" }}>Role Name</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Emp Code</TableCell>
                                             <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Role</TableCell>                                          
                                             <TableCell style={{ fontWeight: "900" }}>Email</TableCell>
-                                            <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>
-                                            <TableCell style={{ fontWeight: "900" }}>Status</TableCell>
+                                            <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>                                         
                                             <TableCell align="right" style={{ fontWeight: "900" }}>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {users.map((user, idx) => (
                                             <TableRow key={idx}>
-                                                <TableCell>{user?.role?.name}</TableCell>
-                                                <TableCell>{user.first_name} {user.last_name}</TableCell>
+                                                <TableCell>{user?.employee_code}</TableCell>
+                                                <TableCell>{user.name}</TableCell>
+                                                <TableCell>{user?.role?.name}</TableCell>                                               
                                                 <TableCell>{user.email}</TableCell>
                                                 <TableCell>{user.institute}</TableCell>
-                                                <TableCell>
-                                                    <Chip
-                                                        label={user.is_active ? 'Active' : 'Inactive'}
-                                                        color={statusChipColor(user.is_active ? "Active" : "Inactive")}
-                                                        variant="outlined"
-                                                        size="small"
-                                                        onClick={() => handleToggleStatus(user)}
-                                                        style={{ cursor: 'pointer' }}
-                                                    />
-                                                </TableCell>
                                                 <TableCell align="right">
                                                     <IconButton onClick={(e) => handleMenuClick(e, idx)}>
                                                         <MoreVertIcon />
@@ -257,6 +264,7 @@ export default function UserTable() {
                     handleSubmit={handleSubmit}
                     setFormOpen={setFormOpen}
                 />
+
             </div>
         </>
     );

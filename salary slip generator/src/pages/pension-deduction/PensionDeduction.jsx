@@ -49,7 +49,7 @@ export default function PensionDeduction() {
     recovery: '',
     other: ''
   });
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [renderFunction, setRenderFunction] = useState(() => null);
   const [historyRecord, setHistoryRecord] = useState([]);
@@ -258,7 +258,7 @@ export default function PensionDeduction() {
                   <TableBody>
                     {pension.map((row, idx) => (
                       <TableRow key={row.id}>
-                        <TableCell>{row.net_pension?.pensioner?.first_name}</TableCell>
+                        <TableCell>{row.net_pension?.pensioner?.first_name} {row.net_pension?.pensioner?.middle_name} {row.net_pension?.pensioner?.last_name}</TableCell>
                         <TableCell>{row.net_pension?.pensioner?.ppo_no}</TableCell>
                         <TableCell>{row.commutation_amount ?? "NA"}</TableCell>
                         <TableCell>{row.income_tax ?? "NA"}</TableCell>

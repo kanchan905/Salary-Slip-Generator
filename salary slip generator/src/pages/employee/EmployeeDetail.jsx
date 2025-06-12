@@ -44,7 +44,7 @@ function EmployeeDetail() {
   const historyStatus = useSelector((state) => state.employee.employeeStatus) || null;
   const historyBank = useSelector((state) => state.employee.bankStatus) || null;
   const historyDesignation = useSelector((state) => state.employee.designationStatus) || null;
-  const {loading,error} = useSelector((state) => state.employee.loading);
+  const { loading, error } = useSelector((state) => state.employee.loading);
   const dispatch = useDispatch();
 
 
@@ -251,7 +251,7 @@ function EmployeeDetail() {
           toast.success("Sucessfully added")
         }).catch((err) => {
           const apiMsg =
-            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+            err?.response?.data?.message || err?.message || err?.errorMsg || "Failed to save info.";
           toast.error(apiMsg);
         });
     } else if (modalType === 'update') {
@@ -260,7 +260,7 @@ function EmployeeDetail() {
           toast.success("Sucessfully Updated")
         }).catch((err) => {
           const apiMsg =
-            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+            err?.response?.data?.message || err?.message || err?.errorMsg || "Failed to save info.";
           toast.error(apiMsg);
         });
       setEditId(null)
@@ -293,22 +293,26 @@ function EmployeeDetail() {
       const newBankData = { ...selectedBank, is_active: selectedBank.is_active ? 1 : 0, employee_id: id };
       console.log(newBankData)
       dispatch(addBankdetails(newBankData)).unwrap()
-      .then(() => {
+        .then(() => {
           toast.success("Sucessfully added")
         }).catch((err) => {
           const apiMsg =
-            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+            err?.response?.data?.message || err?.message || err?.errorMsg || "Failed to save info.";
           toast.error(apiMsg);
         });
     } else if (bankModalType === 'update') {
-      dispatch(updateEmployeeBankdetail({ bankData: selectedBank, employeeId: editId })).unwrap()
-      .then(() => {
-          toast.success("Sucessfully added")
-        }).catch((err) => {
-          const apiMsg =
-            err?.response?.data?.message || err?.message || "Failed to save arrear.";
-          toast.error(apiMsg);
-        });
+      const updatedBankData = {
+        ...selectedBank,
+        is_active: selectedBank.is_active ? 1 : 0,
+      };
+      dispatch(updateEmployeeBankdetail({ bankData: updatedBankData, employeeId: editId })).unwrap()
+    .then(() => {
+        toast.success("Successfully updated") ;
+      }).catch((err) => {
+        const apiMsg =
+          err?.response?.data?.message || err?.message || err?.errorMsg || "Failed to save info.";
+        toast.error(apiMsg);
+      });
       setEditId(null)
     }
     toggleBankModal();
@@ -338,20 +342,20 @@ function EmployeeDetail() {
     if (designationModalType === 'create') {
       const newDesignationData = { ...selectedDesignation, employee_id: id };
       dispatch(addDesignation(newDesignationData)).unwrap()
-      .then(() => {
+        .then(() => {
           toast.success("Sucessfully added")
         }).catch((err) => {
           const apiMsg =
-            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+            err?.response?.data?.message || err?.message || err?.errorMsg || "Failed to save info.";
           toast.error(apiMsg);
         });
     } else if (designationModalType === 'update') {
       dispatch(updateDesignation({ designationData: selectedDesignation, employeeId: editId })).unwrap()
-      .then(() => {
+        .then(() => {
           toast.success("Sucessfully added")
         }).catch((err) => {
           const apiMsg =
-            err?.response?.data?.message || err?.message || "Failed to save arrear.";
+            err?.response?.data?.message || err?.message || err?.errorMsg || "Failed to save info.";
           toast.error(apiMsg);
         });
       setEditId(null);
@@ -362,6 +366,11 @@ function EmployeeDetail() {
   useEffect(() => {
     dispatch(fetchEmployeeById(id));
   }, [dispatch, id]);
+
+  const capitalize = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
 
   return (
@@ -398,10 +407,10 @@ function EmployeeDetail() {
                         color: '#fff',
                       }}
                     >
-                      {data.first_name?.[0]}{data.last_name?.[0]}
+                      {data.first_name?.[0]} {data.last_name?.[0]}
                     </div>
                     <h2 className="font-bold text-2xl mb-1">
-                      {data.first_name} {data.last_name}
+                      {capitalize(data.prefix)} {capitalize(data.first_name)} {capitalize(data.middle_name)} {capitalize(data.last_name)}
                     </h2>
                     <span className="badge bg-info text-white mb-2">{data.gender}</span>
                     <div className="text-gray-600 mb-2">{data.email}</div>
@@ -412,8 +421,10 @@ function EmployeeDetail() {
                     </div>
                     <hr />
                     <div className="text-left text-sm mt-3 space-y-1">
+                      <p><strong>Emp Code:</strong> {data.employee_code}</p>
+                      <p><strong>Institute:</strong> {data.institute}</p>
                       <p><strong>Pension Scheme:</strong> {data.pension_scheme}</p>
-                      <p><strong>PAN:</strong> {data.pancard}</p>
+                      <p><strong>PAN Number:</strong> {data.pancard}</p>
                       <p><strong>PWD Status:</strong> {data.pwd_status ? 'Yes' : 'No'}</p>
                       <p><strong>Pension Number:</strong> {data.pension_number || 'N/A'}</p>
                       <p><strong>GIS Eligibility:</strong> {data.gis_eligibility ? 'Yes' : 'No'}</p>
@@ -423,8 +434,8 @@ function EmployeeDetail() {
                       <p><strong>Uniform Allowance Eligibility:</strong> {data.uniform_allowance_eligibility ? 'Yes' : 'No'}</p>
                       <p><strong>HRA Eligibility:</strong> {data.hra_eligibility ? 'Yes' : 'No'}</p>
                       <p><strong>NPA Eligibility:</strong> {data.npa_eligibility ? 'Yes' : 'No'}</p>
-                      <p><strong>Added By:</strong> {data?.addby?.name || 'N/A'}</p>
-                      <p><strong>Edited By:</strong> {data?.editby?.name || 'N/A'}</p>
+                      <p><strong>Added By:</strong> {data?.added_by?.name || 'N/A'}</p>
+                      <p><strong>Edited By:</strong> {data?.edited_by?.first_name || 'N/A'}</p>
                     </div>
                   </CardBody>
                 </Card>
@@ -432,9 +443,9 @@ function EmployeeDetail() {
               {/* Tabbed Details */}
               <Col xl="8">
                 <Card className="shadow-lg border-0 rounded-3 custom-scrollbar" style={{
-                      maxHeight: '550px',
-                      overflowY: 'auto',
-                    }}>
+                  maxHeight: '550px',
+                  overflowY: 'auto',
+                }}>
                   <CardHeader className="bg-white border-0 pb-0">
                     <Nav tabs className="border-0">
                       <NavItem>
@@ -479,10 +490,10 @@ function EmployeeDetail() {
                         <Table striped bordered hover responsive>
                           <thead>
                             <tr>
-                              <th>Status</th>
-                              <th>From</th>
-                              <th>Till</th>
-                              <th>Actions</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Status</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>From</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Till</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -515,12 +526,12 @@ function EmployeeDetail() {
                         <Table striped bordered hover responsive>
                           <thead>
                             <tr>
-                              <th>Bank Name</th>
-                              <th>Branch</th>
-                              <th>Account #</th>
-                              <th>IFSC</th>
-                              <th>Status</th>
-                              <th>Actions</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Bank Name</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Branch</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Account</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>IFSC</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Status</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -531,7 +542,7 @@ function EmployeeDetail() {
                                 <td>{bank.account_number}</td>
                                 <td>{bank.ifsc_code}</td>
                                 <td>
-                                  <span className={bank.is_active ? "badge bg-success" : "badge bg-secondary"}>
+                                  <span className={bank.is_active ? "badge bg-success" : "badge bg-danger"}>
                                     {bank.is_active ? "Active" : "Inactive"}
                                   </span>
                                 </td>
@@ -559,12 +570,13 @@ function EmployeeDetail() {
                         <Table striped bordered hover responsive>
                           <thead>
                             <tr>
-                              <th>Designation</th>
-                              <th>Cadre</th>
-                              <th>Job Group</th>
-                              <th>From</th>
-                              <th>Till</th>
-                              <th>Actions</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Designation</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Cadre</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Job Group</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>From</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Till</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Promotion Order No.</th>
+                              <th style={{ fontWeight: "900", fontSize: "13px" }}>Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -575,6 +587,7 @@ function EmployeeDetail() {
                                 <td>{designation.job_group}</td>
                                 <td>{designation.effective_from}</td>
                                 <td>{designation.effective_till || "Present"}</td>
+                                <td>{designation.promotion_order_no || "N/A"}</td>
                                 <td>
                                   <Button color="link" size="sm" onClick={() => handleUpdateDesignation(designation)}>
                                     <EditIcon fontSize="small" />

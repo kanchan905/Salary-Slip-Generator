@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    IconButton, TextField, TablePagination, Box
+    IconButton, TextField, TablePagination, Box,
+    Chip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -24,7 +25,16 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
+import { dateFormat } from 'utils/helpers';
 
+
+const statusChipColor = (status) => {
+    switch (status) {
+        case "Active": return "success";
+        case "Inactive": return "error";
+        default: return "default";
+    }
+};
 
 export default function CreditSocietyMember() {
     const dispatch = useDispatch();
@@ -137,7 +147,7 @@ export default function CreditSocietyMember() {
                     const apiMsg =
                         err?.response?.data?.message ||
                         err?.message ||
-                        'Failed to save pensioner.';
+                        'Failed to save Credit Soceity.';
                     toast.error(apiMsg);
                 });
         } else {
@@ -151,7 +161,7 @@ export default function CreditSocietyMember() {
                     const apiMsg =
                         err?.response?.data?.message ||
                         err?.message ||
-                        'Failed to save pensioner.';
+                        'Failed to save Credit Soceity.';
                     toast.error(apiMsg);
                 });
         }
@@ -183,8 +193,8 @@ export default function CreditSocietyMember() {
             <div className="mt--7 mb-7 container-fluid">
                 <Card className="card-stats mb-4 mb-lg-0">
                     <CardHeader>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <TextField placeholder="Employee Id" onChange={handleSearchChange} />
+                        <div className="d-flex justify-content-end align-items-center">
+                            {/* <TextField placeholder="Employee Id" onChange={handleSearchChange} /> */}
                             <Button style={{ background: "#004080", color: "#fff" }} onClick={() => toggleModal("create")}>
                                 + Add
                             </Button>
@@ -200,7 +210,8 @@ export default function CreditSocietyMember() {
                                 <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                                     <Table>
                                         <TableHead>
-                                            <TableRow>                                               
+                                            <TableRow>                  
+                                                <TableCell style={{ fontWeight: "900" }}>Name</TableCell>                             
                                                 <TableCell style={{ fontWeight: "900" }}>Society Name</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Membership Number</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Joining Date</TableCell>
@@ -212,13 +223,21 @@ export default function CreditSocietyMember() {
                                         </TableHead>
                                         <TableBody>
                                             {credits.map((row, idx) => (
-                                                <TableRow key={row.id}>                                                  
+                                                <TableRow key={row.id}>        
+                                                    <TableCell>{row.employee.first_name} {row.employee?.middle_name} {row.employee.last_name}</TableCell>                                          
                                                     <TableCell>{row.society_name}</TableCell>
                                                     <TableCell>{row.membership_number}</TableCell>
-                                                    <TableCell>{row.joining_date}</TableCell>
-                                                    <TableCell>{row.relieving_date}</TableCell>
+                                                    <TableCell>{dateFormat(row.joining_date)}</TableCell>
+                                                    <TableCell>{dateFormat(row.relieving_date)}</TableCell>
                                                     <TableCell>{row.monthly_subscription}</TableCell>                                                    
-                                                    <TableCell>{row.is_active ? 'Active' : 'Inactive'}</TableCell>                                                                                     
+                                                    <TableCell>                                  
+                                                        <Chip
+                                                        label={row.is_active ? 'Active' : 'Inactive'}
+                                                        color={statusChipColor(row.is_active ? "Active" : "Inactive")}
+                                                        variant="outlined"
+                                                        size="small"                                                                                        
+                                                    />
+                                                    </TableCell>                                                                                     
                                                     <TableCell align="left">
                                                         <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
                                                             <MoreVertIcon />

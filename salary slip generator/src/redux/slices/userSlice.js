@@ -1,6 +1,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from 'global/AxiosSetting';
 
+
+export const fetchAllUserData = createAsyncThunk(
+    'user/fetchAllUserData',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/all-users`);
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
+
+
 export const fetchUserData = createAsyncThunk(
     'user/fetchUserData',
     async ({ page, limit }, { rejectWithValue }) => {
@@ -55,6 +72,7 @@ export const changeUserStatus = createAsyncThunk(
 
 const initialState = {
     users: [],
+    allUsers:[],
     totalCount: 0,
     loading: false,
     error: null,
@@ -65,6 +83,11 @@ const userSlice = createSlice({
     initialState,
     extraReducers: (builder) => {
         builder
+        .addCase(fetchAllUserData.fulfilled, (state, action) => {
+                state.loading = false;
+                state.allUsers = action.payload.data;
+                state.totalCount = action.payload.totalCount
+            })
             .addCase(fetchUserData.pending, (state) => {
                 state.loading = true;
             })

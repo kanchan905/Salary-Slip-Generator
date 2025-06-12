@@ -59,7 +59,7 @@ const PensionerDetail = () => {
                                     <PersonIcon fontSize="large" />
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="h4" fontWeight={600}>{data?.first_name}</Typography>
+                                    <Typography variant="h4" fontWeight={600}>{data?.first_name} {data?.middle_name} {data?.last_name} </Typography>
                                     <Typography variant="subtitle1" color="text.secondary">PPO No: {data?.ppo_no}</Typography>
                                 </Box>
                                 </Box>
@@ -108,18 +108,8 @@ const PensionerDetail = () => {
                             <Section title="Audit Trail">
                                 <LabelValue label="Added By" value={data?.added_by?.name} />
                                 <LabelValue label="Edited By" value={data?.edited_by?.name} />
-                                <LabelValue label="Created At" value={new Date(data?.created_at).toLocaleString()} />
-                                <LabelValue label="Updated At" value={new Date(data?.updated_at).toLocaleString()} />
                             </Section>
 
-                            <Section title="Retired Employee Info">
-                                <LabelValue
-                                    label="Employee Name"
-                                    value={`${data?.employee?.first_name} ${data?.employee?.last_name}`}
-                                />
-                                <LabelValue label="Employee DOB" value={data?.employee?.date_of_birth} />
-                                <LabelValue label="Date of Joining" value={data?.employee?.date_of_joining} />
-                            </Section>
                         </Paper>
                     )}
                 </Box>

@@ -50,7 +50,7 @@ export default function PensionDocuments() {
     file: ''
   });
   const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [menuRowId, setMenuRowId] = useState(null);
@@ -271,7 +271,7 @@ export default function PensionDocuments() {
                   <TableBody>
                     {document.map((row, idx) => (
                       <TableRow key={row.id}>      
-                        <TableCell>{row.pensioner?.first_name}</TableCell>                 
+                        <TableCell>{row.pensioner?.first_name} {row.pensioner?.middle_name} {row.pensioner?.last_name}</TableCell>                 
                         <TableCell>{row.document_type}</TableCell>
                         <TableCell>{row.document_number}</TableCell>
                         <TableCell>{row.issue_date}</TableCell>

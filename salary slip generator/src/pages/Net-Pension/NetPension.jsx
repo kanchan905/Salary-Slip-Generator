@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    IconButton, TextField, TablePagination, Box, Menu, MenuItem
+    IconButton, TextField, TablePagination, Box, Menu, MenuItem,
+    Chip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -25,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import HistoryIcon from '@mui/icons-material/History';
 import HistoryModal from 'Modal/HistoryModal';
 import { months } from 'utils/helpers';
+import { dateFormat } from 'utils/helpers';
 
 export default function NetPension() {
     const dispatch = useDispatch();
@@ -48,7 +50,7 @@ export default function NetPension() {
         payment_date: "",
     });
     const [searchQuery, setSearchQuery] = useState('');
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [renderFunction, setRenderFunction] = useState(() => () => null);
     const [tableHead, setTableHead] = useState([]);
@@ -65,7 +67,8 @@ export default function NetPension() {
             "Net Pension",
             "Processing Date",
             "Payment Date",
-            "Created At"
+            "Added By",
+            "Edited By"
         ],
         renderRow: (record, index) => (
             <tr key={record.id}>
@@ -75,7 +78,8 @@ export default function NetPension() {
                 <td>₹{record.net_pension}</td>
                 <td>{record.processing_date || 'N/A'}</td>
                 <td>{record.payment_date || 'N/A'}</td>
-                <td>{new Date(record.created_at).toLocaleString()}</td>
+                <td>{record.added_by?.name || "NA"}</td>
+                <td>{record.edited_by?.name || "NA"}</td>
             </tr>
         )
     });
@@ -158,7 +162,7 @@ export default function NetPension() {
         dispatch(updateNetPension({ id: editId, values }))
             .unwrap()
             .then(() => {
-                toast.success("NetPension added");
+                toast.success("NetPension updated");
                 dispatch(fetchNetPension({ page, limit: rowsPerPage }));
             })
             .catch((err) => {
@@ -210,25 +214,33 @@ export default function NetPension() {
                                 <TableContainer component={Paper} style={{ boxShadow: "none" }}>
                                     <Table>
                                         <TableHead>
-                                            <TableRow> 
+                                            <TableRow>
                                                 <TableCell style={{ fontWeight: "900" }}>Pensioner</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Verification Status</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {netPension?.map((row, idx) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell>{row.pensioner?.first_name}</TableCell>
-                                                    <TableCell>{row.month}</TableCell>
+                                                    <TableCell>{row.pensioner?.first_name} {row.pensioner?.middle_name} {row.pensioner?.last_name}</TableCell>
+                                                    <TableCell>
+                                                        {months.find((m) => m.value === row.month)?.label || 'NA'}
+                                                    </TableCell>
                                                     <TableCell>{row.year}</TableCell>
                                                     <TableCell>{row.net_pension}</TableCell>
-                                                    <TableCell>{row.payment_date}</TableCell>
-                                                    <TableCell>{row.is_verified}</TableCell>
+                                                    <TableCell>{dateFormat(row.payment_date)}</TableCell>
+                                                    <TableCell>
+                                                        {row.is_verified 
+                                                            ? <Chip variant='outlined' label="Verified" color='success'/> 
+                                                            : <Chip variant='outlined' label="Unverified" color='error'/>
+                                                        }
+                                                    </TableCell>
+
                                                     <TableCell align="left">
                                                         <IconButton onClick={(e) => handleMenuClick(e, row)}>
                                                             <MoreVertIcon />

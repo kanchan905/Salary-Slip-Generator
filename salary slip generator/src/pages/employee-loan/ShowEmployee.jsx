@@ -51,7 +51,7 @@ const ShowEmployee = () => {
             <Paper elevation={4} sx={{ borderRadius: 4, p: 4 }}>
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <Typography variant="h4" fontWeight={600}>
-                  Employee Loan Detail (ID: {data?.id})
+                  Employee Loan Detail
                 </Typography>
                 <NavLink to={`/employee-loan`}>
                   <Button
@@ -75,7 +75,7 @@ const ShowEmployee = () => {
               </Section>
 
               <Section title="Employee Information">
-                <LabelValue label="Name" value={`${data?.employee?.first_name} ${data?.employee?.last_name}`} />
+                <LabelValue label="Name" value={`${data?.employee?.first_name} ${data?.employee?.middle_name} ${data?.employee?.middle_name} ${data?.employee?.last_name}`} />
                 <LabelValue label="Gender" value={data?.employee?.gender} />
                 <LabelValue label="Email" value={data?.employee?.email} />
                 <LabelValue label="DOB" value={data?.employee?.date_of_birth} />
@@ -87,10 +87,8 @@ const ShowEmployee = () => {
               </Section>
 
               <Section title="Audit Trail">
-                <LabelValue label="Added By" value={data?.added_by} />
-                <LabelValue label="Edited By" value={data?.edited_by ?? '—'} />
-                <LabelValue label="Created At" value={data?.created_at ? new Date(data.created_at).toLocaleString() : '—'} />
-                <LabelValue label="Updated At" value={data?.updated_at ? new Date(data.updated_at).toLocaleString() : '—'} />
+                <LabelValue label="Added By" value={data?.added_by?.name} />
+                <LabelValue label="Edited By" value={data?.edited_by?.name} />
               </Section>
             </Paper>
           )}

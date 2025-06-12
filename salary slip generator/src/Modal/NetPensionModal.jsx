@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Row, Col, Button, FormGroup, Label, Input } from "reactstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { months } from "utils/helpers";
 
 export default function NetPensionModal({
     formOpen,
@@ -50,24 +51,14 @@ export default function NetPensionModal({
                             <Row>
                                 <Col md="6">
                                     <FormGroup>
-                                        <Label for="pensioner_id">Pensioner Id</Label>
-                                        <Field as={Input} type="number" id="pensioner_id" name="pensioner_id" />
-                                        <ErrorMessage name="pensioner_id" component="div" className="text-danger" />
-                                    </FormGroup>
-                                </Col>
-                                <Col md="6">
-                                    <FormGroup>
-                                        <Label for="pensioner_bank_id">Pensioner Bank Id</Label>
-                                        <Field as={Input} type="number" id="pensioner_bank_id" name="pensioner_bank_id" />
-                                        <ErrorMessage name="pensioner_bank_id" component="div" className="text-danger" />
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="6">
-                                    <FormGroup>
                                         <Label for="month">Month</Label>
-                                        <Field as={Input} type="number" id="month" name="month" />
+                                        <Field as={Input} type="select" id="month" name="month" >
+                                            {months.map((month) => (
+                                                <option key={month.value} value={month.value}>
+                                                    {month.label}
+                                                </option>
+                                            ))}
+                                        </Field>
                                         <ErrorMessage name="month" component="div" className="text-danger" />
                                     </FormGroup>
                                 </Col>

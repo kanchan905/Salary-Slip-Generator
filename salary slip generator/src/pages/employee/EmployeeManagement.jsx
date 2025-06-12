@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import ViewIcon from '@mui/icons-material/Visibility';
 import {
     Button,
@@ -18,15 +19,18 @@ import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchEmployees } from '../../redux/slices/employeeSlice';
+import { fetchEmployeeById, fetchEmployees } from '../../redux/slices/employeeSlice';
 import HomeIcon from '@mui/icons-material/Home';
 import CircularProgress from '@mui/material/CircularProgress';
+import HistoryModal from 'Modal/HistoryModal';
+import { dateFormat } from 'utils/helpers';
 
 
 export default function EmployeeManagement() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
     const employees = useSelector((state) => state.employee.employees) || [];
+    const employeeDetail = useSelector((state) => state.employee.EmployeeDetail) || {};
     const totalCount = useSelector((state) => state.employee.totalCount) || 0;
     const { name } = useSelector((state) => state.auth.user.role);
     const [page, setPage] = React.useState(0);
@@ -35,10 +39,92 @@ export default function EmployeeManagement() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const loading = useSelector((state) => state.employee.loading);
+    const [ renderFunction, setRenderFunction ] = React.useState(() => null);
+    const [historyRecord, setHistoryRecord] = React.useState([]);
+    const [tableHead, setTableHead] = React.useState([
+        "Sr. No.",
+        "Head 1",
+        "Head 2",
+        "Head 3",
+        "Head 4",
+        "Head 5",
+        "Head 6",
+    ]);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
+    const toggleHistoryModal = () => {
+        setIsHistoryModalOpen(!isHistoryModalOpen);
+        setHistoryRecord([]);
+    };
+    const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
+        
+        
+    const getTableConfig = () => {
+        return {
+            head: [
+                "Sr. No.",
+                "Employee Code",
+                "Name",
+                "Email",
+                "Pan Number",
+                "Gender",
+                "DOB",
+                "Joining Date",
+                "Added By",
+                "Edited By"
+            ],
+            renderRow: (record, index) => (
+                <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{record?.employee_code ?? "-"}</td>
+                    <td>{record?.first_name} {record?.last_name}</td>
+                    <td>{record?.email ?? "-"}</td>
+                    <td>{record?.pancard ?? "-"}</td>
+                    <td className='text-capitalize'>{record?.gender ?? "-"}</td>
+                    <td>{dateFormat(record?.date_of_birth)  ?? "-"}</td>
+                    <td>{dateFormat(record?.date_of_joining)  ?? "-"}</td>
+                    <td>{ record?.added_by?.name || "NA" }</td>
+                    <td>{ record?.edited_by?.name }</td>
+                </tr>
+            ),
+        }
+    }
+    
+
 
     useEffect(() => {
         dispatch(fetchEmployees({ page: page + 1, limit: rowsPerPage, search: searchQuery }));
     }, [page, rowsPerPage, searchQuery, dispatch]);
+
+
+    useEffect(() => {
+        if (shouldOpenHistory && employeeDetail) {
+            const config = getTableConfig();
+            setHistoryRecord(employeeDetail?.history);
+            setTableHead(config.head);
+            setRenderFunction(() => config.renderRow);
+            setIsHistoryModalOpen(true);
+            setShouldOpenHistory(false);
+        }
+    }, [employeeDetail, shouldOpenHistory]);
+
+
+    const handleHistoryShow = (id) => {
+        setHistoryRecord([]);
+        setIsHistoryModalOpen(true);
+        dispatch(fetchEmployeeById(id))
+        .unwrap()
+        .then(() => {
+            setShouldOpenHistory(true);
+        }); 
+    }
+
+    // close the menu when history modal is open
+    useEffect(() => {
+        if (isHistoryModalOpen) {
+            handleClose();
+        }
+    }, [isHistoryModalOpen]);
+
 
 
     const handlePageChange = (event, value) => {
@@ -60,6 +146,7 @@ export default function EmployeeManagement() {
         setAnchorEl(event.currentTarget);
         setMenuUserIndex(index);
     };
+
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -123,10 +210,10 @@ export default function EmployeeManagement() {
                                     {employees.map((emp, idx) => (
                                         <TableRow key={emp.id}>
                                             <TableCell>{emp.employee_code}</TableCell>
-                                            <TableCell>{emp.first_name + " " + emp.last_name}</TableCell>
+                                            <TableCell>{emp.first_name + " " + emp?.middle_name + " " + emp.last_name}</TableCell>
                                             <TableCell sx={{ textTransform: 'capitalize' }}>{emp.gender}</TableCell>
-                                            <TableCell>{emp.date_of_birth}</TableCell>
-                                            <TableCell>{emp.date_of_joining}</TableCell>
+                                            <TableCell>{dateFormat(emp.date_of_birth)}</TableCell>
+                                            <TableCell>{dateFormat(emp.date_of_joining)}</TableCell>
                                             <TableCell>{emp.email}</TableCell>
                                             <TableCell>{emp.pancard}</TableCell>
                                             <TableCell align="right">
@@ -148,6 +235,9 @@ export default function EmployeeManagement() {
                                                     <MenuItem onClick={() => handleQuarter(emp.id)}>
                                                         <HomeIcon fontSize="small" /> Quarter
                                                     </MenuItem>
+                                                    <MenuItem onClick={() => handleHistoryShow(emp.id)}>
+                                                        <HistoryIcon fontSize="small" /> History
+                                                    </MenuItem>
                                                 </Menu>
                                             </TableCell>
                                         </TableRow>
@@ -167,8 +257,16 @@ export default function EmployeeManagement() {
                         </TableContainer>
                     </CardBody>
                 </Card>
-
+                    
             </div>
+
+            <HistoryModal 
+                isOpen={isHistoryModalOpen}
+                toggle={toggleHistoryModal}
+                tableHead={tableHead}
+                historyRecord={historyRecord}
+                renderRow={renderFunction}
+            />
         </>
     );
 }

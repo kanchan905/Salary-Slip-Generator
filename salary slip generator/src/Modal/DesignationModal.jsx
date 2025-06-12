@@ -1,16 +1,23 @@
-import React,{useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { fetchDesignationList } from '../redux/slices/memberStoreSlice';
 
 function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setSelectedDesignation, handleSave }) {
   const [errors, setErrors] = useState({});
-  
+  const dispatch = useDispatch();
+  const designationList = useSelector((state) => state.memeberStore?.designationList) || [];
+
+
+  useEffect(() => {
+    dispatch(fetchDesignationList());
+  }, [dispatch])
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSelectedDesignation((prev) => ({ ...prev, [name]: value }));
-    // setErrors((prev) => ({ ...prev, [name]: '' })); 
   };
 
-  // Ensure selectedBank has default values to avoid undefined
   const defaultDesig = {
     designation: '',
     cadre: '',
@@ -42,6 +49,7 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
     handleSave();
   };
 
+
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
@@ -52,25 +60,43 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
           <FormGroup>
             <Label for="designation">Designation</Label>
             <Input
-              type="text"
+              type="select"
               name="designation"
               id="designation"
               value={designationData.designation}
               onChange={handleChange}
               invalid={!!errors.designation}
-            />
+            >
+              <option value="">Select Designation</option>
+              {designationList.map((group) => [
+                <>
+                  <option style={{ fontWeight: '600', fontSize: '16px' }}>{group.name}</option>
+                  {
+                    group.options.map((designation) =>
+                      <option key={`designation1-${designation}`} value={designation}>
+                        {designation}
+                      </option>
+                    )
+                  }
+                </>
+              ])}
+            </Input>
             {errors.designation && <div className="text-danger">{errors.designation}</div>}
           </FormGroup>
           <FormGroup>
             <Label for="cadre">Cadre</Label>
             <Input
-              type="text"
+              type="select"
               name="cadre"
               id="cadre"
               value={designationData.cadre}
               onChange={handleChange}
               invalid={!!errors.cadre}
-            />
+            >
+              <option value="">Select Cadre</option>
+              <option value="Technical">Technical</option>
+              <option value="Administrative">Administrative</option>
+            </Input>
             {errors.cadre && <div className="text-danger">{errors.cadre}</div>}
           </FormGroup>
           <FormGroup>
@@ -99,7 +125,7 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
               id="effective_from"
               value={designationData.effective_from}
               onChange={handleChange}
-               invalid={!!errors.effective_from}
+              invalid={!!errors.effective_from}
             />
             {errors.effective_from && <div className="text-danger">{errors.effective_from}</div>}
           </FormGroup>
@@ -113,8 +139,17 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
               onChange={handleChange}
               invalid={!!errors.effective_till}
             />
-            {/* {errors.effective_till && <div className="text-danger">{errors.effective_till}</div>} */}
             {errors.effective_till && <FormFeedback>{errors.effective_till}</FormFeedback>}
+          </FormGroup>
+          <FormGroup>
+            <Label for="promotion_order_no">Promotion Order No</Label>
+            <Input
+              type="text"
+              name="promotion_order_no"
+              id="promotion_order_no"
+              value={designationData.promotion_order_no}
+              onChange={handleChange}
+            />
           </FormGroup>
         </Form>
       </ModalBody>

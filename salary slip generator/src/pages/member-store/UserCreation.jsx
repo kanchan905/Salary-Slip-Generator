@@ -7,7 +7,7 @@ import {
 } from '../../redux/slices/memberStoreSlice';
 import { toast } from 'react-toastify';
 import { fetchEmployees } from '../../redux/slices/employeeSlice';
-import { fetchUserData } from '../../redux/slices/userSlice';
+import { fetchAllUserData, fetchUserData } from '../../redux/slices/userSlice';
 
 const roles = [
   { id: 1, name: 'IT Admin' },
@@ -21,33 +21,13 @@ const roles = [
 
 const UserCreation = ({ onNext }) => {
   const dispatch = useDispatch();
-  const employees = useSelector((state) => state.employee.employees) || [];
-  const users = useSelector((state) => state.user.users);
+  const allUsers = useSelector((state) => state.user.allUsers);
   const { employeeForm } = useSelector((state) => state.memeberStore);
-
-  const [EmployeeCodes, setEmployeeCodes] = React.useState([]);
-  const [NotExistId, setNotExistId] = React.useState([]);
-  // let EmployeeCodes = []//employees.map(emp => emp?.user?.id);
-  // let NotExistId = []//users.filter(user => !EmployeeCodes.includes(user.id));
- 
-
-  useEffect(() => {
-    if (employees.length) {
-      const empCodes = employees.map(emp => emp?.user?.id).filter(emp => emp);
-      console.log('empCodes', empCodes);
-      setEmployeeCodes(empCodes);
-      if (users.length) {
-        const notExistId = users.filter(user => !EmployeeCodes.includes(user.id));
-        setNotExistId(notExistId);
-        console.log('NotExistId', notExistId);
-      }
-    }
-  }, [employees, users]);
+  const users = allUsers.filter((user) => user.employee_count === 0 && user.employee_code);
 
 
   useEffect(() => {
-    dispatch(fetchEmployees({ page: '1', limit: '1000', search: '' }));
-    dispatch(fetchUserData({ page: '1', limit: '1000' }));
+    dispatch(fetchAllUserData())
   }, [dispatch])
 
   const validate = (values) => {
@@ -58,9 +38,7 @@ const UserCreation = ({ onNext }) => {
 
   const handleSubmit = () => {
     try {
-      toast.success('User created successfully');
       onNext();
-      console.log('User created successfully:', employeeForm);
     } catch (err) {
       const apiMsg =
         err?.response?.data?.message ||
@@ -74,18 +52,11 @@ const UserCreation = ({ onNext }) => {
   const handleChange = (e) => {
     dispatch(updateEmployeeField({ name: e.target.name, value: e.target.value }));
     if (e.target.name === 'employee_code') {
-      const user = NotExistId.find((u) => u.id == e.target.value);
+      const user = users.find((u) => u.employee_code == e.target.value);
       if (user) {
-        // dispatch(updateEmployeeField({ name: 'first_name', value: user.first_name }));
-        // dispatch(updateEmployeeField({ name: 'middle_name', value: user.middle_name }));
-        // dispatch(updateEmployeeField({ name: 'last_name', value: user.last_name }));
-        // dispatch(updateEmployeeField({ name: 'employee_code', value: user.employee_code }));
-        // dispatch(updateEmployeeField({ name: 'user_id', value: user.id }));
-        // dispatch(updateEmployeeField({ name: 'email', value: user.email }));
-        // dispatch(updateEmployeeField({ name: 'institute', value: user.institute }));
         const data = {
           first_name: user.first_name,
-          middle_name: user.middle_name,
+          middle_name: user?.middle_name || '',
           last_name: user.last_name,
           employee_code: user.employee_code,
           user_id: user.id,
@@ -113,16 +84,16 @@ const UserCreation = ({ onNext }) => {
                 fullWidth
                 select
                 name="employee_code"
-                label="Employee Code*"
+                label="User Code*"
                 value={values.employee_code}
                 onChange={(e) => handleChange(e)}
                 error={touched.employee_code && Boolean(errors.employee_code)}
                 helperText={touched.employee_code && errors.employee_code}
               >
-                <MenuItem value="Select Employee Code">Select Employee Code</MenuItem>
-                {NotExistId.map((user) => (
+                <MenuItem value="Select User">Select User</MenuItem>
+                {users.map((user) => (
                   <MenuItem key={`${user.id}`} value={`${user.employee_code}`}>
-                    {user.employee_code} - {user.first_name} {user.last_name}
+                    {user.employee_code} - {user.first_name} {user.middle_name}{user.last_name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -130,6 +101,9 @@ const UserCreation = ({ onNext }) => {
             </Grid>
             <Grid item xs={6}>
               <TextField fullWidth name="first_name" label="First Name*" value={values.first_name} disabled onChange={(e) => handleChange(e)} error={touched.first_name && Boolean(errors.first_name)} helperText={touched.first_name && errors.first_name} />
+            </Grid>
+             <Grid item xs={6}>
+              <TextField fullWidth name="middle_name" label="Middle Name*" value={values.middle_name} disabled onChange={(e) => handleChange(e)} error={touched.middle_name && Boolean(errors.middle_name)} helperText={touched.middle_name && errors.middle_name} />
             </Grid>
             <Grid item xs={6}>
               <TextField fullWidth name="last_name" label="Last Name*" value={values.last_name} disabled onChange={(e) => handleChange(e)} error={touched.last_name && Boolean(errors.last_name)} helperText={touched.last_name && errors.last_name} />

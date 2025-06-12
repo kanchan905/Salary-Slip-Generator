@@ -22,7 +22,6 @@ const PensionerContactAddress = ({ onNext }) => {
   };
 
   const handleSubmit = () => {
-    toast.success('Pensioner Contact Saved');
     const credentials = {...pensionerForm}
       dispatch(createPensioner(credentials)).unwrap()
        .then(()=>{

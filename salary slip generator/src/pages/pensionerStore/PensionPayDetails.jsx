@@ -16,19 +16,21 @@ const PensionPayDetails = ({ onNext }) => {
   const { levels } = useSelector((state) => state.levels);
   const [selectedLevel, setSelectedLevel] = useState(null);
 
+  useEffect(() => {
+    dispatch(fetchPayLevel({ page: '1', limit: '1000' }));
+  }, [selectedLevel])
 
   useEffect(() => {
     dispatch(fetchPayCommisions());
-    dispatch(fetchPayLevel({ page: '1', limit: '1000' }));
-  }, [dispatch,selectedLevel])
+  }, [dispatch])
 
   useEffect(() => {
     if (levels?.length && pensionerForm?.pay_level) {
       const levelObj = levels.find((level) => level.name === pensionerForm.pay_level);
       setSelectedLevel(levelObj);
     }
-  }, [pensionerForm, levels])
-  
+  }, [])
+
 
   const validate = (values) => {
     const errors = {};
@@ -44,9 +46,7 @@ const PensionPayDetails = ({ onNext }) => {
 
   const handleSubmit = () => {
     try {
-      toast.success('Pensioner Pay Detail Saved');
       onNext();
-      console.log(pensionerForm)
     } catch (err) {
       const apiMsg =
         err?.response?.data?.message ||
@@ -171,7 +171,7 @@ const PensionPayDetails = ({ onNext }) => {
               </TextField>
             </Grid>
 
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <TextField
                 fullWidth
                 name="basic_pay_at_retirement"
@@ -181,7 +181,7 @@ const PensionPayDetails = ({ onNext }) => {
                 disabled
               >
               </TextField>
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={6}>
               <TextField

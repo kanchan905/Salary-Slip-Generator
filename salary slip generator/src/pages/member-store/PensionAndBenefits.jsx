@@ -31,7 +31,6 @@ const PensionAndBenefits = ({ onNext }) => {
 
     const handleSubmit = async (values) => {
         try {
-            toast.success('Pension & Benefits details saved');
             onNext();
         } catch (err) {
             toast.error('Failed to save pension & benefits');

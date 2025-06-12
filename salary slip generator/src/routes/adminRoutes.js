@@ -119,12 +119,12 @@ const getAdminRoutes = () => (
       icon: "ni ni-settings-gear-65 text-orange",
       component: PaysStructure,     
     },
-    {
-      path: "/credit-society-member",
-      name: "Credit Society Member",
-      icon: "fa-regular fa-credit-card", 
-      component: CreditSocietyMember,     
-    },
+    // {
+    //   path: "/credit-society-member",
+    //   name: "Credit Society Member",
+    //   icon: "fa-regular fa-credit-card", 
+    //   component: CreditSocietyMember,     
+    // },
     {
       path: "/employee-loan",
       name: "Employee Loan",
@@ -149,12 +149,12 @@ const getAdminRoutes = () => (
       component: NetSalaryCard,
       showInSidebar: false,
     },
-    {
-      path: "/employee/credit-society-member/view/:id",
-      name: "Net Salary",
-      component: ShowCredit,
-      showInSidebar: false,
-    },
+    // {
+    //   path: "/employee/credit-society-member/view/:id",
+    //   name: "Net Salary",
+    //   component: ShowCredit,
+    //   showInSidebar: false,
+    // },
     {
       path: "/employee-loan/view/:id",
       name: "Net Salary",

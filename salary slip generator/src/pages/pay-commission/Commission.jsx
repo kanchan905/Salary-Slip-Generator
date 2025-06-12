@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Row,
   Col,
-  Form,
 } from "reactstrap";
 import { Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +18,7 @@ import LevelFormModal from "Modal/LevelFormModal";
 import { Box, CircularProgress, IconButton, TextField } from "@mui/material";
 import { Cancel, Save } from "@mui/icons-material";
 import { updateCellToAPI } from "../../redux/slices/levelCellSlice";
+import MatrixCellFormModal from "Modal/MatrixCellFormModal";
 
 function Commission({selectedCommissionId, commissionName}) {
 
@@ -31,10 +31,17 @@ function Commission({selectedCommissionId, commissionName}) {
   const [editingCell, setEditingCell] = useState({ levelId: null, rowIndex: null });
   const [cellValue, setCellValue] = useState('');
   const [cellData, setCellData] = useState(null);
+  const [cellModalOpen, setCellModalOpen] = useState(false);
 
-  const toggleModal = () => {
+
+  const toggleLevelModal = () => {
     setFormOpen(!formOpen);
   };
+
+  const toggleCellModal = () => {
+    setCellModalOpen(!cellModalOpen);
+  };
+
 
   useEffect(() => {
     dispatch(fetchPayLevelByCommission(selectedCommissionId))
@@ -78,16 +85,6 @@ function Commission({selectedCommissionId, commissionName}) {
     }
   });
 
-  const handleEditLevel = (level) => {
-    setEditingId(level.id);
-    formik.setValues({
-      pay_commission_id: selectedCommissionId,
-      levelName: level.name,
-      description: level.description
-    });
-    setFormOpen(true);
-  };
-
   const handleCellEdit = (levelId, rowIndex, cellData) => {
     console.log("Editing cell:", cellData);
     setEditingCell({ levelId, rowIndex });
@@ -121,14 +118,21 @@ function Commission({selectedCommissionId, commissionName}) {
 
   return (
     <>
-      {/* <Typography variant="h6" mb={2}>Pay Matrix Levels</Typography> */}
       <Row>
         <Button style={{ background: "#004080", color: "#fff", marginBottom: "1em" }} onClick={() => {
           setEditingId(null);
           formik.resetForm();
-          toggleModal();
+          toggleLevelModal();
         }}>
           + Add Level
+        </Button>
+
+        <Button style={{ background: "#004080", color: "#fff", marginBottom: "1em" }} onClick={() => {
+          setCellModalOpen(true);
+          formik.resetForm();
+          toggleCellModal();
+        }}>
+          + Add Cell
         </Button>
 
         <Col md={12}>
@@ -216,13 +220,18 @@ function Commission({selectedCommissionId, commissionName}) {
       
       <LevelFormModal
         formOpen={formOpen}
-        toggleModal={toggleModal}
+        toggleModal={toggleLevelModal}
         formik={formik}
         editingId={editingId}
         selectedCommissionId={selectedCommissionId}
         commissionName={commissionName}
-      />
+      />  
 
+      <MatrixCellFormModal
+        formOpen={cellModalOpen}
+        toggleModal={toggleCellModal}
+        commissionLevels={commissionLevels}
+      />
     </>
   );
 }

@@ -23,15 +23,13 @@ const BankAccountDetails = ({ onNext }) => {
     } else if (!/^[A-Za-z]{4}[0-9]{1}[A-Za-z0-9]{6}$/.test(values.ifsc_code)) {
       errors.ifsc_code = 'Invalid IFSC code, format IS 4 letters + 1 digit + 6 chars';
     }
-    if (values.is_active == 'Select status') errors.is_active = 'Required';
+    // if (values.is_active == 'Select status') errors.is_active = 'Required';
     return errors;
   };
 
   const handleSubmit = () => {
     try {
-      toast.success('Bank account details saved');
       onNext();
-      console.log(employeeForm)
     } catch (err) {
       toast.error('Failed to save bank account details');
     }
@@ -95,7 +93,7 @@ const BankAccountDetails = ({ onNext }) => {
               />
             </Grid>
 
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <TextField
                 select
                 name="is_active"
@@ -111,7 +109,7 @@ const BankAccountDetails = ({ onNext }) => {
                   <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Grid> */}
             
           </Grid>
 

@@ -33,7 +33,6 @@ const EmploymentDetails = ({ onNext }) => {
 
     const handleSubmit = () => {
         try {
-            toast.success('Employment details saved');
             onNext();
         } catch (err) {
             const apiMsg =

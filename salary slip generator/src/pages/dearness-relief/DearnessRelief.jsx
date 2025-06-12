@@ -41,7 +41,7 @@ export default function DearnessRelief() {
     effective_to: '',
     dr_percentage: '',
   });
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuReliefId, setMenuReliefId] = useState(null);
@@ -168,7 +168,7 @@ export default function DearnessRelief() {
           const apiMsg =
             err?.response?.data?.message ||
             err?.message ||
-            'Failed to save pensioner.';
+            'Failed to save DearnessRelief.';
           toast.error(apiMsg);
         });
     } else {
@@ -182,7 +182,7 @@ export default function DearnessRelief() {
           const apiMsg =
             err?.response?.data?.message ||
             err?.message ||
-            'Failed to save pensioner.';
+            'Failed to save DearnessRelief.';
           toast.error(apiMsg);
         });
     }
@@ -226,10 +226,7 @@ export default function DearnessRelief() {
                     <TableRow>                   
                       <TableCell style={{ fontWeight: "900" }}>Dearness Relief %</TableCell>
                       <TableCell style={{ fontWeight: "900" }}>Effective From</TableCell>
-                      <TableCell style={{ fontWeight: "900" }}>Effective To</TableCell>
-                      <TableCell style={{ fontWeight: "900" }}>Dr Percentage</TableCell>
-                      <TableCell style={{ fontWeight: "900" }}>Added By</TableCell>
-                      <TableCell style={{ fontWeight: "900" }}>Edited By</TableCell>
+                      <TableCell style={{ fontWeight: "900" }}>Effective To</TableCell>                                       
                       <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                     </TableRow>
                   </TableHead>
@@ -238,10 +235,7 @@ export default function DearnessRelief() {
                       <TableRow key={row.id}>
                         <TableCell>{row.dr_percentage ?? "NA"}</TableCell>
                         <TableCell>{row.effective_from || "NA"}</TableCell>
-                        <TableCell>{row.effective_to || "NA"}</TableCell>
-                        <TableCell>{row.dr_percentage ?? "NA"}</TableCell>
-                        <TableCell>{row.added_by?.name || "NA"}</TableCell>
-                        <TableCell>{row.edited_by?.name || "NA"}</TableCell>
+                        <TableCell>{row.effective_to || "NA"}</TableCell>                      
                         <TableCell align="left">
                           <IconButton onClick={(e) => handleMenuClick(e, row.id)}>
                             <MoreVertIcon />

@@ -78,7 +78,7 @@ const ShowCredit = () => {
 
               <Section title="Employee Info">
                 <LabelValue label="Employee ID" value={data?.employee?.id} />
-                <LabelValue label="Name" value={`${data?.employee?.first_name} ${data?.employee?.last_name}`} />
+                <LabelValue label="Name" value={`${data?.employee?.first_name} ${data?.employee?.middle_name} ${data?.employee?.last_name}`} />
                 <LabelValue label="Gender" value={data?.employee?.gender} />
                 <LabelValue label="Email" value={data?.employee?.email} />
                 <LabelValue label="Pancard" value={data?.employee?.pancard} />
