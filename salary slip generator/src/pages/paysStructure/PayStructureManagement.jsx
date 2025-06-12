@@ -16,6 +16,7 @@ import EmployeePayStructures from "./EmployeePayStructure";
 class PaysStructure extends React.Component {
   state = {
     tabs: 3
+    tabs: 3
   };
   toggleNavs = (e, state, index) => {
     e.preventDefault();
@@ -36,6 +37,7 @@ class PaysStructure extends React.Component {
             pills
             role="tablist"
           >
+            {/* 
             <NavItem>
               <NavLink
                 aria-selected={this.state.tabs === 3}
@@ -50,6 +52,7 @@ class PaysStructure extends React.Component {
                 Employee Pay Structure
               </NavLink>
             </NavItem>
+            */}
           </Nav>
         </div>
         </Card>

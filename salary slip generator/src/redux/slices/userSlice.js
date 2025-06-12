@@ -33,6 +33,21 @@ export const fetchUserData = createAsyncThunk(
     }
 );
 
+export const fetchSingleUser = createAsyncThunk(
+    'singleUser/fetchSingleUser',
+    async ({ id }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`/users/${id}`);
+            return {
+                data: response.data.data,
+                totalCount: response.data.total_count
+            };
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to update employee");
+        }
+    }
+);
+
 export const createUserData = createAsyncThunk(
     'user/createUserData',
     async (userData, { rejectWithValue }) => {

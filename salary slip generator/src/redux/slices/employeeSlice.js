@@ -19,7 +19,7 @@ export const fetchEmployees = createAsyncThunk(
 );
 
 export const fetchEmployeeById = createAsyncThunk(
-    "employee/fetchEmployeeById",
+    "EmployeeDetail/fetchEmployeeById",
     async (id, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/employees/${id}`);
@@ -29,6 +29,8 @@ export const fetchEmployeeById = createAsyncThunk(
         }
     }
 );
+
+
 
 export const storeEmployee = createAsyncThunk(
     "employee/addEmployee",
