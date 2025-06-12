@@ -16,7 +16,6 @@ import EmployeePayStructures from "./EmployeePayStructure";
 class PaysStructure extends React.Component {
   state = {
     tabs: 3
-    tabs: 3
   };
   toggleNavs = (e, state, index) => {
     e.preventDefault();

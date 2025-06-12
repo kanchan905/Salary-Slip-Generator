@@ -48,8 +48,6 @@ const EmployeePayStructures = () => {
   const employees = useSelector((state) => state.employee.employees) || [];
   const { matrixCells, loading } = useSelector((state) => state.levelCells);
   const { commissionLevels } = useSelector((state) => state.levels);
-  const { matrixCells, loading } = useSelector((state) => state.levelCells);
-  const { commissionLevels } = useSelector((state) => state.levels);
   const { payStructure, payStructureShow, totalCount } = useSelector((state) => state.payStructure);
   const { payCommissions } = useSelector((state) => state.payCommision);
   const [ selectedCommissionId, setSelectedCommissionId ] = useState('');
@@ -74,7 +72,6 @@ const EmployeePayStructures = () => {
 
 
   const toggleHistoryModal = () => setIsHistoryModalOpen(!isHistoryModalOpen);
-
 
   const getTableConfig = (type) => {
     switch (type) {
@@ -103,10 +100,6 @@ const EmployeePayStructures = () => {
         return { head: [], renderRow: () => null };
     }
   };
-      default:
-        return { head: [], renderRow: () => null };
-    }
-  };
 
   const filteredPayStructures = payStructure.filter((structure) => {
     const fullName = `${structure.employee?.first_name} ${structure.employee?.last_name}`.toLowerCase();
@@ -118,21 +111,12 @@ const EmployeePayStructures = () => {
   const handleHistoryStatus = (id) => {
     dispatch(showPayStructure(id));
     toggleHistoryModal();
-    toggleHistoryModal();
   };
 
-
   useEffect(() => {
-    dispatch(fetchPayCommisions());
     dispatch(fetchPayCommisions());
     dispatch(fetchEmployees({ page: 1, limit: 40, search: "" }));
   }, [dispatch]);
-
-  useEffect(() => {
-    if (selectedCommissionId) {
-      dispatch(fetchPayLevelByCommission(selectedCommissionId));
-    }
-  }, [dispatch, selectedCommissionId]);
 
   useEffect(() => {
     if (selectedCommissionId) {
@@ -148,17 +132,7 @@ const EmployeePayStructures = () => {
 
   useEffect(() => {
     dispatch(fetchPayStructure({ page: page + 1, limit: rowsPerPage, search: "" }));
-    dispatch(fetchPayStructure({ page: page + 1, limit: rowsPerPage, search: "" }));
   }, [dispatch, page, rowsPerPage]);
-
-  useEffect(() => {
-    if (payStructureShow && payStructureShow.history) {
-      const config = getTableConfig("cell");
-      setTableHead(config.head);
-      setRenderFunction(() => config.renderRow);
-      setHistoryRecord(payStructureShow.history);
-    }
-  }, [payStructureShow]);
 
   useEffect(() => {
     if (payStructureShow && payStructureShow.history) {
@@ -180,7 +154,6 @@ const EmployeePayStructures = () => {
     effective_from: editData?.effective_from || '',
     effective_till: editData?.effective_till || '',
   };
-
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
@@ -220,7 +193,6 @@ const EmployeePayStructures = () => {
     setEditData(structure);
   };
 
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -231,11 +203,6 @@ const EmployeePayStructures = () => {
   };
 
 
-
-
-
-
-  console.log("Levels:", commissionLevels);
 
   return (
     <>
@@ -251,7 +218,6 @@ const EmployeePayStructures = () => {
           onSubmit={handleSubmit}
         >
           {({ values, handleChange, setFieldValue }) => (
-          {({ values, handleChange, setFieldValue }) => (
             <Form>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} size={12}>
@@ -263,17 +229,7 @@ const EmployeePayStructures = () => {
                     value={values.employee_id}
                     onChange={handleChange}
                   >
-                <Grid item xs={12} sm={6} size={12}>
-                  <TextField
-                    select
-                    name="employee_id"
-                    label="Employee"
-                    fullWidth
-                    value={values.employee_id}
-                    onChange={handleChange}
-                  >
                     {employees.map((emp) => (
-                      <MenuItem key={emp.id} value={emp.id} className="text-capitalize">
                       <MenuItem key={emp.id} value={emp.id} className="text-capitalize">
                         {emp.first_name} {emp.last_name}
                       </MenuItem>
@@ -334,19 +290,10 @@ const EmployeePayStructures = () => {
                         </MenuItem>
                       ))
                     )}
-                      <MenuItem disabled>Select Level First</MenuItem>
-                    ) : (
-                      filteredCells.map((cell) => (
-                        <MenuItem key={cell.id} value={cell.id}>
-                          {cell.index} - {cell.amount}
-                        </MenuItem>
-                      ))
-                    )}
                   </TextField>
                 </Grid>
 
 
-                <Grid item xs={12} sm={6} size={4}>
                 <Grid item xs={12} sm={6} size={4}>
                   <TextField
                     fullWidth
@@ -361,7 +308,6 @@ const EmployeePayStructures = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6} size={4}>
-                <Grid item xs={12} sm={6} size={4}>
                   <TextField
                     fullWidth
                     name="effective_till"
@@ -375,7 +321,6 @@ const EmployeePayStructures = () => {
                 </Grid>
               </Grid>
 
-              <Grid container spacing={2} mt={3} size={4}>
               <Grid container spacing={2} mt={3} size={4}>
                 <Button
                   style={{ background: '#004080' }}
@@ -445,7 +390,6 @@ const EmployeePayStructures = () => {
             </TableHead>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={6}>Loading...</TableCell></TableRow>
                 <TableRow><TableCell colSpan={6}>Loading...</TableCell></TableRow>
               ) : (
                 filteredPayStructures.map((structure, index) => (
