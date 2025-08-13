@@ -27,6 +27,7 @@ import CommissionCreate from "pages/pay-commission/CommissionCreate";
 import PayComission from "pages/pay-commission/PayComission";
 import PensionStepper from "pages/processing/pensionProcessing/pensionstepper";
 import ViewSalary from "pages/view-salary/ViewSalary";
+import ChangePassword from "pages/Users/ChangePassword";
 
 const getAdminRoutes = () => (
   {
@@ -253,6 +254,12 @@ const getAdminRoutes = () => (
         path: "/forgot-password",
         name: "ForgotPassword",
         component: ForgotPassword,
+        showInSidebar: false,
+      },
+      {
+        path: "/change-password",
+        name: "ChangePassword",
+        component: ChangePassword,
         showInSidebar: false,
       },
       {
