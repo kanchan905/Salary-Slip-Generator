@@ -86,23 +86,24 @@ const PensionSlip = ({ formData, PensionerDetail, drDetails }) => {
           <div className="employee-info">
             <table className="info-table">
               <tbody>
+                {console.log('PensionerDetail:', PensionerDetail)}
                 <tr>
                   <td className="info-label">कर्मचारी कोड / Emp. Code</td>
-                  <td className="info-value">{PensionerDetail?.employee?.employee_code || 'N/A'}</td>
+                  <td className="info-value">{PensionerDetail?.pensioner?.employee?.employee_code || 'N/A'}</td>
                   <td className="info-label">पीपीओ नंबर / PPO No.</td>
-                  <td className="info-value">{PensionerDetail?.ppo_no || 'N/A'}</td>
+                  <td className="info-value">{PensionerDetail?.pensioner?.ppo_no || 'N/A'}</td>
                 </tr>
                 <tr>
                   <td className="info-label">नाम / Name</td>
-                  <td className="info-value">{PensionerDetail?.name || 'N/A'}</td>
+                  <td className="info-value">{PensionerDetail?.pensioner?.name || 'N/A'}</td>
                   <td className="info-label">संबंध / relation</td>
-                  <td className="info-value">{PensionerDetail?.relation || 'N/A'}</td>
+                  <td className="info-value">{PensionerDetail?.pensioner?.relation || 'N/A'}</td>
                 </tr>
                 <tr>
                   <td className="info-label">ईमेल / Gmail</td>
-                  <td className="info-value">{PensionerDetail?.employee?.email || 'N/A'}</td>
+                  <td className="info-value">{PensionerDetail?.pensioner?.email || 'N/A'}</td>
                   <td className="info-label">पेंशन प्रकार / Pension Type</td>
-                  <td className="info-value">{PensionerDetail?.type_of_pension || 'N/A'}</td>
+                  <td className="info-value">{PensionerDetail?.pensioner?.type_of_pension || 'N/A'}</td>
                 </tr>
                 <tr>
                   <td className="info-label">माह / Month</td>
@@ -241,9 +242,11 @@ const FinalizePension = () => {
     return <Box sx={{ p: 3, textAlign: 'center' }}>Loading pensioner details or pensioner not found. Please go back and select a pensioner.</Box>;
   }
 
+  console.log('Selected Pension Info:', selectedPensionInfo);
+
   // Pass the pensioner's static details (like name, PPO no)
   const PensionerDetail = {
-    ...selectedPensionInfo.pensioner,
+    ...selectedPensionInfo,
     // We also need static values that don't come from the form
     commutation_amount: selectedPensionInfo.commutation_amount,
     type_of_pension: selectedPensionInfo.type_of_pension,

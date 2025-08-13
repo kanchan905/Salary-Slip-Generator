@@ -55,17 +55,17 @@ const SalaryProcessing = () => {
 
     // REFINED: All form data, including calculated amounts, is now in `formData`
     const { formData, activeStep, bulkForm } = useSelector((state) => state.salary);
-    const { 
-        basic_pay, 
-        npa_amount, 
-        da_amount, 
-        hra_amount, 
-        uniform_rate_amount, 
-        transport_amount, 
-        da_on_ta, 
-        gis, 
+    const {
+        basic_pay,
+        npa_amount,
+        da_amount,
+        hra_amount,
+        uniform_rate_amount,
+        transport_amount,
+        da_on_ta,
+        gis,
         license_fee
-     } = formData;
+    } = formData;
     const employees = useSelector((state) => state.employee.employees) || [];
     const { employeeBank, EmployeeDetail } = useSelector((state) => state.employee);
     const { payStructure } = useSelector((state) => state.payStructure);
@@ -163,7 +163,7 @@ const SalaryProcessing = () => {
         const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
         const currentYear = now.getFullYear().toString();
         const today = dayjs().format('YYYY-MM-DD');
-        
+
         dispatch(updateField({ name: 'month', value: currentMonth }));
         dispatch(updateField({ name: 'year', value: currentYear }));
         dispatch(updateField({ name: 'processing_date', value: today }));
@@ -240,7 +240,7 @@ const SalaryProcessing = () => {
         if (isUniformEligible && uniformList.length > 0 && !formData.uniform_rate_id) dispatch(updateField({ name: 'uniform_rate_id', value: uniformList[0].id }));
 
         const structure = payStructure.find((s) => s.employee_id === formData.employee_id);
-        
+
         if (structure && transportList.length > 0) {
             const transportItem = transportList.find(t => t.pay_level == structure.pay_matrix_cell?.pay_matrix_level?.name);
             if (transportItem && transportItem.id !== formData.transport_rate_id) {
@@ -249,13 +249,12 @@ const SalaryProcessing = () => {
         }
     }, [dispatch, EmployeeDetail, payStructure, formData.employee_id, isHraEligible, isUniformEligible, hraList, npaList, daList, uniformList, transportList]);
 
-    // Effect to handle calculation completion and auto-proceed
-    useEffect(() => {
-        if (calculationComplete && selectNext && isProcessing) {
-            console.log("Calculation completed, proceeding to next step");
-            // The handleNext function will continue from where it left off
-        }
-    }, [calculationComplete, selectNext, isProcessing]);
+
+    // useEffect(() => {
+    //     if (calculationComplete && selectNext && isProcessing) {
+    //         console.log("Calculation completed, proceeding to next step");
+    //     }
+    // }, [calculationComplete, selectNext, isProcessing]);
 
     // *** CENTRALIZED CALCULATION ENGINE ***
     useEffect(() => {
@@ -263,7 +262,7 @@ const SalaryProcessing = () => {
         console.log("Structure:", structure);
         console.log("NPS Rates - Govt:", govtContributionRate, "Employee:", employeeContributionRate);
         console.log("SelectNext triggered:", selectNext);
-        
+
         // Check for basic required data - only return if absolutely essential data is missing
         if (!structure || !EmployeeDetail) {
             console.log("Missing essential data - structure or EmployeeDetail");
@@ -271,9 +270,9 @@ const SalaryProcessing = () => {
         }
 
         console.log("Proceeding with calculation - will handle missing rate data gracefully");
-        
+
         const calculatedPayload = {};
-        const local_basic_pay = structure?.pay_matrix_cell?.amount || 0;
+         const local_basic_pay = (Number(formData.basic_pay) > 0) ?  Number(formData.basic_pay) : structure?.pay_matrix_cell?.amount;
         calculatedPayload.basic_pay = local_basic_pay;
 
         // Handle NPA calculation - use available data or default to 0
@@ -284,7 +283,8 @@ const SalaryProcessing = () => {
             const threshold = 237500;
             if (npaRate > 0) {
                 const npa_calc = customRound((local_basic_pay * npaRate) / 100);
-                local_npa_amount = (local_basic_pay < threshold && local_basic_pay + npa_calc > threshold) ? (threshold - local_basic_pay) : npa_calc;
+                const defaultNpa = (local_basic_pay < threshold && local_basic_pay + npa_calc > threshold) ? (threshold - local_basic_pay) : npa_calc;
+                local_npa_amount = (Number(formData.npa_amount) > 0) ?  Number(formData.npa_amount) : defaultNpa;
                 if (local_basic_pay >= threshold) local_npa_amount = 0;
             }
         }
@@ -393,9 +393,9 @@ const SalaryProcessing = () => {
             Number(formData.computer_advance_installment) || 0,
             ...deductionDynamicObjects.map((obj) => Number(obj.amount) || 0)
         ].reduce((sum, val) => sum + (Number(val) || 0), 0);
-          
+
         console.log("Total Deductions:", totalDeductions);
-       
+
         calculatedPayload.total_deductions = totalDeductions;
 
         // Calculate and add net_amount to the payload
@@ -407,11 +407,11 @@ const SalaryProcessing = () => {
         dispatch(bulkUpdateField({ name: 'processing_date', value: today }))
 
         dispatch(setCalculatedAmounts(calculatedPayload));
-        setSelectNext(false)
-        setCalculationComplete(true); // Mark calculation as complete
-        
+        // setSelectNext(false)
+        setCalculationComplete(true);
+
         console.log("Calculation completed successfully:", calculatedPayload);
-        
+
         // If this was triggered by selectNext, we can now proceed
         if (selectNext) {
             console.log("Calculation completed after selectNext, ready to proceed");
@@ -419,11 +419,11 @@ const SalaryProcessing = () => {
     }, [
         formData.employee_id, formData.pay_structure_id, formData.npa_rate_id,
         formData.hra_rate_id, formData.da_rate_id, formData.uniform_rate_id,
-        formData.transport_rate_id, formData.gpf, isQuarterOccupied,
+        formData.transport_rate_id, formData.gpf, isQuarterOccupied, 
         payStructure, EmployeeDetail, quarters, npaList, hraList, daList,
-        uniformList, transportList, gisList, dispatch, selectNext,
+        uniformList, transportList, gisList, dispatch, selectNext, formData.basic_pay,
         formData.gpf, formData.gis, formData.license_fee, formData.employee_contribution_10,
-        formData.income_tax, formData.professional_tax, formData.nfch_donation,formData.lic, formData.credit_society_membership,formData.computer_advance_installment,
+        formData.income_tax, formData.professional_tax, formData.nfch_donation, formData.lic, formData.credit_society_membership, formData.computer_advance_installment,
         govtContributionRate, employeeContributionRate, npsContribution // Added NPS rates to dependencies
     ]);
 
@@ -483,73 +483,79 @@ const SalaryProcessing = () => {
     };
 
 
+    useEffect(() => {
+        if (calculationComplete && selectNext && isProcessing) {
+            console.log("All clear! Calculations are done, proceeding to final validation and next step.");
+
+            // Perform final checks that rely on newly calculated data
+            const isDuplicate = netSalary?.some(
+                slip =>
+                    slip.employee_id === formData.employee_id && // Ensure check is for the same employee
+                    slip.month === formData.month &&
+                    slip.year === formData.year
+            );
+
+            if (isDuplicate) {
+                toast.error('A payslip for this employee for the selected month and year already exists.');
+                setIsProcessing(false); // Reset state
+                setSelectNext(false);
+                return;
+            }
+
+            if (formData.processing_date && EmployeeDetail?.date_of_joining) {
+                const processingDate = new Date(formData.processing_date);
+                const joiningDate = new Date(EmployeeDetail.date_of_joining);
+
+                if (processingDate < joiningDate) {
+                    toast.error("Processing date cannot be before the employee's joining date.");
+                    setIsProcessing(false); // Reset state
+                    setSelectNext(false);
+                    return;
+                }
+            }
+
+            // If all checks pass, finally move to the next step
+            dispatch(nextStep());
+
+            // Reset flags for the next operation
+            setIsProcessing(false);
+            setSelectNext(false);
+        }
+    }, [calculationComplete, selectNext, isProcessing, dispatch, formData, EmployeeDetail, netSalary]);
+
+
     const handleNext = async () => {
         if (isProcessing) {
             console.log("Already processing, please wait...");
             return;
         }
 
-        if (activeStep === 0 && mode == 'bulk') {
+
+        if (activeStep === 0 && mode === 'bulk') {
             handleSubmit();
             return;
         }
-        else {
-            setIsProcessing(true);
-            setSelectNext(true);
-            setCalculationComplete(false); // Reset calculation completion state
-            
-            // Wait for calculation to complete if we're on step 1
-            if (activeStep === 1 && mode === 'individual') {
-                // Give the calculation engine time to complete
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-            
-            const result = validateStep({ formData, activeStep });
-            
-            if (!result.valid) {
-                toast.error(result.message);
-                setIsProcessing(false);
-                setSelectNext(false);
-                return;
-            }
-            
-            if (activeStep === 1 && mode === 'individual') {
-                const isDuplicate = netSalary?.some(
-                    slip =>
-                        slip.month === formData.month &&
-                        slip.year === formData.year
-                );
 
-                if (isDuplicate) {
-                    toast.error('A payslip for this employee for the selected month and year already exists.');
-                    setIsProcessing(false);
-                    setSelectNext(false);
-                    return;
-                }
 
-                if (formData.processing_date && EmployeeDetail?.date_of_joining) {
-                    const processingDate = new Date(formData.processing_date);
-                    const joiningDate = new Date(EmployeeDetail.date_of_joining);
+        const result = validateStep({ formData, activeStep });
+        if (!result.valid) {
+            toast.error(result.message);
+            return;
+        }
 
-                    if (processingDate < joiningDate) {
-                        toast.error("Processing date cannot be before the employee's joining date.");
-                        setIsProcessing(false);
-                        setSelectNext(false);
-                        return;
-                    }
-                }
-            }
-            
-            // If we reach here, validation passed and we can proceed
-            if (mode == 'individual') {
-                dispatch(nextStep());
-            }
-            
-            // Reset processing state after successful navigation
+
+        setIsProcessing(true);
+        setCalculationComplete(false);
+        setSelectNext(true);
+
+
+        if (activeStep !== 1 && mode === 'individual') {
+            dispatch(nextStep());
             setIsProcessing(false);
             setSelectNext(false);
         }
     };
+
 
     // Function to handle adding a new object
     const handleAddObject = () => {
@@ -704,15 +710,15 @@ const SalaryProcessing = () => {
                                 </TextField>
                             </Grid>
                             <Grid item size={{ xs: 4 }}><TextField label="Transport Amount" name='transport_amount' value={formData.transport_amount} fullWidth onChange={handleChange} /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField label="DA on TA" value={formData.da_on_ta || '0'} fullWidth/></Grid>
+                            <Grid item size={{ xs: 4 }}><TextField label="DA on TA" value={formData.da_on_ta || '0'} fullWidth /></Grid>
                             {EmployeeDetail?.pension_scheme === 'NPS' && (
                                 <Grid item size={{ xs: 4 }}>
-                                    <TextField 
-                                        label={`NPS Govt Contribution`} 
-                                        name='govt_contribution' 
-                                        value={npsContribution?.loading ? 'Loading...' : formData.govt_contribution} 
-                                        fullWidth 
-                                        disabled={npsContribution?.loading}
+                                    <TextField
+                                        label={`NPS Govt Contribution`}
+                                        name='govt_contribution'
+                                        value={npsContribution?.loading ? 'Loading...' : formData.govt_contribution}
+                                        fullWidth
+                                        disabled={npsContribution?.loading}                                  
                                     />
                                 </Grid>
                             )}
@@ -829,18 +835,18 @@ const SalaryProcessing = () => {
                             {EmployeeDetail?.pension_scheme === 'NPS' ? (
                                 <>
                                     <Grid item size={{ xs: 4 }}>
-                                        <TextField 
-                                            label={`NPS Employee Contribution`} 
-                                            fullWidth  
-                                            value={npsContribution?.loading ? 'Loading...' : (formData.employee_contribution_10 || 0)} 
+                                        <TextField
+                                            label={`NPS Employee Contribution`}
+                                            fullWidth
+                                            value={npsContribution?.loading ? 'Loading...' : (formData.employee_contribution_10 || 0)}
                                             disabled={npsContribution?.loading}
                                         />
                                     </Grid>
                                     <Grid item size={{ xs: 4 }}>
-                                        <TextField 
-                                            label={`NPS Govt Contribution`} 
-                                            fullWidth 
-                                            value={npsContribution?.loading ? 'Loading...' : (formData.govt_contribution_14_recovery || 0)} 
+                                        <TextField
+                                            label={`NPS Govt Contribution`}
+                                            fullWidth
+                                            value={npsContribution?.loading ? 'Loading...' : (formData.govt_contribution_14_recovery || 0)}
                                             disabled={npsContribution?.loading}
                                         />
                                     </Grid>
@@ -850,17 +856,16 @@ const SalaryProcessing = () => {
                             )}
                             <Grid item size={{ xs: 4 }}><TextField name="income_tax" label="Income Tax" fullWidth onChange={handleChange} value={formData.income_tax || ''} /></Grid>
                             <Grid item size={{ xs: 4 }}><TextField name="professional_tax" label="Professional Tax" fullWidth onChange={handleChange} value={formData.professional_tax || ''} /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField label="License Fee" fullWidth value={formData.license_fee} /></Grid>
+                            <Grid item size={{ xs: 4 }}><TextField name="license_fee" label="License Fee"  fullWidth onChange={handleChange} value={formData.license_fee} /></Grid>
                             <Grid item size={{ xs: 4 }}><TextField name="nfch_donation" label="NFCH Donation" fullWidth onChange={handleChange} value={formData.nfch_donation || ''} /></Grid>
                             <Grid item size={{ xs: 4 }}><TextField name="lic" label="LIC" fullWidth onChange={handleChange} value={formData.lic || ''} /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField name="gis" label="GIS" fullWidth value={formData.gis}  /></Grid>
+                            <Grid item size={{ xs: 4 }}><TextField name="gis" label="GIS" fullWidth onChange={handleChange}  value={formData.gis} /></Grid>
                             {
-                                EmployeeDetail?.employee_loan.length > 0 ?
-                                    (
-                                        <>
-                                            <Grid item size={{ xs: 4 }}>
-                                                <TextField name="computer_advance_installment" label="Computer Loan Installment" fullWidth onChange={handleChange} value={formData.computer_advance_installment || ''} />
-                                            </Grid>
+                                EmployeeDetail?.employee_loan.length > 0 ? (
+                                    <>
+                                        <Grid item size={{ xs: 4 }}>
+                                            <TextField name="computer_advance_installment" label="Computer Loan Installment" fullWidth onChange={handleChange} value={formData.computer_advance_installment || ''} />
+                                        </Grid>
                                             {/* <Grid item size={{ xs: 4 }}>
                                                 <TextField name="computer_advance_balance" label="Computer Loan Remaining Balance" fullWidth disabled value={formData.computer_advance_balance || ''} />
                                             </Grid> */}
