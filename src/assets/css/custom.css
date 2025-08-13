@@ -1,0 +1,966 @@
+.MuiPopover-root,
+.MuiMenu-root,
+.MuiPaper-root {
+  scroll-margin-top: 0 !important;
+  scroll-padding-top: 0 !important;
+  scroll-behavior: auto !important;
+}
+
+
+.navbar-nav {
+  margin-top: 0px !important;
+}
+
+.nav-wrapper .navactive {
+  color: #004080 !important;
+}
+
+.nav-wrapper .nav-link {
+  color: #004080 !important;
+}
+
+h6 {
+  font-size: 14px !important;
+}
+
+h5 {
+  font-size: 16px !important;
+}
+
+h4 {
+  font-size: 18px !important;
+}
+
+h3 {
+  font-size: 20px !important;
+}
+
+h2 {
+  font-size: 22px !important;
+}
+
+h1 {
+  font-size: 24px !important;
+}
+
+.sidebar-custom {
+  min-height: 100%;
+  padding-top: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6c757d;
+  /* padding: 0.75rem 1rem 0.25rem; */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-link {
+  color: #dee2e6;
+  padding: 0.6rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.375rem;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.sidebar-link.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.form-control:focus {
+  background-color: transparent !important;
+}
+
+body {
+  padding-right: 0px !important;
+}
+
+/* login page */
+.login-main {
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  padding: 40px 0px;
+}
+
+/* Background Slideshow (Full Page) */
+.bg-slideshow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  /* Behind everything */
+}
+
+.bg-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  filter: blur(3px) brightness(0.7);
+  /* Slightly dimmer/blurry */
+}
+
+.bg-slide.active {
+  opacity: 0.4;
+  /* Adjust opacity as needed */
+}
+
+@media (max-width: 940px) {
+  .custom-container {
+    flex-direction: column;
+    width: 80vw !important;
+  }
+}
+
+/* Left Panel Styling */
+.left-panel {
+  flex: 1.2;
+  /* Slightly wider left panel */
+  /* --- COLOR CHANGE HERE (Restored Original Gradient) --- */
+  background: linear-gradient(135deg, #004080, #001a33);
+  color: white;
+  padding: 40px 40px 20px 40px;
+  /* Adjusted padding */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left Panel Slideshow Overlay */
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* --- COLOR CHANGE HERE (Restored Original Overlay Gradient) --- */
+  background: linear-gradient(135deg, rgba(0, 64, 128, 0.8), rgba(0, 26, 51, 0.9));
+  z-index: 1;
+  /* Above internal slideshow, below content */
+}
+
+/* Left Panel Internal Slideshow */
+.left-panel .slideshow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  /* Behind the overlay */
+}
+
+.left-panel .slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.left-panel .slide.active {
+  opacity: 0.3;
+  /* Adjust opacity of internal slideshow images */
+}
+
+/* Content wrapper inside left panel */
+.content-wrapper {
+  position: relative;
+  z-index: 2;
+  /* Above overlay and internal slideshow */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Logos */
+.logos-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  /* Allow wrapping on smaller screens */
+}
+
+.main-logo {
+  flex-shrink: 0;
+  /* Prevent main logo from shrinking too much */
+}
+
+.secondary-logos {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.logo img {
+  max-height: 55px;
+  /* Slightly smaller */
+  max-width: 100%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Sidebar logo responsive size */
+.sidebar-logo-img {
+  max-height: 60px;
+  width: auto;
+  transition: max-height 0.2s;
+}
+
+@media (max-width: 768px) {
+  .sidebar-logo-img {
+    max-height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar-logo-img {
+    max-height: 40px;
+  }
+}
+
+/* Header Text */
+.header-content {
+  margin: 20px 0 40px;
+}
+
+.left-panel h1 {
+  font-size: 30px;
+  /* Adjusted size */
+  font-weight: 700;
+  margin-bottom: 15px;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  /* color: white; (Inherited) */
+}
+
+.left-panel h2 {
+  font-size: 17px;
+  /* Adjusted size */
+  font-weight: 500;
+  opacity: 0.9;
+  margin-bottom: 10px;
+  /* color: white; (Inherited) */
+}
+
+.left-panel p {
+  font-size: 15px;
+  /* Adjusted size */
+  line-height: 1.6;
+  opacity: 0.85;
+  /* Slightly more opaque */
+  max-width: 95%;
+  /* color: white; (Inherited) */
+}
+
+/* Institute Info Footer */
+.institute-info {
+  font-size: 12px;
+  opacity: 0.7;
+  text-align: center;
+  margin-top: auto;
+  /* Pushes to the bottom */
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  /* Subtler border */
+}
+
+/* Right Panel Styling */
+.right-panel {
+  flex: 0.8;
+  /* Narrower right panel */
+  padding: 40px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+}
+
+.login-form {
+  max-width: 360px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.login-form h3 {
+  color: #304050;
+  font-size: 24px;
+  margin-bottom: 35px;
+  /* Increased spacing */
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Input Fields */
+.input-group {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #445566;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 40px 14px 16px;
+  /* Add padding for icon */
+  border: 1px solid #d0d8e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s;
+  background-color: #f8fafc;
+}
+
+.input-group input:focus {
+  /* --- COLOR CHANGE HERE (Restored Original Focus) --- */
+  border-color: #004080;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 64, 128, 0.1);
+  background-color: white;
+}
+
+.input-icon {
+  position: absolute;
+  right: 16px;
+  top: calc(50% + 4px);
+  transform: translateY(-50%);
+  color: #aab8c5;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.input-group label+input+.input-icon {
+  top: calc(50% + 16px);
+}
+
+/* Forgot Password Link */
+.forgot-password {
+  text-align: right;
+  margin-top: -10px;
+  /* Pull up slightly */
+  margin-bottom: 24px;
+}
+
+.forgot-password a {
+  /* --- COLOR CHANGE HERE (Restored Original Link Color) --- */
+  color: #004080;
+  text-decoration: none;
+  font-size: 13px;
+  /* Slightly smaller */
+  font-weight: 500;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+/* Login Button */
+.login-btn {
+  /* --- COLOR CHANGE HERE (Restored Original Button Gradient) --- */
+  background: linear-gradient(135deg, #005497, #003660);
+  color: white;
+  border: none;
+  padding: 14px;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 84, 151, 0.3);
+}
+
+.login-btn:hover {
+  /* --- COLOR CHANGE HERE (Restored Original Button Hover Gradient) --- */
+  background: linear-gradient(135deg, #00477f, #002d4d);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 84, 151, 0.4);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 84, 151, 0.4);
+}
+
+/* Help Text */
+.help-text {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+  color: #667788;
+}
+
+.help-text a {
+  /* --- COLOR CHANGE HERE (Restored Original Link Color) --- */
+  color: #004080;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.help-text a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Adjustments (No color changes here) */
+@media (max-width: 940px) {
+  .container {
+    width: 95%;
+    flex-direction: column;
+    max-width: 550px;
+  }
+
+  .left-panel,
+  .right-panel {
+    flex: none;
+    width: 100%;
+  }
+
+  .left-panel {
+    padding: 30px 25px 20px 25px;
+    min-height: 300px;
+  }
+
+  .right-panel {
+    padding: 40px 25px;
+  }
+
+  .logos-container {
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .header-content,
+  .left-panel p {
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .institute-info {
+    padding-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-panel h1 {
+    font-size: 24px;
+  }
+
+  .left-panel h2 {
+    font-size: 16px;
+  }
+
+  .left-panel p {
+    font-size: 14px;
+  }
+
+  .logo img {
+    max-height: 45px;
+  }
+
+  .login-form h3 {
+    font-size: 22px;
+  }
+
+  .input-group input {
+    padding: 12px 35px 12px 14px;
+    font-size: 15px;
+  }
+
+  .input-icon {
+    right: 12px;
+    font-size: 18px;
+  }
+
+  .input-group label+input+.input-icon {
+    top: calc(50% + 15px);
+  }
+}
+
+/* header bg color */
+.main-head {
+  /* background: linear-gradient(87deg, #1d4b7a 0, #144983 100%); */
+  background: linear-gradient(87deg, #004080, #002a5a 100%) !important;
+}
+
+/*trends bg color*/
+.trend {
+  background: #f8f9fa !important;
+  border: 4px solid #002a5a !important;
+}
+
+.trend-btn {
+  color: #002a5a !important;
+  border-color: #002a5a !important;
+}
+
+.trend .dropdown-item:active {
+  background-color: #002a5a !important
+}
+
+.trend .nav-link {
+  color: #002a5a !important;
+}
+
+.trend .nav-link.active {
+  background-color: #002a5a !important;
+  color: #ffffff !important;
+}
+
+/*side bar icon colr*/
+.sidebar-link i {
+  color: white !important;
+}
+
+.Mui-selected {
+  color: white !important;
+}
+
+.MuiTabs-scrollButtons {
+  color: white !important;
+}
+
+.dropdown-item:active {
+  background-color: #004080 !important;
+}
+
+/*cardprofile scrollbar*/
+.custom-scrollbar {
+  scrollbar-width: thin;
+  /* For Firefox */
+  scrollbar-color: #004080 #e3f2fd;
+  /* Thumb and track colors */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  /* Scrollbar width */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #e3f2fd;
+  /* Light blue track color */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #004080;
+  /* Dark blue thumb color */
+  border-radius: 10px;
+  border: 2px solid #e3f2fd;
+  /* Adds padding around the thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #002a5a;
+  /* Darker blue thumb hover color */
+}
+
+.Mui-selected {
+  background-color: #125a91 !important;
+}
+
+.nav-item {
+  list-style: none;
+}
+
+
+/* salary slip design */
+
+/* --- SalarySlip.css --- */
+/* Place this file in the same folder as your SalaryProcessing.js component */
+
+.salary-slip-container {
+  font-family: 'Times New Roman', Times, serif;
+  background: white;
+  padding: 20px;
+  color: #000;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.salary-slip {
+  max-width: 850px;
+  margin: 0 auto;
+  background: white;
+  border: 2px solid #000;
+}
+
+.slip-header {
+  text-align: center;
+  padding: 15px;
+  border-bottom: 2px solid #000;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.slip-logo {
+  width: 80px;
+  height: auto;
+}
+
+.org-name h1 {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.org-name h2 {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.org-name p {
+  font-size: 11px;
+  margin-bottom: 1px;
+}
+
+.who-text {
+  font-size: 10px;
+  font-style: italic;
+  margin-top: 5px;
+}
+
+.slip-title {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #000;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.employee-info {
+  padding: 15px;
+  border-bottom: 1px solid #000;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.info-table td {
+  padding: 4px 8px;
+  border: 1px solid #000;
+  vertical-align: top;
+}
+
+.info-label {
+  font-weight: bold;
+  width: 20%;
+  background: #f5f5f5;
+}
+
+.info-value {
+  width: 30%;
+}
+
+.salary-details {
+  border-bottom: 1px solid #000;
+}
+
+.salary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.salary-table th {
+  padding: 8px;
+  border: 1px solid #000;
+  background: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.salary-table td {
+  padding: 6px 8px;
+  border: 1px solid #000;
+  vertical-align: top;
+}
+
+.amount-col {
+  text-align: right;
+  font-weight: 500;
+}
+
+.total-row {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+.net-pay {
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid #000;
+  background: #f8f8f8;
+}
+
+.additional-deductions {
+  padding: 15px;
+  border-bottom: 1px solid #000;
+}
+
+.additional-deductions h3 {
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 13px;
+  text-decoration: underline;
+}
+
+.deduction-table {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.deduction-table td {
+  padding: 4px 8px;
+  border: 1px solid #000;
+}
+
+.deduction-table .amount {
+  text-align: right;
+  font-weight: bold;
+}
+
+.slip-footer {
+  padding: 15px;
+  text-align: center;
+  font-size: 11px;
+  border-top: 1px solid #000;
+}
+
+.slip-footer p {
+  margin-bottom: 5px;
+}
+
+/* sidebar css */
+/* Sidebar.css */
+.sidebar-open {
+  display: block !important;
+}
+
+.sidebar-closed {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .sidebar-toggle-btn {
+    display: none !important;
+  }
+
+  .sidebar-closed {
+    display: block !important;
+  }
+
+  .desktop-tabs-row {
+    flex-direction: row !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .grids {
+    display: grid !important;
+  }
+}
+
+.bg-white .grids {
+  padding: 0px !important;
+}
+
+
+/* Theme Button Styles */
+.theme-blue-btn {
+  background-color: #004080;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.theme-blue-btn:hover {
+  background-color: #003060;
+  /* Darker on hover */
+}
+
+/* Center the navbar title on mobile and reduce font size by 2px */
+@media (max-width: 767.98px) {
+  .do-center {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}
+
+.navbar-title-mobile-center {
+  font-size: calc(1.25rem - 2px);
+  /* Bootstrap h5 is 1.25rem, so reduce by 2px */
+}
+
+/* Reports Page Styles */
+.reports-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.reports-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.reports-filter-item {
+  min-width: 160px;
+}
+
+@media (max-width: 768px) {
+  .reports-table-responsive {
+    overflow-x: auto;
+  }
+
+  .reports-filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem;
+  }
+
+  .reports-filter-item {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+/* net salry card css */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filter-item {
+  min-width: 160px;
+}
+
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem;
+  }
+
+  .filter-item {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+/* employee detail card height */
+.height {
+    height: 100% !important;
+     overflow-y:scroll ;
+  }
+ .detail-height{
+  max-height: 550px !important;
+ }
+@media (min-width: 1800px){
+  .height {
+    height: 100% !important;
+  }
+  .detail-height{
+  max-height: 900px !important;
+ }
+}
+/* net salry card mobile view */
+@media (max-width: 768px) {
+  .employee-info .info-table {
+        width: 100%;
+        table-layout: fixed; 
+    }
+    .employee-info .info-table tbody {
+        display: grid;
+        grid-template-columns: auto ;
+        gap: 8px 10px;
+    }
+
+  .salary-details > div {
+     display: flex;
+     flex-direction: column;
+  }
+  .slip-header{
+    padding: 0px;
+  }
+
+  .do-center .card-title{
+    text-align: center;
+    font-size: 14px !important;
+  }
+  .employee-info .info-table tr{
+    display: flex;
+    flex-direction: column;
+  }
+  .employee-info .info-table td{
+    width: 100% !important;
+  }
+}
+
+/* dashboard card */
+.header-body .row{
+  gap: 20px !important;
+}

@@ -1,0 +1,96 @@
+{
+  "name": "salary-slip-generator",
+  "version": "1.2.4",
+  "description": "React-based salary slip generator with Argon Dashboard.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/creativetimofficial/argon-dashboard-react.git"
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "argon",
+    "argon-react",
+    "dashboard",
+    "dashboard-react"
+  ],
+  "author": "Kanchan",
+  "license": "MIT",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "cross-env PUBLIC_URL=/ react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
+    "compile:scss": "sass src/assets/scss/argon-dashboard-react.scss src/assets/css/argon-dashboard-react.css",
+    "minify:scss": "sass src/assets/scss/argon-dashboard-react.scss src/assets/css/argon-dashboard-react.min.css --style compressed",
+    "build:scss": "npm run compile:scss && npm run minify:scss && npm run map:scss"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fortawesome/fontawesome-free": "6.5.1",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/lab": "^7.0.0-beta.13",
+    "@mui/material": "^7.0.2",
+    "@mui/x-date-pickers": "^7.29.4",
+    "@reduxjs/toolkit": "^2.7.0",
+    "@toolpad/core": "^0.14.0",
+    "ajv": "^8.16.0",
+    "axios": "^1.9.0",
+    "bootstrap": "^4.6.2",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "2.9.4",
+    "classnames": "2.3.2",
+    "cookies-next": "^5.1.0",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
+    "formik": "^2.4.6",
+    "html2pdf.js": "^0.10.3",
+    "install": "^0.13.0",
+    "moment": "2.29.4",
+    "nouislider": "15.4.0",
+    "npm": "^11.3.0",
+    "react": "18.2.0",
+    "react-bootstrap": "^2.10.9",
+    "react-chartjs-2": "2.11.2",
+    "react-copy-to-clipboard": "5.1.0",
+    "react-datetime": "3.2.0",
+    "react-dom": "18.2.0",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "6.21.1",
+    "react-scripts": "5.0.1",
+    "react-to-print": "^3.0.6",
+    "react-toastify": "^11.0.5",
+    "reactstrap": "^8.10.0",
+    "sass": "1.69.5",
+    "sweetalert2": "^11.19.1",
+    "toastify": "^2.0.1",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "gulp": "4.0.2",
+    "gulp-append-prepend": "1.0.9"
+  },
+  "optionalDependencies": {
+    "eslint-plugin-flowtype": "8.0.3",
+    "typescript": "5.3.3"
+  },
+  "overrides": {
+    "svgo": "3.0.2",
+    "fsevents": "2.3.2",
+    "chokidar": "3.5.3"
+  }
+}
