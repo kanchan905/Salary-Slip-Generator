@@ -333,13 +333,14 @@ const SalaryProcessing = () => {
             const gisItem = gisList.find((gis) => gis.pay_matrix_level == structure?.pay_matrix_cell?.pay_matrix_level?.name);
             gisAmount = gisItem?.amount || 0;
         }
-        calculatedPayload.gis = structure?.employee?.gis_eligibility ? gisAmount : 0;
+        const deafultgis = structure?.employee?.gis_eligibility ? gisAmount : 0;
+        calculatedPayload.gis = (Number(formData.gis) > 0) ?  Number(formData.gis)  : deafultgis;
 
         if (isQuarterOccupied) {
             const occupiedQuarter = quarters.find(q => q.employee_id === formData.employee_id && Number(q.is_occupied) === 1);
             calculatedPayload.license_fee = occupiedQuarter ? (occupiedQuarter.quarter?.license_fee || 0) : 0;
         } else {
-            calculatedPayload.license_fee = 0;
+            calculatedPayload.license_fee = (Number(formData.gis) > license_fee) ?  Number(formData.license_fee)  : 0;
         }
 
         if (EmployeeDetail.pension_scheme === 'NPS') {

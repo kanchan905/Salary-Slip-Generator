@@ -1,251 +1,121 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout, clearAuth } from '../redux/slices/authSlice'; 
 import { toast } from 'react-toastify';
 import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { clearAuth } from '../redux/slices/authSlice'; // Your logout action
 
-// Session timeout configuration
-const TIMEOUT_IN_MINUTES = 30; // Reduced from 1440 (24 hours) to 30 minutes for security
-const TIMEOUT_IN_MILLISECONDS = TIMEOUT_IN_MINUTES * 60 * 1000;
-const WARNING_TIME = 5 * 60 * 1000; // Show warning 5 minutes before timeout
+// --- CONFIGURATION ---
 
-// 24-hour token expiration
-const TOKEN_EXPIRATION_HOURS = 24;
-const TOKEN_EXPIRATION_MILLISECONDS = TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000;
+// The total duration of a session is exactly 24 hours.
+const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
 
-// Session tracking
-const SESSION_ID_KEY = 'session_id';
-const LAST_ACTIVITY_KEY = 'last_activity';
-const LOGIN_TIMESTAMP_KEY = 'login_timestamp';
+// How often we check if the session is still valid (e.g., every minute).
+const SESSION_CHECK_INTERVAL_MS = 60 * 1000;
 
+// Keys for cookies used to track the session in this browser.
+const SESSION_ID_COOKIE = 'app_session_id';
+const LOGIN_TIMESTAMP_COOKIE = 'app_login_timestamp';
+
+/**
+ * Manages user session lifecycle based on two rules:
+ * 1. A session has a hard expiration of 24 hours.
+ * 2. A user can only have one active session. A new login on another
+ *    browser/device will invalidate the previous session.
+ *
+ * --- REQUIRED SETUP ---
+ * This component requires your Redux store and backend to work together:
+ *
+ * 1.  **Backend Login API:**
+ *     - When a user logs in, your server MUST generate a new, unique session ID.
+ *     - This new session ID must be returned in the login API response.
+ *
+ * 2.  **Redux `authSlice`:**
+ *     - Your Redux `auth` state MUST store this `sessionId`.
+ *     - The selector `state.auth.sessionId` should provide this value.
+ */
 const SessionTimeoutManager = ({ children }) => {
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const user = useSelector((state) => state.auth.user);
-  const timeoutIdRef = useRef(null);
-  const warningIdRef = useRef(null);
-  const activityCheckIdRef = useRef(null);
-  const tokenExpirationIdRef = useRef(null);
+  const checkIntervalId = useRef(null);
 
-  // Generate unique session ID
-  const generateSessionId = () => {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  // Get the latest session information from the Redux store.
+  // `canonicalSessionId` is the "true" session ID from the most recent login.
+  const { isLoggedIn, canonicalSessionId } = useSelector((state) => ({
+    isLoggedIn: state.auth.isLoggedIn,
+    sessionId: state.auth.sessionId, 
+  }));
+
+  // Reusable function to terminate the session, clear data, and notify the user.
+  const endSession = (message) => {
+    // Check if a session cookie exists to prevent running multiple times.
+    if (!getCookie(SESSION_ID_COOKIE)) return;
+    
+    console.warn(`Session ended: ${message}`);
+    toast.error(message, { toastId: 'session-expired-toast' });
+
+    // Clean up cookies and dispatch the logout action.
+    deleteCookie(SESSION_ID_COOKIE);
+    deleteCookie(LOGIN_TIMESTAMP_COOKIE);
+    dispatch(clearAuth());
   };
 
-  // Check if this is a new login (prevent multiple sessions)
-  const checkForExistingSession = useCallback(() => {
-    const existingSessionId = getCookie(SESSION_ID_KEY);
-    const loginTimestamp = getCookie(LOGIN_TIMESTAMP_KEY);
-    
-    if (existingSessionId && loginTimestamp) {
-      const timeSinceLogin = Date.now() - parseInt(loginTimestamp);
-      // If session is older than 1 hour, consider it stale
-      if (timeSinceLogin > 60 * 60 * 1000) {
-        deleteCookie(SESSION_ID_KEY);
-        deleteCookie(LOGIN_TIMESTAMP_KEY);
-        deleteCookie(LAST_ACTIVITY_KEY);
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }, []);
-
-  // Initialize session on login
-  const initializeSession = useCallback(() => {
-    if (isLoggedIn && user) {
-      const sessionId = generateSessionId();
-      const timestamp = Date.now();
-      
-      setCookie(SESSION_ID_KEY, sessionId, { 
-        path: '/', 
-        maxAge: 60 * 60 * 24, // 24 hours
-        secure: true,
-        sameSite: 'strict'
-      });
-      setCookie(LOGIN_TIMESTAMP_KEY, timestamp.toString(), { 
-        path: '/', 
-        maxAge: 60 * 60 * 24,
-        secure: true,
-        sameSite: 'strict'
-      });
-      setCookie(LAST_ACTIVITY_KEY, timestamp.toString(), { 
-        path: '/', 
-        maxAge: 60 * 60 * 24,
-        secure: true,
-        sameSite: 'strict'
-      });
-    }
-  }, [isLoggedIn, user]);
-
-  // Update last activity timestamp
-  const updateLastActivity = useCallback(() => {
-    if (isLoggedIn) {
-      const timestamp = Date.now();
-      setCookie(LAST_ACTIVITY_KEY, timestamp.toString(), { 
-        path: '/', 
-        maxAge: 60 * 60 * 24,
-        secure: true,
-        sameSite: 'strict'
-      });
-    }
-  }, [isLoggedIn]);
-
-  // Check session validity
-  const validateSession = useCallback(() => {
-    if (!isLoggedIn) return;
-
-    const lastActivity = getCookie(LAST_ACTIVITY_KEY);
-    const sessionId = getCookie(SESSION_ID_KEY);
-    const loginTimestamp = getCookie(LOGIN_TIMESTAMP_KEY);
-    
-    if (!lastActivity || !sessionId || !loginTimestamp) {
-      dispatch(clearAuth());
-      toast.error("Session expired. Please login again.");
-      return false;
-    }
-
-    const timeSinceLastActivity = Date.now() - parseInt(lastActivity);
-    const timeSinceLogin = Date.now() - parseInt(loginTimestamp);
-    
-    // Check if session has been inactive for too long
-    if (timeSinceLastActivity > TIMEOUT_IN_MILLISECONDS) {
-      dispatch(clearAuth());
-      toast.error("Session expired due to inactivity. Please login again.");
-      return false;
-    }
-
-    // Check if token has expired (24 hours)
-    if (timeSinceLogin > TOKEN_EXPIRATION_MILLISECONDS) {
-      dispatch(clearAuth());
-      toast.error("Session expired after 24 hours. Please login again.");
-      return false;
-    }
-
-    return true;
-  }, [isLoggedIn, dispatch]);
-
-  // Periodic session validation
-  const startSessionValidation = useCallback(() => {
-    if (isLoggedIn) {
-      // Check session every 5 minutes
-      activityCheckIdRef.current = setInterval(() => {
-        if (!validateSession()) {
-          clearInterval(activityCheckIdRef.current);
-        }
-      }, 5 * 60 * 1000);
-    }
-  }, [isLoggedIn, validateSession]);
-
-  // Set up 24-hour token expiration
-  const setupTokenExpiration = useCallback(() => {
-    if (isLoggedIn) {
-      const loginTimestamp = getCookie(LOGIN_TIMESTAMP_KEY);
-      if (loginTimestamp) {
-        const timeSinceLogin = Date.now() - parseInt(loginTimestamp);
-        const timeUntilExpiration = Math.max(0, TOKEN_EXPIRATION_MILLISECONDS - timeSinceLogin);
-        
-        tokenExpirationIdRef.current = setTimeout(() => {
-          dispatch(clearAuth());
-          toast.error("Session expired after 24 hours. Please login again.");
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
-        }, timeUntilExpiration);
-      }
-    }
-  }, [isLoggedIn, dispatch]);
-
-  const logoutUser = useCallback(() => {
-    if (isLoggedIn) {
-      // Clear all session data
-      deleteCookie(SESSION_ID_KEY);
-      deleteCookie(LOGIN_TIMESTAMP_KEY);
-      deleteCookie(LAST_ACTIVITY_KEY);
-      
-      dispatch(clearAuth());
-      toast.info("You have been logged out due to inactivity.");
-    }
-  }, [dispatch, isLoggedIn]);
-
-  const showWarning = useCallback(() => {
-    toast.warning("Your session will expire in 5 minutes. Please save your work.", {
-      autoClose: false,
-      closeOnClick: false,
-      draggable: false
-    });
-  }, []);
-
-  const resetTimer = useCallback(() => {
-    // Clear existing timers
-    clearTimeout(timeoutIdRef.current);
-    clearTimeout(warningIdRef.current);
-    
-    if (isLoggedIn) {
-      updateLastActivity();
-      
-      // Set warning timer
-      warningIdRef.current = setTimeout(showWarning, TIMEOUT_IN_MILLISECONDS - WARNING_TIME);
-      
-      // Set logout timer
-      timeoutIdRef.current = setTimeout(logoutUser, TIMEOUT_IN_MILLISECONDS);
-    }
-  }, [isLoggedIn, logoutUser, showWarning, updateLastActivity]);
-
-  // Handle user activity
-  const handleUserActivity = useCallback(() => {
-    if (isLoggedIn) {
-      resetTimer();
-    }
-  }, [isLoggedIn, resetTimer]);
-
   useEffect(() => {
-    if (isLoggedIn) {
-      // Check for existing session on login
-      if (checkForExistingSession()) {
-        // If session exists, validate it
-        if (!validateSession()) {
-          return;
-        }
-      } else {
-        // Initialize new session
-        initializeSession();
-      }
-      
-      // Start session validation
-      startSessionValidation();
-      
-      // Set up 24-hour token expiration
-      setupTokenExpiration();
-      
-      // Set up activity listeners
-      const events = ['mousemove', 'click', 'keydown', 'scroll', 'touchstart'];
-      events.forEach(event => window.addEventListener(event, handleUserActivity, { passive: true }));
-      
-      // Initial timer setup
-      resetTimer();
-    } else {
-      // Clear all timers and session data when logged out
-      clearTimeout(timeoutIdRef.current);
-      clearTimeout(warningIdRef.current);
-      clearInterval(activityCheckIdRef.current);
-      clearTimeout(tokenExpirationIdRef.current);
-      
-      deleteCookie(SESSION_ID_KEY);
-      deleteCookie(LOGIN_TIMESTAMP_KEY);
-      deleteCookie(LAST_ACTIVITY_KEY);
+    // If the user isn't logged in, we stop any running checks and do nothing.
+    if (!isLoggedIn || !canonicalSessionId) {
+      clearInterval(checkIntervalId.current);
+      return;
     }
 
-    return () => {
-      clearTimeout(timeoutIdRef.current);
-      clearTimeout(warningIdRef.current);
-      clearInterval(activityCheckIdRef.current);
-      clearTimeout(tokenExpirationIdRef.current);
+    // Get the session ID currently stored in this browser's cookies.
+    const localSessionId = getCookie(SESSION_ID_COOKIE);
+
+    // If the Redux session ID is different from the cookie's, it's a new login.
+    // We must update the cookies with the new session details.
+    if (localSessionId !== canonicalSessionId) {
+      console.log('New session detected. Initializing session tracking.');
+      const now = Date.now();
+      const cookieOptions = {
+        path: '/',
+        maxAge: SESSION_DURATION_MS / 1000, // 24 hours in seconds
+        sameSite: 'strict',
+        // secure: true, // Recommended for production environments
+      };
       
-      const events = ['mousemove', 'click', 'keydown', 'scroll', 'touchstart'];
-      events.forEach(event => window.removeEventListener(event, handleUserActivity));
+      setCookie(LOGIN_TIMESTAMP_COOKIE, now.toString(), cookieOptions);
+      setCookie(SESSION_ID_COOKIE, canonicalSessionId, cookieOptions);
+    }
+
+    // Periodically check the validity of the current session.
+    checkIntervalId.current = setInterval(() => {
+      const loginTimestamp = parseInt(getCookie(LOGIN_TIMESTAMP_COOKIE) || '0', 10);
+      const currentLocalSessionId = getCookie(SESSION_ID_COOKIE);
+
+      // Failsafe: if cookies are missing, end the session.
+      if (!loginTimestamp || !currentLocalSessionId) {
+        endSession('Session data is invalid. Please log in again.');
+        return;
+      }
+
+      // CHECK 1: Has the 24-hour hard limit been reached?
+      if (Date.now() - loginTimestamp > SESSION_DURATION_MS) {
+        endSession('Session expired after 24 hours. Please log in again.');
+        return;
+      }
+
+      // CHECK 2: Has a new login occurred elsewhere?
+      // We compare this browser's cookie with the "true" ID from Redux.
+      // If they don't match, this session is old and must be terminated.
+      if (canonicalSessionId && currentLocalSessionId !== canonicalSessionId) {
+        endSession('Logged out because you signed in on another browser or device.');
+        return;
+      }
+    }, SESSION_CHECK_INTERVAL_MS);
+
+    // Cleanup function: This runs when the component unmounts or dependencies change.
+    // It's crucial for preventing memory leaks.
+    return () => {
+      clearInterval(checkIntervalId.current);
     };
-  }, [isLoggedIn, checkForExistingSession, validateSession, initializeSession, startSessionValidation, setupTokenExpiration, handleUserActivity, resetTimer]);
+  }, [isLoggedIn, canonicalSessionId, dispatch]);
 
   return children;
 };

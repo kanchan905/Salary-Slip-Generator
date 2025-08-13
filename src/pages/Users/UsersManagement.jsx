@@ -444,6 +444,8 @@ export default function UserTable() {
                                                                     <LockResetIcon fontSize="small" style={{ marginRight: 8 }} /> Change Password
                                                                 </MenuItem>
                                                             )}
+                                                            
+                                                            {currentRoles.includes("IT Admin") && (
                                                             <MenuItem onClick={() => {
                                                                 setPasswordChangeUser(user);
                                                                 setRoleAssignRemoveUser(user); // new state
@@ -452,6 +454,8 @@ export default function UserTable() {
                                                             }}>
                                                                 <i className="fa fa-user-tag" style={{ marginRight: 8 }} /> Manage Roles
                                                             </MenuItem>
+                                                            )}
+
                                                             <MenuItem onClick={() => handleHistory(user)}>
                                                                 <i className="fa fa-history" style={{ marginRight: 8 }} /> History
                                                             </MenuItem>
