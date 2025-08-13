@@ -29,13 +29,13 @@ const AppContent = () => {
           <>
             <Route path="/pensioner-slip" element={<PensionSlipPage/>}/>
             <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/change-password" element={<ForgotPassword />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         ) : (
           <>
             <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/change-password" element={<ForgotPassword />} />
             <Route path="/" element={<Navigate to={`/index`} replace />} />
             <Route path="/*" element={
               <PrivateRoute>
