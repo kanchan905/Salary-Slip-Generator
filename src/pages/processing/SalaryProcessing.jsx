@@ -393,7 +393,9 @@ const SalaryProcessing = () => {
             Number(formData.computer_advance_installment) || 0,
             ...deductionDynamicObjects.map((obj) => Number(obj.amount) || 0)
         ].reduce((sum, val) => sum + (Number(val) || 0), 0);
-
+          
+        console.log("Total Deductions:", totalDeductions);
+       
         calculatedPayload.total_deductions = totalDeductions;
 
         // Calculate and add net_amount to the payload
@@ -420,6 +422,8 @@ const SalaryProcessing = () => {
         formData.transport_rate_id, formData.gpf, isQuarterOccupied,
         payStructure, EmployeeDetail, quarters, npaList, hraList, daList,
         uniformList, transportList, gisList, dispatch, selectNext,
+        formData.gpf, formData.gis, formData.license_fee, formData.employee_contribution_10,
+        formData.income_tax, formData.professional_tax, formData.nfch_donation,formData.lic, formData.credit_society_membership,formData.computer_advance_installment,
         govtContributionRate, employeeContributionRate, npsContribution // Added NPS rates to dependencies
     ]);
 

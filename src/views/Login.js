@@ -156,7 +156,7 @@ const Login = () => {
                   <p className="text-center text-sm text-gray-600 help-text mt-2">
                     Need help?{' '}
                     <a
-                      href="https://mail.google.com/mail/?view=cm&fs=1&to=kanchanbaghel89@gmail.com&su=Forgot%20Password%20Assistance&body=Hi%20Support%2C%20I%20need%20help%20with%20resetting%20my%20password."
+                      href="https://mail.google.com/mail/?view=cm&fs=1&to=NIOH.web@gmail.com&su=Forgot%20Password%20Assistance&body=Hi%20Support%2C%20I%20need%20help%20with%20resetting%20my%20password."
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline"

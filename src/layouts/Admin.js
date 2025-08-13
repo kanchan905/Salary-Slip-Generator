@@ -84,21 +84,10 @@ const AdminLayout = (props) => {
   //   roleRoutes = getAdminRoutes();
   // }
 
-
   const permittedRoutes = useMemo(() => {
     const allRoutes = getAdminRoutes();
-    console.log("AdminLayout - User Roles:", userRoles);
-    console.log("AdminLayout - All Routes:", allRoutes);
-    
-    // TEMPORARY: Always return all routes for testing
-    console.log("AdminLayout - TEMPORARY: Returning all routes for testing");
-    return allRoutes;
-    
-    // Declare filteredRoutes at the beginning
-    const filteredRoutes = {};
-    
     if (userRoles.length === 0) {
-      console.log("AdminLayout - No user roles found");
+      const publicRoutes = {};
       Object.keys(allRoutes).forEach(category => {
         const routes = allRoutes[category].filter(route =>
           !route.roles || route.roles.some(allowedRole => userRoles.includes(allowedRole))
@@ -107,10 +96,10 @@ const AdminLayout = (props) => {
           filteredRoutes[category] = routes;
         }
       });
-      console.log("AdminLayout - Public Routes:", filteredRoutes);
-      return filteredRoutes;
+      return publicRoutes;
     }
 
+    const filteredRoutes = {};
     Object.keys(allRoutes).forEach(category => {
       const routes = allRoutes[category].filter(route => {
         return !route.roles || route.roles.some(allowedRole => userRoles.includes(allowedRole));
@@ -121,15 +110,13 @@ const AdminLayout = (props) => {
       }
     });
 
-    console.log("AdminLayout - Filtered Routes:", filteredRoutes);
     return filteredRoutes;
   }, [userRoles]);
 
-  console.log("AdminLayout - Permitted Routes:", permittedRoutes);
+  console.log("permittedRoutes:", permittedRoutes);
+  
   const getRoutes = (routes) => {
     const allFlattenedRoutes = Object.values(routes).flat();
-    console.log("AdminLayout - Routes:", routes);
-    console.log("AdminLayout - All Flattened Routes:", allFlattenedRoutes);
     return allFlattenedRoutes.map((prop, key) => {
       return (
         <Route
@@ -144,6 +131,67 @@ const AdminLayout = (props) => {
       );
     });
   };
+
+
+  // const permittedRoutes = useMemo(() => {
+  //   const allRoutes = getAdminRoutes();
+  //   console.log("AdminLayout - User Roles:", userRoles);
+  //   console.log("AdminLayout - All Routes:", allRoutes);
+    
+  //   // TEMPORARY: Always return all routes for testing
+  //   console.log("AdminLayout - TEMPORARY: Returning all routes for testing");
+  //   // return allRoutes;
+    
+  //   // Declare filteredRoutes at the beginning
+  //   const filteredRoutes = {};
+    
+  //   if (userRoles.length === 0) {
+  //     console.log("AdminLayout - No user roles found");
+  //     Object.keys(allRoutes).forEach(category => {
+  //       const routes = allRoutes[category].filter(route =>
+  //         !route.roles || route.roles.some(allowedRole => userRoles.includes(allowedRole))
+  //       );
+  //       if (routes.length > 0) {
+  //         filteredRoutes[category] = routes;
+  //       }
+  //     });
+  //     console.log("AdminLayout - Public Routes:", filteredRoutes);
+  //     return filteredRoutes;
+  //   }
+
+  //   Object.keys(allRoutes).forEach(category => {
+  //     const routes = allRoutes[category].filter(route => {
+  //       return !route.roles || route.roles.some(allowedRole => userRoles.includes(allowedRole));
+  //     });
+
+  //     if (routes.length > 0) {
+  //       filteredRoutes[category] = routes;
+  //     }
+  //   });
+
+  //   console.log("AdminLayout - Filtered Routes:", filteredRoutes);
+  //   return filteredRoutes;
+  // }, [userRoles]);
+
+  // console.log("AdminLayout - Permitted Routes:", permittedRoutes);
+  // const getRoutes = (routes) => {
+  //   const allFlattenedRoutes = Object.values(routes).flat();
+  //   console.log("AdminLayout - Routes:", routes);
+  //   console.log("AdminLayout - All Flattened Routes:", allFlattenedRoutes);
+  //   return allFlattenedRoutes.map((prop, key) => {
+  //     return (
+  //       <Route
+  //         path={prop.path}
+  //         element={
+  //           <ProtectedRoute userRoles={userRoles} route={prop}>
+  //             <prop.component />
+  //           </ProtectedRoute>
+  //         }
+  //         key={key}
+  //       />
+  //     );
+  //   });
+  // };
 
 
   const getBrandText = (path) => {
