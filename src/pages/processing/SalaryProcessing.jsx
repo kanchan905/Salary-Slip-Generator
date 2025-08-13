@@ -338,9 +338,10 @@ const SalaryProcessing = () => {
 
         if (isQuarterOccupied) {
             const occupiedQuarter = quarters.find(q => q.employee_id === formData.employee_id && Number(q.is_occupied) === 1);
-            calculatedPayload.license_fee = occupiedQuarter ? (occupiedQuarter.quarter?.license_fee || 0) : 0;
+            const defaultLicenseFee = occupiedQuarter ? (occupiedQuarter.quarter?.license_fee || 0) : 0;
+            calculatedPayload.license_fee = (Number(formData.license_fee) > 0) ?  Number(formData.license_fee)  : defaultLicenseFee;
         } else {
-            calculatedPayload.license_fee = (Number(formData.gis) > license_fee) ?  Number(formData.license_fee)  : 0;
+            calculatedPayload.license_fee = (Number(formData.license_fee) > 0) ?  Number(formData.license_fee)  : 0;
         }
 
         if (EmployeeDetail.pension_scheme === 'NPS') {
