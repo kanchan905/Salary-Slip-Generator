@@ -25,6 +25,7 @@ export default function ViewSalary() {
 
     // --- State from the NEW viewSalary slice ---
     const { viewSalary, loading, totalCount } = useSelector((state) => state.viewSalary);
+    console.log('viewSalary:', viewSalary);
 
     // --- Component State ---
     const [anchorEl, setAnchorEl] = useState(null);
@@ -65,7 +66,7 @@ export default function ViewSalary() {
     // Fetch data on initial load and when pagination changes
     useEffect(() => {
         fetchData(filters, page);
-    }, [dispatch, page, rowsPerPage]);
+    }, [dispatch, page, rowsPerPage, filters]);
     
     // --- Filter and Action Handlers ---
     const handleFilterChange = (e) => {
@@ -201,7 +202,7 @@ export default function ViewSalary() {
                             )}
                         </div>
                         <TablePagination
-                            component="div" count={totalCount} page={page} onPageChange={handlePageChange}
+                            component="div" count={viewSalary?.length === 0 ? 0 : totalCount} page={page} onPageChange={handlePageChange}
                             rowsPerPage={rowsPerPage} onRowsPerPageChange={handleChangeRowsPerPage}
                         />
                     </CardBody>

@@ -31,7 +31,7 @@ const PensionerPersonalDetails = ({ onNext }) => {
 
       // Filter users to get those who are retired but not yet in the pensioners list.
       const availableRetiredUsers = users.filter(
-        (user) => user.is_retired === 1 && !existingPensionerUserIds.has(user.id)
+        (user) => user.is_retired === 1  && !existingPensionerUserIds.has(user.id)
       );
       
       setRetired(availableRetiredUsers);

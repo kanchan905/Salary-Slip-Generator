@@ -14,7 +14,7 @@ import {
     reset,
     bulkUpdateField,
     resetBulkState,
-    setCalculatedAmounts, // REFINED: Import the new centralized action
+    setCalculatedAmounts,
 } from '../../redux/slices/salarySlice';
 import {
     Box, Button, Stepper, Step, StepLabel, Typography, TextField,
@@ -178,7 +178,8 @@ const SalaryProcessing = () => {
         }
     }, [employees]);
 
-    // Fetch employee-specific details and pre-fill related fields
+
+
     useEffect(() => {
         if (formData.employee_id) {
             dispatch(fetchEmployeeBankdetail({ employeeId: formData.employee_id }));
@@ -272,7 +273,7 @@ const SalaryProcessing = () => {
         console.log("Proceeding with calculation - will handle missing rate data gracefully");
 
         const calculatedPayload = {};
-         const local_basic_pay = (Number(formData.basic_pay) > 0) ?  Number(formData.basic_pay) : structure?.pay_matrix_cell?.amount;
+        const local_basic_pay = Number(formData.basic_pay) ? Number(formData.basic_pay) : structure?.pay_matrix_cell?.amount;
         calculatedPayload.basic_pay = local_basic_pay;
 
         // Handle NPA calculation - use available data or default to 0
@@ -284,7 +285,7 @@ const SalaryProcessing = () => {
             if (npaRate > 0) {
                 const npa_calc = customRound((local_basic_pay * npaRate) / 100);
                 const defaultNpa = (local_basic_pay < threshold && local_basic_pay + npa_calc > threshold) ? (threshold - local_basic_pay) : npa_calc;
-                local_npa_amount = (Number(formData.npa_amount) > 0) ?  Number(formData.npa_amount) : defaultNpa;
+                local_npa_amount = (Number(formData.npa_amount) > 0) ? Number(formData.npa_amount) : defaultNpa;
                 if (local_basic_pay >= threshold) local_npa_amount = 0;
             }
         }
@@ -299,7 +300,8 @@ const SalaryProcessing = () => {
             const daItem = daList.find((da) => da.id === formData.da_rate_id);
             daRate = daItem?.rate_percentage || 0;
         }
-        calculatedPayload.da_amount = customRound((calculatedPayload.pay_plus_npa) * daRate / 100);
+        const defaultDa = customRound((calculatedPayload.pay_plus_npa) * daRate / 100);
+        calculatedPayload.da_amount = (Number(formData.da_amount) > 0) ? Number(formData.da_amount) : defaultDa;
 
         // Handle HRA calculation - use available data or default to 0
         let hraRate = 0;
@@ -307,7 +309,8 @@ const SalaryProcessing = () => {
             const hraItem = hraList.find((hra) => hra.id === formData.hra_rate_id);
             hraRate = hraItem?.rate_percentage || 0;
         }
-        calculatedPayload.hra_amount = customRound((calculatedPayload.pay_plus_npa) * hraRate / 100);
+        const defaultHra = customRound((calculatedPayload.pay_plus_npa) * hraRate / 100);
+        calculatedPayload.hra_amount = (Number(formData.hra_amount) > 0) ? Number(formData.hra_amount) : defaultHra;
 
         // Handle Uniform calculation - use available data or default to 0
         let uniformAmount = 0;
@@ -315,7 +318,7 @@ const SalaryProcessing = () => {
             const uniformItem = uniformList.find((u) => u.id === formData.uniform_rate_id);
             uniformAmount = uniformItem?.amount || 0;
         }
-        calculatedPayload.uniform_rate_amount = uniformAmount;
+        calculatedPayload.uniform_rate_amount = (Number(formData.uniform_rate_amount) > 0) ? Number(formData.uniform_rate_amount) : uniformAmount;
 
         // Handle Transport calculation - use available data or default to 0
         let transportBaseAmount = 0;
@@ -323,9 +326,11 @@ const SalaryProcessing = () => {
             const transportItem = transportList.find((t) => t.id === formData.transport_rate_id);
             transportBaseAmount = transportItem?.amount || 0;
         }
-        calculatedPayload.transport_amount = structure?.employee?.pwd_status ? transportBaseAmount * 2 : transportBaseAmount;
+        const defaultTa = structure?.employee?.pwd_status ? transportBaseAmount * 2 : transportBaseAmount;
+        calculatedPayload.transport_amount = (Number(formData.transport_amount) > 0) ? Number(formData.transport_amount) : defaultTa;
 
-        calculatedPayload.da_on_ta = customRound((calculatedPayload.transport_amount * daRate) / 100);
+        const defaultDaonTa = customRound((calculatedPayload.transport_amount * daRate) / 100);
+        calculatedPayload.da_on_ta = (Number(formData.da_on_ta) > 0) ? Number(formData.da_on_ta) : defaultDaonTa;
 
         // Handle GIS calculation - use available data or default to 0
         let gisAmount = 0;
@@ -334,14 +339,14 @@ const SalaryProcessing = () => {
             gisAmount = gisItem?.amount || 0;
         }
         const deafultgis = structure?.employee?.gis_eligibility ? gisAmount : 0;
-        calculatedPayload.gis = (Number(formData.gis) > 0) ?  Number(formData.gis)  : deafultgis;
+        calculatedPayload.gis = (Number(formData.gis) > 0) ? Number(formData.gis) : deafultgis;
 
         if (isQuarterOccupied) {
             const occupiedQuarter = quarters.find(q => q.employee_id === formData.employee_id && Number(q.is_occupied) === 1);
             const defaultLicenseFee = occupiedQuarter ? (occupiedQuarter.quarter?.license_fee || 0) : 0;
-            calculatedPayload.license_fee = (Number(formData.license_fee) > 0) ?  Number(formData.license_fee)  : defaultLicenseFee;
+            calculatedPayload.license_fee = (Number(formData.license_fee) > 0) ? Number(formData.license_fee) : defaultLicenseFee;
         } else {
-            calculatedPayload.license_fee = (Number(formData.license_fee) > 0) ?  Number(formData.license_fee)  : 0;
+            calculatedPayload.license_fee = (Number(formData.license_fee) > 0) ? Number(formData.license_fee) : 0;
         }
 
         if (EmployeeDetail.pension_scheme === 'NPS') {
@@ -354,9 +359,10 @@ const SalaryProcessing = () => {
                 calculatedPayload.gpf = 0;
             } else {
                 const npsBase = local_basic_pay + local_npa_amount + calculatedPayload.da_amount;
-                calculatedPayload.employee_contribution_10 = customRound((employeeContributionRate / 100) * npsBase);
-                const govtContribution = customRound((govtContributionRate / 100) * npsBase);
-                calculatedPayload.govt_contribution_14_recovery = govtContribution;
+                const defaultEmpContr =  customRound((employeeContributionRate / 100) * npsBase);
+                calculatedPayload.employee_contribution_10 = Number(formData.employee_contribution_10 >= 0) ? Number(formData.employee_contribution_10) : defaultEmpContr;
+                const govtContribution =  customRound((govtContributionRate / 100) * npsBase);
+                calculatedPayload.govt_contribution_14_recovery = Number(formData.govt_contribution >= 0) ? Number(formData.govt_contribution) : govtContribution;
                 calculatedPayload.govt_contribution = govtContribution;
                 calculatedPayload.gpf = 0;
                 console.log("NPS calculation successful - Govt Contribution:", govtContribution);
@@ -419,14 +425,35 @@ const SalaryProcessing = () => {
             console.log("Calculation completed after selectNext, ready to proceed");
         }
     }, [
-        formData.employee_id, formData.pay_structure_id, formData.npa_rate_id,
-        formData.hra_rate_id, formData.da_rate_id, formData.uniform_rate_id,
-        formData.transport_rate_id, formData.gpf, isQuarterOccupied, 
+        // Core data triggers
+        formData.employee_id, formData.pay_structure_id,
         payStructure, EmployeeDetail, quarters, npaList, hraList, daList,
-        uniformList, transportList, gisList, dispatch, selectNext, formData.basic_pay,
-        formData.gpf, formData.gis, formData.license_fee, formData.employee_contribution_10,
-        formData.income_tax, formData.professional_tax, formData.nfch_donation, formData.lic, formData.credit_society_membership, formData.computer_advance_installment,
-        govtContributionRate, employeeContributionRate, npsContribution // Added NPS rates to dependencies
+        uniformList, transportList, gisList, isQuarterOccupied,
+        govtContributionRate, employeeContributionRate, npsContribution,
+
+        // Rate ID triggers
+        formData.npa_rate_id, formData.hra_rate_id, formData.da_rate_id,
+        formData.uniform_rate_id, formData.transport_rate_id,
+
+        // --- ADDED THIS SECTION ---
+        // User manual input triggers
+        formData.basic_pay, formData.npa_amount, formData.da_amount,
+        formData.hra_amount, formData.uniform_rate_amount,
+        formData.transport_amount, formData.da_on_ta, formData.gis,
+        formData.license_fee,
+        // --- END ADDED SECTION ---
+
+        // Deduction triggers that are also used in calculation
+        formData.gpf, formData.employee_contribution_10,
+        formData.income_tax, formData.professional_tax, formData.nfch_donation,
+        formData.lic, formData.credit_society_membership,
+        formData.computer_advance_installment,
+
+        formData.govt_contribution_14_recovery, formData.govt_contribution,
+        formData.employee_contribution_10,
+
+        // Other state triggers
+        dispatch, selectNext
     ]);
 
     const handleDownloadPdf = () => {
@@ -704,7 +731,7 @@ const SalaryProcessing = () => {
                                     {uniformList.map((u) => (<MenuItem key={u.id} value={u.id}>Post {u.applicable_post} - ₹{u.amount}</MenuItem>))}
                                 </TextField>
                             </Grid>
-                            <Grid item size={{ xs: 4 }}><TextField label="Uniform Amount" name='uniform_rate_amount' value={formData.uniform_rate_amount} fullWidth onChange={handleChange} disabled={!isUniformEligible} /></Grid>
+                            <Grid item size={{ xs: 4 }}><TextField label="Uniform Amount" name='uniform_rate_amount' value={formData.uniform_rate_amount} fullWidth onChange={handleChange} /></Grid>
 
                             <Grid item size={{ xs: 4 }}>
                                 <TextField select required name="transport_rate_id" label="Transport Allowance" value={formData.transport_rate_id || ''} fullWidth onChange={handleChange}>
@@ -712,7 +739,7 @@ const SalaryProcessing = () => {
                                 </TextField>
                             </Grid>
                             <Grid item size={{ xs: 4 }}><TextField label="Transport Amount" name='transport_amount' value={formData.transport_amount} fullWidth onChange={handleChange} /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField label="DA on TA" value={formData.da_on_ta || '0'} fullWidth /></Grid>
+                            <Grid item size={{ xs: 4 }}><TextField label="DA on TA" name='da_on_ta' value={formData.da_on_ta || '0'} fullWidth onChange={handleChange} /></Grid>
                             {EmployeeDetail?.pension_scheme === 'NPS' && (
                                 <Grid item size={{ xs: 4 }}>
                                     <TextField
@@ -720,7 +747,8 @@ const SalaryProcessing = () => {
                                         name='govt_contribution'
                                         value={npsContribution?.loading ? 'Loading...' : formData.govt_contribution}
                                         fullWidth
-                                        disabled={npsContribution?.loading}                                  
+                                        disabled={npsContribution?.loading}
+                                        onChange={handleChange}
                                     />
                                 </Grid>
                             )}
@@ -858,21 +886,21 @@ const SalaryProcessing = () => {
                             )}
                             <Grid item size={{ xs: 4 }}><TextField name="income_tax" label="Income Tax" fullWidth onChange={handleChange} value={formData.income_tax || ''} /></Grid>
                             <Grid item size={{ xs: 4 }}><TextField name="professional_tax" label="Professional Tax" fullWidth onChange={handleChange} value={formData.professional_tax || ''} /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField name="license_fee" label="License Fee"  fullWidth onChange={handleChange} value={formData.license_fee} /></Grid>
+                            <Grid item size={{ xs: 4 }}><TextField name="license_fee" label="License Fee" fullWidth onChange={handleChange} value={formData.license_fee} /></Grid>
                             <Grid item size={{ xs: 4 }}><TextField name="nfch_donation" label="NFCH Donation" fullWidth onChange={handleChange} value={formData.nfch_donation || ''} /></Grid>
                             <Grid item size={{ xs: 4 }}><TextField name="lic" label="LIC" fullWidth onChange={handleChange} value={formData.lic || ''} /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField name="gis" label="GIS" fullWidth onChange={handleChange}  value={formData.gis} /></Grid>
+                            <Grid item size={{ xs: 4 }}><TextField name="gis" label="GIS" fullWidth onChange={handleChange} value={formData.gis} /></Grid>
                             {
                                 EmployeeDetail?.employee_loan.length > 0 ? (
                                     <>
                                         <Grid item size={{ xs: 4 }}>
                                             <TextField name="computer_advance_installment" label="Computer Loan Installment" fullWidth onChange={handleChange} value={formData.computer_advance_installment || ''} />
                                         </Grid>
-                                            {/* <Grid item size={{ xs: 4 }}>
+                                        {/* <Grid item size={{ xs: 4 }}>
                                                 <TextField name="computer_advance_balance" label="Computer Loan Remaining Balance" fullWidth disabled value={formData.computer_advance_balance || ''} />
                                             </Grid> */}
-                                        </>
-                                    )
+                                    </>
+                                )
                                     : ''
                             }
 
