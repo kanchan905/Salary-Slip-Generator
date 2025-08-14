@@ -245,12 +245,13 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                             <Row>
                                 <Col md={4}>
                                     <FormGroup>
-                                        <Label for="pay_structure_id">Pay Structure (Basic Pay)</Label>
-                                        <Input
+                                        <Label for="pay_structure_id">Basic Pay</Label>
+                                        {/* <Input
                                             type="text"
                                             value={`${selectedStructure?.pay_matrix_cell?.pay_matrix_level?.name || ''} - ${selectedStructure?.pay_matrix_cell?.index} - ₹${selectedStructure?.pay_matrix_cell?.amount}`}
 
-                                        />
+                                        /> */}
+                                        <Field name="basic_pay" type="text" className="form-control" />
                                     </FormGroup>
                                 </Col>
                                 <Col md={4}>
@@ -361,7 +362,7 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                     <Col md={3}>
                                         <FormGroup>
                                             <Label for="govt_contribution">Govt. Contribution (NPS)</Label>
-                                            <Field name="govt_contribution" type="text" className="form-control" disabled />
+                                            <Field name="govt_contribution" type="text" className="form-control"  />
                                         </FormGroup>
                                     </Col>
                                 )}

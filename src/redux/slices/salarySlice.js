@@ -107,6 +107,24 @@ const salarySlice = createSlice({
             state.formData = { ...state.formData, ...action.payload };
         },
 
+        resetForNewEmployee: (state, action) => {
+            const newEmployeeId = action.payload;
+            const preservedData = {
+                month: state.formData.month,
+                year: state.formData.year,
+                processing_date: state.formData.processing_date,
+            };
+
+            // Reset formData to its initial clean state
+            state.formData = {
+                ...initialState.formData,
+                // Now, apply the data we want to keep
+                ...preservedData,
+                // And finally, set the new employee ID
+                employee_id: newEmployeeId,
+            };
+        },
+
         reset: (state) => {
             const month = state.formData.month;
             const year = state.formData.year;
@@ -142,10 +160,11 @@ export const {
     prevStep,
     updateField,
     setDeductionField,
-    setCalculatedAmounts, 
+    setCalculatedAmounts,
     reset,
     bulkUpdateField,
     resetBulkState,
+    resetForNewEmployee,
 } = salarySlice.actions;
 
 export default salarySlice.reducer;
