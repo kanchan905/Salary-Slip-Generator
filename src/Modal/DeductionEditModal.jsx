@@ -234,8 +234,8 @@ export default function DeductionEditModal({ isOpen, toggle, data, onSave, netSa
                                         </Col>
 
                                     )}
-
-                                    { employee?.pension_scheme === 'gpf' && (
+                                    
+                                    { employee?.pension_scheme?.toLowerCase() === 'gpf' && (
                                         <Col md={6} sm={6} xs={12} key="gpf">
                                                 <FormGroup>
                                                     <Label for="gpf">GPF</Label>

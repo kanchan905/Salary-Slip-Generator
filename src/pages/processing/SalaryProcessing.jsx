@@ -1118,6 +1118,10 @@ const SalaryProcessing = () => {
                                                 <td className="info-label">टिप्पणियाँ / remarks </td>
                                                 <td className="info-value">{formData.remarks}</td>
                                             </tr>
+                                            <tr>
+                                                <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
+                                                <td className='info-value'>{EmployeeDetail?.employee_bank?.[0]?.account_number || 'N/A'}</td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>

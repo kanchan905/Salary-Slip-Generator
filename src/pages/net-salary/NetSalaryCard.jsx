@@ -467,6 +467,11 @@ export default function PaySlipPage() {
                                         <td className="info-label">टिप्पणियाँ / remarks </td>
                                         <td className="info-value">{netSalaryData?.remarks}</td>
                                     </tr>
+                                    
+                                    <tr>
+                                        <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
+                                        <td className='info-value'>{netSalaryData?.employee_bank?.account_number || 'N/A'}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

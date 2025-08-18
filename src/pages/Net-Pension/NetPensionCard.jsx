@@ -92,7 +92,7 @@ function NetPensionCard() {
     }
 
     // --- Data Mapping & Calculations for Display ---
-    const { pensioner, monthly_pension, pensioner_deduction } = netPensionData;
+    const { pensioner, monthly_pension, pensioner_deduction,pensioner_bank } = netPensionData;
     const hasRole = (...roles) => currentRoles.some(role => roles.includes(role));
     const canEdit = hasRole(
         'IT Admin',
@@ -357,7 +357,7 @@ function NetPensionCard() {
                                     variant="outlined"
                                     startIcon={<EditIcon />}
                                     onClick={() => setMonthlyModalOpen(true)}
-                                    // disabled={areButtonsDisabled}
+                                // disabled={areButtonsDisabled}
                                 >
                                     Edit Monthly Pension
                                 </Button>
@@ -365,7 +365,7 @@ function NetPensionCard() {
                                     variant="outlined"
                                     startIcon={<EditIcon />}
                                     onClick={() => setDeductionModalOpen(true)}
-                                    // disabled={areButtonsDisabled}
+                                // disabled={areButtonsDisabled}
                                 >
                                     Edit Deductions
                                 </Button>
@@ -447,6 +447,12 @@ function NetPensionCard() {
                                         <td className="info-value">{pensioner?.email || 'N/A'}</td>
                                         <td className="info-label">टिप्पणियाँ / remarks</td>
                                         <td className="info-value">{monthly_pension?.remarks}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
+                                        <td className="info-value">{pensioner_bank?.account_no || 'N/A'}</td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>
