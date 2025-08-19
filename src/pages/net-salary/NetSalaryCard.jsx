@@ -445,7 +445,7 @@ export default function PaySlipPage() {
                                     </tr>
                                     <tr>
                                         <td className="info-label">ईमेल / Gmail</td>
-                                        <td className="info-value">{netSalaryData?.employee.email || 'N/A'}</td>
+                                        <td className="info-value">{netSalaryData?.employee?.email || 'N/A'}</td>
                                         <td className="info-label">लिंग / Gender</td>
                                         <td className="info-value">{employee?.gender || 'N/A'}</td>
                                     </tr>
