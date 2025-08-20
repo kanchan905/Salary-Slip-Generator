@@ -21,12 +21,12 @@ export default function EmployeeLoanModal({
   const initialValues = {
     employee_id: formData.employee_id || "",
     loan_type: formData.loan_type || "",
-    loan_amount: formData.loan_amount || "",
-    interest_rate: formData.interest_rate || "",
+    loan_amount: formData.loan_amount || 0,
+    interest_rate: formData.interest_rate || 0,
     sanctioned_date: formData.sanctioned_date || "",
-    total_installments: formData.total_installments || "",
-    current_installment: formData.current_installment || "",
-    remaining_balance: formData.remaining_balance || "",
+    total_installments: formData.total_installments || 0,
+    current_installment: formData.current_installment || 0,
+    remaining_balance: formData.remaining_balance || 0,
     is_active: formData.is_active || "1"
   };
 
@@ -34,13 +34,10 @@ export default function EmployeeLoanModal({
     const errors = {};
     if (!values.employee_id) errors.employee_id = "Required";
     if (!values.loan_type) errors.loan_type = "Required";
-    if (!values.loan_amount) errors.loan_amount = "Required";
-    if (!values.interest_rate) errors.interest_rate = "Required";
+    // if (!values.loan_amount) errors.loan_amount = "Required";
+    // if (!values.interest_rate) errors.interest_rate = "Required";
     if (!values.sanctioned_date) errors.sanctioned_date = "Required";
-    if (!values.total_installments) errors.total_installments = "Required";
-    // if (!values.current_installment) errors.current_installment = "Required";
-    // if (!values.remaining_balance) errors.remaining_balance = "Required";
-    // if (!values.is_active) errors.is_active = "Required";
+    // if (!values.total_installments) errors.total_installments = "Required";
     return errors;
   };
 
