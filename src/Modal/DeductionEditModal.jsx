@@ -224,7 +224,7 @@ export default function DeductionEditModal({ isOpen, toggle, data, onSave, netSa
 
                                     )}
 
-                                    {data?.computer_advance_installment > 0 && (
+                                    {/* {employee?.computer_advance_installment > 0 && ( */}
                                         <Col md={6} sm={6} xs={12} key="computer_advance_installment">
                                             <FormGroup>
                                                 <Label for="computer_advance_installment">Computer Loan Installment</Label>
@@ -233,7 +233,7 @@ export default function DeductionEditModal({ isOpen, toggle, data, onSave, netSa
                                             </FormGroup>
                                         </Col>
 
-                                    )}
+                                     {/* )}  */}
                                     
                                     { employee?.pension_scheme?.toLowerCase() === 'gpf' && (
                                         <Col md={6} sm={6} xs={12} key="gpf">

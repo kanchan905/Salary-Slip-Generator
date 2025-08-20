@@ -82,7 +82,7 @@ const ShowEmployee = () => {
 
               <Section title="Employee Information">
                 <LabelValue label="Emp. Code" value={`${data?.employee?.employee_code || "- -"} `} />
-                <LabelValue label="Name" value={`${data?.employee?.first_name} ${data?.employee?.middle_name} ${data?.employee?.last_name}`} />
+                <LabelValue label="Name" value={`${data?.employee?.name || "- -"} `} />
                 <LabelValue label="Gender" value={data?.employee?.gender} />
                 <LabelValue label="Email" value={data?.employee?.email} />
                 <LabelValue label="DOB" value={dateFormat(data?.employee?.date_of_birth)} />

@@ -101,6 +101,7 @@ export default function EmployeeLoan() {
         return {
             head: [
                 "Sr. No.",
+                "Employee Name",
                 "Loan Type",
                 "Loan Amount",
                 "Interest Rate",
@@ -117,6 +118,7 @@ export default function EmployeeLoan() {
             firstRow: (
                 <tr className="bg-green text-white">
                     <td>{1}</td>
+                    <td>{data?.employee?.name || "- -"} </td>
                     <td>{data?.loan_type ?? "-"}</td>
                     <td>{data?.loan_amount ?? "-"}</td>
                     <td>{data?.interest_rate ?? "-"}</td>
@@ -143,6 +145,7 @@ export default function EmployeeLoan() {
             renderRow: (record, index) => (
                 <tr key={index}>
                     <td>{index + 2}</td>
+                    <td className='text-capitalize'>{record?.employee?.name || "- -"} </td>
                     <td>{record?.loan_type ?? "-"}</td>
                     <td>{record?.loan_amount ?? "-"}</td>
                     <td>{record?.interest_rate ?? "-"}</td>
