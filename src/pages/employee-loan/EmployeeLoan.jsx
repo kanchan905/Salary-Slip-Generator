@@ -248,12 +248,12 @@ export default function EmployeeLoan() {
             setFormData({
                 employee_id: loan.employee_id || '',
                 loan_type: loan.loan_type || '',
-                loan_amount: loan.loan_amount || '',
-                interest_rate: loan.interest_rate || '',
+                loan_amount: loan.loan_amount ?? 0,
+                interest_rate: loan.interest_rate ?? 0,
                 sanctioned_date: loan.sanctioned_date || '',
-                total_installments: loan.total_installments || '',
-                current_installment: loan.current_installment || '',
-                remaining_balance: loan.remaining_balance || '',
+                total_installments: loan.total_installments ?? 0,
+                current_installment: loan.current_installment ?? 0,
+                remaining_balance: loan.remaining_balance ?? 0,
                 is_active: loan.is_active ?? 1,
             });
             setFormOpen(true);

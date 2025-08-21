@@ -66,10 +66,27 @@ export default function EmployeeLoanModal({
     const lastName = employee.last_name || "";
     const employeeCode = employee.employee_code || "";
     const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-    return `${fullName} - ${employeeCode}`;
+    return `${fullName} - ${employeeCode}`; 
   };
 
-  
+    // PASTE THIS ENTIRE BLOCK OF CODE
+
+  const handleFormSubmit = (values, formikHelpers) => {
+    // Create a new object with processed values
+    const processedValues = {
+      ...values,
+      // If a value is an empty string (''), it will default to 0.
+      loan_amount: values.loan_amount || 0,
+      interest_rate: values.interest_rate || 0,
+      total_installments: values.total_installments || 0,
+      current_installment: values.current_installment || 0,
+      remaining_balance: values.remaining_balance || 0,
+    };
+
+    // Call the original handleSubmit function with the corrected data
+    handleSubmit(processedValues, formikHelpers);
+  };
+
 
   return (
     <Modal
@@ -83,7 +100,7 @@ export default function EmployeeLoanModal({
         <Formik
           initialValues={initialValues}
           validate={validate}
-          onSubmit={handleSubmit}
+          onSubmit={handleFormSubmit}
           enableReinitialize
         >
           {({ isSubmitting, errors, touched, setFieldValue, values, resetForm }) => {
