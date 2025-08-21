@@ -228,7 +228,7 @@ const getAdminRoutes = () => (
         icon: "ni ni-paper-diploma text-purple",
         component: ReportsDashboard,
         showInSidebar: true,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator"]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator", "End Users"]
       },
     ],
 

@@ -79,6 +79,31 @@ export const verifyNetSalaryAdmin = createAsyncThunk(
     }
 );
 
+export const finalizeNetSalary = createAsyncThunk(
+  "salary/finalizeNetSalary",
+  async ({ selected_id }, { rejectWithValue }) => {
+    try {
+      const payload = { selected_id };
+      const response = await axiosInstance.post(`/finalize-salary`, payload);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.errorMsg || err.message);
+    }
+  }
+);
+
+export const releaseNetSalary = createAsyncThunk(
+  "salary/releaseNetSalary",
+  async ({ selected_id }, { rejectWithValue }) => {
+    try {
+      const payload = { selected_id };
+      const response = await axiosInstance.post(`/release-salary`, payload);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.errorMsg || err.message);
+    }
+  }
+);
 
 const initialState = {
   netSalary: [],
@@ -153,7 +178,12 @@ const netSalarySlice = createSlice({
       })
       .addCase(verifyNetSalaryAdmin.fulfilled, (state, action) => {
         state.loading = false;
-        
+      })
+      .addCase(finalizeNetSalary.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(releaseNetSalary.fulfilled, (state, action) => {
+        state.loading = false;
       })
   }
 })

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../assets/css/custom.css';
 import { useNavigate, Link } from 'react-router-dom';
 import logoNioh from '../assets/img/images/nioh_logo_white.png';
@@ -16,36 +16,66 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector(state => state.auth);
+  const [captcha, setCaptcha] = useState('');
 
+
+  const generateCaptcha = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let captchaText = '';
+    for (let i = 0; i < 6; i++) {
+      captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setCaptcha(captchaText);
+  };
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
 
   const initialValues = {
     username: '',
     password: '',
+    captcha: '',
   };
 
   const validationSchema = Yup.object({
     username: Yup.string()
       .required('Username is required'),
     password: Yup.string()
-      .required('Password is required')
+      .required('Password is required'),
+    captcha: Yup.string()
+      .required('CAPTCHA is required'),
   });
 
-  const onSubmit = async (values, { setSubmitting }) => {
+  const onSubmit = async (values, { setSubmitting, setFieldValue }) => {
+    // CAPTCHA validation (case-insensitive)
+    if (values.captcha.toLowerCase() !== captcha.toLowerCase()) {
+      toast.error("Invalid CAPTCHA. Please try again.");
+      generateCaptcha(); // Generate a new CAPTCHA
+      setFieldValue('captcha', ''); // Clear the input field
+      setSubmitting(false);
+      return;
+    }
+
     try {
-      const response = await dispatch(loginUser(values)).unwrap();
+      const loginCredentials = {
+        username: values.username,
+        password: values.password,
+      };
+
+      const response = await dispatch(loginUser(loginCredentials)).unwrap();
 
       if (response && response.token) {
         toast.success('Login Successful')
-
-        const { data } = await dispatch(fetchCurrentUser()).unwrap();
-
+        await dispatch(fetchCurrentUser()).unwrap();
         setTimeout(() => {
           navigate(`/index`);
         }, 100);
-
       }
     } catch (err) {
       toast.error(err)
+      generateCaptcha(); // Also refresh CAPTCHA on login failure
+      setFieldValue('captcha', '');
     } finally {
       setSubmitting(false);
     }
@@ -136,6 +166,28 @@ const Login = () => {
                     <ErrorMessage name="password" component="p" className="text-red-600 text-sm mt-1" />
                   </div>
 
+                  <div className='mt-4 mb-2'>
+                    <label htmlFor="captcha" className="block text-sm font-medium text-gray-700 mb-1">
+                      Security Code
+                    </label>
+                    <div className="captcha-container">
+                      <div className="captcha-box">
+                        {captcha}
+                      </div>
+                      <button type="button" onClick={generateCaptcha} className="captcha-refresh-btn" title="Refresh CAPTCHA">
+                        &#x21bb;
+                      </button>
+                    </div>
+                    <Field
+                      name="captcha"
+                      type="text"
+                      placeholder="Enter the code above"
+                      style={{ width: '100%', marginTop: '8px' }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <ErrorMessage name="captcha" component="p" className="text-red-600 text-sm mt-1" />
+                  </div>
+
                   {/* Forgot Password */}
                   <div className="text-right forgot-password mt-4">
                     <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
@@ -166,8 +218,8 @@ const Login = () => {
                   </p>
 
                   <p className="text-center text-sm text-gray-600 help-text mt-2">
-                     Pensioner?{' '}
-                     <Link to="/pensioner-slip" className="text-sm text-blue-600 hover:underline">
+                    Pensioner?{' '}
+                    <Link to="/pensioner-slip" className="text-sm text-blue-600 hover:underline">
                       Monthly Pension
                     </Link>
                   </p>

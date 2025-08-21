@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, FormGroup, Form } from 'react-bootstrap';
 import {
@@ -16,6 +16,12 @@ import { toast } from 'react-toastify';
 const ReportsDashboard = () => {
     const dispatch = useDispatch();
     const currentYear = new Date().getFullYear();
+    const user = useSelector((state) => state.auth.user);
+    const currentRoles = useSelector((state) =>
+        state.auth.user?.roles?.map(role => role.name) || []
+    );
+    const isEndUser = currentRoles.includes("End Users");
+
 
     // Fetch employees and pensioners on mount
     useEffect(() => {
@@ -44,7 +50,7 @@ const ReportsDashboard = () => {
 
     const [showFilters, setShowFilters] = useState({ all: false, employee: false, pensioner: false });
 
-    const handleFilterChange = (type, field, value) => {
+    const handleFilterChange = useCallback((type, field, value) => {
         setFilters(prev => ({
             ...prev,
             [type]: {
@@ -52,10 +58,37 @@ const ReportsDashboard = () => {
                 [field]: value
             }
         }));
-    };
+    }, []); // Wrapped in useCallback
+
+    // This is the CORRECTLY placed useEffect
+    useEffect(() => {
+        // The condition now goes INSIDE the hook
+        if (isEndUser && user?.employee_code && employees?.length > 0) {
+            const currentUserEmployee = employees.find(
+                emp => String(emp.employee_code) === String(user.employee_code)
+            );
+
+            if (currentUserEmployee) {
+                handleFilterChange('employee', 'employeeId', currentUserEmployee.id);
+            }
+        }
+    }, [isEndUser, user, employees, handleFilterChange]);
+
 
     const handleReset = (type) => {
-        setFilters(prev => ({ ...prev, [type]: { ...initialFilters[type] } }));
+        const newFiltersForType = { ...initialFilters[type] };
+
+        // If resetting employee filter and user is an End User, keep their ID
+        if (type === 'employee' && isEndUser && user?.employee_code && employees?.length > 0) {
+            const currentUserEmployee = employees.find(
+                emp => String(emp.employee_code) === String(user.employee_code)
+            );
+            if (currentUserEmployee) {
+                newFiltersForType.employeeId = currentUserEmployee.id;
+            }
+        }
+
+        setFilters(prev => ({ ...prev, [type]: newFiltersForType }));
     };
 
     const toggleFilter = (type) => {
@@ -83,7 +116,7 @@ const ReportsDashboard = () => {
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            
+
             // Add report type prefix to filename
             let filename = result.filename;
             if (type === 'all') {
@@ -99,7 +132,7 @@ const ReportsDashboard = () => {
                 const pensionerName = selectedPensioner ? `${selectedPensioner.first_name} ${selectedPensioner.middle_name || ''} ${selectedPensioner.last_name}`.trim().replace(/\s+/g, '_') : 'Unknown';
                 filename = `Pensioner-${pensionerName}-${result.filename}`;
             }
-            
+
             link.setAttribute('download', filename);
             document.body.appendChild(link);
             link.click();
@@ -132,7 +165,9 @@ const ReportsDashboard = () => {
         }))
     ];
 
-    const renderCard = ({ type, title, color, extraFieldKey, icon }) => (
+    const renderCard = ({ type, title, color, extraFieldKey, icon }) => {
+        const isEmployeeFieldDisabled = type === 'employee' && isEndUser;
+        return (
         <Box mb={5}>
             <Card sx={{ backgroundColor: color, borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
                 {/* Filter Section */}
@@ -176,6 +211,7 @@ const ReportsDashboard = () => {
                                                     variant="outlined"
                                                     fullWidth
                                                     sx={{ width: 400 }}
+                                                    disabled={isEmployeeFieldDisabled}
                                                 />
                                             )}
                                             isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
@@ -283,7 +319,8 @@ const ReportsDashboard = () => {
                 </CardContent>
             </Card>
         </Box>
-    );
+        )
+    };
 
     return (
         <>
@@ -293,9 +330,16 @@ const ReportsDashboard = () => {
                     <Typography variant="h4" fontWeight="bold">📊 Reports</Typography>
                 </Box>
 
-                {renderCard({ type: 'all', title: 'All Reports', color: '#3498db', icon: <SummarizeIcon /> })}
+                { !isEndUser && (
+                    renderCard({ type: 'all', title: 'All Reports', color: '#3498db', icon: <SummarizeIcon /> })
+                )}
+                {/* {renderCard({ type: 'all', title: 'All Reports', color: '#3498db', icon: <SummarizeIcon /> })} */}
                 {renderCard({ type: 'employee', title: 'Employee Report', color: '#16a085', icon: <SummarizeIcon />, extraFieldKey: 'employeeId' })}
-                {renderCard({ type: 'pensioner', title: 'Pensioner Report', color: '#e67e22', icon: <SummarizeIcon />, extraFieldKey: 'pensionerId' })}
+
+                { !isEndUser && (
+                    renderCard({ type: 'pensioner', title: 'Pensioner Report', color: '#e67e22', icon: <SummarizeIcon />, extraFieldKey: 'pensionerId' })
+                )}
+                {/* {renderCard({ type: 'pensioner', title: 'Pensioner Report', color: '#e67e22', icon: <SummarizeIcon />, extraFieldKey: 'pensionerId' })} */}
             </Container>
         </>
     );

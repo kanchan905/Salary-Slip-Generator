@@ -22,7 +22,7 @@ import {
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
 } from '@mui/icons-material';
-import { verifyNetSalary, verifyNetSalaryAdmin, viewNetSalary } from '../../redux/slices/netSalarySlice';
+import { finalizeNetSalary, releaseNetSalary, verifyNetSalary, verifyNetSalaryAdmin, viewNetSalary } from '../../redux/slices/netSalarySlice';
 import { updatePaySlip } from '../../redux/slices/paySlipSlice';
 import { updateDeduction } from '../../redux/slices/deductionSlice';
 import PaySlipEditModal from '../../Modal/PaySlipEditModal';
@@ -110,6 +110,22 @@ export default function PaySlipPage() {
         return false;
     }
 
+    function canFinalize(row) {
+        const { step } = getCurrentVerificationStep(row);
+        // Check if user can finalize at this step
+        if (step === "Accounts Officer" && currentRoles.includes("Accounts Officer")) return true;
+        if (currentRoles.includes("IT Admin")) return true;
+        return false;
+    }
+
+    function canRelease(row) {
+        const { step } = getCurrentVerificationStep(row);
+        // Check if user can release at this step
+        if (step === "Accounts Officer" && currentRoles.includes("Accounts Officer")) return true;
+        if (currentRoles.includes("IT Admin")) return true;
+        return false;
+    }
+
     // Replace handleToggleStatus with step-based verification
     const handleStepVerification = (row, statusField) => {
         dispatch(verifyNetSalary({ selected_id: [row.id], statusField }))
@@ -120,6 +136,30 @@ export default function PaySlipPage() {
             })
             .catch((err) => {
                 toast.error(err || 'Failed to verify net salary.');
+            });
+    };
+
+    const handleStepFinalization = (row) => {
+        dispatch(finalizeNetSalary({ selected_id: [row.id] }))
+            .unwrap()
+            .then(() => {
+                toast.success("NetSalary finalized successfully");
+                dispatch(viewNetSalary({ id: row.id }));
+            })
+            .catch((err) => {
+                toast.error(err || 'Failed to finalize net salary.');
+            });
+    };
+
+    const handleStepRelease = (row) => {
+        dispatch(releaseNetSalary({ selected_id: [row.id] }))
+            .unwrap()
+            .then(() => {
+                toast.success("NetSalary released successfully");
+                dispatch(viewNetSalary({ id: row.id }));
+            })
+            .catch((err) => {
+                toast.error(err || 'Failed to release net salary.');
             });
     };
 
@@ -207,6 +247,17 @@ export default function PaySlipPage() {
     const { step, statusField } = getCurrentVerificationStep(netSalaryData);
     const userStatusField = getUserStatusField(currentRoles);
     const hasUserVerified = userStatusField && netSalaryData[userStatusField];
+    // Check if all four verification steps are completed.
+    const allStepsVerified =
+        netSalaryData?.salary_processing_status &&
+        netSalaryData?.ddo_status &&
+        netSalaryData?.section_officer_status &&
+        netSalaryData?.account_officer_status;
+
+
+    // Check if the current user has the role to finalize or release.
+    const canManageFinalization =
+        currentRoles.includes("Accounts Officer") || currentRoles.includes("IT Admin");
 
 
     const totalEarnings = (netSalaryData?.pay_slip?.total_pay || 0)
@@ -344,7 +395,7 @@ export default function PaySlipPage() {
                             Pay Slip Details
                         </Typography>
 
-                        {canSeeEditButtons && (
+                        {!netSalaryData?.is_finalize && (
                             <>
                                 <Button
                                     variant="outlined"
@@ -352,7 +403,7 @@ export default function PaySlipPage() {
                                     onClick={() => setPayModalOpen(true)}
                                 // disabled={areButtonsDisabled}
                                 >
-                                    Edit Earnings
+                                    Earnings
                                 </Button>
                                 <Button
                                     variant="outlined"
@@ -360,7 +411,7 @@ export default function PaySlipPage() {
                                     onClick={() => setDeductionModalOpen(true)}
                                 // disabled={areButtonsDisabled}
                                 >
-                                    Edit Deductions
+                                    Deductions
                                 </Button>
                             </>
                         )}
@@ -388,8 +439,34 @@ export default function PaySlipPage() {
                                 Verify
                             </Button>
                         )}
+
+                        {/* Only show the finalize button for the correct role and step */}
+                        {canManageFinalization && (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<CheckCircleIcon />}
+                                    onClick={() => handleStepFinalization(netSalaryData)}
+                                    disabled={!allStepsVerified}
+                                >
+                                    {netSalaryData?.is_finalize ? "Finalized" : "Finalize"}
+                                </Button>
+
+                                <Button
+                                    variant="contained"
+                                    color="info"
+                                    startIcon={<CheckCircleIcon />}
+                                    onClick={() => handleStepRelease(netSalaryData)}
+                                    disabled={!netSalaryData?.is_finalize}
+                                >
+                                    {netSalaryData?.is_finalize ? "Released" : "Release"}
+                                </Button>
+                            </>
+                        )}
+
                         <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
-                            Download PDF
+                            Download
                         </Button>
                     </Stack>
                 </Paper>
@@ -467,7 +544,7 @@ export default function PaySlipPage() {
                                         <td className="info-label">टिप्पणियाँ / remarks </td>
                                         <td className="info-value">{netSalaryData?.remarks}</td>
                                     </tr>
-                                    
+
                                     <tr>
                                         <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
                                         <td className='info-value'>{netSalaryData?.employee_bank?.account_number || 'N/A'}</td>
