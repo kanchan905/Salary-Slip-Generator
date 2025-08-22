@@ -21,7 +21,7 @@ import {
     Cancel as CancelIcon,
     Edit as EditIcon,
 } from '@mui/icons-material';
-import { showNetPension, verifyNetPension, verifyNetPensionAdmin } from '../../redux/slices/netPensionSlice';
+import { finalizeNetPension, releaseNetPension, showNetPension, verifyNetPension, verifyNetPensionAdmin } from '../../redux/slices/netPensionSlice';
 import logo from '../../assets/img/images/slip-header.png';
 import '../../assets/css/custom.css';
 import MonthlyPensionModal from '../../Modal/MonthlyPension';
@@ -92,7 +92,7 @@ function NetPensionCard() {
     }
 
     // --- Data Mapping & Calculations for Display ---
-    const { pensioner, monthly_pension, pensioner_deduction,pensioner_bank } = netPensionData;
+    const { pensioner, monthly_pension, pensioner_deduction, pensioner_bank } = netPensionData;
     const hasRole = (...roles) => currentRoles.some(role => roles.includes(role));
     const canEdit = hasRole(
         'IT Admin',
@@ -241,6 +241,33 @@ function NetPensionCard() {
         }
     };
 
+
+    const handleStepFinalization = (row) => {
+        dispatch(finalizeNetPension({ selected_id: [row.id] }))
+            .unwrap()
+            .then(() => {
+                toast.success("NetPension finalized successfully");
+                dispatch(showNetPension({ id: row.id }));
+            })
+            .catch((err) => {
+                toast.error(err || 'Failed to finalize net pension.');
+            });
+    };
+
+    const handleStepRelease = (row) => {
+        dispatch(releaseNetPension({ selected_id: [row.id] }))
+            .unwrap()
+            .then(() => {
+                toast.success("NetPension released successfully");
+                dispatch(showNetPension({ id: row.id }));
+            })
+            .catch((err) => {
+                toast.error(err || 'Failed to release net pension.');
+            });
+    };
+    
+
+
     // --- START: REVISED LOGIC FOR PENSION EDIT BUTTONS ---
 
     // 1. Define the pension verification workflow
@@ -257,6 +284,15 @@ function NetPensionCard() {
     // 3. Determine if the current user should see the edit buttons
     let canSeeEditButtons = false;
     const isITAdmin = currentRoles.includes("IT Admin");
+    // Check if all four verification steps are completed.
+    const allStepsVerified =
+        netPensionData?.pensioner_operator_status &&
+        netPensionData?.ddo_status &&
+        netPensionData?.section_officer_status &&
+        netPensionData?.account_officer_status;
+    // Check if the current user has the role to finalize or release.
+    const canManageFinalization =
+        currentRoles.includes("Accounts Officer") || currentRoles.includes("IT Admin");
 
     // Find the configuration for the *current active step*
     const currentStepConfig = pensionVerificationWorkflow.find(s => s.statusField === statusField);
@@ -272,13 +308,6 @@ function NetPensionCard() {
         // If workflow is complete, only IT Admin can still see the buttons for corrections.
         canSeeEditButtons = isITAdmin;
     }
-
-    // 4. Determine if the visible buttons should be disabled.
-    // This uses the 'hasUserVerified' variable already defined in the file.
-    // Buttons are disabled if the user has verified, UNLESS they are an IT Admin.
-    const areButtonsDisabled = isITAdmin ? false : hasUserVerified;
-
-    // --- END: REVISED LOGIC FOR PENSION EDIT BUTTONS ---
 
 
     return (
@@ -351,7 +380,7 @@ function NetPensionCard() {
                         <Typography variant="h5" sx={{ flexGrow: 1 }}>Pension Slip Details</Typography>
 
                         {/* --- UPDATED: Edit buttons with revised logic --- */}
-                        {canSeeEditButtons && (
+                        {!netPensionData?.is_finalize && (
                             <>
                                 <Button
                                     variant="outlined"
@@ -359,7 +388,7 @@ function NetPensionCard() {
                                     onClick={() => setMonthlyModalOpen(true)}
                                 // disabled={areButtonsDisabled}
                                 >
-                                    Edit Monthly Pension
+                                      Pension
                                 </Button>
                                 <Button
                                     variant="outlined"
@@ -367,7 +396,7 @@ function NetPensionCard() {
                                     onClick={() => setDeductionModalOpen(true)}
                                 // disabled={areButtonsDisabled}
                                 >
-                                    Edit Deductions
+                                     Deductions
                                 </Button>
                             </>
                         )}
@@ -396,8 +425,34 @@ function NetPensionCard() {
                                 Verify
                             </Button>
                         )}
+
+                        {/* Only show the finalize button for the correct role and step */}
+                        {canManageFinalization && (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={netPensionData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
+                                    onClick={() => handleStepFinalization(netPensionData)}
+                                    disabled={!allStepsVerified}
+                                >
+                                    {netPensionData?.is_finalize ? "Finalized" : "Finalize"}
+                                </Button>
+
+                                <Button
+                                    variant="contained"
+                                    color="info"
+                                    startIcon={netPensionData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
+                                    onClick={() => handleStepRelease(netPensionData)}
+                                    disabled={!netPensionData?.is_finalize}
+                                >
+                                    {netPensionData?.is_verified ? "Released" : "Release"}
+                                </Button>
+                            </>
+                        )}
+
                         <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
-                            Download PDF
+                            Download 
                         </Button>
                     </Stack>
                 </Paper>

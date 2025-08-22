@@ -22,6 +22,8 @@ import {
     updateNetSalary,
     viewNetSalary,
     verifyNetSalary,
+    finalizeNetSalary,
+    releaseNetSalary,
 } from '../../redux/slices/netSalarySlice';
 import NetSalaryModal from '../../Modal/NetSalaryModal';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -79,7 +81,7 @@ export default function NetSalary() {
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
     const [firstRow, setFirstRow] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
-
+    const canUserManageFinalization = currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role));
 
 
     const statusChipColor = (status) => {
@@ -597,6 +599,130 @@ export default function NetSalary() {
             });
     };
 
+    const getEmployeeCodeById = (id) => {
+        const record = netSalary.find(item => item.id === id);
+        return record?.employee?.employee_code || `ID ${id}`;
+    };
+
+    // --- NEW: Handlers for Finalize and Release ---
+    const handleBulkFinalize = () => {
+        if (selectedIds.length === 0) {
+            toast.warn("Please select at least one record to finalize.");
+            return;
+        }
+        dispatch(finalizeNetSalary({ selected_id: selectedIds }))
+            .unwrap()
+            .then((response) => {
+                 // Check if the response has the expected structure
+                if (response && response.success && response.skipped && response.errors) {
+                    const successCount = response.success.length;
+                    const skippedCount = response.skipped.length;
+                    const errorCount = response.errors.length;
+
+                    // 1. Show SUCCESS messages
+                    if (successCount > 0) {
+                        const successCodes = response.success.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.success(`${successCount} record(s) finalized successfully: ${successCodes}`);
+                    }
+
+                    // 2. Show SKIPPED (Warning) messages
+                    if (skippedCount > 0) {
+                        const skippedCodes = response.skipped.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.warn(`${skippedCount} record(s) were skipped (already finalized or not fully verified): ${skippedCodes}`);
+                    }
+
+                    // 3. Show ERROR messages
+                    if (errorCount > 0) {
+                        // Create a formatted list for the toast
+                        const ErrorToast = ({ messages }) => (
+                          <div>
+                            <strong>{`Finalization failed for ${errorCount} record(s):`}</strong>
+                            <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
+                              {messages.map((msg, index) => (
+                                <li key={index}>{msg}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                        // Display the errors in a single, more readable toast
+                        toast.error(<ErrorToast messages={response.errors} />, {
+                            autoClose: 10000 // Give user more time to read errors
+                        });
+                    }
+
+                    // If nothing was processed at all
+                    if (successCount === 0 && skippedCount === 0 && errorCount === 0) {
+                        toast.info("No records were processed.");
+                    }
+                } else {
+                    // Fallback for an unexpected response structure
+                    toast.success("Finalization request completed.");
+                }
+
+                fetchData(); // Refresh the table
+                setSelectedIds([]); // Clear selection
+            })
+            .catch((err) => {
+                const apiMsg = err?.response?.data?.message || err?.message || 'Finalization failed.';
+                toast.error(apiMsg);
+            });
+    };
+
+    const handleBulkRelease = () => {
+        if (selectedIds.length === 0) {
+            toast.warn("Please select at least one record to release.");
+            return;
+        }
+        dispatch(releaseNetSalary({ selected_id: selectedIds }))
+            .unwrap()
+            .then((response) => {
+                // Check if the response has the expected structure
+                if (response && response.success && response.skipped && response.errors) {
+                    const successCount = response.success.length;
+                    const skippedCount = response.skipped.length;
+                    const errorCount = response.errors.length;
+
+                    if (successCount > 0) {
+                        const successCodes = response.success.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.success(`${successCount} record(s) released successfully: ${successCodes}`);
+                    }
+
+                    if (skippedCount > 0) {
+                        const skippedCodes = response.skipped.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.warn(`${skippedCount} record(s) were skipped (not finalized or already released): ${skippedCodes}`);
+                    }
+
+                    if (errorCount > 0) {
+                        const ErrorToast = ({ messages }) => (
+                          <div>
+                            <strong>{`Release failed for ${errorCount} record(s):`}</strong>
+                            <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
+                              {messages.map((msg, index) => (
+                                <li key={index}>{msg}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                        toast.error(<ErrorToast messages={response.errors} />, {
+                            autoClose: 10000
+                        });
+                    }
+
+                    if (successCount === 0 && skippedCount === 0 && errorCount === 0) {
+                        toast.info("No records were processed.");
+                    }
+                } else {
+                    toast.success("Release request completed.");
+                }
+
+                fetchData(); // Refresh the table
+                setSelectedIds([]); // Clear selection
+            })
+            .catch((err) => {
+                const apiMsg = err?.response?.data?.message || err?.message || 'Release failed.';
+                toast.error(apiMsg);
+            });
+    };
 
 
     return (
@@ -683,8 +809,8 @@ export default function NetSalary() {
                                 </Grid>
                             </div>
                             {
-                                currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
-                                    <div className="cardheader-flex-right">
+                                <div className="d-flex flex-column" style={{ gap: '10px' }}>
+                                    {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", 'IT Admin'].includes(role)) && (
                                         <Grid>
                                             <MuiButton
                                                 variant="contained"
@@ -692,11 +818,36 @@ export default function NetSalary() {
                                                 disabled={selectedIds.length === 0}
                                                 onClick={handleBulkStatusUpdate}
                                             >
-                                                Verify Selected
+                                                Verify
                                             </MuiButton>
                                         </Grid>
-                                    </div>
-                                )
+                                    )}
+
+                                    {canUserManageFinalization && (
+                                        <>
+                                            <Grid item>
+                                                <MuiButton
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    disabled={selectedIds.length === 0}
+                                                    onClick={handleBulkFinalize}
+                                                >
+                                                    Finalize 
+                                                </MuiButton>
+                                            </Grid>
+                                            <Grid item>
+                                                <MuiButton
+                                                    variant="contained"
+                                                    color="info"
+                                                    disabled={selectedIds.length === 0}
+                                                    onClick={handleBulkRelease}
+                                                >
+                                                    Release 
+                                                </MuiButton>
+                                            </Grid>
+                                        </>
+                                    )}
+                                </div>
                             }
 
                         </Box>
@@ -713,7 +864,7 @@ export default function NetSalary() {
                                         <TableHead>
                                             <TableRow>
                                                 {
-                                                    currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                    currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "IT Admin"].includes(role)) && (
                                                         <TableCell padding="checkbox">
                                                             <Checkbox
                                                                 indeterminate={selectedIds?.length > 0 && selectedIds?.length < netSalary?.length}
@@ -730,7 +881,7 @@ export default function NetSalary() {
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell>
-                                                 <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
@@ -746,7 +897,7 @@ export default function NetSalary() {
                                                     {netSalary?.map((row, idx) => (
                                                         <TableRow key={row.id}>
                                                             {
-                                                                currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                                currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "IT Admin"].includes(role)) && (
                                                                     <TableCell padding="checkbox">
                                                                         <Checkbox
                                                                             checked={selectedIds.includes(row.id)}
@@ -761,8 +912,8 @@ export default function NetSalary() {
                                                             <TableCell>
                                                                 {months.find((m) => m.value === row.month)?.label || 'NA'}
                                                             </TableCell>
-                                                            <TableCell>{row.year}</TableCell>    
-                                                            <TableCell>{row?.employee?.institute}</TableCell>                                                   
+                                                            <TableCell>{row.year}</TableCell>
+                                                            <TableCell>{row?.employee?.institute}</TableCell>
                                                             <TableCell>{dateFormat(row.processing_date)}</TableCell>
                                                             <TableCell>{dateFormat(row.payment_date)}</TableCell>
                                                             <TableCell>{row.net_amount}</TableCell>

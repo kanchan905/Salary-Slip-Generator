@@ -20,6 +20,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
     fetchNetPension,
+    finalizeNetPension,
+    releaseNetPension,
     showNetPension,
     updateNetPension,
     verifyNetPension,
@@ -70,6 +72,7 @@ export default function NetPension() {
         year: '',
     });
     const [selectedIds, setSelectedIds] = useState([]);
+    const canUserManageFinalization = currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role));
 
 
     const toggleHistoryModal = () => {
@@ -399,6 +402,132 @@ export default function NetPension() {
         navigate(`/net-pension?${queryString}`);
     };
 
+    const getEmployeeCodeById = (id) => {
+        const record = netPension.find(item => item.id === id);
+        return record?.employee?.employee_code || `ID ${id}`;
+    };
+
+    // --- NEW: Handlers for Finalize and Release ---
+    const handleBulkFinalize = () => {
+        if (selectedIds.length === 0) {
+            toast.warn("Please select at least one record to finalize.");
+            return;
+        }
+        dispatch(finalizeNetPension({ selected_id: selectedIds }))
+            .unwrap()
+            .then((response) => {
+                // Check if the response has the expected structure
+                if (response && response.success && response.skipped && response.errors) {
+                    const successCount = response.success.length;
+                    const skippedCount = response.skipped.length;
+                    const errorCount = response.errors.length;
+
+                    // 1. Show SUCCESS messages
+                    if (successCount > 0) {
+                        const successCodes = response.success.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.success(`${successCount} record(s) finalized successfully: ${successCodes}`);
+                    }
+
+                    // 2. Show SKIPPED (Warning) messages
+                    if (skippedCount > 0) {
+                        const skippedCodes = response.skipped.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.warn(`${skippedCount} record(s) were skipped (already finalized or not fully verified): ${skippedCodes}`);
+                    }
+
+                    // 3. Show ERROR messages
+                    if (errorCount > 0) {
+                        // Create a formatted list for the toast
+                        const ErrorToast = ({ messages }) => (
+                            <div>
+                                <strong>{`Finalization failed for ${errorCount} record(s):`}</strong>
+                                <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
+                                    {messages.map((msg, index) => (
+                                        <li key={index}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                        // Display the errors in a single, more readable toast
+                        toast.error(<ErrorToast messages={response.errors} />, {
+                            autoClose: 10000 // Give user more time to read errors
+                        });
+                    }
+
+                    // If nothing was processed at all
+                    if (successCount === 0 && skippedCount === 0 && errorCount === 0) {
+                        toast.info("No records were processed.");
+                    }
+                } else {
+                    // Fallback for an unexpected response structure
+                    toast.success("Finalization request completed.");
+                }
+
+                fetchNetPension(); // Refresh the table
+                setSelectedIds([]); // Clear selection
+            })
+            .catch((err) => {
+                const apiMsg = err?.response?.data?.message || err?.message || 'Finalization failed.';
+                toast.error(apiMsg);
+            });
+    };
+
+    const handleBulkRelease = () => {
+        if (selectedIds.length === 0) {
+            toast.warn("Please select at least one record to release.");
+            return;
+        }
+        dispatch(releaseNetPension({ selected_id: selectedIds }))
+            .unwrap()
+            .then((response) => {
+                // Check if the response has the expected structure
+                if (response && response.success && response.skipped && response.errors) {
+                    const successCount = response.success.length;
+                    const skippedCount = response.skipped.length;
+                    const errorCount = response.errors.length;
+
+                    if (successCount > 0) {
+                        const successCodes = response.success.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.success(`${successCount} record(s) released successfully: ${successCodes}`);
+                    }
+
+                    if (skippedCount > 0) {
+                        const skippedCodes = response.skipped.map(id => getEmployeeCodeById(id)).join(', ');
+                        toast.warn(`${skippedCount} record(s) were skipped (not finalized or already released): ${skippedCodes}`);
+                    }
+
+                    if (errorCount > 0) {
+                        const ErrorToast = ({ messages }) => (
+                            <div>
+                                <strong>{`Release failed for ${errorCount} record(s):`}</strong>
+                                <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
+                                    {messages.map((msg, index) => (
+                                        <li key={index}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                        toast.error(<ErrorToast messages={response.errors} />, {
+                            autoClose: 10000
+                        });
+                    }
+
+                    if (successCount === 0 && skippedCount === 0 && errorCount === 0) {
+                        toast.info("No records were processed.");
+                    }
+                } else {
+                    toast.success("Release request completed.");
+                }
+
+                fetchNetPension(); // Refresh the table
+                setSelectedIds([]); // Clear selection
+            })
+            .catch((err) => {
+                const apiMsg = err?.response?.data?.message || err?.message || 'Release failed.';
+                toast.error(apiMsg);
+            });
+    };
+
+
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
@@ -450,8 +579,8 @@ export default function NetPension() {
                                 </Grid>
                             </div>
                             {
-                                currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
-                                    <div className="cardheader-flex-right">
+                                <div className="d-flex" style={{ gap: '10px' }}>
+                                    {currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
                                         <Button
                                             variant="contained"
                                             style={{ background: "#004080", color: '#fff' }}
@@ -459,10 +588,32 @@ export default function NetPension() {
                                             onClick={handleBulkStatusUpdate}
                                             fullWidth
                                         >
-                                            Verify Selected
+                                            Verify
                                         </Button>
-                                    </div>
-                                )
+                                    )}
+
+                                    {canUserManageFinalization && (
+                                        <>
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={selectedIds.length === 0}
+                                                onClick={handleBulkFinalize}
+                                            >
+                                                Finalize
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="info"
+                                                disabled={selectedIds.length === 0}
+                                                onClick={handleBulkRelease}
+                                            >
+                                                Release
+                                            </Button>
+                                        </>
+                                    )}
+
+                                </div>
                             }
                         </Box>
                     </CardHeader>
@@ -478,7 +629,7 @@ export default function NetPension() {
                                         <TableHead>
                                             <TableRow style={{ whiteSpace: "nowrap" }}>
                                                 {
-                                                    currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
+                                                    currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
                                                         <TableCell padding="checkbox">
                                                             <Checkbox
                                                                 indeterminate={selectedIds.length > 0 && selectedIds.length < netPension.length}
@@ -508,7 +659,7 @@ export default function NetPension() {
                                                     {netPension.map((row, idx) => (
                                                         <TableRow key={row.id} style={{ whiteSpace: "nowrap" }}>
                                                             {
-                                                                currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
+                                                                currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
                                                                     <TableCell padding="checkbox">
                                                                         <Checkbox
                                                                             checked={selectedIds.includes(row.id)}

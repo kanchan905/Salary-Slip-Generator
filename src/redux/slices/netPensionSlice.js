@@ -84,13 +84,41 @@ export const fetchOwnPension = createAsyncThunk(
 );
 
 
+export const finalizeNetPension = createAsyncThunk(
+    "salary/finalizeNetPension",
+    async ({ selected_id }, { rejectWithValue }) => {
+        try {
+            const payload = { selected_id };
+            const response = await axiosInstance.post(`/finalize-pension`, payload);
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.errorMsg || err.message);
+        }
+    }
+);
+
+export const releaseNetPension = createAsyncThunk(
+    "salary/releaseNetPension",
+    async ({ selected_id }, { rejectWithValue }) => {
+        try {
+            const payload = { selected_id };
+            const response = await axiosInstance.post(`/release-pension`, payload);
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.errorMsg || err.message);
+        }
+    }
+);
+
+
+
 const initialState = {
     netPension: [],
     netPensionData: null,
     totalCount: 0,
     loading: false,
     error: null,
-    ownPension:[],
+    ownPension: [],
 }
 
 const netPensionSlice = createSlice({
@@ -150,12 +178,18 @@ const netPensionSlice = createSlice({
             .addCase(fetchOwnPension.pending, (state, action) => {
                 state.loading = true;
             })
-            .addCase(fetchOwnPension.fulfilled, (state,action) => {
-                state.ownPension= action.payload;
+            .addCase(fetchOwnPension.fulfilled, (state, action) => {
+                state.ownPension = action.payload;
             })
             .addCase(fetchOwnPension.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(finalizeNetPension.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(releaseNetPension.fulfilled, (state, action) => {
+                state.loading = false;
             })
     }
 })

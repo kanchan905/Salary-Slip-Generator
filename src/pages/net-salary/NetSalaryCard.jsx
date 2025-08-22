@@ -446,7 +446,7 @@ export default function PaySlipPage() {
                                 <Button
                                     variant="contained"
                                     color="secondary"
-                                    startIcon={<CheckCircleIcon />}
+                                    startIcon={netSalaryData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
                                     onClick={() => handleStepFinalization(netSalaryData)}
                                     disabled={!allStepsVerified}
                                 >
@@ -456,11 +456,11 @@ export default function PaySlipPage() {
                                 <Button
                                     variant="contained"
                                     color="info"
-                                    startIcon={<CheckCircleIcon />}
+                                    startIcon={netSalaryData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
                                     onClick={() => handleStepRelease(netSalaryData)}
                                     disabled={!netSalaryData?.is_finalize}
                                 >
-                                    {netSalaryData?.is_finalize ? "Released" : "Release"}
+                                    {netSalaryData?.is_verified ? "Released" : "Release"}
                                 </Button>
                             </>
                         )}
