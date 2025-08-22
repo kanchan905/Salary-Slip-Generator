@@ -580,7 +580,7 @@ export default function NetPension() {
                             </div>
                             {
                                 <div className="d-flex" style={{ gap: '10px' }}>
-                                    {currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
+                                    {/* {currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
                                         <Button
                                             variant="contained"
                                             style={{ background: "#004080", color: '#fff' }}
@@ -590,7 +590,7 @@ export default function NetPension() {
                                         >
                                             Verify
                                         </Button>
-                                    )}
+                                    )} */}
 
                                     {canUserManageFinalization && (
                                         <>
@@ -646,6 +646,8 @@ export default function NetPension() {
                                                 <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Released</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -718,6 +720,25 @@ export default function NetPension() {
                                                                     })()}
                                                                 </TableCell>
                                                             )}
+
+                                                            <TableCell>
+                                                                <Box display="flex" gap={1}>
+                                                                    <CheckCircleIcon
+                                                                        fontSize="small"
+                                                                        sx={{ color: row.is_finalize === 1 ? 'green' : 'red' }}
+                                                                        titleAccess="Salary Processing Coordinator"
+                                                                    />
+                                                                </Box>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Box display="flex" gap={1}>
+                                                                    <CheckCircleIcon
+                                                                        fontSize="small"
+                                                                        sx={{ color: row.is_verified === 1 ? 'green' : 'red' }}
+                                                                        titleAccess="Salary Processing Coordinator"
+                                                                    />
+                                                                </Box>
+                                                            </TableCell>
 
                                                             <TableCell align="left">
                                                                 <IconButton onClick={(e) => handleMenuClick(e, row)}>

@@ -47,12 +47,14 @@ const Login = () => {
       .required('CAPTCHA is required'),
   });
 
-  const onSubmit = async (values, { setSubmitting, setFieldValue }) => {
+  const onSubmit = async (values, { setSubmitting, setFieldValue, setFieldError }) => {
     // CAPTCHA validation (case-insensitive)
     if (values.captcha.toLowerCase() !== captcha.toLowerCase()) {
-      toast.error("Invalid CAPTCHA. Please try again.");
+      // This is the key change:
+      setFieldError('captcha', 'CAPTCHA does not match. Please try again.');
+      
       generateCaptcha(); // Generate a new CAPTCHA
-      setFieldValue('captcha', ''); // Clear the input field
+      // setFieldValue('captcha', ''); 
       setSubmitting(false);
       return;
     }
@@ -144,7 +146,7 @@ const Login = () => {
                       />
                       {/* <span className="absolute left-3 top-2.5 text-gray-500 input-icon">👤</span> */}
                     </div>
-                    <ErrorMessage name="username" component="p" className="text-red-600 text-sm mt-1" />
+                    <ErrorMessage name="username" component="p" className="text-red-600 text-sm mt-1" style={{color:'red'}}/>
                   </div>
 
                   {/* Password */}
@@ -163,7 +165,7 @@ const Login = () => {
                       />
                       {/* <span className="absolute left-3 top-2.5 text-gray-500 input-icon">🔒</span> */}
                     </div>
-                    <ErrorMessage name="password" component="p" className="text-red-600 text-sm mt-1" />
+                    <ErrorMessage name="password" component="p" className="text-red-600 text-sm mt-1" style={{color:'red'}}/>
                   </div>
 
                   <div className='mt-4 mb-2'>
@@ -185,7 +187,7 @@ const Login = () => {
                       style={{ width: '100%', marginTop: '8px' }}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <ErrorMessage name="captcha" component="p" className="text-red-600 text-sm mt-1" />
+                    <ErrorMessage name="captcha" component="p" className="text-red-600 text-sm mt-1" style={{color:'red'}}/>
                   </div>
 
                   {/* Forgot Password */}

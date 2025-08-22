@@ -197,6 +197,7 @@ const ReportsDashboard = () => {
                             {extraFieldKey && (
                                 <Grid item xs={12} md={4}>
                                     {extraFieldKey === 'employeeId' ? (
+                                        !isEndUser && (
                                         <Autocomplete
                                             options={employees}
                                             getOptionLabel={(option) => `${option.first_name} ${option.middle_name || ''} ${option.last_name} - ${option.employee_code}`}
@@ -217,6 +218,7 @@ const ReportsDashboard = () => {
                                             isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
                                             sx={{ width: 400 }}
                                         />
+                                        )
                                     ) : (
                                         <Autocomplete
                                             options={pensioners}

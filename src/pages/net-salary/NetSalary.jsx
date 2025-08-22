@@ -613,7 +613,7 @@ export default function NetSalary() {
         dispatch(finalizeNetSalary({ selected_id: selectedIds }))
             .unwrap()
             .then((response) => {
-                 // Check if the response has the expected structure
+                // Check if the response has the expected structure
                 if (response && response.success && response.skipped && response.errors) {
                     const successCount = response.success.length;
                     const skippedCount = response.skipped.length;
@@ -635,14 +635,14 @@ export default function NetSalary() {
                     if (errorCount > 0) {
                         // Create a formatted list for the toast
                         const ErrorToast = ({ messages }) => (
-                          <div>
-                            <strong>{`Finalization failed for ${errorCount} record(s):`}</strong>
-                            <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
-                              {messages.map((msg, index) => (
-                                <li key={index}>{msg}</li>
-                              ))}
-                            </ul>
-                          </div>
+                            <div>
+                                <strong>{`Finalization failed for ${errorCount} record(s):`}</strong>
+                                <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
+                                    {messages.map((msg, index) => (
+                                        <li key={index}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         );
                         // Display the errors in a single, more readable toast
                         toast.error(<ErrorToast messages={response.errors} />, {
@@ -694,14 +694,14 @@ export default function NetSalary() {
 
                     if (errorCount > 0) {
                         const ErrorToast = ({ messages }) => (
-                          <div>
-                            <strong>{`Release failed for ${errorCount} record(s):`}</strong>
-                            <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
-                              {messages.map((msg, index) => (
-                                <li key={index}>{msg}</li>
-                              ))}
-                            </ul>
-                          </div>
+                            <div>
+                                <strong>{`Release failed for ${errorCount} record(s):`}</strong>
+                                <ul style={{ paddingLeft: '20px', margin: '5px 0 0 0' }}>
+                                    {messages.map((msg, index) => (
+                                        <li key={index}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         );
                         toast.error(<ErrorToast messages={response.errors} />, {
                             autoClose: 10000
@@ -810,7 +810,7 @@ export default function NetSalary() {
                             </div>
                             {
                                 <div className="d-flex flex-column" style={{ gap: '10px' }}>
-                                    {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", 'IT Admin'].includes(role)) && (
+                                    {/* {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", 'IT Admin'].includes(role)) && (
                                         <Grid>
                                             <MuiButton
                                                 variant="contained"
@@ -821,7 +821,7 @@ export default function NetSalary() {
                                                 Verify
                                             </MuiButton>
                                         </Grid>
-                                    )}
+                                    )} */}
 
                                     {canUserManageFinalization && (
                                         <>
@@ -832,7 +832,7 @@ export default function NetSalary() {
                                                     disabled={selectedIds.length === 0}
                                                     onClick={handleBulkFinalize}
                                                 >
-                                                    Finalize 
+                                                    Finalize
                                                 </MuiButton>
                                             </Grid>
                                             <Grid item>
@@ -842,7 +842,7 @@ export default function NetSalary() {
                                                     disabled={selectedIds.length === 0}
                                                     onClick={handleBulkRelease}
                                                 >
-                                                    Release 
+                                                    Release
                                                 </MuiButton>
                                             </Grid>
                                         </>
@@ -884,6 +884,8 @@ export default function NetSalary() {
                                                 <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Released</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -947,6 +949,7 @@ export default function NetSalary() {
                                                             }
 
 
+
                                                             {
                                                                 !currentRoles.includes('IT Admin') && (
                                                                     <TableCell>
@@ -978,6 +981,25 @@ export default function NetSalary() {
                                                                     </TableCell>
                                                                 )
                                                             }
+
+                                                            <TableCell>
+                                                                <Box display="flex" gap={1}>
+                                                                    <CheckCircleIcon
+                                                                        fontSize="small"
+                                                                        sx={{ color: row.is_finalize === 1 ? 'green' : 'red' }}
+                                                                        titleAccess="Salary Processing Coordinator"
+                                                                    />
+                                                                </Box>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Box display="flex" gap={1}>
+                                                                    <CheckCircleIcon
+                                                                        fontSize="small"
+                                                                        sx={{ color: row.is_verified === 1 ? 'green' : 'red' }}
+                                                                        titleAccess="Salary Processing Coordinator"
+                                                                    />
+                                                                </Box>
+                                                            </TableCell>
                                                             <TableCell align="left">
                                                                 <IconButton onClick={(e) => handleMenuClick(e, row)}>
                                                                     <MoreVertIcon />
