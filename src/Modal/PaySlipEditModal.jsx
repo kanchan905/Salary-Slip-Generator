@@ -24,59 +24,7 @@ import {
 } from '../redux/slices/salarySlice';
 import { fetchPayStructure } from '../redux/slices/payStructureSlice';
 
-// --- Helper component for calculations ---
-// const CalculationUpdater = ({ selectedStructure, transportList, daList, hraList, npaList, employee }) => {
-//     const { values, setFieldValue } = useFormikContext();
 
-//     // This useEffect is now correctly at the top level of a component
-//     useEffect(() => {
-//         if (!selectedStructure || !daList.length) return;
-
-//         const basicPay = selectedStructure.pay_matrix_cell?.amount || 0;
-
-//         // Find selected rates
-//         const selectedNpaRate = npaList.find(n => n.id === parseInt(values.npa_rate_id))?.rate_percentage || 0;
-//         const selectedDaRate = daList.find(d => d.id === parseInt(values.da_rate_id))?.rate_percentage || 0;
-//         const selectedHraRate = hraList.find(h => h.id === parseInt(values.hra_rate_id))?.rate_percentage || 0;
-
-//         // NPA Calculation
-//         const npaAmount = Math.round(basicPay * (selectedNpaRate / 100));
-//         setFieldValue('npa_amount', npaAmount);
-
-//         const payPlusNpa = basicPay + npaAmount;
-
-//         // DA Calculation
-//         const daAmount = Math.round(payPlusNpa * (selectedDaRate / 100));
-//         setFieldValue('da_amount', daAmount);
-
-//         // HRA Calculation
-//         const hraAmount = Math.round(payPlusNpa * (selectedHraRate / 100));
-//         setFieldValue('hra_amount', hraAmount);
-
-//         // Transport Allowance Calculation
-//         const payLevelId = selectedStructure?.pay_matrix_cell?.matrix_level_id;
-//         const isPwd = selectedStructure?.employee?.pwd_status;
-//         const transportItem = transportList.find(t => t?.pay_matrix_level == payLevelId);
-//         const transportAmount = transportItem ? (isPwd ? (transportItem.amount || 0) * 2 : (transportItem.amount || 0)) : 0;
-//         setFieldValue('transport_amount', transportAmount);
-
-//         // DA on TA Calculation
-//         const daOnTa = Math.round(transportAmount * (selectedDaRate / 100));
-//         setFieldValue('da_on_ta', daOnTa);
-
-//         // Government Contribution (NPS) Calculation
-//         if (employee?.pension_scheme === "NPS") {
-//             const npsContribution = Math.round((basicPay + daAmount + npaAmount) * 0.14); // 14%
-//             setFieldValue('govt_contribution', npsContribution);
-//         }
-//     }, [
-//         values.da_rate_id, values.hra_rate_id, values.npa_rate_id,
-//         selectedStructure, transportList, daList, hraList, npaList,
-//         employee, setFieldValue
-//     ]);
-
-//     return null; // This component does not render any UI
-// };
 
 // --- Helper component for Total Pay calculation ---
 const TotalPayCalculator = () => {

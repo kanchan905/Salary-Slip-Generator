@@ -98,6 +98,7 @@ export default function NetSalary() {
         month: '',
         year: '',
         verification_status: '',
+        finalize_status: '',
     });
 
     const toggleHistoryModal = () => {
@@ -426,7 +427,7 @@ export default function NetSalary() {
     };
 
     const handleClearFilters = () => {
-        const clearedFilters = { id: '', month: '', year: '', verification_status: '' };
+        const clearedFilters = { id: '', month: '', year: '', verification_status: '', finalize_status: '' };
         setFilters(clearedFilters);
         setPage(0); // Reset page
 
@@ -782,21 +783,42 @@ export default function NetSalary() {
                                             type="text"
                                         />
                                     </Grid>
-                                    <Grid item size={{ xs: 6, md: 3 }}>
-                                        <FormControl fullWidth size="small">
-                                            <InputLabel>Verification Status</InputLabel>
-                                            <Select
-                                                name="verification_status"
-                                                value={filters.verification_status}
-                                                label="Verification Status"
-                                                onChange={handleFilterChange}
-                                            >
-                                                <MenuItem value="All"><em>All</em></MenuItem>
-                                                <MenuItem value="1">Verified</MenuItem>
-                                                <MenuItem value="0">Not Verified</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
+                                    {
+                                        currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role)) && (
+                                            <>
+                                                <Grid item size={{ xs: 6, md: 3 }}>
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>Verification Status</InputLabel>
+                                                        <Select
+                                                            name="verification_status"
+                                                            value={filters.verification_status}
+                                                            label="Verification Status"
+                                                            onChange={handleFilterChange}
+                                                        >
+                                                            <MenuItem value="All"><em>All</em></MenuItem>
+                                                            <MenuItem value="1">Verified</MenuItem>
+                                                            <MenuItem value="0">Not Verified</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item size={{ xs: 6, md: 3 }}>
+                                                <FormControl fullWidth size="small">
+                                                    <InputLabel>Finalization Status</InputLabel>
+                                                    <Select
+                                                        name="finalize_status"
+                                                        value={filters.finalize_status}
+                                                        label="Finalization Status"
+                                                        onChange={handleFilterChange}
+                                                    >
+                                                        <MenuItem value="All"><em>All</em></MenuItem>
+                                                        <MenuItem value="1">Finalized</MenuItem>
+                                                        <MenuItem value="0">Not Finalized</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </Grid>
+                                            </>
+                                        )
+                                    }
 
                                     <Grid item xs={12} md={3} container spacing={1} justifyContent="flex-start">
                                         <Grid item>

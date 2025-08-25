@@ -4,9 +4,9 @@ import axiosInstance from "global/AxiosSetting";
 
 export const fetchNetSalary = createAsyncThunk(
   "salary/fetchNetSalary",
-  async ({ id, page, limit, month, year, verification_status }, { rejectWithValue }) => {
+  async ({ id, page, limit, month, year, verification_status, finalize_status }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/salary?page=${page}&limit=${limit}&month=${month??''}&year=${year??''}&is_verified=${verification_status??''}&employee_id=${id??''}`);
+      const response = await axiosInstance.get(`/salary?page=${page}&limit=${limit}&month=${month??''}&year=${year??''}&is_verified=${verification_status??''}&employee_id=${id??''}&is_finalize=${finalize_status??''}`);
       return {
         data: response.data.data,
         totalCount: response.data.total_count
