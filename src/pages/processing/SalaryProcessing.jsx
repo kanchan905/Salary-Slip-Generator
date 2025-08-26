@@ -275,7 +275,7 @@ const SalaryProcessing = () => {
         console.log("Proceeding with calculation - will handle missing rate data gracefully");
 
         const calculatedPayload = {};
-        const local_basic_pay = EditMode  ? Number(formData.basic_pay) : structure?.pay_matrix_cell?.amount;
+        const local_basic_pay = EditMode ? Number(formData.basic_pay) : structure?.pay_matrix_cell?.amount;
         calculatedPayload.basic_pay = local_basic_pay;
 
         // Handle NPA calculation - use available data or default to 0
@@ -287,7 +287,7 @@ const SalaryProcessing = () => {
             if (npaRate > 0) {
                 const npa_calc = customRound((local_basic_pay * npaRate) / 100);
                 const defaultNpa = (local_basic_pay < threshold && local_basic_pay + npa_calc > threshold) ? (threshold - local_basic_pay) : npa_calc;
-                local_npa_amount =  defaultNpa;
+                local_npa_amount = defaultNpa;
                 if (local_basic_pay >= threshold) local_npa_amount = 0;
             }
         }
@@ -303,7 +303,7 @@ const SalaryProcessing = () => {
             daRate = daItem?.rate_percentage || 0;
         }
         const defaultDa = customRound((calculatedPayload.pay_plus_npa) * daRate / 100);
-        calculatedPayload.da_amount =  defaultDa;
+        calculatedPayload.da_amount = defaultDa;
 
         // Handle HRA calculation - use available data or default to 0
         let hraRate = 0;
@@ -312,7 +312,7 @@ const SalaryProcessing = () => {
             hraRate = hraItem?.rate_percentage || 0;
         }
         const defaultHra = customRound((calculatedPayload.pay_plus_npa) * hraRate / 100);
-        calculatedPayload.hra_amount =  defaultHra;
+        calculatedPayload.hra_amount = defaultHra;
 
         // Handle Uniform calculation - use available data or default to 0
         let uniformAmount = 0;
@@ -320,7 +320,7 @@ const SalaryProcessing = () => {
             const uniformItem = uniformList.find((u) => u.id === formData.uniform_rate_id);
             uniformAmount = uniformItem?.amount || 0;
         }
-        calculatedPayload.uniform_rate_amount =  EditMode ? Number(formData.uniform_rate_amount) : uniformAmount;
+        calculatedPayload.uniform_rate_amount = EditMode ? Number(formData.uniform_rate_amount) : uniformAmount;
 
         // Handle Transport calculation - use available data or default to 0
         let transportBaseAmount = 0;
@@ -329,7 +329,7 @@ const SalaryProcessing = () => {
             transportBaseAmount = transportItem?.amount || 0;
         }
         const defaultTa = structure?.employee?.pwd_status ? transportBaseAmount * 2 : transportBaseAmount;
-        calculatedPayload.transport_amount =  EditMode ? Number(formData.transport_amount) : defaultTa;
+        calculatedPayload.transport_amount = EditMode ? Number(formData.transport_amount) : defaultTa;
 
         const defaultDaonTa = customRound((calculatedPayload.transport_amount * daRate) / 100);
         calculatedPayload.da_on_ta = EditMode ? Number(formData.da_on_ta) : defaultDaonTa;
@@ -346,7 +346,7 @@ const SalaryProcessing = () => {
         if (isQuarterOccupied) {
             const occupiedQuarter = quarters.find(q => q.employee_id === formData.employee_id && Number(q.is_occupied) === 1);
             const defaultLicenseFee = occupiedQuarter ? (occupiedQuarter.quarter?.license_fee || 0) : 0;
-            calculatedPayload.license_fee =  EditMode ? Number(formData.license_fee) : defaultLicenseFee;
+            calculatedPayload.license_fee = EditMode ? Number(formData.license_fee) : defaultLicenseFee;
         } else {
             calculatedPayload.license_fee = EditMode ? Number(formData.license_fee) : 0;
         }
@@ -362,9 +362,9 @@ const SalaryProcessing = () => {
             } else {
                 const npsBase = local_basic_pay + local_npa_amount + calculatedPayload.da_amount;
                 const defaultEmpContr = customRound((employeeContributionRate / 100) * npsBase);
-                calculatedPayload.employee_contribution_10 =  defaultEmpContr;
+                calculatedPayload.employee_contribution_10 = defaultEmpContr;
                 const govtContribution = customRound((govtContributionRate / 100) * npsBase);
-                calculatedPayload.govt_contribution_14_recovery =  govtContribution;
+                calculatedPayload.govt_contribution_14_recovery = govtContribution;
                 calculatedPayload.govt_contribution = govtContribution;
                 calculatedPayload.gpf = 0;
                 console.log("NPS calculation successful - Govt Contribution:", govtContribution);
@@ -437,13 +437,13 @@ const SalaryProcessing = () => {
         formData.npa_rate_id, formData.hra_rate_id, formData.da_rate_id,
         formData.uniform_rate_id, formData.transport_rate_id,
 
-        
+
         // User manual input triggers
         formData.basic_pay, formData.npa_amount, formData.da_amount,
         formData.hra_amount, formData.uniform_rate_amount,
         formData.transport_amount, formData.da_on_ta, formData.gis,
         formData.license_fee,
-        
+
 
         // Deduction triggers that are also used in calculation
         formData.gpf, formData.employee_contribution_10,
@@ -455,7 +455,7 @@ const SalaryProcessing = () => {
         formData.employee_contribution_10,
 
         // Other state triggers
-        dispatch,selectNext,
+        dispatch, selectNext,
     ]);
 
     const handleDownloadPdf = () => {
@@ -714,9 +714,34 @@ const SalaryProcessing = () => {
                                 </TextField>
                             </Grid>
                             <Grid item size={{ xs: 4 }}><TextField label="Basic Pay" value={formData.basic_pay} name='basic_pay' fullWidth onChange={handleChange} /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField label="Month" value={months.find(m => m.value === formData.month)?.label || ''} fullWidth disabled /></Grid>
-                            <Grid item size={{ xs: 4 }}><TextField label="Year" value={formData.year || ''} fullWidth disabled /></Grid>
-
+                            {/* <Grid item size={{ xs: 4 }}><TextField label="Month" value={months.find(m => m.value === formData.month)?.label || ''} fullWidth disabled/></Grid> */}
+                            {/* <Grid item size={{ xs: 4 }}><TextField label="Year" value={formData.year || ''} fullWidth disabled/></Grid> */}
+                            <Grid item size={{ xs: 4 }}>
+                                <TextField
+                                    select
+                                    required
+                                    name="month"
+                                    label="Month"
+                                    value={formData.month || ''}
+                                    fullWidth
+                                    onChange={handleChange}
+                                >
+                                    {months.map((option) => (
+                                        <MenuItem key={option.value} value={option.value}>
+                                            {option.label}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+                            <Grid item size={{ xs: 4 }}>
+                                <TextField
+                                    label="Year"
+                                    name="year"
+                                    value={formData.year || ''}
+                                    fullWidth
+                                    onChange={handleChange}
+                                />
+                            </Grid>
                             <Grid item size={{ xs: 4 }}>
                                 <TextField select required name="npa_rate_id" label="NPA Rate %" value={formData.npa_rate_id || ''} fullWidth onChange={handleChange} disabled={!EmployeeDetail?.npa_eligibility}>
                                     {npaList.map((npa) => (<MenuItem key={npa.id} value={npa.id}>{npa.rate_percentage}</MenuItem>))}
@@ -1118,10 +1143,10 @@ const SalaryProcessing = () => {
                                                 <td className="info-label">टिप्पणियाँ / remarks </td>
                                                 <td className="info-value">{formData.remarks}</td>
                                             </tr>
-                                            <tr>
+                                            {/* <tr>
                                                 <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
                                                 <td className='info-value'>{EmployeeDetail?.employee_bank?.[0]?.account_number || 'N/A'}</td>
-                                            </tr>
+                                            </tr> */}
                                         </tbody>
                                     </table>
                                 </div>

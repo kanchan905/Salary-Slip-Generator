@@ -211,8 +211,8 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                             </Row>
                             <hr />
                             <Row>
-                                {data?.da_amount > 0 && (
-                                    <>
+                                {/* {data?.da_amount > 0 && (
+                                    <> */}
                                         <Col md={3}>
                                             <FormGroup>
                                                 <Label for="da_rate_id">DA Rate</Label>
@@ -227,11 +227,11 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                                 <Field name="da_amount" type="text" className="form-control" />
                                             </FormGroup>
                                         </Col>
-                                    </>
-                                )}
+                                    {/* </>
+                                )} */}
 
-                                {data?.hra_amount > 0 && (
-                                    <>
+                                {/* {data?.hra_amount > 0 && (
+                                    <> */}
                                         <Col md={3}>
                                             <FormGroup>
                                                 <Label for="hra_rate_id">HRA Rate</Label>
@@ -246,11 +246,11 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                                 <Field name="hra_amount" type="text" className="form-control" />
                                             </FormGroup>
                                         </Col>
-                                    </>
-                                )}
+                                    {/* </>
+                                )} */}
 
-                                {data?.npa_amount > 0 && (
-                                    <>
+                                {/* {data?.npa_amount > 0 && (
+                                    <> */}
                                         <Col md={3}>
                                             <FormGroup>
                                                 <Label for="npa_rate_id">NPA Rate</Label>
@@ -265,11 +265,11 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                                 <Field name="npa_amount" type="text" className="form-control" />
                                             </FormGroup>
                                         </Col>
-                                    </>
-                                )}
+                                    {/* </>
+                                )} */}
 
-                                {data?.transport_amount > 0 && (
-                                    <>
+                                {/* {data?.transport_amount > 0 && (
+                                    <> */}
                                         <Col md={3}>
                                             <FormGroup>
                                                 <Label for="transport_amount">Transport Amount</Label>
@@ -282,11 +282,11 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                                 <Field name="da_on_ta" type="text" className="form-control" />
                                             </FormGroup>
                                         </Col>
-                                    </>
-                                )}
+                                    {/* </>
+                                )} */}
 
-                                {data?.uniform_rate_amount > 0 && (
-                                    <>
+                                {/* {data?.uniform_rate_amount > 0 && (
+                                    <> */}
                                         <Col md={3}>
                                             <FormGroup>
                                                 <Label for="uniform_rate_id">Uniform Allowance</Label>
@@ -303,8 +303,8 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                                 <Field name="uniform_rate_amount" type="text" className="form-control" />
                                             </FormGroup>
                                         </Col>
-                                    </>
-                                )}
+                                    {/* </>
+                                )} */}
 
                                 {employee?.pension_scheme === "NPS" && (
                                     <Col md={3}>

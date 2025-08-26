@@ -503,12 +503,12 @@ function NetPensionCard() {
                                         <td className="info-label">टिप्पणियाँ / remarks</td>
                                         <td className="info-value">{monthly_pension?.remarks}</td>
                                     </tr>
-                                    <tr>
+                                    {/* <tr>
                                         <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
                                         <td className="info-value">{pensioner_bank?.account_no || 'N/A'}</td>
                                         <td></td>
                                         <td></td>
-                                    </tr>
+                                    </tr> */}
                                 </tbody>
                             </table>
                         </div>

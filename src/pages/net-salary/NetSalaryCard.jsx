@@ -329,53 +329,58 @@ export default function PaySlipPage() {
     return (
         <>
             <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
-            <Box sx={{ p: 3 }} >
-                {
-                    <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
-                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
-                            {[
-                                { label: "Salary Processing Coordinator", field: "salary_processing_status", timestampField: "salary_processing_date" },
-                                { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
-                                { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
-                                { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
-                            ].map(({ label, field, timestampField }) => {
-                                const isButtonClickable =
-                                    !netSalaryData[field] &&      // 1. Must NOT be verified
-                                    field === statusField &&      // 2. Must be the current step's turn
-                                    userHasRoleForStep(field);    // 3. User must have the correct role
+            {
+                !currentRoles.includes("End Users") && (
+                    <Box sx={{ p: 3 }} >
+                        {
+                            <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
+                                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
+                                    {[
+                                        { label: "Salary Processing Coordinator", field: "salary_processing_status", timestampField: "salary_processing_date" },
+                                        { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
+                                        { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
+                                        { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
+                                    ].map(({ label, field, timestampField }) => {
+                                        const isButtonClickable =
+                                            !netSalaryData[field] &&      // 1. Must NOT be verified
+                                            field === statusField &&      // 2. Must be the current step's turn
+                                            userHasRoleForStep(field);    // 3. User must have the correct role
 
-                                const verificationTime = formatTimestamp(netSalaryData[timestampField]);
+                                        const verificationTime = formatTimestamp(netSalaryData[timestampField]);
 
-                                return (
-                                    <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
-                                        <Button
-                                            variant="contained"
-                                            color={netSalaryData[field] ? "success" : "error"}
-                                            startIcon={netSalaryData[field] ? <CheckCircleIcon /> : <CancelIcon />}
-                                            onClick={isButtonClickable ? () => handleStepVerification(netSalaryData, field) : null}
-                                            sx={{
-                                                minWidth: 240,
-                                                fontWeight: 500,
-                                                // Improved cursor logic
-                                                cursor: isButtonClickable ? 'pointer' : (netSalaryData[field] ? 'default' : 'not-allowed')
-                                            }}
-                                        >
-                                            {label} {netSalaryData[field] ? "Verified" : "Verify"}
-                                        </Button>
-                                        {/* UPDATED: Conditionally render the formatted timestamp */}
-                                        {verificationTime && (
-                                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                                {verificationTime}
-                                            </Typography>
-                                        )}
-                                    </Box>
-                                )
-                            })}
-                        </Stack>
-                    </Paper>
-                }
-            </Box>
+                                        return (
+                                            <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                                                <Button
+                                                    variant="contained"
+                                                    color={netSalaryData[field] ? "success" : "error"}
+                                                    startIcon={netSalaryData[field] ? <CheckCircleIcon /> : <CancelIcon />}
+                                                    onClick={isButtonClickable ? () => handleStepVerification(netSalaryData, field) : null}
+                                                    sx={{
+                                                        minWidth: 240,
+                                                        fontWeight: 500,
+                                                        // Improved cursor logic
+                                                        cursor: isButtonClickable ? 'pointer' : (netSalaryData[field] ? 'default' : 'not-allowed')
+                                                    }}
+                                                >
+                                                    {label} {netSalaryData[field] ? "Verified" : "Verify"}
+                                                </Button>
+                                                {/* UPDATED: Conditionally render the formatted timestamp */}
+                                                {verificationTime && (
+                                                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                                        {verificationTime}
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                        )
+                                    })}
+                                </Stack>
+                            </Paper>
+                        }
+                    </Box>
+                )
+            }
+
 
             <Box sx={{ p: 3 }}>
                 {/* --- Action Bar (Preserved) --- */}
@@ -545,10 +550,10 @@ export default function PaySlipPage() {
                                         <td className="info-value">{netSalaryData?.remarks}</td>
                                     </tr>
 
-                                    <tr>
+                                    {/* <tr>
                                         <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
                                         <td className='info-value'>{netSalaryData?.employee_bank?.account_number || 'N/A'}</td>
-                                    </tr>
+                                    </tr> */}
                                 </tbody>
                             </table>
                         </div>

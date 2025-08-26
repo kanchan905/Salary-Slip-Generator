@@ -212,7 +212,7 @@ export default function DeductionEditModal({ isOpen, toggle, data, onSave, netSa
                                         </Col>
                                     ))}
 
-                                    {employee?.credit_society_member === 1 && (
+                                    {/* {employee?.credit_society_member === 1 && ( */}
                                         <Col md={6} sm={6} xs={12} key="credit_society_membership">
                                             <FormGroup>
                                                 <Label for="credit_society_membership">Credit Society Membership</Label>
@@ -221,7 +221,7 @@ export default function DeductionEditModal({ isOpen, toggle, data, onSave, netSa
                                             </FormGroup>
                                         </Col>
 
-                                    )}
+                                    {/* )} */}
 
                                     {/* {employee?.computer_advance_installment > 0 && ( */}
                                         <Col md={6} sm={6} xs={12} key="computer_advance_installment">

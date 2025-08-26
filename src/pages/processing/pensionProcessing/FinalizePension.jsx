@@ -114,8 +114,8 @@ const PensionSlip = ({ formData, PensionerDetail, drDetails }) => {
                 <tr>
                   <td className="info-label">टिप्पणियाँ / remarks </td>
                   <td className="info-value">{formData?.remarks}</td>
-                  <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
-                  <td className="info-value">{PensionerDetail?.pensioner?.bank_account[0]?.account_no || 'N/A'}</td>
+                  {/* <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
+                  <td className="info-value">{PensionerDetail?.pensioner?.bank_account[0]?.account_no || 'N/A'}</td> */}
                 </tr>
               </tbody>
             </table>
