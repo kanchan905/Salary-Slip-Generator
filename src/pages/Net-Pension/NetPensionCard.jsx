@@ -28,6 +28,7 @@ import MonthlyPensionModal from '../../Modal/MonthlyPension';
 import { updateMonthlyPension } from '../../redux/slices/monthlyPensionSlice';
 import { updatePensionDeduction } from '../../redux/slices/pensionDeductionSlice';
 import PensionDeductionModal from '../../Modal/PensionDeductionModal';
+import niohfooter from '../../assets/img/images/nioh-footer.png'
 
 function NetPensionCard() {
     const dispatch = useDispatch();
@@ -463,14 +464,7 @@ function NetPensionCard() {
                     <div className="salary-slip">
                         <div className="slip-header">
                             <div className="logo-section">
-                                <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />
-                                {/* <div className="org-name">
-                                    <h1>आई.सी.एम.आर.- राष्ट्रीय व्यावसायिक स्वास्थ्य संस्थान</h1>
-                                    <h2>ICMR- National Institute Of Occupational Health</h2>
-                                    <p>अहमदाबाद - 380016 भारत / Ahmedabad - 380016 India</p>
-                                    <p className="who-text">व्यावसायिक स्वास्थ्य के लिए डब्ल्यूएचओ का सहयोग केंद्र</p>
-                                    <p className="who-text">WHO Collaborating Center for Occupational Health</p>
-                                </div> */}
+                                <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />                            
                             </div>
                         </div>
                         <div className="slip-title">
@@ -593,6 +587,11 @@ function NetPensionCard() {
                         <div className="slip-footer">
                             <p><strong>यह कंप्यूटर जनरेटेड डॉक्यूमेंट है और इसमें हस्ताक्षर की आवश्यकता नहीं है</strong></p>
                             <p><strong>This is a computer-generated document and does not require a signature</strong></p>
+                        </div>
+                        <div className="slip-footer">
+                            <div className="logo-section">
+                                <img src={niohfooter} alt="NIOH Logo" className="slip-logo w-100" />                            
+                            </div>
                         </div>
                     </div>
                 </div>

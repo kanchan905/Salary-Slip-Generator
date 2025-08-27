@@ -570,7 +570,7 @@ function EmployeeDetail() {
                     <hr />
                     <div className="text-left text-sm mt-3 space-y-1">
                       <p><strong>Emp Code:</strong> {data.employee_code}</p>
-                      <p><strong>Institute:</strong> {data.institute}</p>
+                      <p><strong>Institute:</strong> {data.institute === 'NIOH' ? "ICMR-NIOH" : data.institute === 'ROHC' ? "ICMR-ROHC" : data.institute === 'BOTH' ? "BOTH" : "NA"}</p>
                       <p><strong>Pension Scheme:</strong> {data.pension_scheme}</p>
                       <p><strong>PAN Number:</strong> {data.pancard}</p>
                       <p><strong>PWD Status:</strong> {data.pwd_status ? 'Yes' : 'No'}</p>

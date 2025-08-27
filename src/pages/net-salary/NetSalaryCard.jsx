@@ -33,6 +33,8 @@ import { fetchNpsContribution, selectLatestEmployeeRate, selectLatestGovtRate } 
 import '../../assets/css/custom.css';
 import { getMonthName } from '../../utils/helpers';
 import rohcheader from '../../assets/img/images/rohcheader.png'
+import rohcfooter from '../../assets/img/images/rohc-footer.png'
+import niohfooter from '../../assets/img/images/nioh-footer.png'
 
 
 export default function PaySlipPage() {
@@ -491,14 +493,7 @@ export default function PaySlipPage() {
                                     netSalaryData?.employee?.institute === 'ROHC' ? (
                                         <img src={rohcheader} alt="ROHC Logo" className="slip-logo w-100" />
                                     ) : null
-                                }
-                                {/* <div className="org-name">
-                                    <h1>आई.सी.एम.आर.- राष्ट्रीय व्यावसायिक स्वास्थ्य संस्थान</h1>
-                                    <h2>ICMR- National Institute Of Occupational Health</h2>
-                                    <p>अहमदाबाद - 380016 भारत / Ahmedabad - 380016 India</p>
-                                    <p className="who-text">व्यावसायिक स्वास्थ्य के लिए डब्ल्यूएचओ का सहयोग केंद्र</p>
-                                    <p className="who-text">WHO Collaborating Center for Occupational Health</p>
-                                </div> */}
+                                }                            
                             </div>
                         </div>
                         <div className="slip-title">
@@ -533,7 +528,7 @@ export default function PaySlipPage() {
                                     </tr>
                                     <tr>
                                         <td className="info-label">संस्थान / Institute</td>
-                                        <td className="info-value">{netSalaryData?.employee?.institute || 'N/A'}</td>
+                                        <td className="info-value">{netSalaryData?.employee?.institute === 'NIOH' ? "ICMR-NIOH" : netSalaryData?.employee?.institute === 'ROHC' ? "ICMR-ROHC" : netSalaryData?.employee?.institute === 'BOTH' ? "BOTH" : "NA"}</td>
                                         <td className="info-label">वृद्धि महीने / Inc. Month</td>
                                         <td className="info-value">{getMonthName(netSalaryData?.employee?.increment_month)}</td>
                                     </tr>
@@ -784,6 +779,21 @@ export default function PaySlipPage() {
                         </div>
                         <div className="slip-footer">
                             <p><strong>This is a computer-generated document and does not require a signature.</strong></p>
+                        </div>
+                        <div className="slip-footer">
+                            <div className="logo-section">
+                                {
+                                    netSalaryData?.employee?.institute === 'NIOH' || netSalaryData?.employee?.institute === 'BOTH' ? (
+                                        <img src={niohfooter} alt="NIOH Logo" className="slip-logo w-100" />
+                                    ) : null
+                                }
+
+                                {
+                                    netSalaryData?.employee?.institute === 'ROHC' ? (
+                                        <img src={rohcfooter} alt="ROHC Logo" className="slip-logo w-100" />
+                                    ) : null
+                                }       
+                            </div>
                         </div>
                     </div>
                 </div>

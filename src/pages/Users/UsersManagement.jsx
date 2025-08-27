@@ -413,7 +413,7 @@ export default function UserTable() {
                                                             : "NA"}
                                                     </TableCell>
                                                     <TableCell>{user.email || "NA"}</TableCell>
-                                                    <TableCell>{user.institute || "NA"}</TableCell>
+                                                    <TableCell>{user.institute === "NIOH" ? " ICMR-NIOH" : user.institute === "ROHC" ? "ICMR-ROHC" : user.institute === "BOTH" ? "BOTH" :"NA"}</TableCell>
                                                     <TableCell>{user.is_retired ? <Chip
                                                         label='Retired'
                                                         color={getStatusColor('Retired')}

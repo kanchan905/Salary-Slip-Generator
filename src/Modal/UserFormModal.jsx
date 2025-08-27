@@ -151,8 +151,8 @@ export default function UserFormModal({
                                             type="select"
                                         >
                                             <option value="">Select Institute</option>
-                                            <option value="NIOH">NIOH</option>
-                                            <option value="ROHC">ROHC</option>
+                                            <option value="NIOH">ICMR-NIOH</option>
+                                            <option value="ROHC">ICMR-ROHC</option>
                                             <option value="BOTH">BOTH</option>
                                         </Field>
                                         <ErrorMessage name="institute" component="div" className="text-danger" />

@@ -148,6 +148,7 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
 
     const onSubmit = async (values, { setSubmitting }) => {
         try {
+            console.log("Submitting values:", values.npa_rate_id); // Debugging line
             await onSave(values);
             toggle();
         } catch (error) {
@@ -213,104 +214,115 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                             <Row>
                                 {/* {data?.da_amount > 0 && (
                                     <> */}
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="da_rate_id">DA Rate</Label>
-                                                <Field as="select" name="da_rate_id" className="form-control">
-                                                    {daList.map((da) => (<option key={da.id} value={da.id}>{da.rate_percentage}%</option>))}
-                                                </Field>
-                                            </FormGroup>
-                                        </Col>
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="da_amount">DA Amount</Label>
-                                                <Field name="da_amount" type="text" className="form-control" />
-                                            </FormGroup>
-                                        </Col>
-                                    {/* </>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="da_rate_id">DA Rate</Label>
+                                        <Field as="select" name="da_rate_id" className="form-control">
+                                            <option value="">Select DA Rate</option>
+                                            {daList.map((da) => (<option key={da.id} value={da.id}>{da.rate_percentage}%</option>))}
+                                        </Field>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="da_amount">DA Amount</Label>
+                                        <Field name="da_amount" type="text" className="form-control" />
+                                    </FormGroup>
+                                </Col>
+                                {/* </>
                                 )} */}
 
                                 {/* {data?.hra_amount > 0 && (
                                     <> */}
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="hra_rate_id">HRA Rate</Label>
-                                                <Field as="select" name="hra_rate_id" className="form-control">
-                                                    {hraList.map((hra) => (<option key={hra.id} value={hra.id}>{hra.rate_percentage}%</option>))}
-                                                </Field>
-                                            </FormGroup>
-                                        </Col>
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="hra_amount">HRA Amount</Label>
-                                                <Field name="hra_amount" type="text" className="form-control" />
-                                            </FormGroup>
-                                        </Col>
-                                    {/* </>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="hra_rate_id">HRA Rate</Label>
+                                        <Field as="select" name="hra_rate_id" className="form-control">
+                                            <option value="">Select HRA Rate</option>
+                                            {hraList.map((hra) => (<option key={hra.id} value={hra.id}>{hra.rate_percentage}%</option>))}
+                                        </Field>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="hra_amount">HRA Amount</Label>
+                                        <Field name="hra_amount" type="text" className="form-control" />
+                                    </FormGroup>
+                                </Col>
+                                {/* </>
                                 )} */}
 
                                 {/* {data?.npa_amount > 0 && (
                                     <> */}
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="npa_rate_id">NPA Rate</Label>
-                                                <Field as="select" name="npa_rate_id" className="form-control">
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="npa_rate_id">NPA Rate</Label>
+                                        {/* <Field as="select" name="npa_rate_id" className="form-control">                            
                                                     {npaList.map((npa) => (<option key={npa.id} value={npa.id}>{npa.rate_percentage}%</option>))}
-                                                </Field>
-                                            </FormGroup>
-                                        </Col>
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="npa_amount">NPA Amount</Label>
-                                                <Field name="npa_amount" type="text" className="form-control" />
-                                            </FormGroup>
-                                        </Col>
-                                    {/* </>
+                                                </Field> */}
+                                        <Field as="select" name="npa_rate_id" className="form-control">
+                                            <option value="">Select NPA Rate</option> 
+                                            {npaList.map((npa) => (
+                                                <option key={npa.id} value={npa.id}>
+                                                    {npa.rate_percentage}%
+                                                </option>
+                                            ))}
+                                        </Field>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="npa_amount">NPA Amount</Label>
+                                        <Field name="npa_amount" type="text" className="form-control" />
+                                    </FormGroup>
+                                </Col>
+                                {/* </>
                                 )} */}
 
                                 {/* {data?.transport_amount > 0 && (
                                     <> */}
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="transport_amount">Transport Amount</Label>
-                                                <Field name="transport_amount" type="text" className="form-control" />
-                                            </FormGroup>
-                                        </Col>
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="da_on_ta">DA on TA</Label>
-                                                <Field name="da_on_ta" type="text" className="form-control" />
-                                            </FormGroup>
-                                        </Col>
-                                    {/* </>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="transport_amount">Transport Amount</Label>
+                                        <Field name="transport_amount" type="text" className="form-control" />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="da_on_ta">DA on TA</Label>
+                                        <Field name="da_on_ta" type="text" className="form-control" />
+                                    </FormGroup>
+                                </Col>
+                                {/* </>
                                 )} */}
 
                                 {/* {data?.uniform_rate_amount > 0 && (
                                     <> */}
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="uniform_rate_id">Uniform Allowance</Label>
-                                                <Field as="select" name="uniform_rate_id" className="form-control">
-                                                    {uniformList.map((uniform) => (
-                                                        <option key={uniform.id} value={uniform.id}>Post {uniform.applicable_post} - ₹{uniform.amount}</option>
-                                                    ))}
-                                                </Field>
-                                            </FormGroup>
-                                        </Col>
-                                        <Col md={3}>
-                                            <FormGroup>
-                                                <Label for="uniform_rate_amount">Uniform Amount</Label>
-                                                <Field name="uniform_rate_amount" type="text" className="form-control" />
-                                            </FormGroup>
-                                        </Col>
-                                    {/* </>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="uniform_rate_id">Uniform Allowance</Label>
+                                        <Field as="select" name="uniform_rate_id" className="form-control">
+                                            <option value="">Select Uniform Rate</option>
+                                            {uniformList.map((uniform) => (
+                                                <option key={uniform.id} value={uniform.id}>Post {uniform.applicable_post} - ₹{uniform.amount}</option>
+                                            ))}
+                                        </Field>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="uniform_rate_amount">Uniform Amount</Label>
+                                        <Field name="uniform_rate_amount" type="text" className="form-control" />
+                                    </FormGroup>
+                                </Col>
+                                {/* </>
                                 )} */}
 
                                 {employee?.pension_scheme === "NPS" && (
                                     <Col md={3}>
                                         <FormGroup>
                                             <Label for="govt_contribution">Govt. Contribution (NPS)</Label>
-                                            <Field name="govt_contribution" type="text" className="form-control"  />
+                                            <Field name="govt_contribution" type="text" className="form-control" />
                                         </FormGroup>
                                     </Col>
                                 )}

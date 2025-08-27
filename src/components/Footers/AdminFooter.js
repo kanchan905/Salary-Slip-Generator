@@ -13,7 +13,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              NIOH/ROHC 
+               ICMR-NIOH/ ICMR-ROHC 
             </a>
           </div>
         </Col>
@@ -26,7 +26,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                NIOH/ROHC 
+                ICMR-NIOH/ ICMR-ROHC
               </NavLink>
             </NavItem>
 

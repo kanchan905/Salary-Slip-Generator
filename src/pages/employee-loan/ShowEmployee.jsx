@@ -86,7 +86,7 @@ const ShowEmployee = () => {
                 <LabelValue label="Gender" value={data?.employee?.gender} />
                 <LabelValue label="Email" value={data?.employee?.email} />
                 <LabelValue label="DOB" value={dateFormat(data?.employee?.date_of_birth)} />
-                <LabelValue label="Institute" value={data?.employee?.institute} />
+                <LabelValue label="Institute" value={data?.employee?.institute === 'NIOH' ? "ICMR-NIOH" : data?.employee?.institute === 'ROHC' ? "ICMR-ROHC" : data?.employee?.institute === 'BOTH' ? "BOTH" : "NA"} />
                 <LabelValue label="Pension Scheme" value={data?.employee?.pension_scheme} />
                 <LabelValue label="PWD Status" value={data?.employee?.pwd_status ? 'Yes' : 'No'} />
                 <LabelValue label="HRA Eligibility" value={data?.employee?.hra_eligibility ? 'Yes' : 'No'} />

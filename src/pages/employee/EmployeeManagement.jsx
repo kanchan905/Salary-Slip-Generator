@@ -67,9 +67,9 @@ export default function EmployeeManagement() {
     const [shouldOpenHistory, setShouldOpenHistory] = React.useState(false);
     const [selectedInstitute, setSelectedInstitute] = React.useState("");
     const instituteList = [
-        { id: "1", name: "NIOH" },
-        { id: "2", name: "ROHC" },
-        { id: "3", name: "BOTH" },
+        { id: "NIOH", name: "ICMR-NIOH" },
+        { id: "ROHC", name: "ICMR-ROHC" },
+        { id: "BOTH", name: "BOTH" },
     ];
 
     const handleInstituteChange = (event) => {
@@ -300,7 +300,7 @@ export default function EmployeeManagement() {
                                         >
                                             <MenuItem value="">ALL</MenuItem>
                                             {instituteList.map((inst) => (
-                                                <MenuItem key={inst.id} value={inst.name}>
+                                                <MenuItem key={inst.id} value={inst.id}>
                                                     {inst.name}
                                                 </MenuItem>
                                             ))}
@@ -367,7 +367,7 @@ export default function EmployeeManagement() {
                                                                 variant="outlined"
                                                             />
                                                         </TableCell>
-                                                        <TableCell>{emp.institute}</TableCell>
+                                                        <TableCell>{emp.institute === 'NIOH' ? "ICMR-NIOH" : emp.institute === 'ROHC' ? "ICMR-ROHC" : emp.institute === 'BOTH' ? "BOTH" : "NA"}</TableCell>
                                                         <TableCell align="right">
                                                             <IconButton onClick={(e) => handleMenuClick(e, idx)}>
                                                                 <MoreVertIcon />

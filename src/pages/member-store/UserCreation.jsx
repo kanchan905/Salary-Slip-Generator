@@ -297,8 +297,8 @@ const UserCreation = forwardRef(({ values, onNext }, ref) => {
                 onChange={handleChange} error={touched.institute && Boolean(errors.institute)}
                 helperText={touched.institute && errors.institute} disabled>
                 <MenuItem value="">Select Institute</MenuItem>
-                <MenuItem value="NIOH">NIOH</MenuItem>
-                <MenuItem value="ROHC">ROHC</MenuItem>
+                <MenuItem value="NIOH">ICMR-NIOH</MenuItem>
+                <MenuItem value="ROHC">ICMR-ROHC</MenuItem>
                 <MenuItem value="BOTH">BOTH</MenuItem>
               </TextField>
             </Grid>

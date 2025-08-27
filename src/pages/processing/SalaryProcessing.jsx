@@ -40,6 +40,8 @@ import { fetchNpsContribution, selectLatestGovtRate, selectLatestEmployeeRate } 
 import { fetchGpfContribution } from '../../redux/slices/gpfContributionSlice';
 import { customRound, getMonthName } from 'utils/helpers';
 import rohcheader from '../../assets/img/images/rohcheader.png'
+import rohcfooter from '../../assets/img/images/rohc-footer.png'
+import niohfooter from '../../assets/img/images/nioh-footer.png'
 
 const steps = [
     'Select Mode',
@@ -1079,15 +1081,7 @@ const SalaryProcessing = () => {
                                             EmployeeDetail?.institute === 'ROHC' ? (
                                                 <img src={rohcheader} alt="ROHC Logo" className="slip-logo w-100" />
                                             ) : null
-                                        }
-
-                                        {/* <div className="org-name">
-                                            <h1>आई.सी.एम.आर.- राष्ट्रीय व्यावसायिक स्वास्थ्य संस्थान</h1>
-                                            <h2>ICMR- National Institute Of Occupational Health</h2>
-                                            <p>अहमदाबाद - 380016 भारत / Ahmedabad - 380016 India</p>
-                                            <p className="who-text">व्यावसायिक स्वास्थ्य के लिए डब्ल्यूएचओ का सहयोग केंद्र</p>
-                                            <p className="who-text">WHO Collaborating Center for Occupational Health</p>
-                                        </div> */}
+                                        }                   
                                     </div>
                                 </div>
                                 <div className="slip-title">
@@ -1127,7 +1121,7 @@ const SalaryProcessing = () => {
 
                                             <tr>
                                                 <td className="info-label">संस्थान / Institute</td>
-                                                <td className="info-value">{EmployeeDetail?.institute || 'N/A'}</td>
+                                                <td className="info-value">{EmployeeDetail?.institute === 'NIOH' ? "ICMR-NIOH" : EmployeeDetail?.institute === 'ROHC' ? "ICMR-ROHC" : EmployeeDetail?.institute === 'BOTH' ? "BOTH" : "NA"}</td>
                                                 <td className="info-label">वृद्धि महीने / Inc. Month</td>
                                                 <td className="info-value">{getMonthName(EmployeeDetail?.increment_month)}</td>
                                             </tr>
@@ -1377,6 +1371,21 @@ const SalaryProcessing = () => {
                                     <p><strong>This is a computer-generated document and does not require a signature</strong></p>
                                     <hr style={{ margin: '10px 0', border: 0, borderTop: '1px solid #000' }} />
                                     <p>Generated on: {new Date().toLocaleDateString('en-IN')} | ICMR-NIOH Payroll System</p>
+                                </div>
+                                <div className="slip-footer">
+                                    <div className="logo-section">
+                                        {
+                                            EmployeeDetail?.institute === 'NIOH' || EmployeeDetail?.institute === 'BOTH' ? (
+                                                <img src={niohfooter} alt="NIOH Logo" className="slip-logo w-100" />
+                                            ) : null
+                                        }
+
+                                        {
+                                            EmployeeDetail?.institute === 'ROHC' ? (
+                                                <img src={rohcfooter} alt="ROHC Logo" className="slip-logo w-100" />
+                                            ) : null
+                                        }                   
+                                    </div>
                                 </div>
                             </div>
                         </div>
