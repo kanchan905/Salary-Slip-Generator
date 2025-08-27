@@ -28,7 +28,7 @@ import MonthlyPensionModal from '../../Modal/MonthlyPension';
 import { updateMonthlyPension } from '../../redux/slices/monthlyPensionSlice';
 import { updatePensionDeduction } from '../../redux/slices/pensionDeductionSlice';
 import PensionDeductionModal from '../../Modal/PensionDeductionModal';
-import niohfooter from '../../assets/img/images/nioh-footer.png'
+import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
 
 function NetPensionCard() {
     const dispatch = useDispatch();

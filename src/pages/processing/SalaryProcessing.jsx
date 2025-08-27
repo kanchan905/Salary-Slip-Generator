@@ -40,8 +40,8 @@ import { fetchNpsContribution, selectLatestGovtRate, selectLatestEmployeeRate } 
 import { fetchGpfContribution } from '../../redux/slices/gpfContributionSlice';
 import { customRound, getMonthName } from 'utils/helpers';
 import rohcheader from '../../assets/img/images/rohcheader.png'
-import rohcfooter from '../../assets/img/images/rohc-footer.png'
-import niohfooter from '../../assets/img/images/nioh-footer.png'
+import rohcfooter from '../../assets/img/images/rohc-footer.jpeg'
+import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
 
 const steps = [
     'Select Mode',
