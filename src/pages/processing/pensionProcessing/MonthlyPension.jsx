@@ -26,8 +26,9 @@ const ARREAR_TYPES = [
 
 
 const MonthlyPension = ({ pensioners, mode }) => {
+  const [dearnessAmount, setDearnessAmount] = useState(0);
   const dispatch = useDispatch();
-  const { formData } = useSelector((state) => state.pension);
+  const { formData, dr_amount_overridden } = useSelector((state) => state.pension);
   const { pensionRelated } = useSelector((state) => state.info);
   const [selectedPensionerId, setSelectedPensionerId] = useState('');
   const { bankdetails } = useSelector((state) => state.bankdetail);
@@ -84,49 +85,35 @@ const MonthlyPension = ({ pensioners, mode }) => {
     }
   };
 
-
-  //   useEffect(() => {
-  //   if (formData.pension_related_info_id) {
-  //       const selectedRecord = (pensionRelated || []).find(info => info.id === formData.pension_related_info_id && info.is_active) || {};
-
-  //       dispatch(updatePensionField({ name: 'basic_pension', value: Number(selectedRecord.basic_pension) || 0 }));
-  //       dispatch(updatePensionField({ name: 'additional_pension', value: Number(selectedRecord.additional_pension) || 0 }));
-  //       dispatch(updatePensionField({ name: 'medical_allowance', value: Number(selectedRecord.medical_allowance) || 0 }));
-  //        dispatch(updatePensionField({ name: 'commutation_amount', value: Number(selectedRecord?.commutation_amount) || 0 }));
-  //   }
-  // }, [formData.pension_related_info_id, dispatch]);
+const drHandleChange = (e) => {
+  const { name, value } = e.target;
+  dispatch(updatePensionField({ name, value }));
+}
 
 
 
-  useEffect(() => {
-    // Get values directly from formData, as they may have been edited
+
+useEffect(() => {
     const basic = Number(formData.basic_pension) || 0;
     const additional = Number(formData.additional_pension) || 0;
     const medical = Number(formData.medical_allowance) || 0;
-
-    // Calculate DR Amount
+    
+    // Recalculate DR Amount when dr_id or related fields change
     const selectedDR = (dearness || []).find(dr => dr.id === formData.dr_id);
     const drPercentage = selectedDR ? Number(selectedDR.dr_percentage) : 0;
-    const drAmt = customRound(((basic + additional) * drPercentage) / 100);
-
-    if (formData.dr_amount !== drAmt) {
-      dispatch(updatePensionField({ name: 'dr_amount', value: drAmt }));
+    const calculatedDrAmt = customRound(((basic + additional) * drPercentage) / 100);
+    
+    if (formData.dr_amount !== calculatedDrAmt) {
+      dispatch(updatePensionField({ name: 'dr_amount', value: Number(dr_amount_overridden ? formData.dr_amount : calculatedDrAmt) }));
     }
 
-    // Calculate arrears and deductions
     const totalArrears = (formData.arrears || []).reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-
-
-    // Calculate the final total pension
-    const netPayable = customRound(
-      basic + additional + medical + drAmt + totalArrears
-    );
+    const netPayable = customRound(basic + additional + medical + (Number(formData.dr_amount) || 0) + totalArrears);
 
     if (formData.total_pension !== netPayable) {
       dispatch(updatePensionField({ name: 'total_pension', value: netPayable }));
     }
-
-  }, [formData, dearness, dispatch]);
+  }, [formData.basic_pension, formData.additional_pension, formData.medical_allowance, formData.dr_id, formData.arrears, dearness, dispatch]);
 
   return (
     <div>
@@ -229,7 +216,7 @@ const MonthlyPension = ({ pensioners, mode }) => {
         </Grid>
 
         <Grid item size={{ xs: 4 }}>
-          <TextField name="dr_amount" label="DR Amount" fullWidth value={formData.dr_amount} onChange={handleChange} />
+          <TextField name="dr_amount" label="DR Amount" fullWidth value={formData.dr_amount} onChange={drHandleChange} />
         </Grid>
 
 

@@ -30,7 +30,8 @@ const CalculationUpdater = () => {
         const drPercentage = selectedDR ? Number(selectedDR.dr_percentage) : 0;
 
         // Calculate the DR amount
-        const drAmt = Math.round(((basic + additional) * drPercentage) / 100);
+        // const drAmt = Math.round(((basic + additional) * drPercentage) / 100);
+           const drAmt = Number(values.dr_amount) || Math.round(((basic + additional) * drPercentage) / 100);
 
         // Update the dr_amount field in the form state
         // Check to avoid unnecessary re-renders if the value hasn't changed

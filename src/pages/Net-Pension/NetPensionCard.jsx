@@ -292,8 +292,8 @@ function NetPensionCard() {
         netPensionData?.section_officer_status &&
         netPensionData?.account_officer_status;
     // Check if the current user has the role to finalize or release.
-    const canManageFinalization =
-        currentRoles.includes("Accounts Officer") || currentRoles.includes("IT Admin");
+    // const canManageFinalization =
+    //     currentRoles.includes("Accounts Officer") || currentRoles.includes("IT Admin");
 
     // Find the configuration for the *current active step*
     const currentStepConfig = pensionVerificationWorkflow.find(s => s.statusField === statusField);
@@ -381,7 +381,7 @@ function NetPensionCard() {
                         <Typography variant="h5" sx={{ flexGrow: 1 }}>Pension Slip Details</Typography>
 
                         {/* --- UPDATED: Edit buttons with revised logic --- */}
-                        {!netPensionData?.is_finalize && (
+                        {!netPensionData?.is_finalize &&  currentRoles.some(role => ['IT Admin', "Accounts Officer", 'Pensioners Operator', 'Drawing and Disbursing Officer (NIOH)', 'Section Officer (Accounts)'].includes(role)) && (
                             <>
                                 <Button
                                     variant="outlined"
@@ -428,7 +428,7 @@ function NetPensionCard() {
                         )}
 
                         {/* Only show the finalize button for the correct role and step */}
-                        {canManageFinalization && (
+                        { currentRoles.some(role => ['IT Admin', "Accounts Officer"].includes(role)) && (
                             <>
                                 <Button
                                     variant="contained"
@@ -488,14 +488,14 @@ function NetPensionCard() {
                                     <tr>
                                         <td className="info-label">मोबाइल नंबर / MoBILE No.</td>
                                         <td className="info-value">{pensioner?.mobile_no}</td>
-                                        <td className="info-label">ईमेल / Email</td>
-                                        <td className="info-value">{pensioner?.email}</td>
+                                         <td className="info-label">टिप्पणियाँ / remarks</td>
+                                        <td className="info-value">{monthly_pension?.remarks}</td>
                                     </tr>
                                     <tr>
                                         <td className="info-label">ईमेल / Gmail</td>
                                         <td className="info-value">{pensioner?.email || 'N/A'}</td>
-                                        <td className="info-label">टिप्पणियाँ / remarks</td>
-                                        <td className="info-value">{monthly_pension?.remarks}</td>
+                                         <td className="info-label"></td>
+                                         <td className="info-value"></td>
                                     </tr>
                                     {/* <tr>
                                         <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Button } from '@mui/material';
 import html2pdf from 'html2pdf.js';
-import { months } from 'utils/helpers';
+import { months, customRound } from 'utils/helpers';
 import { fetchPensionRelated } from '../../../redux/slices/pensionRelatedSlice';
 import { fetchDearnessRelief } from '../../../redux/slices/dearnessRelief';
 import logo from '../../../assets/img/images/slip-header.png';
@@ -21,7 +21,8 @@ const PensionSlip = ({ formData, PensionerDetail, drDetails }) => {
   const additional_pension = Number(formData.additional_pension) || 0;
   const medical_allowance = Number(formData.medical_allowance) || 0;
   const dr_rate = Number(drDetails?.rate) || 0;
-  const dearness_relief = ((basic_pension + additional_pension) * dr_rate) / 100;
+  const dearness_relief = Number(formData?.dr_amount) || 0;
+  // const dearness_relief = ((basic_pension + additional_pension) * dr_rate) / 100;
 
   // Calculate total arrears from the dynamic array
   const total_arrear = (formData.arrears || []).reduce((sum, arrear) => sum + (Number(arrear.amount) || 0), 0);
@@ -44,7 +45,7 @@ const PensionSlip = ({ formData, PensionerDetail, drDetails }) => {
   }
 
   // --- Helper Functions ---
-  const formatCurrency = (val) => (Number(val) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatCurrency = (val) => customRound(Number(val) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const dateFormat = (dateString) => dateString ? new Date(dateString).toLocaleDateString('en-GB') : 'N/A';
 
   const handleDownloadPdf = () => {

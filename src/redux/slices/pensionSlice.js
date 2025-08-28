@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { customRound } from 'utils/helpers';
 
 
 export const validateStep = ({ formData, activeStep }) => {
@@ -46,6 +47,7 @@ export const validateStep = ({ formData, activeStep }) => {
 
 const initialState = {
     activeStep: 0,
+    dr_amount_overridden: '',
     formData: {
         pension_related_info_id: '',
         dr_id: '',
@@ -62,15 +64,15 @@ const initialState = {
         recovery: '',
         other: '',
         description: '',
-        commutation_amount:'',
-        net_pension:'',
-        total_pension:'',
-        amount:'',
-        arrears:[],
-        dr_amount:'',
-        basic_pension:'',
-        additional_pension:'',
-        medical_allowance:'',
+        commutation_amount: '',
+        net_pension: '',
+        total_pension: '',
+        amount: '',
+        arrears: [],
+        dr_amount: '',
+        basic_pension: '',
+        additional_pension: '',
+        medical_allowance: '',
     },
     bulkForm: {
         month: '',
@@ -104,8 +106,13 @@ const pensionSlice = createSlice(({
                 return `${year}-${month}-${day}`;
             };
 
+            // If user edits DR Amount manually → set override flag
+            if (name === "dr_amount") {
+                state.dr_amount_overridden = customRound(Number(value));
+            }
+
             state.formData[name] = ['month', 'year'].includes(name)
-                ? Number(value) || 0
+                ? customRound(Number(value) || 0)
                 : isDateField
                     ? formatDate(value)
                     : value;
@@ -125,7 +132,7 @@ const pensionSlice = createSlice(({
                 };
 
                 state.bulkForm[name] = ['month', 'year'].includes(name)
-                    ? Number(value) || 0
+                    ? customRound(Number(value) || 0)
                     : isDateField
                         ? formatDate(value)
                         : value;
@@ -151,5 +158,5 @@ const pensionSlice = createSlice(({
 }))
 
 
-export const { nextStep, prevStep, updatePensionField, bulkUpdateField, reset,addArrear, updateArrear, removeArrear } = pensionSlice.actions
+export const { nextStep, prevStep, updatePensionField, bulkUpdateField, reset, addArrear, updateArrear, removeArrear } = pensionSlice.actions
 export default pensionSlice.reducer;
