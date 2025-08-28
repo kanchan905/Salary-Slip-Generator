@@ -266,7 +266,7 @@ function NetPensionCard() {
                 toast.error(err || 'Failed to release net pension.');
             });
     };
-    
+
 
 
     // --- START: REVISED LOGIC FOR PENSION EDIT BUTTONS ---
@@ -389,7 +389,7 @@ function NetPensionCard() {
                                     onClick={() => setMonthlyModalOpen(true)}
                                 // disabled={areButtonsDisabled}
                                 >
-                                      Pension
+                                    Pension
                                 </Button>
                                 <Button
                                     variant="outlined"
@@ -397,7 +397,7 @@ function NetPensionCard() {
                                     onClick={() => setDeductionModalOpen(true)}
                                 // disabled={areButtonsDisabled}
                                 >
-                                     Deductions
+                                    Deductions
                                 </Button>
                             </>
                         )}
@@ -453,7 +453,7 @@ function NetPensionCard() {
                         )}
 
                         <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
-                            Download 
+                            Download
                         </Button>
                     </Stack>
                 </Paper>
@@ -464,7 +464,7 @@ function NetPensionCard() {
                     <div className="salary-slip">
                         <div className="slip-header">
                             <div className="logo-section">
-                                <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />                            
+                                <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />
                             </div>
                         </div>
                         <div className="slip-title">
@@ -588,11 +588,43 @@ function NetPensionCard() {
                             <p><strong>यह कंप्यूटर जनरेटेड डॉक्यूमेंट है और इसमें हस्ताक्षर की आवश्यकता नहीं है</strong></p>
                             <p><strong>This is a computer-generated document and does not require a signature</strong></p>
                         </div>
-                        <div className="slip-footer">
-                            <div className="logo-section">
-                                <img src={niohfooter} alt="NIOH Logo" className="slip-logo w-100" />                            
+                        <footer className="border-top pt-3 pb-3 bg-white">
+                            <div className="container">
+                                <div className="row">
+                                    {/* Left Section */}
+                                    <div className="col-md-6">
+                                        <p className="mb-1 fs-14">मेघानिनगर, अहमदाबाद</p>
+                                        <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
+                                        <p className="mb-0 fs-14">
+                                            <span className="text-danger">Meghaninagar</span>, Ahmedabad,
+                                           <p >  Gujarat – 380016, India</p>
+                                        </p>
+                                    </div>
+
+                                    {/* Right Section */}
+                                    <div className="col-md-6 text-md-right">
+                                        <p className="mb-1 fs-14">
+                                            Tel: +91-79-22688700, 22686351
+                                        </p>
+                                        <p className="mb-1 fs-14">
+                                            Fax: +91-79-22686110
+                                        </p>
+                                        <p className="mb-1 fs-14">
+                                            PS to Director: +91-79-22688709, 22686340
+                                        </p>
+                                        <p className="mb-0 fs-14">
+                                            <a href="mailto:director-nioh@gov.in">
+                                                director-nioh@gov.in
+                                            </a>{" "}
+                                            |{" "}
+                                            <a href="https://nioh.org" target="_blank" rel="noreferrer">
+                                                https://nioh.org
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </footer>
                     </div>
                 </div>
             </Box>

@@ -493,7 +493,7 @@ export default function PaySlipPage() {
                                     netSalaryData?.employee?.institute === 'ROHC' ? (
                                         <img src={rohcheader} alt="ROHC Logo" className="slip-logo w-100" />
                                     ) : null
-                                }                            
+                                }
                             </div>
                         </div>
                         <div className="slip-title">
@@ -780,21 +780,89 @@ export default function PaySlipPage() {
                         <div className="slip-footer">
                             <p><strong>This is a computer-generated document and does not require a signature.</strong></p>
                         </div>
-                        <div className="slip-footer">
-                            <div className="logo-section">
+                    
                                 {
                                     netSalaryData?.employee?.institute === 'NIOH' || netSalaryData?.employee?.institute === 'BOTH' ? (
-                                        <img src={niohfooter} alt="NIOH Logo" className="slip-logo w-100" />
+                                        <footer className="border-top pt-3 pb-3 bg-white">
+                                            <div className="container">
+                                                <div className="row">
+                                                    {/* Left Section */}
+                                                    <div className="col-md-6">
+                                                        <p className="mb-1 fs-14">मेघानिनगर, अहमदाबाद</p>
+                                                        <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
+                                                        <p className="mb-0 fs-14">
+                                                            <span className="text-danger">Meghaninagar</span>, Ahmedabad,
+                                                            <p >  Gujarat – 380016, India</p>
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Right Section */}
+                                                    <div className="col-md-6 text-md-right">
+                                                        <p className="mb-1 fs-14">
+                                                            Tel: +91-79-22688700, 22686351
+                                                        </p>
+                                                        <p className="mb-1 fs-14">
+                                                            Fax: +91-79-22686110
+                                                        </p>
+                                                        <p className="mb-1 fs-14">
+                                                            PS to Director: +91-79-22688709, 22686340
+                                                        </p>
+                                                        <p className="mb-0 fs-14">
+                                                            <a href="mailto:director-nioh@gov.in">
+                                                                director-nioh@gov.in
+                                                            </a>{" "}
+                                                            |{" "}
+                                                            <a href="https://nioh.org" target="_blank" rel="noreferrer">
+                                                                https://nioh.org
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </footer>
                                     ) : null
                                 }
 
                                 {
                                     netSalaryData?.employee?.institute === 'ROHC' ? (
-                                        <img src={rohcfooter} alt="ROHC Logo" className="slip-logo w-100" />
+                                        <footer className="border-top pt-3 pb-3 bg-white">
+                                            <div className="container">
+                                                <div className="row">
+                                                    {/* Left Section */}
+                                                    <div className="col-md-6">
+                                                        <p className="mb-1 fs-14">
+                                                            आई. सी. एम. आर. - क्षेत्रीय व्यावसायिक स्वास्थ्य केन्द्र (दक्षिण) (एन. आई. ओ. एच.)
+                                                        </p>
+                                                        <p className="mb-1 fs-14">
+                                                            पूजनहल्ली मार्ग, कन्नमंगला पोस्ट, देवनहल्ली तालुक, बैंगलुरु-562110
+                                                        </p>
+                                                        <p className="mb-1 fw-bold fs-14">
+                                                            ICMR - Regional Occupational Health Centre (Southern), (NIOH)
+                                                        </p>
+                                                        <p className="mb-0 fs-14">
+                                                            Poojanahalli Road, Kannamangala Post, Devanahalli Taluk, Bangalore-562110 <br />
+                                                            Karnataka, INDIA
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Right Section */}
+                                                    <div className="col-md-6 text-md-right mt-3 mt-md-0">
+                                                        <p className="mb-1 fs-14">Mob : 9483507101</p>
+                                                        <p className="mb-1 fs-14">Phone : 080-22172500/501</p>
+                                                        <p className="mb-1 fs-14">FAX : 080-22172502</p>
+                                                        <p className="mb-0 fs-14">
+                                                            Email :{" "}
+                                                            <a href="mailto:rohc-s-admin@icmr.gov.in" className="text-decoration-none">
+                                                                rohcs-admin@icmr.gov.in
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </footer>
                                     ) : null
-                                }       
-                            </div>
-                        </div>
+                                }
+                           
                     </div>
                 </div>
             </Box>

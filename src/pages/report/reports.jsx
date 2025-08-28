@@ -332,16 +332,16 @@ const ReportsDashboard = () => {
                     <Typography variant="h4" fontWeight="bold">📊 Reports</Typography>
                 </Box>
 
-                { !isEndUser && (
+                { !currentRoles.some(role => ['End Users','Pensioners Operator'].includes(role)) && (
                     renderCard({ type: 'all', title: 'All Reports', color: '#3498db', icon: <SummarizeIcon /> })
                 )}
-                {/* {renderCard({ type: 'all', title: 'All Reports', color: '#3498db', icon: <SummarizeIcon /> })} */}
-                {renderCard({ type: 'employee', title: 'Employee Report', color: '#16a085', icon: <SummarizeIcon />, extraFieldKey: 'employeeId' })}
+                {!currentRoles.some(role => ['Pensioners Operator'].includes(role)) && (
+                    renderCard({ type: 'employee', title: 'Employee Report', color: '#16a085', icon: <SummarizeIcon />, extraFieldKey: 'employeeId' })
+                )}
 
-                { !isEndUser && (
+                { !currentRoles.some(role => ['End Users'].includes(role)) && (
                     renderCard({ type: 'pensioner', title: 'Pensioner Report', color: '#e67e22', icon: <SummarizeIcon />, extraFieldKey: 'pensionerId' })
                 )}
-                {/* {renderCard({ type: 'pensioner', title: 'Pensioner Report', color: '#e67e22', icon: <SummarizeIcon />, extraFieldKey: 'pensionerId' })} */}
             </Container>
         </>
     );

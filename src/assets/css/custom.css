@@ -6,6 +6,9 @@
   scroll-behavior: auto !important;
 }
 
+.fs-14 {
+  font-size: 14px !important;
+}
 
 .navbar-nav {
   margin-top: 0px !important;

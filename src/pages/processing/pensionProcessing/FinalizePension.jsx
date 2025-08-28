@@ -207,6 +207,43 @@ const PensionSlip = ({ formData, PensionerDetail, drDetails }) => {
             <hr style={{ margin: '10px 0', border: 0, borderTop: '1px solid #000' }} />
             <p>Generated on: {new Date().toLocaleDateString('en-IN')} | ICMR-NIOH Payroll System</p>
           </div>
+          <footer className="border-top pt-3 pb-3 bg-white">
+            <div className="container">
+              <div className="row">
+                {/* Left Section */}
+                <div className="col-md-6">
+                  <p className="mb-1 fs-14">मेघानिनगर, अहमदाबाद</p>
+                  <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
+                  <p className="mb-0 fs-14">
+                    <span className="text-danger">Meghaninagar</span>, Ahmedabad,
+                    <p >  Gujarat – 380016, India</p>
+                  </p>
+                </div>
+
+                {/* Right Section */}
+                <div className="col-md-6 text-md-right">
+                  <p className="mb-1 fs-14">
+                    Tel: +91-79-22688700, 22686351
+                  </p>
+                  <p className="mb-1 fs-14">
+                    Fax: +91-79-22686110
+                  </p>
+                  <p className="mb-1 fs-14">
+                    PS to Director: +91-79-22688709, 22686340
+                  </p>
+                  <p className="mb-0 fs-14">
+                    <a href="mailto:director-nioh@gov.in">
+                      director-nioh@gov.in
+                    </a>{" "}
+                    |{" "}
+                    <a href="https://nioh.org" target="_blank" rel="noreferrer">
+                      https://nioh.org
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </footer>
         </div>
       </div>
       <Box sx={{ textAlign: 'center', m: 4 }}>

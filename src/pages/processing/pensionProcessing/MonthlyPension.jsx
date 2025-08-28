@@ -52,7 +52,7 @@ const MonthlyPension = ({ pensioners, mode }) => {
   useEffect(() => {
     if (selectedPensionerId) {
       dispatch(fetchPensionRelated({ page: 1, limit: 1000 }))
-      dispatch(fetchBankDetails({ page: '', limit: '', id: selectedPensionerId }));
+      dispatch(fetchBankDetails({ page: '1', limit: '1000', id: selectedPensionerId }));
       dispatch(fetchDearnessRelief());
     }
   }, [dispatch, selectedPensionerId]);
