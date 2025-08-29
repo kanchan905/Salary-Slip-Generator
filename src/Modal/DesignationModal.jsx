@@ -94,9 +94,14 @@ function DesignationModal({ isOpen, toggle, modalType, selectedDesignation, setS
                 invalid={!!errors.cadre}
               >
                 <option value="">Select Cadre</option>
-                <option value="Scientific">Scientific</option>
+                {/* <option value="Scientific">Scientific</option>
                 <option value="Technical">Technical</option>
-                <option value="Administrative">Administrative</option>
+                <option value="Administrative">Administrative</option> */}
+                {designationList.map((group, i) => (
+                  <option key={i} value={group.name}>
+                    {group.name.split(" ")[0]}
+                  </option>
+                ))}
               </Input>
               {errors.cadre && <div className="text-danger">{errors.cadre}</div>}
             </FormGroup>

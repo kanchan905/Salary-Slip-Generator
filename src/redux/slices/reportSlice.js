@@ -19,9 +19,13 @@ export const fetchDashboardSummary = createAsyncThunk(
 
 export const fetchDashboardReports = createAsyncThunk(
   'report/fetchDashboardReports',
-  async ({ month, year }, { rejectWithValue }) => {
+  async ({ month, year, institute }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/dashboard-reports?month=${month}&year=${year}`);
+      const params = new URLSearchParams();
+      params.append('month', month);
+      params.append('year', year);
+      if (institute) params.append('institute', institute);
+      const response = await axiosInstance.get(`/dashboard-reports?${params.toString()}`);
       // Validate that the response data is not an error object
       if (response.data && typeof response.data === 'object' && response.data.message) {
         return rejectWithValue(response.data.message);

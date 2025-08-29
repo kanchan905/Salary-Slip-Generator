@@ -33,6 +33,7 @@ import dashboardReportReducer from './slices/reportSlice';
 import npsContributionReducer from './slices/npsContributionSlice';
 import gpfContributionReducer from './slices/gpfContributionSlice';
 import viewSalaryReducer from './slices/viewSalarySlice';
+import designationReducer from './slices/designationSlice';
 
 
 // 1. Combine all your reducers into a single appReducer
@@ -70,6 +71,7 @@ const appReducer = combineReducers({
     npsContribution: npsContributionReducer,
     gpfContribution: gpfContributionReducer,
     viewSalary: viewSalaryReducer,
+    designation: designationReducer,
 })
 
 const rootReducer = (state, action) => {

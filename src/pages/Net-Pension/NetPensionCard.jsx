@@ -381,7 +381,7 @@ function NetPensionCard() {
                         <Typography variant="h5" sx={{ flexGrow: 1 }}>Pension Slip Details</Typography>
 
                         {/* --- UPDATED: Edit buttons with revised logic --- */}
-                        {!netPensionData?.is_finalize &&  currentRoles.some(role => ['IT Admin', "Accounts Officer", 'Pensioners Operator', 'Drawing and Disbursing Officer (NIOH)', 'Section Officer (Accounts)'].includes(role)) && (
+                        {!netPensionData?.is_finalize && currentRoles.some(role => ['IT Admin', "Accounts Officer", 'Pensioners Operator', 'Drawing and Disbursing Officer (NIOH)', 'Section Officer (Accounts)'].includes(role)) && (
                             <>
                                 <Button
                                     variant="outlined"
@@ -403,7 +403,7 @@ function NetPensionCard() {
                         )}
 
                         {
-                            currentRoles.includes("IT Admin") && (
+                            currentRoles.includes("IT Admin") && !allStepsVerified && (
                                 <Button
                                     variant="contained"
                                     color="success"
@@ -416,7 +416,7 @@ function NetPensionCard() {
                             )}
 
                         {/* In the action bar, only show the verify button for the correct role and step */}
-                        {canVerify(netPensionData) && statusField && (
+                        {canVerify(netPensionData) && statusField && !allStepsVerified && (
                             <Button
                                 variant="contained"
                                 color="success"
@@ -428,27 +428,36 @@ function NetPensionCard() {
                         )}
 
                         {/* Only show the finalize button for the correct role and step */}
-                        { currentRoles.some(role => ['IT Admin', "Accounts Officer"].includes(role)) && (
+                        {currentRoles.some(role => ['IT Admin', "Accounts Officer"].includes(role)) && (
                             <>
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    startIcon={netPensionData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
-                                    onClick={() => handleStepFinalization(netPensionData)}
-                                    disabled={!allStepsVerified}
-                                >
-                                    {netPensionData?.is_finalize ? "Finalized" : "Finalize"}
-                                </Button>
+                                {
+                                    !netPensionData?.is_finalize && (
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={netPensionData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
+                                            onClick={() => handleStepFinalization(netPensionData)}
+                                            disabled={!allStepsVerified}
+                                        >
+                                            {netPensionData?.is_finalize ? "Finalized" : "Finalize"}
+                                        </Button>
 
-                                <Button
-                                    variant="contained"
-                                    color="info"
-                                    startIcon={netPensionData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
-                                    onClick={() => handleStepRelease(netPensionData)}
-                                    disabled={!netPensionData?.is_finalize}
-                                >
-                                    {netPensionData?.is_verified ? "Released" : "Release"}
-                                </Button>
+                                    )
+                                }
+
+                                {
+                                    !netPensionData?.is_verified && (
+                                        <Button
+                                            variant="contained"
+                                            color="info"
+                                            startIcon={netPensionData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
+                                            onClick={() => handleStepRelease(netPensionData)}
+                                            disabled={!netPensionData?.is_finalize}
+                                        >
+                                            {netPensionData?.is_verified ? "Released" : "Release"}
+                                        </Button>
+                                    )
+                                }
                             </>
                         )}
 
@@ -488,14 +497,14 @@ function NetPensionCard() {
                                     <tr>
                                         <td className="info-label">मोबाइल नंबर / MoBILE No.</td>
                                         <td className="info-value">{pensioner?.mobile_no}</td>
-                                         <td className="info-label">टिप्पणियाँ / remarks</td>
+                                        <td className="info-label">टिप्पणियाँ / remarks</td>
                                         <td className="info-value">{monthly_pension?.remarks}</td>
                                     </tr>
                                     <tr>
                                         <td className="info-label">ईमेल / Gmail</td>
                                         <td className="info-value">{pensioner?.email || 'N/A'}</td>
-                                         <td className="info-label"></td>
-                                         <td className="info-value"></td>
+                                        <td className="info-label"></td>
+                                        <td className="info-value"></td>
                                     </tr>
                                     {/* <tr>
                                         <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
@@ -593,11 +602,11 @@ function NetPensionCard() {
                                 <div className="row">
                                     {/* Left Section */}
                                     <div className="col-md-6">
-                                        <p className="mb-1 fs-14">मेघानिनगर, अहमदाबाद</p>
+                                        <p className="mb-1 fs-14">मेघानी नगर, अहमदाबाद</p>
                                         <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
                                         <p className="mb-0 fs-14">
-                                            <span className="text-danger">Meghaninagar</span>, Ahmedabad,
-                                           <p >  Gujarat – 380016, India</p>
+                                            <span>Meghaninagar</span>, Ahmedabad,
+                                            <p >  Gujarat – 380016, India</p>
                                         </p>
                                     </div>
 
@@ -606,7 +615,7 @@ function NetPensionCard() {
                                         <p className="mb-1 fs-14">
                                             Tel: +91-79-22688700, 22686351
                                         </p>
-                                        <p className="mb-1 fs-14">
+                                        {/* <p className="mb-1 fs-14">
                                             Fax: +91-79-22686110
                                         </p>
                                         <p className="mb-1 fs-14">
@@ -620,7 +629,7 @@ function NetPensionCard() {
                                             <a href="https://nioh.org" target="_blank" rel="noreferrer">
                                                 https://nioh.org
                                             </a>
-                                        </p>
+                                        </p> */}
                                     </div>
                                 </div>
                             </div>

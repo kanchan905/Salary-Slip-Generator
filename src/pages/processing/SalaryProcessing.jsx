@@ -1380,10 +1380,10 @@ const SalaryProcessing = () => {
                                                 <div className="row">
                                                     {/* Left Section */}
                                                     <div className="col-md-6">
-                                                        <p className="mb-1 fs-14">मेघानिनगर, अहमदाबाद</p>
+                                                        <p className="mb-1 fs-14">मेघानी नगर, अहमदाबाद</p>
                                                         <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
                                                         <p className="mb-0 fs-14">
-                                                            <span className="text-danger">Meghaninagar</span>, Ahmedabad,
+                                                            <span>Meghaninagar</span>, Ahmedabad,
                                                             <p >  Gujarat – 380016, India</p>
                                                         </p>
                                                     </div>
@@ -1393,13 +1393,13 @@ const SalaryProcessing = () => {
                                                         <p className="mb-1 fs-14">
                                                             Tel: +91-79-22688700, 22686351
                                                         </p>
-                                                        <p className="mb-1 fs-14">
+                                                        {/* <p className="mb-1 fs-14">
                                                             Fax: +91-79-22686110
-                                                        </p>
-                                                        <p className="mb-1 fs-14">
+                                                        </p> */}
+                                                        {/* <p className="mb-1 fs-14">
                                                             PS to Director: +91-79-22688709, 22686340
-                                                        </p>
-                                                        <p className="mb-0 fs-14">
+                                                        </p> */}
+                                                        {/* <p className="mb-0 fs-14">
                                                             <a href="mailto:director-nioh@gov.in">
                                                                 director-nioh@gov.in
                                                             </a>{" "}
@@ -1407,7 +1407,7 @@ const SalaryProcessing = () => {
                                                             <a href="https://nioh.org" target="_blank" rel="noreferrer">
                                                                 https://nioh.org
                                                             </a>
-                                                        </p>
+                                                        </p> */}
                                                     </div>
                                                 </div>
                                             </div>

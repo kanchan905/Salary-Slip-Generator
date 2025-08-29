@@ -674,7 +674,7 @@ body {
   border-bottom: 1px solid #000;
   font-size: 14px;
   font-weight: bold;
-  text-decoration: underline;
+  /* text-decoration: underline; */
 }
 
 .employee-info {
@@ -754,7 +754,7 @@ body {
   margin-bottom: 10px;
   text-align: center;
   font-size: 13px;
-  text-decoration: underline;
+  /* text-decoration: underline; */
 }
 
 .deduction-table {
@@ -1008,4 +1008,140 @@ body {
 .captcha-refresh-btn:active {
   transform: rotate(360deg);
   transition: transform 0.5s;
+}
+
+/* dashboard css */
+/* Custom Header Background */
+.custom-header-bg {
+  background: linear-gradient(#fff, #fff);
+}
+
+#navbar-main{
+  background: linear-gradient(87deg, #004080, #002a5a 100%) !important;;
+}
+
+/* Dashboard Title */
+.dashboard-title {
+  font-size: 2.2rem; /* Larger font size */
+  font-weight: 700; /* Bolder */
+  margin-bottom: 2.5rem !important; /* More space below title */
+}
+
+/* Custom Card Styles */
+.custom-card {
+  border-radius: 1rem; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+  border: none; /* Remove default border */
+}
+
+.custom-card:hover {
+  transform: translateY(-5px); /* Lift card on hover */
+}
+
+.custom-card .card-body {
+  padding: 1.5rem; /* Consistent padding */
+}
+
+.custom-card .card-title {
+  font-size: 0.9rem; /* Smaller, uppercase title */
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  /* color: #a0a0a0 !important;  */
+}
+
+/* Specific background colors for top cards */
+.card-custom-bg-blue {
+  background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); /* Light blue */
+  color: white; /* Ensure text is white */
+}
+
+.card-custom-bg-green {
+  background: linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%); /* Light green */
+  color: white;
+}
+
+.card-custom-bg-orange {
+  background: linear-gradient(45deg, #fbc2eb 0%, #a6c1ee 100%); /* Soft orange/pink */
+  color: white;
+}
+
+.card-custom-bg-purple {
+  background: linear-gradient(45deg, #a18cd1 0%, #fbc2eb 100%); /* Soft purple */
+  color: white;
+}
+
+/* You can define more for ROHC if needed, or use a default if it's not one of these specific colors */
+.card-custom-bg-primary {
+  background: linear-gradient(45deg, #a8c0ff 0%, #3f2b96 100%); /* Example primary gradient */
+  color: white;
+}
+
+
+/* Custom Icon Shape */
+.custom-icon-shape {
+  width: 3rem; /* Larger icon circle */
+  height: 3rem;
+  font-size: 1.2rem; /* Icon size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white for icons */
+  color: white; /* Icon color */
+}
+
+/* Values in cards (e.g., total users, employees) */
+.custom-card h2 {
+    font-size: 1.8rem; /* Larger font for values */
+}
+
+
+/* Filter Select Inputs */
+.custom-select-input {
+  border-radius: 0.5rem; /* Rounded corners */
+  border: 1px solid #000; /* Lighter border */
+  background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+  color: #000; /* Black text */
+  padding: 0.6rem 1rem;
+  height: auto; /* Allow height to adjust */
+}
+
+.custom-select-input:focus {
+  background-color: rgba(59, 75, 224, 0.2); /* Slightly darker on focus */
+  border-color: #000;
+  box-shadow: none; /* Remove default focus shadow if any */
+  color: #000;
+}
+
+/* Options within the select should also be styled for dark background compatibility */
+.custom-select-input option {
+  background-color: #295196; /* Dark background for options */
+  color: #fff;
+}
+
+/* Styling for the numeric values in the bottom cards */
+.text-info.font-weight-bold.mb-0 {
+  color: #00bcd4 !important; /* Cyan-like color */
+}
+.text-success.font-weight-bold.mb-0 {
+  color: #4caf50 !important; /* Green */
+}
+.text-warning.font-weight-bold.mb-0 {
+  color: #ffc107 !important; /* Amber */
+}
+
+/* Ensure the spinner is visible on dark backgrounds */
+.spinner-border {
+  color: #fff !important;
+}
+
+/* Adjust text color for titles in the white cards */
+.custom-card .text-muted {
+  color: #6c757d !important; /* Darker gray for titles on light cards */
+}
+
+/* Adjust the icon shape size and position slightly for better alignment if needed */
+.custom-icon-shape i {
+    position: relative;
+    top: 1px; /* Small adjustment */
 }

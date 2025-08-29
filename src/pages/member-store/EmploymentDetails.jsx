@@ -19,6 +19,7 @@ const EmploymentDetails = forwardRef(({ values, onNext }, ref) => {
     const dispatch = useDispatch();
     const { designationList } = useSelector((state) => state.memeberStore);
 
+
     useEffect(() => {
         dispatch(fetchDesignationList());
     }, [dispatch]);
@@ -90,9 +91,14 @@ const EmploymentDetails = forwardRef(({ values, onNext }, ref) => {
                                     helperText={touched.cadre && errors.cadre}
                                 >
                                     <MenuItem value="">Select Cadre</MenuItem>
-                                    {Cadree.map((cad) => (
+                                    {/* {Cadree.map((cad) => (
                                         <MenuItem key={cad} value={cad}>{cad}</MenuItem>
-                                    ))}
+                                    ))} */}
+                                    {designationList.map((group) => [
+                                        <MenuItem key={group.id} value={group.name}>
+                                            {group.name.split(' ')[0]}
+                                        </MenuItem>
+                                    ])}
                                 </TextField>
                             </Grid>
                             <Grid item size={{ xs: 6, md: 4 }}>

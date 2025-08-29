@@ -28,6 +28,7 @@ import PayComission from "pages/pay-commission/PayComission";
 import PensionStepper from "pages/processing/pensionProcessing/pensionstepper";
 import ViewSalary from "pages/view-salary/ViewSalary";
 import ChangePassword from "pages/Users/ChangePassword";
+import Designation from "pages/Designation/Designation";
 
 const getAdminRoutes = () => (
   {
@@ -158,6 +159,13 @@ const getAdminRoutes = () => (
         component: Quarter,
         roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"]
       },
+      {
+        path: "/designation",
+        name: "Designation",
+        icon: "fa-solid fa-user-tag text-orange",
+        component: Designation,
+        roles: ["IT Admin", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"]
+      }
     ],
 
     processing: [
