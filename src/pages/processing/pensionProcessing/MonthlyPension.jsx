@@ -92,7 +92,6 @@ const drHandleChange = (e) => {
 
 
 
-
 useEffect(() => {
     const basic = Number(formData.basic_pension) || 0;
     const additional = Number(formData.additional_pension) || 0;
@@ -108,12 +107,12 @@ useEffect(() => {
     }
 
     const totalArrears = (formData.arrears || []).reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-    const netPayable = customRound(basic + additional + medical + (Number(formData.dr_amount) || 0) + totalArrears);
+    const netPayable = customRound(basic + additional + medical + formData.dr_amount + totalArrears);
 
     if (formData.total_pension !== netPayable) {
       dispatch(updatePensionField({ name: 'total_pension', value: netPayable }));
     }
-  }, [formData.basic_pension, formData.additional_pension, formData.medical_allowance, formData.dr_id, formData.arrears, dearness, dispatch]);
+  }, [formData.basic_pension, formData.additional_pension, formData.medical_allowance, formData.dr_id, formData.arrears, dearness, dispatch, formData.dr_amount]);
 
   return (
     <div>

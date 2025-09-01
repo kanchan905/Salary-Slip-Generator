@@ -49,7 +49,7 @@ const Login = () => {
 
   const onSubmit = async (values, { setSubmitting, setFieldValue, setFieldError }) => {
     // CAPTCHA validation (case-insensitive)
-    if (values.captcha.toLowerCase() !== captcha.toLowerCase()) {
+    if (values.captcha !== captcha) {
       // This is the key change:
       setFieldError('captcha', 'CAPTCHA does not match. Please try again.');
       
