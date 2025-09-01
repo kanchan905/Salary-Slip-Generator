@@ -59,24 +59,10 @@ const validationSchema = Yup.object({
   relation: Yup.string()
     .oneOf(["Self", "Spouse", "Son", "Daughter", "Other"], "Select a valid relation")
     .required("Relation is required"),
-  dob: Yup.date().required("Date of Birth is required"),
-  doj: Yup.date().required("Date of Joining is required"),
-  dor: Yup.date().required("Date of Retirement is required"),
   start_date: Yup.date().required("Start Date is Required"), 
   status: Yup.string()
     .oneOf(["Active", "Inactive"], 'select a valid status')
     .required("Status is required"),
-  pan_number: Yup.string()
-    .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN format")
-    .required("PAN Number is required"),
-  address: Yup.string().required("Address is required"),
-  city: Yup.string().required("City is required"),
-  state: Yup.string().required("State is required"),
-  pin_code: Yup.string()
-    .required("Pin Code is required"),
-  mobile_no: Yup.string()
-    .required("Mobile Number is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
 });
 
 export default function PensionerForm() {

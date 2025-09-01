@@ -832,7 +832,7 @@ export default function NetSalary() {
                             </div>
                             {
                                 <div className="d-flex flex-column" style={{ gap: '10px' }}>
-                                    {/* {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", 'IT Admin'].includes(role)) && (
+                                    {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
                                         <Grid>
                                             <MuiButton
                                                 variant="contained"
@@ -843,7 +843,7 @@ export default function NetSalary() {
                                                 Verify
                                             </MuiButton>
                                         </Grid>
-                                    )} */}
+                                    )}
 
                                     {canUserManageFinalization && (
                                         <>

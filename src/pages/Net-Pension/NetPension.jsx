@@ -36,6 +36,7 @@ import HistoryModal from 'Modal/HistoryModal';
 import { months } from 'utils/helpers';
 import { dateFormat } from 'utils/helpers';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { fetchPensioners } from '../../redux/slices/pensionerSlice';
 
 
 export default function NetPension() {
@@ -70,9 +71,12 @@ export default function NetPension() {
     const [filters, setFilters] = useState({
         month: '',
         year: '',
+        ppo_no: '',
+        user_id: '',
     });
     const [selectedIds, setSelectedIds] = useState([]);
     const canUserManageFinalization = currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role));
+    const { pensioners } = useSelector((state) => state.pensioner);
 
 
     const toggleHistoryModal = () => {
@@ -238,9 +242,13 @@ export default function NetPension() {
         const params = new URLSearchParams(location.search);
         const monthFromUrl = params.get('month');
         const yearFromUrl = params.get('year');
+        const ppoNoFromUrl = params.get('ppo_no');
+        const userIdFromUrl = params.get('user_id');
         const initialFilters = {
             month: monthFromUrl || filters.month,
             year: yearFromUrl || filters.year,
+            ppo_no: ppoNoFromUrl || filters.ppo_no,
+            user_id: userIdFromUrl || filters.user_id,
         };
 
 
@@ -253,6 +261,7 @@ export default function NetPension() {
             limit: rowsPerPage,
             ...initialFilters
         }));
+        dispatch(fetchPensioners({ page: '1', limit: 1000, id: '' , search: '' }));
     }, [dispatch, page, rowsPerPage, location.search]);
 
 
@@ -391,7 +400,7 @@ export default function NetPension() {
     };
 
     const handleClearFilters = () => {
-        setFilters({ month: '', year: '' });
+        setFilters({ month: '', year: '', ppo_no: '', user_id: '' });
         setPage(0);
         navigate('/net-pension');
     };
@@ -566,6 +575,35 @@ export default function NetPension() {
                                             onChange={(e) => setFilters({ ...filters, year: e.target.value })}
                                         />
                                     </Grid>
+                                    <Grid item size={{ xs: 6, md: 3 }} >
+                                        <TextField
+                                            label="PPO No"
+                                            name="ppo_no"
+                                            type="text"
+                                            size="small"
+                                            fullWidth
+                                            value={filters.ppo_no}
+                                            onChange={(e) => setFilters({ ...filters, ppo_no: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item size={{ xs: 6, md: 3 }} >
+                                        <FormControl fullWidth size="small">
+                                            <InputLabel>Pensioner</InputLabel>
+                                            <Select
+                                                name="user_id"
+                                                value={filters.user_id}
+                                                label="Pensioner"
+                                                onChange={(e) => setFilters({ ...filters, user_id: e.target.value })}
+                                            >
+                                                <MenuItem value="All"><em>All</em></MenuItem>
+                                                {pensioners.map((pensioner) => (
+                                                    <MenuItem key={pensioner.id} value={pensioner.user_id}>
+                                                        {pensioner.ppo_no} - {pensioner.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
                                     <Grid item >
                                         <Button style={{ background: "#004080", color: '#fff' }} onClick={handleSearch}>
                                             Search
@@ -579,8 +617,8 @@ export default function NetPension() {
                                 </Grid>
                             </div>
                             {
-                                <div className="d-flex" style={{ gap: '10px' }}>
-                                    {/* {currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
+                                <div className="d-flex flex-column" style={{ gap: '10px' }}>
+                                    {currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
                                         <Button
                                             variant="contained"
                                             style={{ background: "#004080", color: '#fff' }}
@@ -590,7 +628,7 @@ export default function NetPension() {
                                         >
                                             Verify
                                         </Button>
-                                    )} */}
+                                    )}
 
                                     {canUserManageFinalization && (
                                         <>
@@ -639,7 +677,7 @@ export default function NetPension() {
                                                         </TableCell>
                                                     )}
                                                 <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Emp. Code</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>PPO NO.</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Pensioner</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
@@ -670,7 +708,7 @@ export default function NetPension() {
                                                                     </TableCell>
                                                                 )}
                                                             <TableCell>{(page * rowsPerPage) + idx + 1}</TableCell>
-                                                            <TableCell>{row.pensioner?.employee?.employee_code || "- -"}</TableCell>
+                                                            <TableCell>{row.pensioner?.ppo_no || "- -"}</TableCell>
                                                             <TableCell>{row.pensioner?.name || "NA"}</TableCell>
                                                             <TableCell>
                                                                 {months.find((m) => m.value === row.month)?.label || 'NA'}

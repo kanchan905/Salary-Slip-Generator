@@ -4,9 +4,9 @@ import axiosInstance from "global/AxiosSetting";
 
 export const fetchNetPension = createAsyncThunk(
     "Pension/fetchNetPension",
-    async ({ page, limit, month, year }, { rejectWithValue }) => {
+    async ({ page, limit, month, year, ppo_no, user_id }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/net-pension?page=${page}&limit=${limit}&month=${month}&year=${year}`);
+            const response = await axiosInstance.get(`/net-pension?page=${page}&limit=${limit}&month=${month}&year=${year}&ppo_no=${ppo_no}&user_id=${user_id}`);
             return {
                 data: response.data.data,
                 totalCount: response.data.total_count

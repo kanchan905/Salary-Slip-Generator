@@ -3,6 +3,7 @@ import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, IconButton,
   TablePagination, Box,
+  TextField,
 } from '@mui/material';
 import {
   Button,
@@ -22,11 +23,13 @@ import ViewIcon from '@mui/icons-material/Visibility';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import { dateFormat } from "utils/helpers";
+import useDebounce from "hooks/useDebounce";
 
 
 
 
 export default function Pensioner() {
+  const [inputValue, setInputValue] = React.useState('');
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -159,7 +162,7 @@ export default function Pensioner() {
 
 
   useEffect(() => {
-    dispatch(fetchPensioners({ page: page + 1, limit: rowsPerPage, id: searchQuery }))
+    dispatch(fetchPensioners({ page: page + 1, limit: rowsPerPage, id: '', search: searchQuery }));
   }, [dispatch, page, rowsPerPage, searchQuery,])
 
   const handleChangePage = (event, newPage) => {
@@ -192,13 +195,29 @@ export default function Pensioner() {
     navigate(`/pensioner/view/${id}`);
   };
 
+  const debouncedSearch = useDebounce((value) => {
+    setSearchQuery(value);
+    setPage(0);
+  }, 1000);
+
   return (
     <>
       <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
       <div className="mt--7 mb-7 container-fluid">
         <Card className="shadow border-0">
           <CardHeader>
-            <div className="d-flex justify-content-end align-items-center">
+          
+            <div className="d-flex justify-content-between align-items-center">
+              <TextField
+                label="Search by name & ppo"
+                value={inputValue}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  debouncedSearch(value);
+                  setInputValue(value);
+                }}
+                className="filter-item"
+              />
               {
                 currentRoles.some(role => ['IT Admin', "Pensioners Operator"].includes(role)) && (
                   <Button
@@ -250,7 +269,7 @@ export default function Pensioner() {
                             <TableCell>{dateFormat(p.dor) || "NA"}</TableCell>
                             <TableCell>{dateFormat(p.end_date) || "NA"}</TableCell>
                             <TableCell>
-                              { currentRoles.some(role => ['IT Admin', "Pensioners Operator"].includes(role)) ? (
+                              {currentRoles.some(role => ['IT Admin', "Pensioners Operator"].includes(role)) ? (
                                 <Select
                                   value={p.status || ""}
                                   onChange={(e) => handleStatusChange(p.id, e.target.value)}
