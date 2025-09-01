@@ -229,7 +229,7 @@ useEffect(() => {
             value={formData.month}
             fullWidth
             onChange={handleChange}
-            disabled
+            
           >
             {months.map((month) => (
               <MenuItem key={month.value} value={month.value}>
@@ -246,7 +246,7 @@ useEffect(() => {
             fullWidth
             value={formData.year}
             onChange={handleChange}
-            disabled
+            
           />
         </Grid>
 

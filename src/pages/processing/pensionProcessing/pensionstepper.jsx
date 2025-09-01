@@ -31,8 +31,8 @@ const PensionStepper = () => {
     const { netPension } = useSelector((state) => state.netPension);
 
     useEffect(() => {
-        dispatch(fetchPensioners({ page: 1, limit: 1000, id: '' }))
-        dispatch(fetchNetPension({ page: 1, limit: 1000, month: '' }));
+        dispatch(fetchPensioners({ page: 1, limit: 1000, id: '', search: '' }));
+        dispatch(fetchNetPension({ page: 1, limit: 1000, month: '' ,year: '', ppo_no: '', user_id: ''}));
     }, [dispatch])
 
 

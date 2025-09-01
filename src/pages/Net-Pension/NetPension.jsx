@@ -299,7 +299,7 @@ export default function NetPension() {
             .unwrap()
             .then(() => {
                 toast.success("NetPension updated");
-                dispatch(fetchNetPension({ page, limit: rowsPerPage, month: '', year: '' }));
+                dispatch(fetchNetPension({ page, limit: rowsPerPage, month: '', year: '', ppo_no: '', user_id: '' }));
             })
             .catch((err) => {
                 const apiMsg =
