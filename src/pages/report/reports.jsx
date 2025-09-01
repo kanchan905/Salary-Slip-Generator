@@ -157,11 +157,28 @@ const ReportsDashboard = () => {
         { value: 11, label: 'November' }, { value: 12, label: 'December' },
     ];
 
+    // const years = [
+    //     { value: '', label: 'Select Year' },
+    //     ...Array.from({ length: 51 }, (_, i) => ({
+    //         value: currentYear  + i,
+    //         label: (currentYear  + i).toString()
+    //     }))
+    // ];
+
+    // Modified years array
     const years = [
         { value: '', label: 'Select Year' },
-        ...Array.from({ length: 51 }, (_, i) => ({
-            value: currentYear  + i,
-            label: (currentYear  + i).toString()
+        // Previous 10 years
+        ...Array.from({ length: 3 }, (_, i) => ({
+            value: currentYear - (3 - i),
+            label: (currentYear - (3 - i)).toString()
+        })),
+        // Current year
+        { value: currentYear, label: currentYear.toString() },
+        // Future 10 years
+        ...Array.from({ length: 3 }, (_, i) => ({
+            value: currentYear + (i + 1),
+            label: (currentYear + (i + 1)).toString()
         }))
     ];
 
