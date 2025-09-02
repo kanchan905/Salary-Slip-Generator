@@ -72,7 +72,7 @@ const ShowEmployee = () => {
               <Section title="Loan Information">
                 <LabelValue label="Loan Type" value={data?.loan_type} />
                 <LabelValue label="Loan Amount" value={data?.loan_amount} />
-                <LabelValue label="Interest Rate" value={data?.interest_rate} />
+                {/* <LabelValue label="Interest Rate" value={data?.interest_rate} /> */}
                 <LabelValue label="Sanctioned Date" value={dateFormat(data?.sanctioned_date)} />
                 <LabelValue label="Total Installments" value={data?.total_installments} />
                 <LabelValue label="Current Installment" value={data?.current_installment} />

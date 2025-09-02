@@ -3,9 +3,9 @@ import axiosInstance from "global/AxiosSetting";
 
 export const fetchPensioners = createAsyncThunk(
     "pensioner/details",
-    async ({page,limit,id,search}, { rejectWithValue }) => {
+    async ({page,limit,id,search,is_verified}, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/pensioner?page=${page}&limit=${limit}&retired_employee_id=${id}&search=${search}`);
+            const response = await axiosInstance.get(`/pensioner?page=${page}&limit=${limit}&retired_employee_id=${id}&search=${search}&is_verified=${is_verified}`);
             return {
                 data: response.data.data,
                 totalCount: response.data.total_count

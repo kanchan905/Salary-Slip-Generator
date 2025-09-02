@@ -7,7 +7,7 @@ import '../../assets/css/custom.css';
 const Header = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedInstitute, setSelectedInstitute] = useState('both');
+  const [selectedInstitute, setSelectedInstitute] = useState('nioh');
   const { name } = useSelector((state) => state?.auth?.user?.roles[0]); // This 'name' variable isn't used after being declared.
   const dispatch = useDispatch();
   const { summary, loading, error, reports } = useSelector((state) => state.dashboardReport);

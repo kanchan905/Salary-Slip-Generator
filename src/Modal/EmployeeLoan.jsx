@@ -208,11 +208,20 @@ export default function EmployeeLoanModal({
                       <ErrorMessage name="loan_amount" component="div" className="text-danger" />
                     </FormGroup>
                   </Col>
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <Label for="interest_rate">Interest Rate* (%)</Label>
                       <Field as={Input} type="text" id="interest_rate" name="interest_rate" />
                       <ErrorMessage name="interest_rate" component="div" className="text-danger" />
+                    </FormGroup>
+                  </Col> */}
+                   <Col md="6">
+                    <FormGroup>
+                      <Label for="is_active">Status</Label>
+                      <Field as={Input} type="select" id="is_active" name="is_active">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                      </Field>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -264,17 +273,7 @@ export default function EmployeeLoanModal({
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
-                  <Col md="6">
-                    <FormGroup>
-                      <Label for="is_active">Status</Label>
-                      <Field as={Input} type="select" id="is_active" name="is_active">
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                      </Field>
-                    </FormGroup>
-                  </Col>
-                </Row>
+                
                 <Button
                   color="primary"
                   type="submit"

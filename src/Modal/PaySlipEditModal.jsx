@@ -101,6 +101,15 @@ const TotalPayCalculator = () => {
 
 const validationSchema = Yup.object({
     // Validation rules can be expanded as needed
+    salary_arrears: Yup.array().of(
+            Yup.object().shape({
+                type: Yup.string().required("Type is required"),
+                amount: Yup.number()
+                    .typeError("Amount must be a number")
+                    .required("Amount is required")
+                    .positive("Amount must be a positive number"),
+            })
+        ),
 });
 
 export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employee }) {
@@ -357,7 +366,7 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                                 </Row>
                                             );
                                         })}
-                                        <Button type="button" color="info" className="mt-2" onClick={() => push({ type: '', amount: 0 })}>Add Arrear</Button>
+                                        <Button type="button" color="info" className="mt-2" onClick={() => push({ type: '', amount: '' })}>Add Arrear</Button>
                                     </div>
                                 )}
                             </FieldArray>

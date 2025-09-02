@@ -104,7 +104,7 @@ export default function EmployeeLoan() {
                 "Employee Name",
                 "Loan Type",
                 "Loan Amount",
-                "Interest Rate",
+                // "Interest Rate",
                 "Sanctioned Date",
                 "Total Installments",
                 "Current Installment",
@@ -121,7 +121,7 @@ export default function EmployeeLoan() {
                     <td>{data?.employee?.name || "- -"} </td>
                     <td>{data?.loan_type ?? "-"}</td>
                     <td>{data?.loan_amount ?? "-"}</td>
-                    <td>{data?.interest_rate ?? "-"}</td>
+                    {/* <td>{data?.interest_rate ?? "-"}</td> */}
                     <td>{dateFormat(data?.sanctioned_date) ?? "-"}</td>
                     <td>{data?.total_installments ?? "-"}</td>
                     <td>{data?.current_installment ?? "-"}</td>
@@ -148,7 +148,7 @@ export default function EmployeeLoan() {
                     <td className='text-capitalize'>{record?.employee?.name || "- -"} </td>
                     <td>{record?.loan_type ?? "-"}</td>
                     <td>{record?.loan_amount ?? "-"}</td>
-                    <td>{record?.interest_rate ?? "-"}</td>
+                    {/* <td>{record?.interest_rate ?? "-"}</td> */}
                     <td>{dateFormat(record?.sanctioned_date) ?? "-"}</td>
                     <td>{record?.total_installments ?? "-"}</td>
                     <td>{record?.current_installment ?? "-"}</td>
@@ -339,7 +339,7 @@ export default function EmployeeLoan() {
                                                 <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Type</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Amount</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Interest Rate</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Remaining Balance</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Sanctioned Date</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Total Installments</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Current Installment</TableCell>
@@ -362,7 +362,7 @@ export default function EmployeeLoan() {
                                                             <TableCell className='text-capitalize' style={{ whiteSpace: "nowrap" }}>{row?.employee?.first_name} {row?.employee?.middle_name} {row?.employee?.last_name}</TableCell>
                                                             <TableCell>{row?.loan_type}</TableCell>
                                                             <TableCell>{row?.loan_amount}</TableCell>
-                                                            <TableCell>{row?.interest_rate}</TableCell>
+                                                            <TableCell>{row?.remaining_balance}</TableCell>
                                                             <TableCell>{dateFormat(row?.sanctioned_date)}</TableCell>
                                                             <TableCell>{row?.total_installments}</TableCell>
                                                             <TableCell>{row?.current_installment}</TableCell>

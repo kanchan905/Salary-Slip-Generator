@@ -783,9 +783,9 @@ export default function NetSalary() {
                                             type="text"
                                         />
                                     </Grid>
-                                    {
+                                    {/* {
                                         currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role)) && (
-                                            <>
+                                            <> */}
                                                 <Grid item size={{ xs: 6, md: 3 }}>
                                                     <FormControl fullWidth size="small">
                                                         <InputLabel>Verification Status</InputLabel>
@@ -816,9 +816,9 @@ export default function NetSalary() {
                                                     </Select>
                                                 </FormControl>
                                             </Grid>
-                                            </>
+                                            {/* </>
                                         )
-                                    }
+                                    } */}
 
                                     <Grid item xs={12} md={3} container spacing={1} justifyContent="flex-start">
                                         <Grid item>
@@ -941,8 +941,8 @@ export default function NetSalary() {
                                                             <TableCell>{dateFormat(row.processing_date)}</TableCell>
                                                             <TableCell>{dateFormat(row.payment_date)}</TableCell>
                                                             <TableCell>{row.net_amount}</TableCell>
-                                                            {
-                                                                currentRoles.includes('IT Admin') && (
+                                                            {/* {
+                                                                currentRoles.includes('IT Admin') && ( */}
                                                                     <TableCell>
                                                                         <Box display="flex" gap={1}>
                                                                             <CheckCircleIcon
@@ -967,12 +967,12 @@ export default function NetSalary() {
                                                                             />
                                                                         </Box>
                                                                     </TableCell>
-                                                                )
-                                                            }
+                                                                {/* )
+                                                            } */}
 
 
 
-                                                            {
+                                                            {/* {
                                                                 !currentRoles.includes('IT Admin') && (
                                                                     <TableCell>
                                                                         <Chip
@@ -1002,7 +1002,7 @@ export default function NetSalary() {
                                                                         />
                                                                     </TableCell>
                                                                 )
-                                                            }
+                                                            } */}
 
                                                             <TableCell>
                                                                 <Box display="flex" gap={1}>

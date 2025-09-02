@@ -12,6 +12,7 @@ import { fetchNetPension } from '../../../redux/slices/netPensionSlice';
 import { createMonthlyPension } from '../../../redux/slices/monthlyPensionSlice';
 import { fetchPensioners } from '../../../redux/slices/pensionerSlice';
 import { createBulkPension } from '../../../redux/slices/bulkSlice';
+import * as Yup from 'yup';
 import dayjs from 'dayjs';
 import { nextStep, prevStep, reset, validateStep, updatePensionField, bulkUpdateField } from '../../../redux/slices/pensionSlice';
 
@@ -32,11 +33,11 @@ const PensionStepper = () => {
 
     useEffect(() => {
         dispatch(fetchPensioners({ page: 1, limit: 1000, id: '', search: '' }));
-        dispatch(fetchNetPension({ page: 1, limit: 1000, month: '' ,year: '', ppo_no: '', user_id: ''}));
+        dispatch(fetchNetPension({ page: 1, limit: 1000, month: '', year: '', ppo_no: '', user_id: '' }));
     }, [dispatch])
 
 
-    const handleNext = () => {
+    const handleNext = async() => {
         if (activeStep === 0 && mode == 'bulk') {
             handleSubmit();
             return;
@@ -59,6 +60,25 @@ const PensionStepper = () => {
                 if (isDuplicate) {
                     toast.error('A payslip for this pensioner for the selected month and year already exists.');
                     return;
+                }
+
+               const arrearSchema = Yup.array().of(
+                    Yup.object().shape({
+                        type: Yup.string().required("Arrear Type is required"),
+                        amount: Yup.number()
+                            .typeError("Arrear Amount must be a number")
+                            .required("Arrear Amount is required")
+                            .positive("Arrear Amount must be a positive number"),
+                    })
+                );
+
+                try {
+                    await arrearSchema.validate(formData.arrears, { abortEarly: false });
+                } catch (validationErrors) {
+                    validationErrors.inner.forEach(err => {
+                        toast.error(err.message);
+                    });
+                    return; // Stop if arrears validation fails
                 }
             }
 

@@ -73,6 +73,7 @@ export default function NetPension() {
         year: '',
         ppo_no: '',
         user_id: '',
+        is_verified: '',
     });
     const [selectedIds, setSelectedIds] = useState([]);
     const canUserManageFinalization = currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role));
@@ -244,11 +245,13 @@ export default function NetPension() {
         const yearFromUrl = params.get('year');
         const ppoNoFromUrl = params.get('ppo_no');
         const userIdFromUrl = params.get('user_id');
+        const verificationStatusFromUrl = params.get('is_verified');
         const initialFilters = {
             month: monthFromUrl || filters.month,
             year: yearFromUrl || filters.year,
             ppo_no: ppoNoFromUrl || filters.ppo_no,
             user_id: userIdFromUrl || filters.user_id,
+            is_verified: verificationStatusFromUrl || filters.is_verified,
         };
 
 
@@ -261,7 +264,7 @@ export default function NetPension() {
             limit: rowsPerPage,
             ...initialFilters
         }));
-        dispatch(fetchPensioners({ page: '1', limit: 1000, id: '' , search: '' }));
+        dispatch(fetchPensioners({ page: '1', limit: 1000, id: '', search: '' }));
     }, [dispatch, page, rowsPerPage, location.search]);
 
 
@@ -299,7 +302,7 @@ export default function NetPension() {
             .unwrap()
             .then(() => {
                 toast.success("NetPension updated");
-                dispatch(fetchNetPension({ page, limit: rowsPerPage, month: '', year: '', ppo_no: '', user_id: '' }));
+                dispatch(fetchNetPension({ page, limit: rowsPerPage, month: '', year: '', ppo_no: '', user_id: '' , is_verified: ''}));
             })
             .catch((err) => {
                 const apiMsg =
@@ -400,7 +403,7 @@ export default function NetPension() {
     };
 
     const handleClearFilters = () => {
-        setFilters({ month: '', year: '', ppo_no: '', user_id: '' });
+        setFilters({ month: '', year: '', ppo_no: '', user_id: '', is_verified: '' });
         setPage(0);
         navigate('/net-pension');
     };
@@ -604,6 +607,21 @@ export default function NetPension() {
                                             </Select>
                                         </FormControl>
                                     </Grid>
+                                    <Grid item size={{ xs: 6, md: 3 }}>
+                                        <FormControl fullWidth size="small">
+                                            <InputLabel>Verification Status</InputLabel>
+                                            <Select
+                                                name="is_verified"
+                                                value={filters.is_verified}
+                                                label="Verification Status"
+                                                onChange={(e) => setFilters({ ...filters, is_verified: e.target.value })}
+                                            >
+                                                <MenuItem value="All"><em>All</em></MenuItem>
+                                                <MenuItem value="1">Verified</MenuItem>
+                                                <MenuItem value="0">Not Verified</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
                                     <Grid item >
                                         <Button style={{ background: "#004080", color: '#fff' }} onClick={handleSearch}>
                                             Search
@@ -716,8 +734,8 @@ export default function NetPension() {
                                                             <TableCell>{row.year}</TableCell>
                                                             <TableCell>{row.net_pension}</TableCell>
                                                             <TableCell>{dateFormat(row.payment_date)}</TableCell>
-                                                            {
-                                                                currentRoles.includes('IT Admin') && (
+                                                            {/* {
+                                                                currentRoles.includes('IT Admin') && ( */}
                                                                     <TableCell>
                                                                         <Box display="flex" gap={1}>
                                                                             <CheckCircleIcon
@@ -742,10 +760,10 @@ export default function NetPension() {
                                                                             />
                                                                         </Box>
                                                                     </TableCell>
-                                                                )
-                                                            }
+                                                                {/* )
+                                                            } */}
 
-                                                            {!currentRoles.includes('IT Admin') && (
+                                                            {/* {!currentRoles.includes('IT Admin') && (
                                                                 <TableCell
                                                                     onClick={canVerify(row) && getCurrentVerificationStep(row).statusField ? () => handleStepVerification(row, getCurrentVerificationStep(row).statusField) : undefined}
                                                                     style={{ cursor: canVerify(row) && getCurrentVerificationStep(row).statusField ? 'pointer' : 'default' }}
@@ -757,7 +775,7 @@ export default function NetPension() {
                                                                         return <Chip variant='filled' label="Pending" color='error' />;
                                                                     })()}
                                                                 </TableCell>
-                                                            )}
+                                                            )} */}
 
                                                             <TableCell>
                                                                 <Box display="flex" gap={1}>

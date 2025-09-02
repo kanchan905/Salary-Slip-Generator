@@ -26,7 +26,7 @@ const ReportsDashboard = () => {
     // Fetch employees and pensioners on mount
     useEffect(() => {
         dispatch(fetchEmployees({ page: 1, limit: 1000, search: '', institute: '' }));
-        dispatch(fetchPensioners({ page: 1, limit: 1000, id: '' }));
+        dispatch(fetchPensioners({ page: 1, limit: 1000, id: '', search: '' }));
     }, [dispatch]);
 
     const employeesData = useSelector((state) => state.employee.employees) || [];
