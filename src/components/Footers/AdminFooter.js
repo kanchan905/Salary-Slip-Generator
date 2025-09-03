@@ -20,11 +20,11 @@ const Footer = () => {
         <Col xl="6">
             <NavItem>
               <NavLink
-                href="http://payroll.nioh.org.in"
+                href="https://nioh.org"
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                NIOH
+                About Us
               </NavLink>
             </NavItem>
         </Col>

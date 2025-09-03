@@ -642,11 +642,38 @@ const SalaryProcessing = () => {
                         {
                             mode === 'bulk' ? (
                                 <>
-                                    <Grid item size={{ xs: 12 }} >
+                                    {/* <Grid item size={{ xs: 12 }} >
                                         <TextField label="Month" value={months.find(m => m.value === bulkForm.month)?.label || ''} fullWidth disabled />
                                     </Grid>
                                     <Grid item size={{ xs: 12 }}>
                                         <TextField label="Year" value={bulkForm.year || ''} fullWidth disabled />
+                                    </Grid> */}
+                                    <Grid item size={{ xs: 12 }}>
+                                        <TextField
+                                            select
+                                            required
+                                            name="month"
+                                            label="Month"
+                                            value={bulkForm.month || ''}
+                                            fullWidth
+                                            onChange={(e) => dispatch(bulkUpdateField({ name: 'month', value: e.target.value })) }
+                                        >
+                                           
+                                            {months.map((option) => (
+                                                <MenuItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                    <Grid item size={{ xs: 12 }}>
+                                        <TextField
+                                            label="Year"
+                                            name="year"
+                                            value={bulkForm.year || ''}
+                                            fullWidth
+                                            onChange={(e) => dispatch(bulkUpdateField({ name: 'year', value: e.target.value })) }
+                                        />
                                     </Grid>
                                     <Grid item size={{ xs: 6 }}>
                                         <LocalizationProvider dateAdapter={AdapterDayjs}>

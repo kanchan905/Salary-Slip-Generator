@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 
 const ReportsDashboard = () => {
     const dispatch = useDispatch();
-    const currentYear = new Date().getFullYear();
+    // const currentYear = new Date().getFullYear();
     const user = useSelector((state) => state.auth.user);
     const currentRoles = useSelector((state) =>
         state.auth.user?.roles?.map(role => role.name) || []
@@ -124,12 +124,12 @@ const ReportsDashboard = () => {
             } else if (type === 'employee') {
                 // Get employee name for filename
                 const selectedEmployee = employees.find(emp => String(emp.id) === String(filterData.employeeId));
-                const employeeName = selectedEmployee ? `${selectedEmployee.first_name} ${selectedEmployee.middle_name || ''} ${selectedEmployee.last_name}`.trim().replace(/\s+/g, '_') : 'Unknown';
+                const employeeName = selectedEmployee ? `${selectedEmployee.first_name} ${selectedEmployee.middle_name || ''} ${selectedEmployee.last_name}`.trim().replace(/\s+/g, '_') : '';
                 filename = `${employeeName}-${result.filename}`;
             } else if (type === 'pensioner') {
                 // Get pensioner name for filename
                 const selectedPensioner = pensioners.find(pen => String(pen.id) === String(filterData.pensionerId));
-                const pensionerName = selectedPensioner ? `${selectedPensioner.first_name} ${selectedPensioner.middle_name || ''} ${selectedPensioner.last_name}`.trim().replace(/\s+/g, '_') : 'Unknown';
+                const pensionerName = selectedPensioner ? `${selectedPensioner.first_name} ${selectedPensioner.middle_name || ''} ${selectedPensioner.last_name}`.trim().replace(/\s+/g, '_') : '';
                 filename = `Pensioner-${pensionerName}-${result.filename}`;
             }
 
@@ -157,185 +157,184 @@ const ReportsDashboard = () => {
         { value: 11, label: 'November' }, { value: 12, label: 'December' },
     ];
 
-    const years = [
-        { value: '', label: 'Select Year' },
-        ...Array.from({ length: 3 }, (_, i) => ({
-            value: currentYear - 3  + i,
-            label: (currentYear - 3  + i).toString()
-        })),
-         { value: currentYear, label: currentYear.toString() },
-    ];
-
-   
     // const years = [
     //     { value: '', label: 'Select Year' },
     //     ...Array.from({ length: 3 }, (_, i) => ({
-    //         value: currentYear - (3 - i),
-    //         label: (currentYear - (3 - i)).toString()
+    //         value: currentYear - 3  + i,
+    //         label: (currentYear - 3  + i).toString()
     //     })),
-    //     { value: currentYear, label: currentYear.toString() },
-    //     ...Array.from({ length: 3 }, (_, i) => ({
-    //         value: currentYear + (i + 1),
-    //         label: (currentYear + (i + 1)).toString()
-    //     }))
+    //      { value: currentYear, label: currentYear.toString() },
     // ];
+
+    const minYear = 2025;
+    const currentYear = new Date().getFullYear();
+    const years = [];
+
+    // Add a default "Select Year" option
+    years.push({ value: '', label: 'Select Year' });
+
+    // Add years from minYear to currentYear
+    for (let year = minYear; year <= currentYear; year++) {
+        years.push({ value: year, label: year.toString() });
+    }
+
 
     const renderCard = ({ type, title, color, extraFieldKey, icon }) => {
         const isEmployeeFieldDisabled = type === 'employee' && isEndUser;
         return (
-        <Box mb={5}>
-            <Card sx={{ backgroundColor: color, borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
-                {/* Filter Section */}
-                <Collapse in={showFilters[type]}>
-                    <Box p={3} sx={{ borderBottom: '1px solid #ddd', backgroundColor: '#fff', }}>
-                        <Grid container spacing={2}>
-                            {['startMonth', 'startYear', 'endMonth', 'endYear'].map((key, i) => (
-                                <Grid item xs={12} md={3} key={i}>
-                                    <FormGroup>
-                                        <Form.Label>
-                                            {key.includes('Month')
-                                                ? key.includes('start') ? 'Start Month' : 'End Month'
-                                                : key.includes('start') ? 'Start Year' : 'End Year'} *
-                                        </Form.Label>
-                                        <Form.Select
-                                            value={filters[type][key]}
-                                            onChange={(e) => handleFilterChange(type, key, parseInt(e.target.value) || '')}
-                                            className={!filters[type][key] ? 'border-danger' : ''}
-                                        >
-                                            {(key.includes('Month') ? months : years).map((opt) => (
-                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                            ))}
-                                        </Form.Select>
-                                    </FormGroup>
-                                </Grid>
-                            ))}
-                            {extraFieldKey && (
-                                <Grid item xs={12} md={4}>
-                                    {extraFieldKey === 'employeeId' ? (
-                                        !isEndUser && (
-                                        <Autocomplete
-                                            options={employees}
-                                            getOptionLabel={(option) => `${option.first_name} ${option.middle_name || ''} ${option.last_name} - ${option.employee_code}`}
-                                            value={employees.find(emp => String(emp.id) === String(filters[type][extraFieldKey])) || null}
-                                            onChange={(_, newValue) => {
-                                                handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
-                                            }}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    label="Employee"
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    sx={{ width: 400 }}
-                                                    disabled={isEmployeeFieldDisabled}
-                                                />
-                                            )}
-                                            isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
-                                            sx={{ width: 400 }}
-                                        />
-                                        )
-                                    ) : (
-                                        <Autocomplete
-                                            options={pensioners}
-                                            getOptionLabel={(option) => `${option.first_name} ${option.middle_name || ''} ${option.last_name} - ${option.ppo_no || option.id}`}
-                                            value={pensioners.find(pen => String(pen.id) === String(filters[type][extraFieldKey])) || null}
-                                            onChange={(_, newValue) => {
-                                                handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
-                                            }}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    label="Pensioner"
-                                                    variant="outlined"
-                                                    fullWidth
+            <Box mb={5}>
+                <Card sx={{ backgroundColor: color, borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
+                    {/* Filter Section */}
+                    <Collapse in={showFilters[type]}>
+                        <Box p={3} sx={{ borderBottom: '1px solid #ddd', backgroundColor: '#fff', }}>
+                            <Grid container spacing={2}>
+                                {['startMonth', 'startYear', 'endMonth', 'endYear'].map((key, i) => (
+                                    <Grid item xs={12} md={3} key={i}>
+                                        <FormGroup>
+                                            <Form.Label>
+                                                {key.includes('Month')
+                                                    ? key.includes('start') ? 'Start Month' : 'End Month'
+                                                    : key.includes('start') ? 'Start Year' : 'End Year'} *
+                                            </Form.Label>
+                                            <Form.Select
+                                                value={filters[type][key]}
+                                                onChange={(e) => handleFilterChange(type, key, parseInt(e.target.value) || '')}
+                                                className={!filters[type][key] ? 'border-danger' : ''}
+                                            >
+                                                {(key.includes('Month') ? months : years).map((opt) => (
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                ))}
+                                            </Form.Select>
+                                        </FormGroup>
+                                    </Grid>
+                                ))}
+                                {extraFieldKey && (
+                                    <Grid item xs={12} md={4}>
+                                        {extraFieldKey === 'employeeId' ? (
+                                            !isEndUser && (
+                                                <Autocomplete
+                                                    options={employees}
+                                                    getOptionLabel={(option) => `${option.first_name} ${option.middle_name || ''} ${option.last_name} - ${option.employee_code}`}
+                                                    value={employees.find(emp => String(emp.id) === String(filters[type][extraFieldKey])) || null}
+                                                    onChange={(_, newValue) => {
+                                                        handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
+                                                    }}
+                                                    renderInput={(params) => (
+                                                        <TextField
+                                                            {...params}
+                                                            label="Employee"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            sx={{ width: 400 }}
+                                                            disabled={isEmployeeFieldDisabled}
+                                                        />
+                                                    )}
+                                                    isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
                                                     sx={{ width: 400 }}
                                                 />
-                                            )}
-                                            isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
-                                            sx={{ width: 400 }}
-                                        />
-                                    )}
-                                </Grid>
-                            )}
-                        </Grid>
-                        <Box display="flex" justifyContent="flex-end" mt={2}>
-                            <Button
-                                variant="outlined"
-                                sx={{ width: 120, fontWeight: 'bold' }}
-                                onClick={() => handleReset(type)}
-                            >
-                                Reset
-                            </Button>
+                                            )
+                                        ) : (
+                                            <Autocomplete
+                                                options={pensioners}
+                                                getOptionLabel={(option) => `${option.first_name} ${option.middle_name || ''} ${option.last_name} - ${option.ppo_no || option.id}`}
+                                                value={pensioners.find(pen => String(pen.id) === String(filters[type][extraFieldKey])) || null}
+                                                onChange={(_, newValue) => {
+                                                    handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Pensioner"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        sx={{ width: 400 }}
+                                                    />
+                                                )}
+                                                isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
+                                                sx={{ width: 400 }}
+                                            />
+                                        )}
+                                    </Grid>
+                                )}
+                            </Grid>
+                            <Box display="flex" justifyContent="flex-end" mt={2}>
+                                <Button
+                                    variant="outlined"
+                                    sx={{ width: 120, fontWeight: 'bold' }}
+                                    onClick={() => handleReset(type)}
+                                >
+                                    Reset
+                                </Button>
+                            </Box>
                         </Box>
-                    </Box>
-                </Collapse>
+                    </Collapse>
 
-                {/* Header */}
-                <Box sx={{
-                    backgroundColor: color,
-                    px: 3,
-                    py: 2,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    color: '#fff',
-                }}>
-                    <Typography variant="h6">
-                        {icon} {title}
-                    </Typography>
-                    <Button onClick={() => toggleFilter(type)} sx={{ backgroundColor: '#fff' }}>
-                        <MoreVertIcon /> Filter
-                    </Button>
-                </Box>
-
-                {/* Export */}
-                <CardContent>
-                    <Box display="flex" gap={2}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                mt: 1,
-                                backgroundColor: '#f9f9f9',
-                                color: color,
-                                width: '100%',
-                                fontWeight: 'bold'
-                            }}
-                            startIcon={<DownloadIcon />}
-                            onClick={() => {
-                                if (type === 'employee') {
-                                    const f = filters.employee;
-                                    if (!f.employeeId || !f.startMonth || !f.startYear || !f.endMonth || !f.endYear) {
-                                        toast.warning('Please select Employee & Time duration');
-                                        setShowFilters(prev => ({ ...prev, employee: true }));
-                                        return;
-                                    }
-                                }
-                                // if (type === 'pensioner') {
-                                //     const f = filters.pensioner;
-                                //     if (!f.pensionerId || !f.startMonth || !f.startYear || !f.endMonth || !f.endYear) {
-                                //         toast.warning('Please select Pensioner & Time duration');
-                                //         setShowFilters(prev => ({ ...prev, pensioner: true }));
-                                //         return;
-                                //     }
-                                // }
-                                handleExport('Excel', type);
-                            }}
-                            disabled={loading[type]}
-                        >
-                            {
-                                loading[type]
-                                    ? 'Downloading...'
-                                    : (type === 'employee' && (!filters.employee.employeeId || !filters.employee.startMonth || !filters.employee.startYear || !filters.employee.endMonth || !filters.employee.endYear))
-                                        ? 'Select Employee & Time'
-                                        : (type === 'pensioner' && (!filters.pensioner.pensionerId || !filters.pensioner.startMonth || !filters.pensioner.startYear || !filters.pensioner.endMonth || !filters.pensioner.endYear))
-                                            ? 'Select Pensioner & Time'
-                                            : 'Export Excel'
-                            }
+                    {/* Header */}
+                    <Box sx={{
+                        backgroundColor: color,
+                        px: 3,
+                        py: 2,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        color: '#fff',
+                    }}>
+                        <Typography variant="h6">
+                            {icon} {title}
+                        </Typography>
+                        <Button onClick={() => toggleFilter(type)} sx={{ backgroundColor: '#fff' }}>
+                            <MoreVertIcon /> Filter
                         </Button>
                     </Box>
-                </CardContent>
-            </Card>
-        </Box>
+
+                    {/* Export */}
+                    <CardContent>
+                        <Box display="flex" gap={2}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    mt: 1,
+                                    backgroundColor: '#f9f9f9',
+                                    color: color,
+                                    width: '100%',
+                                    fontWeight: 'bold'
+                                }}
+                                startIcon={<DownloadIcon />}
+                                onClick={() => {
+                                    if (type === 'employee') {
+                                        const f = filters.employee;
+                                        if (!f.employeeId || !f.startMonth || !f.startYear || !f.endMonth || !f.endYear) {
+                                            toast.warning('Please select Employee & Time duration');
+                                            setShowFilters(prev => ({ ...prev, employee: true }));
+                                            return;
+                                        }
+                                    }
+                                    // if (type === 'pensioner') {
+                                    //     const f = filters.pensioner;
+                                    //     if (!f.pensionerId || !f.startMonth || !f.startYear || !f.endMonth || !f.endYear) {
+                                    //         toast.warning('Please select Pensioner & Time duration');
+                                    //         setShowFilters(prev => ({ ...prev, pensioner: true }));
+                                    //         return;
+                                    //     }
+                                    // }
+                                    handleExport('Excel', type);
+                                }}
+                                disabled={loading[type]}
+                            >
+                                {
+                                    loading[type]
+                                        ? 'Downloading...'
+                                        : (type === 'employee' && (!filters.employee.employeeId || !filters.employee.startMonth || !filters.employee.startYear || !filters.employee.endMonth || !filters.employee.endYear))
+                                            ? 'Select Employee & Time'
+                                            : (type === 'pensioner' && (!filters.pensioner.pensionerId || !filters.pensioner.startMonth || !filters.pensioner.startYear || !filters.pensioner.endMonth || !filters.pensioner.endYear))
+                                                ? 'Select Pensioner & Time'
+                                                : 'Export Excel'
+                                }
+                            </Button>
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Box>
         )
     };
 
@@ -347,14 +346,14 @@ const ReportsDashboard = () => {
                     <Typography variant="h4" fontWeight="bold">📊 Reports</Typography>
                 </Box>
 
-                { !currentRoles.some(role => ['End Users','Pensioners Operator'].includes(role)) && (
+                {!currentRoles.some(role => ['End Users', 'Pensioners Operator'].includes(role)) && (
                     renderCard({ type: 'all', title: 'All Reports', color: '#3498db', icon: <SummarizeIcon /> })
                 )}
                 {!currentRoles.some(role => ['Pensioners Operator'].includes(role)) && (
                     renderCard({ type: 'employee', title: 'Employee Report', color: '#16a085', icon: <SummarizeIcon />, extraFieldKey: 'employeeId' })
                 )}
 
-                { !currentRoles.some(role => ['End Users',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                {!currentRoles.some(role => ['End Users', "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
                     renderCard({ type: 'pensioner', title: 'Pensioner Report', color: '#e67e22', icon: <SummarizeIcon />, extraFieldKey: 'pensionerId' })
                 )}
             </Container>

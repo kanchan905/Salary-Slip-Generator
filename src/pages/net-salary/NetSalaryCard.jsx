@@ -22,7 +22,7 @@ import {
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
 } from '@mui/icons-material';
-import { finalizeNetSalary, releaseNetSalary, verifyNetSalary, verifyNetSalaryAdmin, viewNetSalary } from '../../redux/slices/netSalarySlice';
+import { finalizeNetSalary, releaseNetSalary, setIsReleasing, verifyNetSalary, verifyNetSalaryAdmin, viewNetSalary } from '../../redux/slices/netSalarySlice';
 import { updatePaySlip } from '../../redux/slices/paySlipSlice';
 import { updateDeduction } from '../../redux/slices/deductionSlice';
 import PaySlipEditModal from '../../Modal/PaySlipEditModal';
@@ -59,11 +59,12 @@ export default function PaySlipPage() {
         dispatch(fetchPayStructure({ page: 1, limit: 1000, search: "" }));
     }, [dispatch]);
 
-    const { netSalaryData, loading } = useSelector((state) => state.netSalary);
+    const { netSalaryData, loading, isReleasing } = useSelector((state) => state.netSalary);
 
 
     const [isPayModalOpen, setPayModalOpen] = useState(false);
     const [isDeductionModalOpen, setDeductionModalOpen] = useState(false);
+    // const [isReleasing, setIsReleasing] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -154,6 +155,8 @@ export default function PaySlipPage() {
     };
 
     const handleStepRelease = (row) => {
+        // setIsReleasing(true);
+        dispatch(setIsReleasing(true));
         dispatch(releaseNetSalary({ selected_id: [row.id] }))
             .unwrap()
             .then(() => {
@@ -162,6 +165,10 @@ export default function PaySlipPage() {
             })
             .catch((err) => {
                 toast.error(err || 'Failed to release net salary.');
+            })
+            .finally(() => {
+                // setIsReleasing(false);
+                dispatch(setIsReleasing(false));
             });
     };
 
@@ -330,489 +337,492 @@ export default function PaySlipPage() {
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
             {
-                !currentRoles.includes("End Users") && (
-                    <Box sx={{ p: 3 }} >
+                !isReleasing && (
+                    <>
+                        <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
                         {
-                            <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
-                                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
-                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
-                                    {[
-                                        { label: "Salary Processing Coordinator", field: "salary_processing_status", timestampField: "salary_processing_date" },
-                                        { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
-                                        { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
-                                        { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
-                                    ].map(({ label, field, timestampField }) => {
-                                        const isButtonClickable =
-                                            !netSalaryData[field] &&      // 1. Must NOT be verified
-                                            field === statusField &&      // 2. Must be the current step's turn
-                                            userHasRoleForStep(field);    // 3. User must have the correct role
+                            !currentRoles.includes("End Users") && (
+                                <Box sx={{ p: 3 }} >
+                                    {
+                                        <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
+                                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
+                                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
+                                                {[
+                                                    { label: "Salary Processing Coordinator", field: "salary_processing_status", timestampField: "salary_processing_date" },
+                                                    { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
+                                                    { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
+                                                    { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
+                                                ].map(({ label, field, timestampField }) => {
+                                                    const isButtonClickable =
+                                                        !netSalaryData[field] &&      // 1. Must NOT be verified
+                                                        field === statusField &&      // 2. Must be the current step's turn
+                                                        userHasRoleForStep(field);    // 3. User must have the correct role
 
-                                        const verificationTime = formatTimestamp(netSalaryData[timestampField]);
+                                                    const verificationTime = formatTimestamp(netSalaryData[timestampField]);
 
-                                        return (
-                                            <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
-                                                <Button
-                                                    variant="contained"
-                                                    color={netSalaryData[field] ? "success" : "error"}
-                                                    startIcon={netSalaryData[field] ? <CheckCircleIcon /> : <CancelIcon />}
-                                                    onClick={isButtonClickable ? () => handleStepVerification(netSalaryData, field) : null}
-                                                    sx={{
-                                                        minWidth: 240,
-                                                        fontWeight: 500,
-                                                        // Improved cursor logic
-                                                        cursor: isButtonClickable ? 'pointer' : (netSalaryData[field] ? 'default' : 'not-allowed')
-                                                    }}
-                                                >
-                                                    {label} {netSalaryData[field] ? "Verified" : "Verify"}
-                                                </Button>
-                                                {/* UPDATED: Conditionally render the formatted timestamp */}
-                                                {verificationTime && (
-                                                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                                        {verificationTime}
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                        )
-                                    })}
+                                                    return (
+                                                        <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                                                            <Button
+                                                                variant="contained"
+                                                                color={netSalaryData[field] ? "success" : "error"}
+                                                                startIcon={netSalaryData[field] ? <CheckCircleIcon /> : <CancelIcon />}
+                                                                onClick={isButtonClickable ? () => handleStepVerification(netSalaryData, field) : null}
+                                                                sx={{
+                                                                    minWidth: 240,
+                                                                    fontWeight: 500,
+                                                                    // Improved cursor logic
+                                                                    cursor: isButtonClickable ? 'pointer' : (netSalaryData[field] ? 'default' : 'not-allowed')
+                                                                }}
+                                                            >
+                                                                {label} {netSalaryData[field] ? "Verified" : "Verify"}
+                                                            </Button>
+                                                            {/* UPDATED: Conditionally render the formatted timestamp */}
+                                                            {verificationTime && (
+                                                                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                                                    {verificationTime}
+                                                                </Typography>
+                                                            )}
+                                                        </Box>
+                                                    )
+                                                })}
+                                            </Stack>
+                                        </Paper>
+                                    }
+                                </Box>
+                            )
+                        }
+
+
+                        <Box sx={{ p: 3 }}>
+                            {/* --- Action Bar (Preserved) --- */}
+                            <Paper elevation={2} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                                    <IconButton onClick={() => {
+                                        if (currentRoles.length === 1 && currentRoles[0] === "End Users") {
+                                            navigate('/my-salary')
+                                        }
+                                        else {
+                                            navigate('/net-salary')
+                                        }
+                                    }}>
+                                        <ArrowBackIcon />
+                                    </IconButton>
+                                    <Typography variant="h5" sx={{ flexGrow: 1 }}>
+                                        Pay Slip Details
+                                    </Typography>
+
+                                    {!netSalaryData?.is_finalize && (
+                                        <>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<EditIcon />}
+                                                onClick={() => setPayModalOpen(true)}
+                                            // disabled={areButtonsDisabled}
+                                            >
+                                                Earnings
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<EditIcon />}
+                                                onClick={() => setDeductionModalOpen(true)}
+                                            // disabled={areButtonsDisabled}
+                                            >
+                                                Deductions
+                                            </Button>
+                                        </>
+                                    )}
+                                    {
+                                        currentRoles.includes("IT Admin") && !allStepsVerified && (
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                startIcon={<CheckCircleIcon />}
+                                                onClick={handleAdminVerify}
+                                                sx={{ m: 1 }}
+                                            >
+                                                Verify All
+                                            </Button>
+                                        )}
+
+                                    {/* Only show the verify button for the correct role and step */}
+                                    {canVerify(netSalaryData) && statusField && !allStepsVerified && (
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            startIcon={<CheckCircleIcon />}
+                                            onClick={() => handleStepVerification(netSalaryData, statusField)}
+                                        >
+                                            Verify
+                                        </Button>
+                                    )}
+
+                                    {/* Only show the finalize button for the correct role and step */}
+                                    {canManageFinalization && (
+                                        <>
+                                            {
+                                                !netSalaryData?.is_finalize && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        startIcon={netSalaryData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
+                                                        onClick={() => handleStepFinalization(netSalaryData)}
+                                                        disabled={!allStepsVerified}
+                                                    >
+                                                        {netSalaryData?.is_finalize ? "Finalized" : "Finalize"}
+                                                    </Button>
+                                                )
+                                            }
+                                            {
+                                                !netSalaryData?.is_verified && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="info"
+                                                        startIcon={netSalaryData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
+                                                        onClick={() => handleStepRelease(netSalaryData)}
+                                                        disabled={!netSalaryData?.is_finalize}
+                                                    >
+                                                        {netSalaryData?.is_verified ? "Released" : "Release"}
+                                                    </Button>
+                                                )
+                                            }
+
+                                        </>
+                                    )}
+
+                                    <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
+                                        Download
+                                    </Button>
                                 </Stack>
                             </Paper>
-                        }
-                    </Box>
-                )
-            }
 
+                            {/* --- Redesigned Payslip Body --- */}
+                            <div className="salary-slip-container" ref={pdfContainerRef}>
+                                <div className="salary-slip">
+                                    <div className="slip-header">
+                                        <div className="logo-section">
+                                            {
+                                                netSalaryData?.employee?.institute === 'NIOH' || netSalaryData?.employee?.institute === 'BOTH' ? (
+                                                    <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />
+                                                ) : null
+                                            }
 
-            <Box sx={{ p: 3 }}>
-                {/* --- Action Bar (Preserved) --- */}
-                <Paper elevation={2} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-                        <IconButton onClick={() => {
-                            if (currentRoles.length === 1 && currentRoles[0] === "End Users") {
-                                navigate('/my-salary')
-                            }
-                            else {
-                                navigate('/net-salary')
-                            }
-                        }}>
-                            <ArrowBackIcon />
-                        </IconButton>
-                        <Typography variant="h5" sx={{ flexGrow: 1 }}>
-                            Pay Slip Details
-                        </Typography>
+                                            {
+                                                netSalaryData?.employee?.institute === 'ROHC' ? (
+                                                    <img src={rohcheader} alt="ROHC Logo" className="slip-logo w-100" />
+                                                ) : null
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="slip-title">
+                                        वेतन पर्ची / SALARY SLIP for {monthLabel} {netSalaryData.year}
+                                    </div>
+                                    <div className="employee-info">
+                                        <table className="info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td className="info-label">कर्मचारी कोड / Emp. Code</td>
+                                                    <td className="info-value">{employee?.employee_code || 'N/A'}</td>
+                                                    <td className="info-label">नाम / Name</td>
+                                                    <td className="info-value">{employee?.name || 'N/A'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">पद / Designation</td>
+                                                    <td className="info-value">{employee?.employee_designation?.[0]?.designation || 'N/A'}</td>
+                                                    <td className="info-label">वर्ग-कैडर / Group-Cadre</td>
+                                                    <td className="info-value">{employee?.employee_designation?.[0]?.job_group}/{employee?.employee_designation?.[0]?.cadre || 'N/A'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">मैट्रिक्स लैवल / Pay Level</td>
+                                                    <td className="info-value">{employee?.employee_pay_structure?.pay_matrix_cell?.pay_matrix_level?.name || 'N/A'}</td>
+                                                    <td className="info-label">पे इंडेक्स / Pay Index</td>
+                                                    <td className="info-value">{employee?.employee_pay_structure?.pay_matrix_cell ? `${employee?.employee_pay_structure?.pay_matrix_cell?.index} | ₹${employee?.employee_pay_structure?.pay_matrix_cell?.amount}` : 'N/A'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">ईमेल / Gmail</td>
+                                                    <td className="info-value">{netSalaryData?.employee?.email || 'N/A'}</td>
+                                                    <td className="info-label">लिंग / Gender</td>
+                                                    <td className="info-value">{employee?.gender || 'N/A'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">संस्थान / Institute</td>
+                                                    <td className="info-value">{netSalaryData?.employee?.institute === 'NIOH' ? "ICMR-NIOH" : netSalaryData?.employee?.institute === 'ROHC' ? "ICMR-ROHC" : netSalaryData?.employee?.institute === 'BOTH' ? "BOTH" : "NA"}</td>
+                                                    <td className="info-label">वृद्धि महीने / Inc. Month</td>
+                                                    <td className="info-value">{getMonthName(netSalaryData?.employee?.increment_month)}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">पेंशन योजना / Pension Scheme</td>
+                                                    <td className="info-value">{netSalaryData?.employee?.pension_scheme}</td>
+                                                    <td className="info-label">पेंशन नंबर / pension_number</td>
+                                                    <td className="info-value">{netSalaryData?.employee?.pension_number}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">स्थिति / status</td>
+                                                    <td className="info-value">{netSalaryData?.employee?.employee_status?.[0].status}</td>
+                                                    <td className="info-label">टिप्पणियाँ / remarks </td>
+                                                    <td className="info-value">{netSalaryData?.remarks}</td>
+                                                </tr>
 
-                        {!netSalaryData?.is_finalize && (
-                            <>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<EditIcon />}
-                                    onClick={() => setPayModalOpen(true)}
-                                // disabled={areButtonsDisabled}
-                                >
-                                    Earnings
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<EditIcon />}
-                                    onClick={() => setDeductionModalOpen(true)}
-                                // disabled={areButtonsDisabled}
-                                >
-                                    Deductions
-                                </Button>
-                            </>
-                        )}
-                        {
-                            currentRoles.includes("IT Admin") && !allStepsVerified && (
-                                <Button
-                                    variant="contained"
-                                    color="success"
-                                    startIcon={<CheckCircleIcon />}
-                                    onClick={handleAdminVerify}
-                                    sx={{ m: 1 }}
-                                >
-                                    Verify All
-                                </Button>
-                            )}
-
-                        {/* Only show the verify button for the correct role and step */}
-                        {canVerify(netSalaryData) && statusField && !allStepsVerified && (
-                            <Button
-                                variant="contained"
-                                color="success"
-                                startIcon={<CheckCircleIcon />}
-                                onClick={() => handleStepVerification(netSalaryData, statusField)}
-                            >
-                                Verify
-                            </Button>
-                        )}
-
-                        {/* Only show the finalize button for the correct role and step */}
-                        {canManageFinalization && (
-                            <>
-                                {
-                                    !netSalaryData?.is_finalize && (
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            startIcon={netSalaryData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
-                                            onClick={() => handleStepFinalization(netSalaryData)}
-                                            disabled={!allStepsVerified}
-                                        >
-                                            {netSalaryData?.is_finalize ? "Finalized" : "Finalize"}
-                                        </Button>
-                                    )
-                                }
-                                {
-                                    !netSalaryData?.is_verified && (
-                                        <Button
-                                            variant="contained"
-                                            color="info"
-                                            startIcon={netSalaryData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
-                                            onClick={() => handleStepRelease(netSalaryData)}
-                                            disabled={!netSalaryData?.is_finalize}
-                                        >
-                                            {netSalaryData?.is_verified ? "Released" : "Release"}
-                                        </Button>
-                                    )
-                                }
-
-                            </>
-                        )}
-
-                        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
-                            Download
-                        </Button>
-                    </Stack>
-                </Paper>
-
-                {/* --- Redesigned Payslip Body --- */}
-                <div className="salary-slip-container" ref={pdfContainerRef}>
-                    <div className="salary-slip">
-                        <div className="slip-header">
-                            <div className="logo-section">
-                                {
-                                    netSalaryData?.employee?.institute === 'NIOH' || netSalaryData?.employee?.institute === 'BOTH' ? (
-                                        <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />
-                                    ) : null
-                                }
-
-                                {
-                                    netSalaryData?.employee?.institute === 'ROHC' ? (
-                                        <img src={rohcheader} alt="ROHC Logo" className="slip-logo w-100" />
-                                    ) : null
-                                }
-                            </div>
-                        </div>
-                        <div className="slip-title">
-                            वेतन पर्ची / SALARY SLIP for {monthLabel} {netSalaryData.year}
-                        </div>
-                        <div className="employee-info">
-                            <table className="info-table">
-                                <tbody>
-                                    <tr>
-                                        <td className="info-label">कर्मचारी कोड / Emp. Code</td>
-                                        <td className="info-value">{employee?.employee_code || 'N/A'}</td>
-                                        <td className="info-label">नाम / Name</td>
-                                        <td className="info-value">{employee?.name || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">पद / Designation</td>
-                                        <td className="info-value">{employee?.employee_designation?.[0]?.designation || 'N/A'}</td>
-                                        <td className="info-label">वर्ग-कैडर / Group-Cadre</td>
-                                        <td className="info-value">{employee?.employee_designation?.[0]?.job_group}/{employee?.employee_designation?.[0]?.cadre || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">मैट्रिक्स लैवल / Pay Level</td>
-                                        <td className="info-value">{matrix?.pay_matrix_level?.name || 'N/A'}</td>
-                                        <td className="info-label">पे इंडेक्स / Pay Index</td>
-                                        <td className="info-value">{matrix ? `${matrix.index} | ₹${matrix.amount}` : 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">ईमेल / Gmail</td>
-                                        <td className="info-value">{netSalaryData?.employee?.email || 'N/A'}</td>
-                                        <td className="info-label">लिंग / Gender</td>
-                                        <td className="info-value">{employee?.gender || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">संस्थान / Institute</td>
-                                        <td className="info-value">{netSalaryData?.employee?.institute === 'NIOH' ? "ICMR-NIOH" : netSalaryData?.employee?.institute === 'ROHC' ? "ICMR-ROHC" : netSalaryData?.employee?.institute === 'BOTH' ? "BOTH" : "NA"}</td>
-                                        <td className="info-label">वृद्धि महीने / Inc. Month</td>
-                                        <td className="info-value">{getMonthName(netSalaryData?.employee?.increment_month)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">पेंशन योजना / Pension Scheme</td>
-                                        <td className="info-value">{netSalaryData?.employee?.pension_scheme}</td>
-                                        <td className="info-label">पेंशन नंबर / pension_number</td>
-                                        <td className="info-value">{netSalaryData?.employee?.pension_number}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">स्थिति / status</td>
-                                        <td className="info-value">{netSalaryData?.employee?.employee_status?.[0].status}</td>
-                                        <td className="info-label">टिप्पणियाँ / remarks </td>
-                                        <td className="info-value">{netSalaryData?.remarks}</td>
-                                    </tr>
-
-                                    {/* <tr>
+                                                {/* <tr>
                                         <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
                                         <td className='info-value'>{netSalaryData?.employee_bank?.account_number || 'N/A'}</td>
                                     </tr> */}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="salary-details">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0px' }}>
-                                {/* Earnings Table */}
-                                <div style={{ flex: 1 }}>
-                                    <table className="salary-table">
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: '70%' }}>आय विवरण / EARNINGS</th>
-                                                <th style={{ width: '30%' }}>राशि / AMOUNT (₹)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {Number(payslipForm?.basic_pay) > 0 && (
-                                                <tr>
-                                                    <td>मूल वेतन / Basic Pay</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.basic_pay)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.npa_amount) > 0 && (
-                                                <tr>
-                                                    <td>एन पी ए / NPA</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.npa_amount)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.basic_pay) > 0 && (
-                                                <tr>
-                                                    <td>पे + एन पी ए / PAY + NPA</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.basic_pay + payslipForm?.npa_amount) || 0}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.da_amount) > 0 && (
-                                                <tr>
-                                                    <td>महंगाई भत्ता / Dearness Allowance</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.da_amount)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.govt_contribution) > 0 && (
-                                                <tr>
-                                                    <td>{govtContributionRate}% सरकारी योगदान / Government Contribution</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.govt_contribution)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.hra_amount) > 0 && (
-                                                <tr>
-                                                    <td>मकान किराया भत्ता / HRA</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.hra_amount)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.transport_amount) > 0 && (
-                                                <tr>
-                                                    <td>यात्रा भत्ता / Transport Allowance</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.transport_amount)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.da_on_ta) > 0 && (
-                                                <tr>
-                                                    <td>DA on T.A.</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.da_on_ta)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.spacial_pay) > 0 && (
-                                                <tr>
-                                                    <td>विशेष वेतन / Special Pay</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.spacial_pay)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.da_1) > 0 && (
-                                                <tr>
-                                                    <td>महंगाई भत्ता / D.A.1</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.da_1)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.da_2) > 0 && (
-                                                <tr>
-                                                    <td>महंगाई भत्ता / D.A.2</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.da_2)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.itc_leave_salary) > 0 && (
-                                                <tr>
-                                                    <td>एलटीसी छुट्टी वेतन / LTC Leave Salary</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.itc_leave_salary)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(payslipForm?.uniform_rate_amount) > 0 && (
-                                                <tr>
-                                                    <td>वर्दी भत्ता / Uniform Allowance</td>
-                                                    <td className="amount-col">{formatCurrency(payslipForm?.uniform_rate_amount)}</td>
-                                                </tr>
-                                            )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="salary-details">
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0px' }}>
+                                            {/* Earnings Table */}
+                                            <div style={{ flex: 1 }}>
+                                                <table className="salary-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{ width: '70%' }}>आय विवरण / EARNINGS</th>
+                                                            <th style={{ width: '30%' }}>राशि / AMOUNT (₹)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {Number(payslipForm?.basic_pay) > 0 && (
+                                                            <tr>
+                                                                <td>मूल वेतन / Basic Pay</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.basic_pay)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.npa_amount) > 0 && (
+                                                            <tr>
+                                                                <td>एन पी ए / NPA</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.npa_amount)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.basic_pay) > 0 && (
+                                                            <tr>
+                                                                <td>पे + एन पी ए / PAY + NPA</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.basic_pay + payslipForm?.npa_amount) || 0}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.da_amount) > 0 && (
+                                                            <tr>
+                                                                <td>महंगाई भत्ता / Dearness Allowance</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.da_amount)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.govt_contribution) > 0 && (
+                                                            <tr>
+                                                                <td>{govtContributionRate}% सरकारी योगदान / Government Contribution</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.govt_contribution)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.hra_amount) > 0 && (
+                                                            <tr>
+                                                                <td>मकान किराया भत्ता / HRA</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.hra_amount)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.transport_amount) > 0 && (
+                                                            <tr>
+                                                                <td>यात्रा भत्ता / Transport Allowance</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.transport_amount)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.da_on_ta) > 0 && (
+                                                            <tr>
+                                                                <td>DA on T.A.</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.da_on_ta)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.spacial_pay) > 0 && (
+                                                            <tr>
+                                                                <td>विशेष वेतन / Special Pay</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.spacial_pay)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.da_1) > 0 && (
+                                                            <tr>
+                                                                <td>महंगाई भत्ता / D.A.1</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.da_1)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.da_2) > 0 && (
+                                                            <tr>
+                                                                <td>महंगाई भत्ता / D.A.2</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.da_2)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.itc_leave_salary) > 0 && (
+                                                            <tr>
+                                                                <td>एलटीसी छुट्टी वेतन / LTC Leave Salary</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.itc_leave_salary)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(payslipForm?.uniform_rate_amount) > 0 && (
+                                                            <tr>
+                                                                <td>वर्दी भत्ता / Uniform Allowance</td>
+                                                                <td className="amount-col">{formatCurrency(payslipForm?.uniform_rate_amount)}</td>
+                                                            </tr>
+                                                        )}
 
-                                            {/* Add dynamic earnings */}
-                                            {payslipForm?.salary_arrears?.map((obj, index) => (
-                                                Number(obj.amount) > 0 && (
-                                                    <tr key={index}>
-                                                        <td>{obj.type}</td>
-                                                        <td className="amount-col">{formatCurrency(obj.amount)}</td>
-                                                    </tr>
-                                                )
-                                            ))}
+                                                        {/* Add dynamic earnings */}
+                                                        {payslipForm?.salary_arrears?.map((obj, index) => (
+                                                            Number(obj.amount) > 0 && (
+                                                                <tr key={index}>
+                                                                    <td>{obj.type}</td>
+                                                                    <td className="amount-col">{formatCurrency(obj.amount)}</td>
+                                                                </tr>
+                                                            )
+                                                        ))}
 
-                                            <tr className="total-row">
-                                                <td><strong>कुल आय / TOTAL EARNINGS</strong></td>
-                                                <td className="amount-col"><strong>{formatCurrency(totalEarnings)}</strong></td>
-                                            </tr>
+                                                        <tr className="total-row">
+                                                            <td><strong>कुल आय / TOTAL EARNINGS</strong></td>
+                                                            <td className="amount-col"><strong>{formatCurrency(totalEarnings)}</strong></td>
+                                                        </tr>
 
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {/* Deductions Table */}
-                                <div style={{ flex: 1 }}>
-                                    <table className="salary-table">
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: '70%' }}>कटौती विवरण / DEDUCTIONS</th>
-                                                <th style={{ width: '30%' }}>राशि / AMOUNT (₹)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {Number(deductionForm?.income_tax) > 0 && (
-                                                <tr>
-                                                    <td>आयकर / Income Tax</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.income_tax)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.professional_tax) > 0 && (
-                                                <tr>
-                                                    <td>व्यवसाय कर / Professional Tax</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.professional_tax)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.license_fee) > 0 && (
-                                                <tr>
-                                                    <td>लाइसेंस फीस / License Fee</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.license_fee)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.nfch_donation) > 0 && (
-                                                <tr>
-                                                    <td>दान / NFCH Donation</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.nfch_donation)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.gpf) > 0 && (
-                                                <tr>
-                                                    <td>सा.भ.नि./GPF</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.gpf)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.employee_contribution_10) > 0 && (
-                                                <tr>
-                                                    <td>{employeeContributionRate}% NPS Employee Contribution</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.employee_contribution_10)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.govt_contribution_14_recovery) > 0 && (
-                                                <tr>
-                                                    <td>{govtContributionRate}%  सरकारी योगदान रिकवरी / Govt. Contribution Rec.</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.govt_contribution_14_recovery)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.gis) > 0 && (
-                                                <tr>
-                                                    <td>समूह बीमा योजना / GIS</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.gis)}</td>
-                                                </tr>
-                                            )}
-                                            {Number(deductionForm?.computer_advance_installment) > 0 && (
-                                                <tr>
-                                                    <td>कंप्यूटर ऋण किस्त / Computer Advance Installment</td>
-                                                    <td className="amount-col">{formatCurrency(deductionForm?.computer_advance_installment)}</td>
-                                                </tr>
-                                            )}
-
-                                            {/* Add dynamic deductions */}
-                                            {deductionForm?.deduction_recoveries?.map((obj, index) => (
-                                                Number(obj.amount) > 0 && (
-                                                    <tr key={index}>
-                                                        <td>{obj.type}</td>
-                                                        <td className="amount-col">{formatCurrency(obj.amount)}</td>
-                                                    </tr>
-                                                )
-                                            ))}
-
-                                            <tr className="total-row">
-                                                <td><strong>कुल कटौती / TOTAL DEDUCTIONS</strong></td>
-                                                <td className="amount-col"><strong>{formatCurrency(totalDeductionsCalc)}</strong></td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div className="net-pay">
-                            शुद्ध वेतन / NET PAY (BEFORE ADDL. DEDUCTIONS): ₹ {formatCurrency(netPayCalc)}
-                        </div>
-                        <div className="additional-deductions">
-                            <h3>अतिरिक्त कटौती / ADDITIONAL DEDUCTIONS</h3>
-                            <div className="table-responsive">
-                                <table className="deduction-table">
-                                    <tbody>
-                                        <tr>
-                                            <td>जीवन बीमा निगम / LIC</td>
-                                            <td className="amount">₹ {formatCurrency(deductionForm?.lic)}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>क्रेडिट सोसायटी / Credit Society</td>
-                                            <td className="amount">₹ {formatCurrency(deductionForm?.credit_society)}</td>
-                                        </tr>
-                                        <tr style={{ background: '#f0f0f0' }}>
-                                            <td><strong>कुल अतिरिक्त कटौती / Total Additional Deductions</strong></td>
-                                            <td className="amount"><strong>₹ {formatCurrency(totalAdditionalDeductions)}</strong></td>
-                                        </tr>
-                                        <tr style={{ background: '#e0e0e0' }}>
-                                            <td><strong>अंतिम शुद्ध वेतन / FINAL NET PAY</strong></td>
-                                            <td className="amount"><strong>₹ {formatCurrency(finalNetPay)}</strong></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div className="slip-footer">
-                            <p><strong>This is a computer-generated document and does not require a signature.</strong></p>
-                        </div>
-
-                        {
-                            netSalaryData?.employee?.institute === 'NIOH' || netSalaryData?.employee?.institute === 'BOTH' ? (
-                                <footer className="border-top pt-3 pb-3 bg-white">
-                                    <div className="container">
-                                        <div className="row">
-                                            {/* Left Section */}
-                                            <div className="col-md-6">
-                                                <p className="mb-1 fs-14">मेघानी नगर, अहमदाबाद</p>
-                                                <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
-                                                <p className="mb-0 fs-14">
-                                                    <span>Meghaninagar</span>, Ahmedabad,
-                                                    <p >  Gujarat – 380016, India</p>
-                                                </p>
+                                                    </tbody>
+                                                </table>
                                             </div>
 
-                                            {/* Right Section */}
-                                            <div className="col-md-6 text-md-right">
-                                                <p className="mb-1 fs-14">
-                                                    Tel: +91-79-22688700, 22686351
-                                                </p>
-                                                {/* <p className="mb-1 fs-14">
+                                            {/* Deductions Table */}
+                                            <div style={{ flex: 1 }}>
+                                                <table className="salary-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{ width: '70%' }}>कटौती विवरण / DEDUCTIONS</th>
+                                                            <th style={{ width: '30%' }}>राशि / AMOUNT (₹)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {Number(deductionForm?.income_tax) > 0 && (
+                                                            <tr>
+                                                                <td>आयकर / Income Tax</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.income_tax)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.professional_tax) > 0 && (
+                                                            <tr>
+                                                                <td>व्यवसाय कर / Professional Tax</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.professional_tax)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.license_fee) > 0 && (
+                                                            <tr>
+                                                                <td>लाइसेंस फीस / License Fee</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.license_fee)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.nfch_donation) > 0 && (
+                                                            <tr>
+                                                                <td>दान / NFCH Donation</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.nfch_donation)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.gpf) > 0 && (
+                                                            <tr>
+                                                                <td>सा.भ.नि./GPF</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.gpf)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.employee_contribution_10) > 0 && (
+                                                            <tr>
+                                                                <td>{employeeContributionRate}% NPS Employee Contribution</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.employee_contribution_10)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.govt_contribution_14_recovery) > 0 && (
+                                                            <tr>
+                                                                <td>{govtContributionRate}%  सरकारी योगदान रिकवरी / Govt. Contribution Rec.</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.govt_contribution_14_recovery)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.gis) > 0 && (
+                                                            <tr>
+                                                                <td>समूह बीमा योजना / GIS</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.gis)}</td>
+                                                            </tr>
+                                                        )}
+                                                        {Number(deductionForm?.computer_advance_installment) > 0 && (
+                                                            <tr>
+                                                                <td>कंप्यूटर ऋण किस्त / Computer Advance Installment</td>
+                                                                <td className="amount-col">{formatCurrency(deductionForm?.computer_advance_installment)}</td>
+                                                            </tr>
+                                                        )}
+
+                                                        {/* Add dynamic deductions */}
+                                                        {deductionForm?.deduction_recoveries?.map((obj, index) => (
+                                                            Number(obj.amount) > 0 && (
+                                                                <tr key={index}>
+                                                                    <td>{obj.type}</td>
+                                                                    <td className="amount-col">{formatCurrency(obj.amount)}</td>
+                                                                </tr>
+                                                            )
+                                                        ))}
+
+                                                        <tr className="total-row">
+                                                            <td><strong>कुल कटौती / TOTAL DEDUCTIONS</strong></td>
+                                                            <td className="amount-col"><strong>{formatCurrency(totalDeductionsCalc)}</strong></td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="net-pay">
+                                        शुद्ध वेतन / NET PAY (BEFORE ADDL. DEDUCTIONS): ₹ {formatCurrency(netPayCalc)}
+                                    </div>
+                                    <div className="additional-deductions">
+                                        <h3>अतिरिक्त कटौती / ADDITIONAL DEDUCTIONS</h3>
+                                        <div className="table-responsive">
+                                            <table className="deduction-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>जीवन बीमा निगम / LIC</td>
+                                                        <td className="amount">₹ {formatCurrency(deductionForm?.lic)}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>क्रेडिट सोसायटी / Credit Society</td>
+                                                        <td className="amount">₹ {formatCurrency(deductionForm?.credit_society)}</td>
+                                                    </tr>
+                                                    <tr style={{ background: '#f0f0f0' }}>
+                                                        <td><strong>कुल अतिरिक्त कटौती / Total Additional Deductions</strong></td>
+                                                        <td className="amount"><strong>₹ {formatCurrency(totalAdditionalDeductions)}</strong></td>
+                                                    </tr>
+                                                    <tr style={{ background: '#e0e0e0' }}>
+                                                        <td><strong>अंतिम शुद्ध वेतन / FINAL NET PAY</strong></td>
+                                                        <td className="amount"><strong>₹ {formatCurrency(finalNetPay)}</strong></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div className="slip-footer">
+                                        <p><strong>This is a computer-generated document and does not require a signature.</strong></p>
+                                    </div>
+
+                                    {
+                                        netSalaryData?.employee?.institute === 'NIOH' || netSalaryData?.employee?.institute === 'BOTH' ? (
+                                            <footer className="border-top pt-3 pb-3 bg-white">
+                                                <div className="container">
+                                                    <div className="row">
+                                                        {/* Left Section */}
+                                                        <div className="col-md-6">
+                                                            <p className="mb-1 fs-14">मेघानी नगर, अहमदाबाद</p>
+                                                            <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
+                                                            <p className="mb-0 fs-14">
+                                                                <span>Meghaninagar</span>, Ahmedabad,
+                                                                <p >  Gujarat – 380016, India</p>
+                                                            </p>
+                                                        </div>
+
+                                                        {/* Right Section */}
+                                                        <div className="col-md-6 text-md-right">
+                                                            <p className="mb-1 fs-14">
+                                                                Tel: +91-79-22688700, 22686351
+                                                            </p>
+                                                            {/* <p className="mb-1 fs-14">
                                                     Fax: +91-79-22686110
                                                 </p> */}
-                                                {/* <p className="mb-1 fs-14">
+                                                            {/* <p className="mb-1 fs-14">
                                                     PS to Director: +91-79-22688709, 22686340
                                                 </p>
                                                 <p className="mb-0 fs-14">
@@ -824,73 +834,75 @@ export default function PaySlipPage() {
                                                         https://nioh.org
                                                     </a>
                                                 </p> */}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </footer>
-                            ) : null
-                        }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </footer>
+                                        ) : null
+                                    }
 
-                        {
-                            netSalaryData?.employee?.institute === 'ROHC' ? (
-                                <footer className="border-top pt-3 pb-3 bg-white">
-                                    <div className="container">
-                                        <div className="row">
-                                            {/* Left Section */}
-                                            <div className="col-md-6">
-                                                <p className="mb-1 fs-14">
-                                                    आई. सी. एम. आर. - क्षेत्रीय व्यावसायिक स्वास्थ्य केन्द्र (दक्षिण) (एन. आई. ओ. एच.)
-                                                </p>
-                                                <p className="mb-1 fs-14">
-                                                    पूजनहल्ली मार्ग, कन्नमंगला पोस्ट, देवनहल्ली तालुक, बैंगलुरु-562110
-                                                </p>
-                                                <p className="mb-1 fw-bold fs-14">
-                                                    ICMR - Regional Occupational Health Centre (Southern), (NIOH)
-                                                </p>
-                                                <p className="mb-0 fs-14">
-                                                    Poojanahalli Road, Kannamangala Post, Devanahalli Taluk, Bangalore-562110 <br />
-                                                    Karnataka, INDIA
-                                                </p>
-                                            </div>
+                                    {
+                                        netSalaryData?.employee?.institute === 'ROHC' ? (
+                                            <footer className="border-top pt-3 pb-3 bg-white">
+                                                <div className="container">
+                                                    <div className="row">
+                                                        {/* Left Section */}
+                                                        <div className="col-md-6">
+                                                            <p className="mb-1 fs-14">
+                                                                आई. सी. एम. आर. - क्षेत्रीय व्यावसायिक स्वास्थ्य केन्द्र (दक्षिण) (एन. आई. ओ. एच.)
+                                                            </p>
+                                                            <p className="mb-1 fs-14">
+                                                                पूजनहल्ली मार्ग, कन्नमंगला पोस्ट, देवनहल्ली तालुक, बैंगलुरु-562110
+                                                            </p>
+                                                            <p className="mb-1 fw-bold fs-14">
+                                                                ICMR - Regional Occupational Health Centre (Southern), (NIOH)
+                                                            </p>
+                                                            <p className="mb-0 fs-14">
+                                                                Poojanahalli Road, Kannamangala Post, Devanahalli Taluk, Bangalore-562110 <br />
+                                                                Karnataka, INDIA
+                                                            </p>
+                                                        </div>
 
-                                            {/* Right Section */}
-                                            <div className="col-md-6 text-md-right mt-3 mt-md-0">
-                                                <p className="mb-1 fs-14">Mob : 9483507101</p>
-                                                <p className="mb-1 fs-14">Phone : 080-22172500/501</p>
-                                                <p className="mb-1 fs-14">FAX : 080-22172502</p>
-                                                <p className="mb-0 fs-14">
-                                                    Email :{" "}
-                                                    <a href="mailto:rohc-s-admin@icmr.gov.in" className="text-decoration-none">
-                                                        rohcs-admin@icmr.gov.in
-                                                    </a>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </footer>
-                            ) : null
-                        }
+                                                        {/* Right Section */}
+                                                        <div className="col-md-6 text-md-right mt-3 mt-md-0">
+                                                            <p className="mb-1 fs-14">Mob : 9483507101</p>
+                                                            <p className="mb-1 fs-14">Phone : 080-22172500/501</p>
+                                                            <p className="mb-1 fs-14">FAX : 080-22172502</p>
+                                                            <p className="mb-0 fs-14">
+                                                                Email :{" "}
+                                                                <a href="mailto:rohc-s-admin@icmr.gov.in" className="text-decoration-none">
+                                                                    rohcs-admin@icmr.gov.in
+                                                                </a>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </footer>
+                                        ) : null
+                                    }
 
-                    </div>
-                </div>
-            </Box>
+                                </div>
+                            </div>
+                        </Box>
 
-            {/* --- Modals (Preserved) --- */}
-            <PaySlipEditModal
-                isOpen={isPayModalOpen}
-                toggle={() => setPayModalOpen(false)}
-                data={payslipForm || {}}
-                employee={netSalaryData?.employee}
-                onSave={handlePaySave}
-            />
-            <DeductionEditModal
-                isOpen={isDeductionModalOpen}
-                toggle={() => setDeductionModalOpen(false)}
-                data={deductionForm || {}}
-                onSave={handleDeductionSave}
-                employee={netSalaryData?.employee}
-                netSalaryId={netSalaryData?.id}
-            />
+                        {/* --- Modals (Preserved) --- */}
+                        <PaySlipEditModal
+                            isOpen={isPayModalOpen}
+                            toggle={() => setPayModalOpen(false)}
+                            data={payslipForm || {}}
+                            employee={netSalaryData?.employee}
+                            onSave={handlePaySave}
+                        />
+                        <DeductionEditModal
+                            isOpen={isDeductionModalOpen}
+                            toggle={() => setDeductionModalOpen(false)}
+                            data={deductionForm || {}}
+                            onSave={handleDeductionSave}
+                            employee={netSalaryData?.employee}
+                            netSalaryId={netSalaryData?.id}
+                        />
+                    </>
+                )}
         </>
     );
 }

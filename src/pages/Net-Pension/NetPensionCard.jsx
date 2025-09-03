@@ -29,6 +29,7 @@ import { updateMonthlyPension } from '../../redux/slices/monthlyPensionSlice';
 import { updatePensionDeduction } from '../../redux/slices/pensionDeductionSlice';
 import PensionDeductionModal from '../../Modal/PensionDeductionModal';
 import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
+import { setIsReleasing } from '../../redux/slices/netSalarySlice';
 
 function NetPensionCard() {
     const dispatch = useDispatch();
@@ -42,6 +43,8 @@ function NetPensionCard() {
     const currentRoles = useSelector((state) =>
         state.auth.user?.roles?.map(role => role.name) || []
     );
+    const { isReleasing } = useSelector((state) => state.netSalary);
+    // const [isReleasing, setIsReleasing] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -256,6 +259,8 @@ function NetPensionCard() {
     };
 
     const handleStepRelease = (row) => {
+        // setIsReleasing(true);
+        dispatch(setIsReleasing(true))
         dispatch(releaseNetPension({ selected_id: [row.id] }))
             .unwrap()
             .then(() => {
@@ -264,6 +269,10 @@ function NetPensionCard() {
             })
             .catch((err) => {
                 toast.error(err || 'Failed to release net pension.');
+            })
+            .finally(() => {
+                // setIsReleasing(false);
+                dispatch(setIsReleasing(false))
             });
     };
 
@@ -313,309 +322,312 @@ function NetPensionCard() {
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
+            {
+                !isReleasing && (
+                    <>
+                        <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
 
-            <Box sx={{ p: 3 }} >
-                {
-                    <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
-                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
-                            {[
-                                { label: "Pensioners Operator", field: "pensioner_operator_status", timestampField: "pensioner_operator_date" },
-                                { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
-                                { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
-                                { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
-                            ].map(({ label, field, timestampField }) => {
-                                const isButtonClickable =
-                                    !netPensionData[field] &&      // 1. Must NOT be verified
-                                    field === statusField &&      // 2. Must be the current step's turn
-                                    userHasRoleForStep(field);    // 3. User must have the correct role
+                        <Box sx={{ p: 3 }} >
+                            {
+                                <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
+                                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
+                                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
+                                        {[
+                                            { label: "Pensioners Operator", field: "pensioner_operator_status", timestampField: "pensioner_operator_date" },
+                                            { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
+                                            { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
+                                            { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
+                                        ].map(({ label, field, timestampField }) => {
+                                            const isButtonClickable =
+                                                !netPensionData[field] &&      // 1. Must NOT be verified
+                                                field === statusField &&      // 2. Must be the current step's turn
+                                                userHasRoleForStep(field);    // 3. User must have the correct role
 
-                                const verificationTime = formatTimestamp(netPensionData[timestampField]);
+                                            const verificationTime = formatTimestamp(netPensionData[timestampField]);
 
-                                return (
-                                    <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
-                                        <Button
-                                            variant="contained"
-                                            color={netPensionData[field] ? "success" : "error"}
-                                            startIcon={netPensionData[field] ? <CheckCircleIcon /> : <CancelIcon />}
-                                            onClick={isButtonClickable ? () => !netPensionData[field] && handleStepVerification(netPensionData, field) : null}
-                                            // onClick={() => handleAdminVerify(field)}
-                                            sx={{
-                                                minWidth: 240,
-                                                fontWeight: 500,
-                                                // Improved cursor logic
-                                                cursor: isButtonClickable ? 'pointer' : (netPensionData[field] ? 'default' : 'not-allowed')
-                                            }}
-                                        >
-                                            {label} {netPensionData[field] ? "Verified" : "Verify"}
-                                        </Button>
-                                        {/* UPDATED: Conditionally render the formatted timestamp */}
-                                        {verificationTime && (
-                                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                                {verificationTime}
-                                            </Typography>
+                                            return (
+                                                <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color={netPensionData[field] ? "success" : "error"}
+                                                        startIcon={netPensionData[field] ? <CheckCircleIcon /> : <CancelIcon />}
+                                                        onClick={isButtonClickable ? () => !netPensionData[field] && handleStepVerification(netPensionData, field) : null}
+                                                        // onClick={() => handleAdminVerify(field)}
+                                                        sx={{
+                                                            minWidth: 240,
+                                                            fontWeight: 500,
+                                                            // Improved cursor logic
+                                                            cursor: isButtonClickable ? 'pointer' : (netPensionData[field] ? 'default' : 'not-allowed')
+                                                        }}
+                                                    >
+                                                        {label} {netPensionData[field] ? "Verified" : "Verify"}
+                                                    </Button>
+                                                    {/* UPDATED: Conditionally render the formatted timestamp */}
+                                                    {verificationTime && (
+                                                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                                            {verificationTime}
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            )
+                                        })}
+                                    </Stack>
+                                </Paper>
+                            }
+                        </Box>
+
+                        <Box sx={{ p: 3 }}>
+                            {/* --- Action Bar (Adapted from PaySlipPage) --- */}
+                            <Paper elevation={2} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                                    <IconButton onClick={() => {
+                                        if (currentRoles.includes("End Users")) {
+                                            navigate('/my-salary')
+                                        }
+                                        else {
+                                            navigate('/net-pension')
+                                        }
+                                    }}>
+                                        <ArrowBackIcon />
+                                    </IconButton>
+                                    <Typography variant="h5" sx={{ flexGrow: 1 }}>Pension Slip Details</Typography>
+
+                                    {/* --- UPDATED: Edit buttons with revised logic --- */}
+                                    {!netPensionData?.is_finalize && currentRoles.some(role => ['IT Admin', "Accounts Officer", 'Pensioners Operator', 'Drawing and Disbursing Officer (NIOH)', 'Section Officer (Accounts)'].includes(role)) && (
+                                        <>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<EditIcon />}
+                                                onClick={() => setMonthlyModalOpen(true)}
+                                            // disabled={areButtonsDisabled}
+                                            >
+                                                Pension
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<EditIcon />}
+                                                onClick={() => setDeductionModalOpen(true)}
+                                            // disabled={areButtonsDisabled}
+                                            >
+                                                Deductions
+                                            </Button>
+                                        </>
+                                    )}
+
+                                    {
+                                        currentRoles.includes("IT Admin") && !allStepsVerified && (
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                startIcon={<CheckCircleIcon />}
+                                                onClick={handleAdminVerify}
+                                                sx={{ m: 1 }}
+                                            >
+                                                Verify All
+                                            </Button>
                                         )}
-                                    </Box>
-                                )
-                            })}
-                        </Stack>
-                    </Paper>
-                }
-            </Box>
 
-            <Box sx={{ p: 3 }}>
-                {/* --- Action Bar (Adapted from PaySlipPage) --- */}
-                <Paper elevation={2} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-                        <IconButton onClick={() => {
-                            if (currentRoles.includes("End Users")) {
-                                navigate('/my-salary')
-                            }
-                            else {
-                                navigate('/net-pension')
-                            }
-                        }}>
-                            <ArrowBackIcon />
-                        </IconButton>
-                        <Typography variant="h5" sx={{ flexGrow: 1 }}>Pension Slip Details</Typography>
-
-                        {/* --- UPDATED: Edit buttons with revised logic --- */}
-                        {!netPensionData?.is_finalize && currentRoles.some(role => ['IT Admin', "Accounts Officer", 'Pensioners Operator', 'Drawing and Disbursing Officer (NIOH)', 'Section Officer (Accounts)'].includes(role)) && (
-                            <>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<EditIcon />}
-                                    onClick={() => setMonthlyModalOpen(true)}
-                                // disabled={areButtonsDisabled}
-                                >
-                                    Pension
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<EditIcon />}
-                                    onClick={() => setDeductionModalOpen(true)}
-                                // disabled={areButtonsDisabled}
-                                >
-                                    Deductions
-                                </Button>
-                            </>
-                        )}
-
-                        {
-                            currentRoles.includes("IT Admin") && !allStepsVerified && (
-                                <Button
-                                    variant="contained"
-                                    color="success"
-                                    startIcon={<CheckCircleIcon />}
-                                    onClick={handleAdminVerify}
-                                    sx={{ m: 1 }}
-                                >
-                                    Verify All
-                                </Button>
-                            )}
-
-                        {/* In the action bar, only show the verify button for the correct role and step */}
-                        {canVerify(netPensionData) && statusField && !allStepsVerified && (
-                            <Button
-                                variant="contained"
-                                color="success"
-                                startIcon={<CheckCircleIcon />}
-                                onClick={() => handleStepVerification(netPensionData, statusField)}
-                            >
-                                Verify
-                            </Button>
-                        )}
-
-                        {/* Only show the finalize button for the correct role and step */}
-                        {currentRoles.some(role => ['IT Admin', "Accounts Officer"].includes(role)) && (
-                            <>
-                                {
-                                    !netPensionData?.is_finalize && (
+                                    {/* In the action bar, only show the verify button for the correct role and step */}
+                                    {canVerify(netPensionData) && statusField && !allStepsVerified && (
                                         <Button
                                             variant="contained"
-                                            color="secondary"
-                                            startIcon={netPensionData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
-                                            onClick={() => handleStepFinalization(netPensionData)}
-                                            disabled={!allStepsVerified}
+                                            color="success"
+                                            startIcon={<CheckCircleIcon />}
+                                            onClick={() => handleStepVerification(netPensionData, statusField)}
                                         >
-                                            {netPensionData?.is_finalize ? "Finalized" : "Finalize"}
+                                            Verify
                                         </Button>
+                                    )}
 
-                                    )
-                                }
+                                    {/* Only show the finalize button for the correct role and step */}
+                                    {currentRoles.some(role => ['IT Admin', "Accounts Officer"].includes(role)) && (
+                                        <>
+                                            {
+                                                !netPensionData?.is_finalize && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        startIcon={netPensionData?.is_finalize ? <CheckCircleIcon /> : <CancelIcon />}
+                                                        onClick={() => handleStepFinalization(netPensionData)}
+                                                        disabled={!allStepsVerified}
+                                                    >
+                                                        {netPensionData?.is_finalize ? "Finalized" : "Finalize"}
+                                                    </Button>
 
-                                {
-                                    !netPensionData?.is_verified && (
-                                        <Button
-                                            variant="contained"
-                                            color="info"
-                                            startIcon={netPensionData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
-                                            onClick={() => handleStepRelease(netPensionData)}
-                                            disabled={!netPensionData?.is_finalize}
-                                        >
-                                            {netPensionData?.is_verified ? "Released" : "Release"}
-                                        </Button>
-                                    )
-                                }
-                            </>
-                        )}
+                                                )
+                                            }
 
-                        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
-                            Download
-                        </Button>
-                    </Stack>
-                </Paper>
+                                            {
+                                                !netPensionData?.is_verified && (
+                                                    <Button
+                                                        variant="contained"
+                                                        color="info"
+                                                        startIcon={netPensionData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
+                                                        onClick={() => handleStepRelease(netPensionData)}
+                                                        disabled={!netPensionData?.is_finalize }
+                                                    >
+                                                        {netPensionData?.is_verified ? "Released" : "Release"}
+                                                    </Button>
+                                                )
+                                            }
+                                        </>
+                                    )}
+
+                                    <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
+                                        Download
+                                    </Button>
+                                </Stack>
+                            </Paper>
 
 
-                {/* --- Redesigned Pension Slip Body --- */}
-                <div className="salary-slip-container" ref={pdfContainerRef}>
-                    <div className="salary-slip">
-                        <div className="slip-header">
-                            <div className="logo-section">
-                                <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />
-                            </div>
-                        </div>
-                        <div className="slip-title">
-                            पेंशन पर्ची / PENSION SLIP for {monthLabel} {netPensionData.year}
-                        </div>
-                        <div className="employee-info">
-                            <table className="info-table">
-                                <tbody>
-                                    <tr>
-                                        <td className="info-label">पीपीओ नंबर / PPO No.</td>
-                                        <td className="info-value">{pensioner?.ppo_no || 'N/A'}</td>
-                                        <td className="info-label">नाम / Name</td>
-                                        <td className="info-value">{pensioner?.name || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">संबंध / relation</td>
-                                        <td className="info-value">{pensioner?.relation || 'N/A'}</td>
-                                        <td className="info-label">पेंशन प्रकार / Pension Type</td>
-                                        <td className="info-value">{pensioner?.type_of_pension || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">मोबाइल नंबर / MoBILE No.</td>
-                                        <td className="info-value">{pensioner?.mobile_no}</td>
-                                        <td className="info-label">टिप्पणियाँ / remarks</td>
-                                        <td className="info-value">{monthly_pension?.remarks}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="info-label">ईमेल / Gmail</td>
-                                        <td className="info-value">{pensioner?.email || 'N/A'}</td>
-                                        <td className="info-label"></td>
-                                        <td className="info-value"></td>
-                                    </tr>
-                                    {/* <tr>
+                            {/* --- Redesigned Pension Slip Body --- */}
+                            <div className="salary-slip-container" ref={pdfContainerRef}>
+                                <div className="salary-slip">
+                                    <div className="slip-header">
+                                        <div className="logo-section">
+                                            <img src={logo} alt="NIOH Logo" className="slip-logo w-100" />
+                                        </div>
+                                    </div>
+                                    <div className="slip-title">
+                                        पेंशन पर्ची / PENSION SLIP for {monthLabel} {netPensionData.year}
+                                    </div>
+                                    <div className="employee-info">
+                                        <table className="info-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td className="info-label">पीपीओ नंबर / PPO No.</td>
+                                                    <td className="info-value">{pensioner?.ppo_no || 'N/A'}</td>
+                                                    <td className="info-label">नाम / Name</td>
+                                                    <td className="info-value">{pensioner?.name || 'N/A'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">संबंध / relation</td>
+                                                    <td className="info-value">{pensioner?.relation || 'N/A'}</td>
+                                                    <td className="info-label">पेंशन प्रकार / Pension Type</td>
+                                                    <td className="info-value">{pensioner?.type_of_pension || 'N/A'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">मोबाइल नंबर / MoBILE No.</td>
+                                                    <td className="info-value">{pensioner?.mobile_no}</td>
+                                                    <td className="info-label">टिप्पणियाँ / remarks</td>
+                                                    <td className="info-value">{monthly_pension?.remarks}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="info-label">ईमेल / Gmail</td>
+                                                    <td className="info-value">{pensioner?.email || 'N/A'}</td>
+                                                    <td className="info-label"></td>
+                                                    <td className="info-value"></td>
+                                                </tr>
+                                                {/* <tr>
                                         <td className='info-label'>बैंक खाता संख्या / Bank Account Number</td>
                                         <td className="info-value">{pensioner_bank?.account_no || 'N/A'}</td>
                                         <td></td>
                                         <td></td>
                                     </tr> */}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="salary-details">
-                            <table className="salary-table">
-                                <thead>
-                                    <tr>
-                                        <th style={{ width: '40%' }}>पेंशन विवरण / PENSION DETAILS</th>
-                                        <th style={{ width: '10%' }}>राशि / AMOUNT (₹)</th>
-                                        <th style={{ width: '40%' }}>कटौती / DEDUCTIONS</th>
-                                        <th style={{ width: '10%' }}>राशि / AMOUNT (₹)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {(() => {
-
-                                        // 1. Define the earnings and deductions as lists of objects.
-                                        const earnings = [
-                                            { label: 'मूल पेंशन / Basic Pension', value: monthly_pension?.basic_pension },
-
-                                            { label: 'अतिरिक्त पेंशन / Additional Pension', value: monthly_pension?.additional_pension },
-                                            { label: 'महंगाई राहत / Dearness Relief', value: monthly_pension?.dr_amount },
-                                            { label: 'चिकित्सा भत्ता / Medical Allowance', value: monthly_pension?.medical_allowance },
-                                            { label: 'कुल बकाया / Total Arrear', value: monthly_pension?.total_arrear },
-                                        ];
-
-                                        (monthly_pension.arrears || []).forEach(arrear => {
-                                            if (Number(arrear.amount) > 0) {
-                                                earnings.push({
-                                                    label: `बकाया / ${arrear.type || 'N/A'}`,
-                                                    value: arrear.amount
-                                                });
-                                            }
-                                        })
-
-                                        const deductions = [
-                                            { label: 'आयकर / Income Tax', value: pensioner_deduction?.income_tax },
-                                            { label: 'रिकवरी / Recovery', value: pensioner_deduction?.recovery },
-                                            { label: 'परिवर्तनीय पेंशन / Commutation Pension', value: pensioner_deduction?.commutation_amount },
-                                            { label: 'अन्य / Other', value: pensioner_deduction?.other },
-                                        ];
-
-                                        // 2. Filter out any items with a value of 0 or less.
-                                        const visibleEarnings = earnings.filter(item => Number(item.value) > 0);
-                                        const visibleDeductions = deductions.filter(item => Number(item.value) > 0);
-
-                                        // 3. Determine the number of rows needed for the table body.
-                                        const numRows = Math.max(visibleEarnings.length, visibleDeductions.length);
-
-                                        // 4. Dynamically generate the table rows.
-                                        return Array.from({ length: numRows }).map((_, index) => {
-                                            const earning = visibleEarnings[index];   // The earning for this row, if it exists.
-                                            const deduction = visibleDeductions[index]; // The deduction for this row, if it exists.
-
-                                            return (
-                                                <tr key={index}>
-                                                    {/* Earning Label and Amount */}
-                                                    <td>{earning ? earning.label : ''}</td>
-                                                    <td className="amount-col">{earning ? formatCurrency(earning.value) : ''}</td>
-
-                                                    {/* Deduction Label and Amount */}
-                                                    <td>{deduction ? deduction.label : ''}</td>
-                                                    <td className="amount-col">{deduction ? formatCurrency(deduction.value) : ''}</td>
-                                                </tr>
-                                            );
-                                        });
-                                    })()}
-
-                                    {/* The total row should always be displayed */}
-                                    <tr className="total-row">
-                                        <td><strong>कुल पेंशन / TOTAL PENSION</strong></td>
-                                        <td className="amount-col"><strong>{formatCurrency(totalPension)}</strong></td>
-                                        <td><strong>कुल कटौती / TOTAL DEDUCTIONS</strong></td>
-                                        <td className="amount-col"><strong>{formatCurrency(totalDeductions)}</strong></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="net-pay" style={{ fontSize: '1.2rem', padding: '15px 10px' }}>
-                            <strong>कुल देय पेंशन / NET PENSION PAYABLE:   ₹ {formatCurrency(netPensionData?.net_pension)}</strong>
-                        </div>
-                        <div className="slip-footer">
-                            <p><strong>यह कंप्यूटर जनरेटेड डॉक्यूमेंट है और इसमें हस्ताक्षर की आवश्यकता नहीं है</strong></p>
-                            <p><strong>This is a computer-generated document and does not require a signature</strong></p>
-                        </div>
-                        <footer className="border-top pt-3 pb-3 bg-white">
-                            <div className="container">
-                                <div className="row">
-                                    {/* Left Section */}
-                                    <div className="col-md-6">
-                                        <p className="mb-1 fs-14">मेघानी नगर, अहमदाबाद</p>
-                                        <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
-                                        <p className="mb-0 fs-14">
-                                            <span>Meghaninagar</span>, Ahmedabad,
-                                            <p >  Gujarat – 380016, India</p>
-                                        </p>
+                                            </tbody>
+                                        </table>
                                     </div>
+                                    <div className="salary-details">
+                                        <table className="salary-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style={{ width: '40%' }}>पेंशन विवरण / PENSION DETAILS</th>
+                                                    <th style={{ width: '10%' }}>राशि / AMOUNT (₹)</th>
+                                                    <th style={{ width: '40%' }}>कटौती / DEDUCTIONS</th>
+                                                    <th style={{ width: '10%' }}>राशि / AMOUNT (₹)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {(() => {
 
-                                    {/* Right Section */}
-                                    <div className="col-md-6 text-md-right">
-                                        <p className="mb-1 fs-14">
-                                            Tel: +91-79-22688700, 22686351
-                                        </p>
-                                        {/* <p className="mb-1 fs-14">
+                                                    // 1. Define the earnings and deductions as lists of objects.
+                                                    const earnings = [
+                                                        { label: 'मूल पेंशन / Basic Pension', value: monthly_pension?.basic_pension },
+
+                                                        { label: 'अतिरिक्त पेंशन / Additional Pension', value: monthly_pension?.additional_pension },
+                                                        { label: 'महंगाई राहत / Dearness Relief', value: monthly_pension?.dr_amount },
+                                                        { label: 'चिकित्सा भत्ता / Medical Allowance', value: monthly_pension?.medical_allowance },
+                                                        { label: 'कुल बकाया / Total Arrear', value: monthly_pension?.total_arrear },
+                                                    ];
+
+                                                    (monthly_pension.arrears || []).forEach(arrear => {
+                                                        if (Number(arrear.amount) > 0) {
+                                                            earnings.push({
+                                                                label: `बकाया / ${arrear.type || 'N/A'}`,
+                                                                value: arrear.amount
+                                                            });
+                                                        }
+                                                    })
+
+                                                    const deductions = [
+                                                        { label: 'आयकर / Income Tax', value: pensioner_deduction?.income_tax },
+                                                        { label: 'रिकवरी / Recovery', value: pensioner_deduction?.recovery },
+                                                        { label: 'परिवर्तनीय पेंशन / Commutation Pension', value: pensioner_deduction?.commutation_amount },
+                                                        { label: 'अन्य / Other', value: pensioner_deduction?.other },
+                                                    ];
+
+                                                    // 2. Filter out any items with a value of 0 or less.
+                                                    const visibleEarnings = earnings.filter(item => Number(item.value) > 0);
+                                                    const visibleDeductions = deductions.filter(item => Number(item.value) > 0);
+
+                                                    // 3. Determine the number of rows needed for the table body.
+                                                    const numRows = Math.max(visibleEarnings.length, visibleDeductions.length);
+
+                                                    // 4. Dynamically generate the table rows.
+                                                    return Array.from({ length: numRows }).map((_, index) => {
+                                                        const earning = visibleEarnings[index];   // The earning for this row, if it exists.
+                                                        const deduction = visibleDeductions[index]; // The deduction for this row, if it exists.
+
+                                                        return (
+                                                            <tr key={index}>
+                                                                {/* Earning Label and Amount */}
+                                                                <td>{earning ? earning.label : ''}</td>
+                                                                <td className="amount-col">{earning ? formatCurrency(earning.value) : ''}</td>
+
+                                                                {/* Deduction Label and Amount */}
+                                                                <td>{deduction ? deduction.label : ''}</td>
+                                                                <td className="amount-col">{deduction ? formatCurrency(deduction.value) : ''}</td>
+                                                            </tr>
+                                                        );
+                                                    });
+                                                })()}
+
+                                                {/* The total row should always be displayed */}
+                                                <tr className="total-row">
+                                                    <td><strong>कुल पेंशन / TOTAL PENSION</strong></td>
+                                                    <td className="amount-col"><strong>{formatCurrency(totalPension)}</strong></td>
+                                                    <td><strong>कुल कटौती / TOTAL DEDUCTIONS</strong></td>
+                                                    <td className="amount-col"><strong>{formatCurrency(totalDeductions)}</strong></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="net-pay" style={{ fontSize: '1.2rem', padding: '15px 10px' }}>
+                                        <strong>कुल देय पेंशन / NET PENSION PAYABLE:   ₹ {formatCurrency(netPensionData?.net_pension)}</strong>
+                                    </div>
+                                    <div className="slip-footer">
+                                        <p><strong>यह कंप्यूटर जनरेटेड डॉक्यूमेंट है और इसमें हस्ताक्षर की आवश्यकता नहीं है</strong></p>
+                                        <p><strong>This is a computer-generated document and does not require a signature</strong></p>
+                                    </div>
+                                    <footer className="border-top pt-3 pb-3 bg-white">
+                                        <div className="container">
+                                            <div className="row">
+                                                {/* Left Section */}
+                                                <div className="col-md-6">
+                                                    <p className="mb-1 fs-14">मेघानी नगर, अहमदाबाद</p>
+                                                    <p className="mb-1 fs-14">गुजरात, 380016, भारत</p>
+                                                    <p className="mb-0 fs-14">
+                                                        <span>Meghaninagar</span>, Ahmedabad,
+                                                        <p >  Gujarat – 380016, India</p>
+                                                    </p>
+                                                </div>
+
+                                                {/* Right Section */}
+                                                <div className="col-md-6 text-md-right">
+                                                    <p className="mb-1 fs-14">
+                                                        Tel: +91-79-22688700, 22686351
+                                                    </p>
+                                                    {/* <p className="mb-1 fs-14">
                                             Fax: +91-79-22686110
                                         </p>
                                         <p className="mb-1 fs-14">
@@ -630,29 +642,32 @@ function NetPensionCard() {
                                                 https://nioh.org
                                             </a>
                                         </p> */}
-                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </footer>
                                 </div>
                             </div>
-                        </footer>
-                    </div>
-                </div>
-            </Box>
+                        </Box>
 
-            {/* --- Modals (Preserved) --- */}
-            <MonthlyPensionModal
-                isOpen={isMonthlyModalOpen}
-                toggle={() => setMonthlyModalOpen(false)}
-                data={monthly_pension || {}}
-                onSave={handleMonthlySave}
-            />
+                        {/* --- Modals (Preserved) --- */}
+                        <MonthlyPensionModal
+                            isOpen={isMonthlyModalOpen}
+                            toggle={() => setMonthlyModalOpen(false)}
+                            data={monthly_pension || {}}
+                            onSave={handleMonthlySave}
+                        />
 
-            <PensionDeductionModal
-                isOpen={isDeductionModalOpen}
-                toggle={() => setDeductionModalOpen(false)}
-                data={pensioner_deduction || {}}
-                onSave={handleDeductionSave}
-                netPensionRecord={netPensionData}
-            />
+                        <PensionDeductionModal
+                            isOpen={isDeductionModalOpen}
+                            toggle={() => setDeductionModalOpen(false)}
+                            data={pensioner_deduction || {}}
+                            onSave={handleDeductionSave}
+                            netPensionRecord={netPensionData}
+                        />
+                    </>
+                )
+            }
 
         </>
     );

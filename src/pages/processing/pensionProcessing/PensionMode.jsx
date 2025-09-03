@@ -65,7 +65,7 @@ function PensionMode({mode,setmode}) {
                     mode === 'bulk' ? (
                         <>
                             <Grid size={{ xs: 12 }} >
-                                <TextField select required name="month" label="Month" value={bulkForm.month} fullWidth onChange={(e) => dispatch(bulkUpdateField({ name: 'month', value: e.target.value }))} disabled>
+                                <TextField select required name="month" label="Month" value={bulkForm.month} fullWidth onChange={(e) => dispatch(bulkUpdateField({ name: 'month', value: e.target.value }))} >
                                     {months.map((month) => (
                                         <MenuItem key={month.value} value={month.value}>
                                             {month.label}
@@ -74,7 +74,7 @@ function PensionMode({mode,setmode}) {
                                 </TextField>
                             </Grid>
                             <Grid size={{ xs: 12 }}>
-                                <TextField name="year" label="Year" value={bulkForm.year} fullWidth onChange={(e) => dispatch(bulkUpdateField({ name: 'year', value: e.target.value }))} disabled />
+                                <TextField name="year" label="Year" value={bulkForm.year} fullWidth onChange={(e) => dispatch(bulkUpdateField({ name: 'year', value: e.target.value }))}  />
                             </Grid>
                             <Grid item size={{ xs: 6 }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>

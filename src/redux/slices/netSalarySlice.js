@@ -6,7 +6,7 @@ export const fetchNetSalary = createAsyncThunk(
   "salary/fetchNetSalary",
   async ({ id, page, limit, month, year, verification_status, finalize_status }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/salary?page=${page}&limit=${limit}&month=${month??''}&year=${year??''}&is_verified=${verification_status??''}&employee_id=${id??''}&is_finalize=${finalize_status??''}`);
+      const response = await axiosInstance.get(`/salary?page=${page}&limit=${limit}&month=${month ?? ''}&year=${year ?? ''}&is_verified=${verification_status ?? ''}&employee_id=${id ?? ''}&is_finalize=${finalize_status ?? ''}`);
       return {
         data: response.data.data,
         totalCount: response.data.total_count
@@ -68,15 +68,15 @@ export const verifyNetSalary = createAsyncThunk(
 );
 
 export const verifyNetSalaryAdmin = createAsyncThunk(
-    "salary/verifyNetSalaryAdmin",
-    async (payload, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.post(`/verify-salary`, payload);
-            return response.data;
-        } catch (err) {
-            return rejectWithValue(err.response?.data?.errorMsg || err.message);
-        }
+  "salary/verifyNetSalaryAdmin",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/verify-salary`, payload);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.errorMsg || err.message);
     }
+  }
 );
 
 export const finalizeNetSalary = createAsyncThunk(
@@ -106,6 +106,7 @@ export const releaseNetSalary = createAsyncThunk(
 );
 
 const initialState = {
+  isReleasing: false,
   netSalary: [],
   netSalaryData: null,
   totalCount: 0,
@@ -116,6 +117,11 @@ const initialState = {
 const netSalarySlice = createSlice({
   name: 'netSalary',
   initialState,
+  reducers: {
+    setIsReleasing: (state, action) => {
+      state.isReleasing = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchNetSalary.pending, (state, action) => {
@@ -174,7 +180,7 @@ const netSalarySlice = createSlice({
       })
       .addCase(verifyNetSalary.fulfilled, (state, action) => {
         state.loading = false;
-        
+
       })
       .addCase(verifyNetSalaryAdmin.fulfilled, (state, action) => {
         state.loading = false;
@@ -188,4 +194,5 @@ const netSalarySlice = createSlice({
   }
 })
 
+export const { setIsReleasing } = netSalarySlice.actions;
 export default netSalarySlice.reducer;

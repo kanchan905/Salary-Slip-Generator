@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Autocomplete, Grid, IconButton, MenuItem, TextField, Typography, Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { updatePensionField, addArrear, updateArrear, removeArrear } from '../../../redux/slices/pensionSlice';
+import { updatePensionField, addArrear, updateArrear, removeArrear, updateAmount } from '../../../redux/slices/pensionSlice';
 import { fetchPensionRelated } from '../../../redux/slices/pensionRelatedSlice';
 import { fetchBankDetails } from '../../../redux/slices/bankSlice';
 import { fetchDearnessRelief } from '../../../redux/slices/dearnessRelief';
@@ -28,12 +28,12 @@ const ARREAR_TYPES = [
 const MonthlyPension = ({ pensioners, mode }) => {
   const [dearnessAmount, setDearnessAmount] = useState(0);
   const dispatch = useDispatch();
-  const { formData, dr_amount_overridden } = useSelector((state) => state.pension);
+  const { formData, dr_amount_overridden, isDrAmountManuallySet} = useSelector((state) => state.pension);
   const { pensionRelated } = useSelector((state) => state.info);
   const [selectedPensionerId, setSelectedPensionerId] = useState('');
   const { bankdetails } = useSelector((state) => state.bankdetail);
   const { dearness } = useSelector((state) => state.dearnessRelief);
-  const [isDrAmountManuallySet , setIsDrAmountManuallySet] = useState(false);
+  // const [isDrAmountManuallySet , setIsDrAmountManuallySet] = useState(false);
   // let netPayable = null;
 
   // Prefill processing date with the current date
@@ -84,32 +84,38 @@ const MonthlyPension = ({ pensioners, mode }) => {
       dispatch(updatePensionField({ name: 'medical_allowance', value: Number(selectedRecord.medical_allowance) || 0 }));
       dispatch(updatePensionField({ name: 'commutation_amount', value: Number(selectedRecord?.commutation_amount) || 0 }));
 
-      setIsDrAmountManuallySet(false);
+      // setIsDrAmountManuallySet(false);
+      dispatch(updateAmount({ status: false }));
     }
     if (['basic_pension', 'additional_pension', 'medical_allowance', 'dr_id'].includes(name)) {
-      setIsDrAmountManuallySet(false);
+      // setIsDrAmountManuallySet(false);
+      dispatch(updateAmount({ status: false }));
     }
   };
 
 
   useEffect(() => {
-    const basic = Number(formData.basic_pension) || 0;
-    const additional = Number(formData.additional_pension) || 0;
-    const medical = Number(formData.medical_allowance) || 0;
+    const basic = formData.basic_pension ;
+    const additional = formData.additional_pension ;
+    const medical = formData.medical_allowance;
 
     // Recalculate DR Amount when dr_id or related fields change
     const selectedDR = (dearness || []).find(dr => dr.id === formData.dr_id);
-    const drPercentage = selectedDR ? Number(selectedDR.dr_percentage) : 0;
-    const calculatedDrAmt = customRound(((basic + additional) * drPercentage) / 100);
+    const drPercentage = selectedDR ? selectedDR.dr_percentage : '';
+    const calculatedDrAmt = ((basic + additional) * drPercentage) / 100;
+    console.log("Calculated DR Amount:", calculatedDrAmt);
 
-    // if (formData.dr_amount !== calculatedDrAmt) {
-    //   dispatch(updatePensionField({ name: 'dr_amount', value: Number(dr_amount_overridden ? formData.dr_amount : calculatedDrAmt) }));
-    // }
-    if (!isDrAmountManuallySet) {
-      if (formData.dr_amount !== calculatedDrAmt) {
-        dispatch(updatePensionField({ name: 'dr_amount', value: calculatedDrAmt }));
-      }
-  }
+     if (!isDrAmountManuallySet) {
+    if (formData.dr_amount !== calculatedDrAmt) {
+      dispatch(updatePensionField({ name: 'dr_amount', value: Number(dr_amount_overridden  ? formData.dr_amount : customRound(calculatedDrAmt)) }));
+    }
+     }
+
+  //   if (!isDrAmountManuallySet) {
+  //     if (formData.dr_amount !== calculatedDrAmt) {
+  //       dispatch(updatePensionField({ name: 'dr_amount', value: calculatedDrAmt }));
+  //     }
+  // }
 
     const totalArrears = (formData.arrears || []).reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
     const netPayable = customRound(basic + additional + medical + formData.dr_amount + totalArrears);
@@ -124,7 +130,8 @@ const MonthlyPension = ({ pensioners, mode }) => {
     const { value } = e.target;
     dispatch(updatePensionField({ name: 'dr_amount', value: Number(value) }));
     // When the user types into the DR Amount field, set the flag
-    setIsDrAmountManuallySet(true);
+    // setIsDrAmountManuallySet(true);
+    dispatch(updateAmount({ status: true }));
   };
 
   return (
@@ -228,7 +235,7 @@ const MonthlyPension = ({ pensioners, mode }) => {
         </Grid>
 
         <Grid item size={{ xs: 4 }}>
-          <TextField name="dr_amount" label="DR Amount" fullWidth value={formData.dr_amount} onChange={drHandleChange} />
+          <TextField name="dr_amount" label="DR Amount" fullWidth value={dr_amount_overridden} onChange={drHandleChange} />
         </Grid>
 
 

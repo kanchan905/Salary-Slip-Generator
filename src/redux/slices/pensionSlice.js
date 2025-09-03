@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { customRound } from 'utils/helpers';
+import { updateStatus } from './pensionerSlice';
 
 
 export const validateStep = ({ formData, activeStep }) => {
@@ -48,11 +49,12 @@ export const validateStep = ({ formData, activeStep }) => {
 const initialState = {
     activeStep: 0,
     dr_amount_overridden: '',
+    isDrAmountManuallySet: false,
     formData: {
         pension_related_info_id: '',
         dr_id: '',
         remarks: '',
-        status: '',
+        status: 'Initiated',
         pensioner_id: '',
         pensioner_bank_id: '',
         month: '',
@@ -93,6 +95,10 @@ const pensionSlice = createSlice(({
         prevStep: (state) => {
             if (state.activeStep > 0) state.activeStep -= 1;
         },
+        updateAmount: (state, action) => {
+            const { status } = action.payload;
+            state.isDrAmountManuallySet = status;
+        },
         updatePensionField: (state, action) => {
             const { name, value } = action.payload;
             const isDateField = ['processing_date', 'payment_date'].includes(name);
@@ -106,13 +112,13 @@ const pensionSlice = createSlice(({
                 return `${year}-${month}-${day}`;
             };
 
-            // If user edits DR Amount manually → set override flag
+            
             if (name === "dr_amount") {
                 state.dr_amount_overridden = customRound(Number(value));
             }
 
             state.formData[name] = ['month', 'year'].includes(name)
-                ? customRound(Number(value) || 0)
+                ? customRound(Number(value))
                 : isDateField
                     ? formatDate(value)
                     : value;
@@ -158,5 +164,5 @@ const pensionSlice = createSlice(({
 }))
 
 
-export const { nextStep, prevStep, updatePensionField, bulkUpdateField, reset, addArrear, updateArrear, removeArrear } = pensionSlice.actions
+export const { updateAmount, nextStep, prevStep, updatePensionField, bulkUpdateField, reset, addArrear, updateArrear, removeArrear } = pensionSlice.actions
 export default pensionSlice.reducer;

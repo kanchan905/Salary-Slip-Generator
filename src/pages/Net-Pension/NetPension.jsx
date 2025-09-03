@@ -37,6 +37,8 @@ import { months } from 'utils/helpers';
 import { dateFormat } from 'utils/helpers';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { fetchPensioners } from '../../redux/slices/pensionerSlice';
+import Preloader from 'include/Preloader';
+import { setIsReleasing } from '../../redux/slices/netSalarySlice';
 
 
 export default function NetPension() {
@@ -47,6 +49,7 @@ export default function NetPension() {
         state.auth.user?.roles?.map(role => role.name) || []
     );
     const { netPension, loading } = useSelector((state) => state.netPension);
+      const {isReleasing } = useSelector((state) => state.netSalary);
     const totalCount = useSelector((state) => state.netPension?.totalCount) || 0;
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
@@ -78,6 +81,7 @@ export default function NetPension() {
     const [selectedIds, setSelectedIds] = useState([]);
     const canUserManageFinalization = currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role));
     const { pensioners } = useSelector((state) => state.pensioner);
+    // const [isReleasing, setIsReleasing] = useState(false);
 
 
     const toggleHistoryModal = () => {
@@ -121,7 +125,7 @@ export default function NetPension() {
             case "NetPension":
                 return {
                     head: [
-                        "Sr. No.", "Pensioner Code", "Month", "Year",
+                        "Sr. No.", "PPO No", "Month", "Year",
                         // Monthly Pension Details
                         "Basic Pension", "Additional Pension", "DR Amount", "Medical Allowance", 'Pay Arrear',
                         'Commutational Arrear',
@@ -137,7 +141,7 @@ export default function NetPension() {
                     firstRow: (
                         <tr className="bg-green text-white">
                             <td>{1}</td>
-                            <td>{data.pensioner?.employee?.employee_code || "N/A"}</td>
+                            <td>{data.pensioner?.ppo_no || "N/A"}</td>
                             <td>{months.find((m) => m.value === data.month)?.label || 'N/A'}</td>
                             <td>{data.year || 'N/A'}</td>
                             {/* Monthly Pension Data */}
@@ -174,7 +178,7 @@ export default function NetPension() {
                         return (
                             <tr key={record.id || index}>
                                 <td>{index + 2}</td>
-                                <td>{data.pensioner?.employee?.employee_code || "N/A"}</td>
+                                <td>{data.pensioner?.ppo_no || "N/A"}</td>
                                 <td>{months.find((m) => m.value === record.month)?.label || 'N/A'}</td>
                                 <td>{record.year || 'N/A'}</td>
                                 {/* Monthly Pension Data */}
@@ -302,7 +306,7 @@ export default function NetPension() {
             .unwrap()
             .then(() => {
                 toast.success("NetPension updated");
-                dispatch(fetchNetPension({ page, limit: rowsPerPage, month: '', year: '', ppo_no: '', user_id: '' , is_verified: ''}));
+                dispatch(fetchNetPension({ page, limit: rowsPerPage, month: '', year: '', ppo_no: '', user_id: '', is_verified: '' }));
             })
             .catch((err) => {
                 const apiMsg =
@@ -474,7 +478,7 @@ export default function NetPension() {
                     toast.success("Finalization request completed.");
                 }
 
-                fetchNetPension(); // Refresh the table
+                dispatch(fetchNetPension({ page: page + 1, limit: rowsPerPage, ...filters })); // Refresh the table
                 setSelectedIds([]); // Clear selection
             })
             .catch((err) => {
@@ -488,6 +492,8 @@ export default function NetPension() {
             toast.warn("Please select at least one record to release.");
             return;
         }
+        // setIsReleasing(true);
+        dispatch(setIsReleasing(true));
         dispatch(releaseNetPension({ selected_id: selectedIds }))
             .unwrap()
             .then((response) => {
@@ -530,240 +536,247 @@ export default function NetPension() {
                     toast.success("Release request completed.");
                 }
 
-                fetchNetPension(); // Refresh the table
+                dispatch(fetchNetPension({ page: page + 1, limit: rowsPerPage, ...filters })); // Refresh the table
                 setSelectedIds([]); // Clear selection
             })
             .catch((err) => {
                 const apiMsg = err?.response?.data?.message || err?.message || 'Release failed.';
                 toast.error(apiMsg);
+            })
+            .finally(() => {
+                // setIsReleasing(false);
+                dispatch(setIsReleasing(false));
             });
     };
 
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
-            <div className="mt--7 mb-7 container-fluid">
-                <Card className="card-stats mb-4 mb-lg-0">
-                    <CardHeader>
-                        <Box sx={{ p: 2, mb: 3, border: '1px solid #e0e0e0', borderRadius: '8px' }} className="cardheader-flex-group">
-                            <div className="cardheader-flex-left w-75">
-                                <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-                                    <Grid item size={{ xs: 6, md: 3 }} >
-                                        <FormControl fullWidth size="small">
-                                            <InputLabel>{"Month"}</InputLabel>
-                                            <Select
-                                                name="month"
-                                                value={filters.month}
-                                                label="Month"
-                                                onChange={(e) => setFilters({ ...filters, month: e.target.value })}
-                                            >
-                                                <MenuItem value="">All</MenuItem>
-                                                {months.map((month) => (
-                                                    <MenuItem key={month.value} value={month.value}>
-                                                        {month.label}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item size={{ xs: 6, md: 3 }} >
-                                        <TextField
-                                            label="Year"
-                                            name="year"
-                                            type="text"
-                                            size="small"
-                                            fullWidth
-                                            value={filters.year}
-                                            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-                                        />
-                                    </Grid>
-                                    <Grid item size={{ xs: 6, md: 3 }} >
-                                        <TextField
-                                            label="PPO No"
-                                            name="ppo_no"
-                                            type="text"
-                                            size="small"
-                                            fullWidth
-                                            value={filters.ppo_no}
-                                            onChange={(e) => setFilters({ ...filters, ppo_no: e.target.value })}
-                                        />
-                                    </Grid>
-                                    <Grid item size={{ xs: 6, md: 3 }} >
-                                        <FormControl fullWidth size="small">
-                                            <InputLabel>Pensioner</InputLabel>
-                                            <Select
-                                                name="user_id"
-                                                value={filters.user_id}
-                                                label="Pensioner"
-                                                onChange={(e) => setFilters({ ...filters, user_id: e.target.value })}
-                                            >
-                                                <MenuItem value="All"><em>All</em></MenuItem>
-                                                {pensioners.map((pensioner) => (
-                                                    <MenuItem key={pensioner.id} value={pensioner.user_id}>
-                                                        {pensioner.ppo_no} - {pensioner.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item size={{ xs: 6, md: 3 }}>
-                                        <FormControl fullWidth size="small">
-                                            <InputLabel>Verification Status</InputLabel>
-                                            <Select
-                                                name="is_verified"
-                                                value={filters.is_verified}
-                                                label="Verification Status"
-                                                onChange={(e) => setFilters({ ...filters, is_verified: e.target.value })}
-                                            >
-                                                <MenuItem value="All"><em>All</em></MenuItem>
-                                                <MenuItem value="1">Verified</MenuItem>
-                                                <MenuItem value="0">Not Verified</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item >
-                                        <Button style={{ background: "#004080", color: '#fff' }} onClick={handleSearch}>
-                                            Search
-                                        </Button>
-                                    </Grid>
-                                    <Grid item >
-                                        <Button color="secondary" onClick={handleClearFilters} className="ml-2">
-                                            Clear
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </div>
-                            {
-                                <div className="d-flex flex-column" style={{ gap: '10px' }}>
-                                    {currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
-                                        <Button
-                                            variant="contained"
-                                            style={{ background: "#004080", color: '#fff' }}
-                                            disabled={selectedIds.length === 0}
-                                            onClick={handleBulkStatusUpdate}
-                                            fullWidth
-                                        >
-                                            Verify
-                                        </Button>
-                                    )}
+            {
+                !isReleasing && (
+                    <>
+                        <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
+                        <div className="mt--7 mb-7 container-fluid">
+                            <Card className="card-stats mb-4 mb-lg-0">
+                                <CardHeader>
+                                    <Box sx={{ p: 2, mb: 3, border: '1px solid #e0e0e0', borderRadius: '8px' }} className="cardheader-flex-group">
+                                        <div className="cardheader-flex-left w-75">
+                                            <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                                                <Grid item size={{ xs: 6, md: 3 }} >
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>{"Month"}</InputLabel>
+                                                        <Select
+                                                            name="month"
+                                                            value={filters.month}
+                                                            label="Month"
+                                                            onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+                                                        >
+                                                            <MenuItem value="">All</MenuItem>
+                                                            {months.map((month) => (
+                                                                <MenuItem key={month.value} value={month.value}>
+                                                                    {month.label}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item size={{ xs: 6, md: 3 }} >
+                                                    <TextField
+                                                        label="Year"
+                                                        name="year"
+                                                        type="text"
+                                                        size="small"
+                                                        fullWidth
+                                                        value={filters.year}
+                                                        onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+                                                    />
+                                                </Grid>
+                                                <Grid item size={{ xs: 6, md: 3 }} >
+                                                    <TextField
+                                                        label="PPO No"
+                                                        name="ppo_no"
+                                                        type="text"
+                                                        size="small"
+                                                        fullWidth
+                                                        value={filters.ppo_no}
+                                                        onChange={(e) => setFilters({ ...filters, ppo_no: e.target.value })}
+                                                    />
+                                                </Grid>
+                                                <Grid item size={{ xs: 6, md: 3 }} >
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>Pensioner</InputLabel>
+                                                        <Select
+                                                            name="user_id"
+                                                            value={filters.user_id}
+                                                            label="Pensioner"
+                                                            onChange={(e) => setFilters({ ...filters, user_id: e.target.value })}
+                                                        >
+                                                            <MenuItem value="All"><em>All</em></MenuItem>
+                                                            {pensioners.map((pensioner) => (
+                                                                <MenuItem key={pensioner.id} value={pensioner.user_id}>
+                                                                    {pensioner.ppo_no} - {pensioner.name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item size={{ xs: 6, md: 3 }}>
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>Verification Status</InputLabel>
+                                                        <Select
+                                                            name="is_verified"
+                                                            value={filters.is_verified}
+                                                            label="Verification Status"
+                                                            onChange={(e) => setFilters({ ...filters, is_verified: e.target.value })}
+                                                        >
+                                                            <MenuItem value="All"><em>All</em></MenuItem>
+                                                            <MenuItem value="1">Verified</MenuItem>
+                                                            <MenuItem value="0">Not Verified</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item >
+                                                    <Button style={{ background: "#004080", color: '#fff' }} onClick={handleSearch}>
+                                                        Search
+                                                    </Button>
+                                                </Grid>
+                                                <Grid item >
+                                                    <Button color="secondary" onClick={handleClearFilters} className="ml-2">
+                                                        Clear
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                        </div>
+                                        {
+                                            <div className="d-flex flex-column" style={{ gap: '10px' }}>
+                                                {currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
+                                                    <Button
+                                                        variant="contained"
+                                                        style={{ background: "#004080", color: '#fff' }}
+                                                        disabled={selectedIds.length === 0}
+                                                        onClick={handleBulkStatusUpdate}
+                                                        fullWidth
+                                                    >
+                                                        Verify
+                                                    </Button>
+                                                )}
 
-                                    {canUserManageFinalization && (
-                                        <>
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                disabled={selectedIds.length === 0}
-                                                onClick={handleBulkFinalize}
-                                            >
-                                                Finalize
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                color="info"
-                                                disabled={selectedIds.length === 0}
-                                                onClick={handleBulkRelease}
-                                            >
-                                                Release
-                                            </Button>
-                                        </>
-                                    )}
+                                                {canUserManageFinalization && (
+                                                    <>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            disabled={selectedIds.length === 0}
+                                                            onClick={handleBulkFinalize}
+                                                        >
+                                                            Finalize
+                                                        </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="info"
+                                                            disabled={selectedIds.length === 0 || isReleasing}
+                                                            onClick={handleBulkRelease}
+                                                        >
+                                                            {isReleasing ? 'Releasing...' : 'Release'}
+                                                        </Button>
+                                                    </>
+                                                )}
 
-                                </div>
-                            }
-                        </Box>
-                    </CardHeader>
-                    <CardBody>
-                        <div>
-                            {loading ? (
-                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <CircularProgress />
-                                </Box>
-                            ) : (
-                                <TableContainer component={Paper} style={{ boxShadow: "none" }}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow style={{ whiteSpace: "nowrap" }}>
-                                                {
-                                                    currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
-                                                        <TableCell padding="checkbox">
-                                                            <Checkbox
-                                                                indeterminate={selectedIds.length > 0 && selectedIds.length < netPension.length}
-                                                                checked={netPension.length > 0 && selectedIds.length === netPension.length}
-                                                                onChange={handleSelectAll}
-                                                            />
-                                                        </TableCell>
-                                                    )}
-                                                <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>PPO NO.</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Pensioner</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Released</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {netPension.length === 0 ? (
-                                                <TableRow>
-                                                    <TableCell align="center" colSpan={currentRoles.some(role => ['IT Admin', "Section Officer (Accounts)", "Pensioners Operator"].includes(role)) ? 10 : 9}>No data available</TableCell>
-                                                </TableRow>
-                                            ) : (
-                                                <>
-                                                    {netPension.map((row, idx) => (
-                                                        <TableRow key={row.id} style={{ whiteSpace: "nowrap" }}>
+                                            </div>
+                                        }
+                                    </Box>
+                                </CardHeader>
+                                <CardBody>
+                                    <div>
+                                        {loading ? (
+                                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <CircularProgress />
+                                            </Box>
+                                        ) : (
+                                            <TableContainer component={Paper} style={{ boxShadow: "none" }}>
+                                                <Table>
+                                                    <TableHead>
+                                                        <TableRow style={{ whiteSpace: "nowrap" }}>
                                                             {
                                                                 currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
                                                                     <TableCell padding="checkbox">
                                                                         <Checkbox
-                                                                            checked={selectedIds.includes(row.id)}
-                                                                            onChange={() => handleSelect(row.id)}
+                                                                            indeterminate={selectedIds.length > 0 && selectedIds.length < netPension.length}
+                                                                            checked={netPension.length > 0 && selectedIds.length === netPension.length}
+                                                                            onChange={handleSelectAll}
                                                                         />
                                                                     </TableCell>
                                                                 )}
-                                                            <TableCell>{(page * rowsPerPage) + idx + 1}</TableCell>
-                                                            <TableCell>{row.pensioner?.ppo_no || "- -"}</TableCell>
-                                                            <TableCell>{row.pensioner?.name || "NA"}</TableCell>
-                                                            <TableCell>
-                                                                {months.find((m) => m.value === row.month)?.label || 'NA'}
-                                                            </TableCell>
-                                                            <TableCell>{row.year}</TableCell>
-                                                            <TableCell>{row.net_pension}</TableCell>
-                                                            <TableCell>{dateFormat(row.payment_date)}</TableCell>
-                                                            {/* {
+                                                            <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>PPO NO.</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Pensioner</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Released</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {netPension.length === 0 ? (
+                                                            <TableRow>
+                                                                <TableCell align="center" colSpan={currentRoles.some(role => ['IT Admin', "Section Officer (Accounts)", "Pensioners Operator"].includes(role)) ? 10 : 9}>No data available</TableCell>
+                                                            </TableRow>
+                                                        ) : (
+                                                            <>
+                                                                {netPension.map((row, idx) => (
+                                                                    <TableRow key={row.id} style={{ whiteSpace: "nowrap" }}>
+                                                                        {
+                                                                            currentRoles.some(role => ["Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "IT Admin"].includes(role)) && (
+                                                                                <TableCell padding="checkbox">
+                                                                                    <Checkbox
+                                                                                        checked={selectedIds.includes(row.id)}
+                                                                                        onChange={() => handleSelect(row.id)}
+                                                                                    />
+                                                                                </TableCell>
+                                                                            )}
+                                                                        <TableCell>{(page * rowsPerPage) + idx + 1}</TableCell>
+                                                                        <TableCell>{row.pensioner?.ppo_no || "- -"}</TableCell>
+                                                                        <TableCell>{row.pensioner?.name || "NA"}</TableCell>
+                                                                        <TableCell>
+                                                                            {months.find((m) => m.value === row.month)?.label || 'NA'}
+                                                                        </TableCell>
+                                                                        <TableCell>{row.year}</TableCell>
+                                                                        <TableCell>{row.net_pension}</TableCell>
+                                                                        <TableCell>{dateFormat(row.payment_date)}</TableCell>
+                                                                        {/* {
                                                                 currentRoles.includes('IT Admin') && ( */}
-                                                                    <TableCell>
-                                                                        <Box display="flex" gap={1}>
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.pensioner_operator_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Pensioner Operator"
-                                                                            />
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.ddo_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Drawing and Disbursing Officer"
-                                                                            />
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.section_officer_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Section Officer"
-                                                                            />
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.account_officer_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Accounts Officer"
-                                                                            />
-                                                                        </Box>
-                                                                    </TableCell>
-                                                                {/* )
+                                                                        <TableCell>
+                                                                            <Box display="flex" gap={1}>
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.pensioner_operator_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Pensioner Operator"
+                                                                                />
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.ddo_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Drawing and Disbursing Officer"
+                                                                                />
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.section_officer_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Section Officer"
+                                                                                />
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.account_officer_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Accounts Officer"
+                                                                                />
+                                                                            </Box>
+                                                                        </TableCell>
+                                                                        {/* )
                                                             } */}
 
-                                                            {/* {!currentRoles.includes('IT Admin') && (
+                                                                        {/* {!currentRoles.includes('IT Admin') && (
                                                                 <TableCell
                                                                     onClick={canVerify(row) && getCurrentVerificationStep(row).statusField ? () => handleStepVerification(row, getCurrentVerificationStep(row).statusField) : undefined}
                                                                     style={{ cursor: canVerify(row) && getCurrentVerificationStep(row).statusField ? 'pointer' : 'default' }}
@@ -777,86 +790,91 @@ export default function NetPension() {
                                                                 </TableCell>
                                                             )} */}
 
-                                                            <TableCell>
-                                                                <Box display="flex" gap={1}>
-                                                                    <CheckCircleIcon
-                                                                        fontSize="small"
-                                                                        sx={{ color: row.is_finalize === 1 ? 'green' : 'red' }}
-                                                                        titleAccess="Salary Processing Coordinator"
-                                                                    />
-                                                                </Box>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Box display="flex" gap={1}>
-                                                                    <CheckCircleIcon
-                                                                        fontSize="small"
-                                                                        sx={{ color: row.is_verified === 1 ? 'green' : 'red' }}
-                                                                        titleAccess="Salary Processing Coordinator"
-                                                                    />
-                                                                </Box>
-                                                            </TableCell>
+                                                                        <TableCell>
+                                                                            <Box display="flex" gap={1}>
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.is_finalize === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Salary Processing Coordinator"
+                                                                                />
+                                                                            </Box>
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            <Box display="flex" gap={1}>
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.is_verified === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Salary Processing Coordinator"
+                                                                                />
+                                                                            </Box>
+                                                                        </TableCell>
 
-                                                            <TableCell align="left">
-                                                                <IconButton onClick={(e) => handleMenuClick(e, row)}>
-                                                                    <MoreVertIcon />
-                                                                </IconButton>
-                                                                <Menu
-                                                                    anchorEl={anchorEl}
-                                                                    open={selectedRow === row}
-                                                                    onClose={handleClose}
-                                                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                                                >
-                                                                    {
-                                                                        currentRoles.some(role => ['IT Admin', 'Director', "Senior AO", "Administrative Officer", "Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
-                                                                            <MenuItem
-                                                                                onClick={() => handleView(row.id)}
+                                                                        <TableCell align="left">
+                                                                            <IconButton onClick={(e) => handleMenuClick(e, row)}>
+                                                                                <MoreVertIcon />
+                                                                            </IconButton>
+                                                                            <Menu
+                                                                                anchorEl={anchorEl}
+                                                                                open={selectedRow === row}
+                                                                                onClose={handleClose}
+                                                                                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                                             >
-                                                                                <ViewIcon fontSize="small" /> View
-                                                                            </MenuItem>
-                                                                        )}
-                                                                    <MenuItem onClick={() => handleHistoryStatus(row.id)}>
-                                                                        <HistoryIcon fontSize="small" /> History
-                                                                    </MenuItem>
+                                                                                {
+                                                                                    currentRoles.some(role => ['IT Admin', 'Director', "Senior AO", "Administrative Officer", "Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)"].includes(role)) && (
+                                                                                        <MenuItem
+                                                                                            onClick={() => handleView(row.id)}
+                                                                                        >
+                                                                                            <ViewIcon fontSize="small" /> View
+                                                                                        </MenuItem>
+                                                                                    )}
+                                                                                <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                                                                                    <HistoryIcon fontSize="small" /> History
+                                                                                </MenuItem>
 
-                                                                </Menu>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            )}
+                                                                            </Menu>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </>
+                                                        )}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        )}
+                                    </div>
+                                    <TablePagination
+                                        component="div"
+                                        count={totalCount}
+                                        page={page}
+                                        onPageChange={handlePageChange}
+                                        rowsPerPage={rowsPerPage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                    />
+                                </CardBody>
+                            </Card>
+                            <NetPensionModal
+                                setFormOpen={setFormOpen}
+                                formOpen={formOpen}
+                                toggleModal={toggleModal}
+                                formMode={formMode}
+                                formData={formData}
+                                handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                                handleSubmit={handleSubmit}
+                            />
                         </div>
-                        <TablePagination
-                            component="div"
-                            count={totalCount}
-                            page={page}
-                            onPageChange={handlePageChange}
-                            rowsPerPage={rowsPerPage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
+
+                        <HistoryModal
+                            isOpen={isHistoryModalOpen}
+                            toggle={toggleHistoryModal}
+                            tableHead={tableHead}
+                            historyRecord={historyRecord}
+                            renderRow={renderFunction}
+                            firstRow={firstRow}
                         />
-                    </CardBody>
-                </Card>
-                <NetPensionModal
-                    setFormOpen={setFormOpen}
-                    formOpen={formOpen}
-                    toggleModal={toggleModal}
-                    formMode={formMode}
-                    formData={formData}
-                    handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                    handleSubmit={handleSubmit}
-                />
-            </div>
-            <HistoryModal
-                isOpen={isHistoryModalOpen}
-                toggle={toggleHistoryModal}
-                tableHead={tableHead}
-                historyRecord={historyRecord}
-                renderRow={renderFunction}
-                firstRow={firstRow}
-            />
+                    </>
+                )
+            }
+
 
         </>
     );

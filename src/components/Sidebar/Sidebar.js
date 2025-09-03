@@ -3,13 +3,15 @@ import { Link, NavLink as RouterNavLink } from "react-router-dom";
 import { Navbar, Nav, NavItem, Container, Collapse } from "reactstrap";
 import logo from '../../assets/img/images/nioh_logo_white.png';
 import '../../assets/css/custom.css';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import Preloader from "include/Preloader";
 
 const NewSidebar = ({ routes }) => {
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { isReleasing } = useSelector((state) => state.netSalary);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -29,6 +31,10 @@ const NewSidebar = ({ routes }) => {
     dispatch(logout());
     navigate("/login");
   };
+
+  if(isReleasing){
+    return <Preloader />
+  }
 
   return (
     <>

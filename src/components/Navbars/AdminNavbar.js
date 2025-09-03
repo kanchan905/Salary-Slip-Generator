@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { appLogout } from '../../redux/slices/authSlice';
+import Preloader from "include/Preloader";
 
 
 const AdminNavbar = (props) => {
@@ -23,6 +24,7 @@ const AdminNavbar = (props) => {
   const { roles } = useSelector((state) => state.auth.user);
   const { name } = useSelector((state) => state.auth.user);
   const roleNames = roles.map(role => role.name).join(", ");
+  const { isReleasing } = useSelector((state) => state.netSalary);
   const navigate = useNavigate();
 
 
@@ -32,6 +34,10 @@ const AdminNavbar = (props) => {
     dispatch(appLogout());
     navigate("/login");
   }
+
+  if(isReleasing){
+      return null;
+    }
 
   return (
     <>

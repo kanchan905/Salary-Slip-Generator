@@ -75,9 +75,9 @@ const Login = () => {
         }, 100);
       }
     } catch (err) {
-      toast.error(err)
-      generateCaptcha(); // Also refresh CAPTCHA on login failure
-      setFieldValue('captcha', '');
+      toast.error("User ID or Password is incorrect")
+      // generateCaptcha(); 
+      // setFieldValue('captcha', '');
     } finally {
       setSubmitting(false);
     }

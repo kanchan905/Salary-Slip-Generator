@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
     fetchNetSalary,
-    createNetSalary,
+    setIsReleasing,
     updateNetSalary,
     viewNetSalary,
     verifyNetSalary,
@@ -35,6 +35,7 @@ import { months } from 'utils/helpers';
 import { dateFormat } from 'utils/helpers';
 import { fetchEmployees } from '../../redux/slices/employeeSlice';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Preloader from 'include/Preloader';
 
 
 export default function NetSalary() {
@@ -45,7 +46,7 @@ export default function NetSalary() {
         state.auth.user?.roles?.map(role => role.name) || []
     );
     const employees = useSelector((state) => state.employee.employees) || [];
-    const { netSalary, loading } = useSelector((state) => state.netSalary);
+    const { netSalary, loading, isReleasing } = useSelector((state) => state.netSalary);
     const totalCount = useSelector((state) => state.netSalary.totalCount) || 0;
     const { error } = useSelector((state) => state.netSalary)
     const [anchorEl, setAnchorEl] = useState(null);
@@ -81,6 +82,7 @@ export default function NetSalary() {
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
     const [firstRow, setFirstRow] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
+    // const [isReleasing, setIsReleasing] = useState(false); 
     const canUserManageFinalization = currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role));
 
 
@@ -669,11 +671,17 @@ export default function NetSalary() {
             });
     };
 
+
+
     const handleBulkRelease = () => {
         if (selectedIds.length === 0) {
             toast.warn("Please select at least one record to release.");
             return;
         }
+
+        // setIsReleasing(true); 
+        dispatch(setIsReleasing(true));
+
         dispatch(releaseNetSalary({ selected_id: selectedIds }))
             .unwrap()
             .then((response) => {
@@ -722,68 +730,75 @@ export default function NetSalary() {
             .catch((err) => {
                 const apiMsg = err?.response?.data?.message || err?.message || 'Release failed.';
                 toast.error(apiMsg);
+            })
+            .finally(() => {
+                // setIsReleasing(false); 
+                dispatch(setIsReleasing(false));
             });
     };
 
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
-            <div className="mt--7 mb-7 container-fluid">
-                <Card className="card-stats mb-4 mb-lg-0">
-                    <CardHeader>
-                        <Box sx={{ p: 2, mb: 3, border: '1px solid #e0e0e0', borderRadius: '8px' }} className="cardheader-flex-group">
-                            <div className="cardheader-flex-left w-75">
-                                <Grid container spacing={2} alignItems="center">
-                                    <Grid item size={{ xs: 6, md: 3 }} >
-                                        <FormControl fullWidth size="small">
-                                            <InputLabel>Employee</InputLabel>
-                                            <Select
-                                                name="id"
-                                                value={filters.id}
-                                                label="Emp Code"
-                                                onChange={handleFilterChange}
-                                            >
-                                                <MenuItem value="All"><em>All</em></MenuItem>
-                                                {employees.map((emp) => (
-                                                    <MenuItem key={emp.id} value={emp.id}>
-                                                        {emp.employee_code} - {emp.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item size={{ xs: 6, md: 3 }}>
-                                        <FormControl fullWidth size="small">
-                                            <InputLabel>Month</InputLabel>
-                                            <Select
-                                                name="month"
-                                                value={filters.month}
-                                                label="Month"
-                                                onChange={handleFilterChange}
-                                            >
-                                                <MenuItem value="All"><em>All</em></MenuItem>
-                                                {months.map((month) => (
-                                                    <MenuItem key={month.value} value={month.value}>
-                                                        {month.label}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item size={{ xs: 6, md: 3 }}>
-                                        <TextField
-                                            fullWidth
-                                            label="Year"
-                                            name="year"
-                                            value={filters.year}
-                                            onChange={handleFilterChange}
-                                            variant="outlined"
-                                            size="small"
-                                            type="text"
-                                        />
-                                    </Grid>
-                                    {/* {
+            {
+                !isReleasing && (
+                    <>
+                        <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
+                        <div className="mt--7 mb-7 container-fluid">
+                            <Card className="card-stats mb-4 mb-lg-0">
+                                <CardHeader>
+                                    <Box sx={{ p: 2, mb: 3, border: '1px solid #e0e0e0', borderRadius: '8px' }} className="cardheader-flex-group">
+                                        <div className="cardheader-flex-left w-75">
+                                            <Grid container spacing={2} alignItems="center">
+                                                <Grid item size={{ xs: 6, md: 3 }} >
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>Employee</InputLabel>
+                                                        <Select
+                                                            name="id"
+                                                            value={filters.id}
+                                                            label="Emp Code"
+                                                            onChange={handleFilterChange}
+                                                        >
+                                                            <MenuItem value="All"><em>All</em></MenuItem>
+                                                            {employees.map((emp) => (
+                                                                <MenuItem key={emp.id} value={emp.id}>
+                                                                    {emp.employee_code} - {emp.name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item size={{ xs: 6, md: 3 }}>
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>Month</InputLabel>
+                                                        <Select
+                                                            name="month"
+                                                            value={filters.month}
+                                                            label="Month"
+                                                            onChange={handleFilterChange}
+                                                        >
+                                                            <MenuItem value="All"><em>All</em></MenuItem>
+                                                            {months.map((month) => (
+                                                                <MenuItem key={month.value} value={month.value}>
+                                                                    {month.label}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item size={{ xs: 6, md: 3 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Year"
+                                                        name="year"
+                                                        value={filters.year}
+                                                        onChange={handleFilterChange}
+                                                        variant="outlined"
+                                                        size="small"
+                                                        type="text"
+                                                    />
+                                                </Grid>
+                                                {/* {
                                         currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role)) && (
                                             <> */}
                                                 <Grid item size={{ xs: 6, md: 3 }}>
@@ -802,177 +817,177 @@ export default function NetSalary() {
                                                     </FormControl>
                                                 </Grid>
                                                 <Grid item size={{ xs: 6, md: 3 }}>
-                                                <FormControl fullWidth size="small">
-                                                    <InputLabel>Finalization Status</InputLabel>
-                                                    <Select
-                                                        name="finalize_status"
-                                                        value={filters.finalize_status}
-                                                        label="Finalization Status"
-                                                        onChange={handleFilterChange}
-                                                    >
-                                                        <MenuItem value="All"><em>All</em></MenuItem>
-                                                        <MenuItem value="1">Finalized</MenuItem>
-                                                        <MenuItem value="0">Not Finalized</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-                                            </Grid>
-                                            {/* </>
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>Finalization Status</InputLabel>
+                                                        <Select
+                                                            name="finalize_status"
+                                                            value={filters.finalize_status}
+                                                            label="Finalization Status"
+                                                            onChange={handleFilterChange}
+                                                        >
+                                                            <MenuItem value="All"><em>All</em></MenuItem>
+                                                            <MenuItem value="1">Finalized</MenuItem>
+                                                            <MenuItem value="0">Not Finalized</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                {/* </>
                                         )
                                     } */}
 
-                                    <Grid item xs={12} md={3} container spacing={1} justifyContent="flex-start">
-                                        <Grid item>
-                                            <MuiButton variant="contained" onClick={handleSearch}>Search</MuiButton>
-                                        </Grid>
-                                        <Grid item>
-                                            <MuiButton variant="outlined" onClick={handleClearFilters}>Clear</MuiButton>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            </div>
-                            {
-                                <div className="d-flex flex-column" style={{ gap: '10px' }}>
-                                    {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
-                                        <Grid>
-                                            <MuiButton
-                                                variant="contained"
-                                                color="primary"
-                                                disabled={selectedIds.length === 0}
-                                                onClick={handleBulkStatusUpdate}
-                                            >
-                                                Verify
-                                            </MuiButton>
-                                        </Grid>
-                                    )}
-
-                                    {canUserManageFinalization && (
-                                        <>
-                                            <Grid item>
-                                                <MuiButton
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    disabled={selectedIds.length === 0}
-                                                    onClick={handleBulkFinalize}
-                                                >
-                                                    Finalize
-                                                </MuiButton>
+                                                <Grid item xs={12} md={3} container spacing={1} justifyContent="flex-start">
+                                                    <Grid item>
+                                                        <MuiButton variant="contained" onClick={handleSearch}>Search</MuiButton>
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <MuiButton variant="outlined" onClick={handleClearFilters}>Clear</MuiButton>
+                                                    </Grid>
+                                                </Grid>
                                             </Grid>
-                                            <Grid item>
-                                                <MuiButton
-                                                    variant="contained"
-                                                    color="info"
-                                                    disabled={selectedIds.length === 0}
-                                                    onClick={handleBulkRelease}
-                                                >
-                                                    Release
-                                                </MuiButton>
-                                            </Grid>
-                                        </>
-                                    )}
-                                </div>
-                            }
+                                        </div>
+                                        {
+                                            <div className="d-flex flex-column" style={{ gap: '10px' }}>
+                                                {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                    <Grid>
+                                                        <MuiButton
+                                                            variant="contained"
+                                                            color="primary"
+                                                            disabled={selectedIds.length === 0}
+                                                            onClick={handleBulkStatusUpdate}
+                                                        >
+                                                            Verify
+                                                        </MuiButton>
+                                                    </Grid>
+                                                )}
 
-                        </Box>
-                    </CardHeader>
-                    <CardBody>
-                        <div className="custom-scrollbar">
-                            {loading ? (
-                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <CircularProgress />
-                                </Box>
-                            ) : (
-                                <TableContainer component={Paper} style={{ boxShadow: "none" }}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                {
-                                                    currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "IT Admin"].includes(role)) && (
-                                                        <TableCell padding="checkbox">
-                                                            <Checkbox
-                                                                indeterminate={selectedIds?.length > 0 && selectedIds?.length < netSalary?.length}
-                                                                checked={netSalary?.length > 0 && selectedIds?.length === netSalary?.length}
-                                                                onChange={handleSelectAll}
-                                                                inputProps={{ 'aria-label': 'select all rows' }}
-                                                            />
-                                                        </TableCell>
-                                                    )}
-                                                <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Emp Code</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Released</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {netSalary?.length === 0 ? (
-                                                <TableRow>
-                                                    <TableCell align="center" colSpan={currentRoles.some(role => ['IT Admin', "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) ? 10 : 9}>No data available</TableCell>
-                                                </TableRow>
-                                            ) : (
-                                                <>
-                                                    {netSalary?.map((row, idx) => (
-                                                        <TableRow key={row.id}>
+                                                {canUserManageFinalization && (
+                                                    <>
+                                                        <Grid item>
+                                                            <MuiButton
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                disabled={selectedIds.length === 0}
+                                                                onClick={handleBulkFinalize}
+                                                            >
+                                                                Finalize
+                                                            </MuiButton>
+                                                        </Grid>
+                                                        <Grid item>
+                                                            <MuiButton
+                                                                variant="contained"
+                                                                color="info"
+                                                                disabled={selectedIds.length === 0}
+                                                                onClick={handleBulkRelease}
+                                                            >
+                                                                Release
+                                                            </MuiButton>
+                                                        </Grid>
+                                                    </>
+                                                )}
+                                            </div>
+                                        }
+
+                                    </Box>
+                                </CardHeader>
+                                <CardBody>
+                                    <div className="custom-scrollbar">
+                                        {(loading) ? (
+                                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                                                <CircularProgress />
+                                            </Box>
+                                        ) : (
+                                            <TableContainer component={Paper} style={{ boxShadow: "none" }}>
+                                                <Table>
+                                                    <TableHead>
+                                                        <TableRow>
                                                             {
                                                                 currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "IT Admin"].includes(role)) && (
                                                                     <TableCell padding="checkbox">
                                                                         <Checkbox
-                                                                            checked={selectedIds.includes(row.id)}
-                                                                            onChange={() => handleSelect(row.id)}
-                                                                            inputProps={{ 'aria-label': `select row ${row.id}` }}
+                                                                            indeterminate={selectedIds?.length > 0 && selectedIds?.length < netSalary?.length}
+                                                                            checked={netSalary?.length > 0 && selectedIds?.length === netSalary?.length}
+                                                                            onChange={handleSelectAll}
+                                                                            inputProps={{ 'aria-label': 'select all rows' }}
                                                                         />
                                                                     </TableCell>
                                                                 )}
-                                                            <TableCell>{(page * rowsPerPage) + idx + 1}</TableCell>
-                                                            <TableCell>{row?.employee?.employee_code}</TableCell>
-                                                            <TableCell>{row.employee?.name}</TableCell>
-                                                            <TableCell>
-                                                                {months.find((m) => m.value === row.month)?.label || 'NA'}
-                                                            </TableCell>
-                                                            <TableCell>{row.year}</TableCell>
-                                                            <TableCell>{row?.employee?.institute}</TableCell>
-                                                            <TableCell>{dateFormat(row.processing_date)}</TableCell>
-                                                            <TableCell>{dateFormat(row.payment_date)}</TableCell>
-                                                            <TableCell>{row.net_amount}</TableCell>
-                                                            {/* {
+                                                            <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Emp Code</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Released</TableCell>
+                                                            <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {netSalary?.length === 0 ? (
+                                                            <TableRow>
+                                                                <TableCell align="center" colSpan={currentRoles.some(role => ['IT Admin', "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) ? 10 : 9}>No data available</TableCell>
+                                                            </TableRow>
+                                                        ) : (
+                                                            <>
+                                                                {netSalary?.map((row, idx) => (
+                                                                    <TableRow key={row.id}>
+                                                                        {
+                                                                            currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "IT Admin"].includes(role)) && (
+                                                                                <TableCell padding="checkbox">
+                                                                                    <Checkbox
+                                                                                        checked={selectedIds.includes(row.id)}
+                                                                                        onChange={() => handleSelect(row.id)}
+                                                                                        inputProps={{ 'aria-label': `select row ${row.id}` }}
+                                                                                    />
+                                                                                </TableCell>
+                                                                            )}
+                                                                        <TableCell>{(page * rowsPerPage) + idx + 1}</TableCell>
+                                                                        <TableCell>{row?.employee?.employee_code}</TableCell>
+                                                                        <TableCell>{row.employee?.name}</TableCell>
+                                                                        <TableCell>
+                                                                            {months.find((m) => m.value === row.month)?.label || 'NA'}
+                                                                        </TableCell>
+                                                                        <TableCell>{row.year}</TableCell>
+                                                                        <TableCell>{row?.employee?.institute}</TableCell>
+                                                                        <TableCell>{dateFormat(row.processing_date)}</TableCell>
+                                                                        <TableCell>{dateFormat(row.payment_date)}</TableCell>
+                                                                        <TableCell>{row.net_amount}</TableCell>
+                                                                        {/* {
                                                                 currentRoles.includes('IT Admin') && ( */}
-                                                                    <TableCell>
-                                                                        <Box display="flex" gap={1}>
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.salary_processing_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Salary Processing Coordinator"
-                                                                            />
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.ddo_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Drawing and Disbursing Officer"
-                                                                            />
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.section_officer_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Section Officer"
-                                                                            />
-                                                                            <CheckCircleIcon
-                                                                                fontSize="small"
-                                                                                sx={{ color: row.account_officer_status === 1 ? 'green' : 'red' }}
-                                                                                titleAccess="Accounts Officer"
-                                                                            />
-                                                                        </Box>
-                                                                    </TableCell>
-                                                                {/* )
+                                                                        <TableCell>
+                                                                            <Box display="flex" gap={1}>
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.salary_processing_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Salary Processing Coordinator"
+                                                                                />
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.ddo_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Drawing and Disbursing Officer"
+                                                                                />
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.section_officer_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Section Officer"
+                                                                                />
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.account_officer_status === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Accounts Officer"
+                                                                                />
+                                                                            </Box>
+                                                                        </TableCell>
+                                                                        {/* )
                                                             } */}
 
 
 
-                                                            {/* {
+                                                                        {/* {
                                                                 !currentRoles.includes('IT Admin') && (
                                                                     <TableCell>
                                                                         <Chip
@@ -1004,84 +1019,89 @@ export default function NetSalary() {
                                                                 )
                                                             } */}
 
-                                                            <TableCell>
-                                                                <Box display="flex" gap={1}>
-                                                                    <CheckCircleIcon
-                                                                        fontSize="small"
-                                                                        sx={{ color: row.is_finalize === 1 ? 'green' : 'red' }}
-                                                                        titleAccess="Salary Processing Coordinator"
-                                                                    />
-                                                                </Box>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Box display="flex" gap={1}>
-                                                                    <CheckCircleIcon
-                                                                        fontSize="small"
-                                                                        sx={{ color: row.is_verified === 1 ? 'green' : 'red' }}
-                                                                        titleAccess="Salary Processing Coordinator"
-                                                                    />
-                                                                </Box>
-                                                            </TableCell>
-                                                            <TableCell align="left">
-                                                                <IconButton onClick={(e) => handleMenuClick(e, row)}>
-                                                                    <MoreVertIcon />
-                                                                </IconButton>
-                                                                <Menu
-                                                                    anchorEl={anchorEl}
-                                                                    open={selectedRow === row}
-                                                                    onClose={handleClose}
-                                                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                                                >
-                                                                    {
-                                                                        currentRoles.some(role => ['IT Admin', 'Director', "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
-                                                                            <MenuItem
-                                                                                onClick={() => handleView(row.id)}
+                                                                        <TableCell>
+                                                                            <Box display="flex" gap={1}>
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.is_finalize === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Salary Processing Coordinator"
+                                                                                />
+                                                                            </Box>
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            <Box display="flex" gap={1}>
+                                                                                <CheckCircleIcon
+                                                                                    fontSize="small"
+                                                                                    sx={{ color: row.is_verified === 1 ? 'green' : 'red' }}
+                                                                                    titleAccess="Salary Processing Coordinator"
+                                                                                />
+                                                                            </Box>
+                                                                        </TableCell>
+                                                                        <TableCell align="left">
+                                                                            <IconButton onClick={(e) => handleMenuClick(e, row)}>
+                                                                                <MoreVertIcon />
+                                                                            </IconButton>
+                                                                            <Menu
+                                                                                anchorEl={anchorEl}
+                                                                                open={selectedRow === row}
+                                                                                onClose={handleClose}
+                                                                                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                                             >
-                                                                                <ViewIcon fontSize="small" /> View
-                                                                            </MenuItem>
-                                                                        )}
-                                                                    <MenuItem onClick={() => handleHistoryStatus(row.id)}>
-                                                                        <HistoryIcon fontSize="small" /> History
-                                                                    </MenuItem>
-                                                                </Menu>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            )}
+                                                                                {
+                                                                                    currentRoles.some(role => ['IT Admin', 'Director', "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                                                        <MenuItem
+                                                                                            onClick={() => handleView(row.id)}
+                                                                                        >
+                                                                                            <ViewIcon fontSize="small" /> View
+                                                                                        </MenuItem>
+                                                                                    )}
+                                                                                <MenuItem onClick={() => handleHistoryStatus(row.id)}>
+                                                                                    <HistoryIcon fontSize="small" /> History
+                                                                                </MenuItem>
+                                                                            </Menu>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </>
+                                                        )}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        )}
+                                    </div>
+                                    <TablePagination
+                                        component="div"
+                                        count={totalCount}
+                                        page={page}
+                                        onPageChange={handlePageChange}
+                                        rowsPerPage={rowsPerPage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                    />
+                                </CardBody>
+                            </Card>
+                            <NetSalaryModal
+                                setFormOpen={setFormOpen}
+                                formOpen={formOpen}
+                                toggleModal={toggleModal}
+                                formMode={formMode}
+                                formData={formData}
+                                handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                                handleSubmit={handleSubmit}
+                            />
                         </div>
-                        <TablePagination
-                            component="div"
-                            count={totalCount}
-                            page={page}
-                            onPageChange={handlePageChange}
-                            rowsPerPage={rowsPerPage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
+
+                        <HistoryModal
+                            isOpen={isHistoryModalOpen}
+                            toggle={toggleHistoryModal}
+                            tableHead={tableHead}
+                            historyRecord={historyRecord}
+                            renderRow={renderFunction}
+                            firstRow={firstRow}
                         />
-                    </CardBody>
-                </Card>
-                <NetSalaryModal
-                    setFormOpen={setFormOpen}
-                    formOpen={formOpen}
-                    toggleModal={toggleModal}
-                    formMode={formMode}
-                    formData={formData}
-                    handleChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                    handleSubmit={handleSubmit}
-                />
-            </div>
-            <HistoryModal
-                isOpen={isHistoryModalOpen}
-                toggle={toggleHistoryModal}
-                tableHead={tableHead}
-                historyRecord={historyRecord}
-                renderRow={renderFunction}
-                firstRow={firstRow}
-            />
+                    </>
+                )
+            }
+
         </>
     );
 }
