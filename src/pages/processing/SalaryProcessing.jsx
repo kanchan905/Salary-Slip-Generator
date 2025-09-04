@@ -485,7 +485,7 @@ const SalaryProcessing = () => {
             await dispatch(createBulkSalry(bulkForm)).unwrap()
                 .then((response) => {
                     toast.success('Bulk salary processing initiated successfully!');
-                    response?.warnings?.forEach((e) => toast.info(e));
+                    toast.warn(response?.warnings?.join(', '));
                     dispatch(resetBulkState());
                     navigate(`/net-salary?month=${month}&year=${year}`)
                 })

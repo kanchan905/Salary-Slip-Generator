@@ -37,7 +37,7 @@ const PensionStepper = () => {
     }, [dispatch])
 
 
-    const handleNext = async() => {
+    const handleNext = async () => {
         if (activeStep === 0 && mode == 'bulk') {
             handleSubmit();
             return;
@@ -62,7 +62,7 @@ const PensionStepper = () => {
                     return;
                 }
 
-               const arrearSchema = Yup.array().of(
+                const arrearSchema = Yup.array().of(
                     Yup.object().shape({
                         type: Yup.string().required("Arrear Type is required"),
                         amount: Yup.number()
@@ -97,9 +97,7 @@ const PensionStepper = () => {
                 await dispatch(createBulkPension(bulkForm)).unwrap()
                     .then((response) => {
                         toast.success('Bulk Pension submitted successfully!');
-                        response?.warnings?.forEach(warning => {
-                            toast.warn(warning);
-                        });
+                        toast.warn(response?.warnings?.join(', '));
                         dispatch(reset());
                         navigate(`/net-pension?month=${month}&year=${year}`)
                     })
