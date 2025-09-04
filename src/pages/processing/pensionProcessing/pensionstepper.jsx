@@ -95,8 +95,11 @@ const PensionStepper = () => {
             if (mode === 'bulk') {
                 const { month, year } = bulkForm;
                 await dispatch(createBulkPension(bulkForm)).unwrap()
-                    .then(() => {
+                    .then((response) => {
                         toast.success('Bulk Pension submitted successfully!');
+                        response?.warnings?.forEach(warning => {
+                            toast.warn(warning);
+                        });
                         dispatch(reset());
                         navigate(`/net-pension?month=${month}&year=${year}`)
                     })

@@ -25,7 +25,7 @@ export default function ViewSalary() {
 
     // --- State from the NEW viewSalary slice ---
     const { viewSalary, loading, totalCount } = useSelector((state) => state.viewSalary);
-    console.log('viewSalary:', viewSalary);
+
 
     // --- Component State ---
     const [anchorEl, setAnchorEl] = useState(null);

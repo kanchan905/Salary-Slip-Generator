@@ -87,7 +87,6 @@ const PensionSlip = ({ formData, PensionerDetail, drDetails }) => {
           <div className="employee-info">
             <table className="info-table">
               <tbody>
-                {console.log('PensionerDetail:', PensionerDetail)}
                 <tr>
                   <td className="info-label">कर्मचारी कोड / Emp. Code</td>
                   <td className="info-value">{PensionerDetail?.pensioner?.employee?.employee_code || 'N/A'}</td>
@@ -274,7 +273,6 @@ const FinalizePension = () => {
     return <Box sx={{ p: 3, textAlign: 'center' }}>Loading pensioner details or pensioner not found. Please go back and select a pensioner.</Box>;
   }
 
-  console.log('Selected Pension Info:', selectedPensionInfo);
 
   // Pass the pensioner's static details (like name, PPO no)
   const PensionerDetail = {

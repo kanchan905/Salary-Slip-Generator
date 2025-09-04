@@ -71,7 +71,6 @@ const SessionTimeoutManager = ({ children }) => {
     // If the Redux session ID is different from the cookie's, it's a new login.
     // We must update the cookies with the new session details.
     if (localSessionId !== canonicalSessionId) {
-      console.log('New session detected. Initializing session tracking.');
       const now = Date.now();
       const cookieOptions = {
         path: '/',

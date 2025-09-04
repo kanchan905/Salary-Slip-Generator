@@ -88,8 +88,7 @@ const SalaryProcessing = () => {
     const [EditMode, SetEditMode] = useState(false);
 
 
-    // console.log("FormData: ", formData);
-    // console.log("Payst: ", payStructure);
+ 
 
     const typeOptions = [
         'NPA Arrear',
@@ -255,26 +254,16 @@ const SalaryProcessing = () => {
     }, [dispatch, EmployeeDetail, payStructure, formData.employee_id, isHraEligible, isUniformEligible, hraList, npaList, daList, uniformList, transportList]);
 
 
-    // useEffect(() => {
-    //     if (calculationComplete && selectNext && isProcessing) {
-    //         console.log("Calculation completed, proceeding to next step");
-    //     }
-    // }, [calculationComplete, selectNext, isProcessing]);
-
-    // *** CENTRALIZED CALCULATION ENGINE ***
+    
     useEffect(() => {
         const structure = payStructure.find((s) => s.employee_id === formData.employee_id);
-        console.log("Structure:", structure);
-        console.log("NPS Rates - Govt:", govtContributionRate, "Employee:", employeeContributionRate);
-        console.log("SelectNext triggered:", selectNext);
+ 
 
         // Check for basic required data - only return if absolutely essential data is missing
         if (!structure || !EmployeeDetail) {
-            console.log("Missing essential data - structure or EmployeeDetail");
             return;
         }
 
-        console.log("Proceeding with calculation - will handle missing rate data gracefully");
 
         const calculatedPayload = {};
         const local_basic_pay = EditMode ? Number(formData.basic_pay) : structure?.pay_matrix_cell?.amount;
@@ -356,7 +345,6 @@ const SalaryProcessing = () => {
         if (EmployeeDetail.pension_scheme === 'NPS') {
             // Check if NPS rates are available before calculating
             if (govtContributionRate === null || employeeContributionRate === null || npsContribution?.loading) {
-                console.log("NPS rates not yet available or loading, skipping NPS calculation");
                 calculatedPayload.employee_contribution_10 = 0;
                 calculatedPayload.govt_contribution_14_recovery = 0;
                 calculatedPayload.govt_contribution = 0;
@@ -369,7 +357,6 @@ const SalaryProcessing = () => {
                 calculatedPayload.govt_contribution_14_recovery = govtContribution;
                 calculatedPayload.govt_contribution = govtContribution;
                 calculatedPayload.gpf = 0;
-                console.log("NPS calculation successful - Govt Contribution:", govtContribution);
             }
         } else if (EmployeeDetail.pension_scheme === 'GPF') {
             // calculatedPayload.gpf = customRound((formData.gpf / 100) * (calculatedPayload.pay_plus_npa));
@@ -406,7 +393,7 @@ const SalaryProcessing = () => {
             ...deductionDynamicObjects.map((obj) => Number(obj.amount) || 0)
         ].reduce((sum, val) => sum + (Number(val) || 0), 0);
 
-        console.log("Total Deductions:", totalDeductions);
+       
 
         calculatedPayload.total_deductions = totalDeductions;
 
@@ -422,11 +409,11 @@ const SalaryProcessing = () => {
         // setSelectNext(false)
         setCalculationComplete(true);
 
-        console.log("Calculation completed successfully:", calculatedPayload);
+    
 
         // If this was triggered by selectNext, we can now proceed
         if (selectNext) {
-            console.log("Calculation completed after selectNext, ready to proceed");
+           
         }
     }, [
         // Core data triggers
@@ -496,8 +483,9 @@ const SalaryProcessing = () => {
         if (mode === 'bulk') {
             const { month, year } = bulkForm;
             await dispatch(createBulkSalry(bulkForm)).unwrap()
-                .then(() => {
+                .then((response) => {
                     toast.success('Bulk salary processing initiated successfully!');
+                    response?.warnings?.forEach((e) => toast.info(e));
                     dispatch(resetBulkState());
                     navigate(`/net-salary?month=${month}&year=${year}`)
                 })
@@ -520,7 +508,7 @@ const SalaryProcessing = () => {
 
     useEffect(() => {
         if (calculationComplete && selectNext && isProcessing) {
-            console.log("All clear! Calculations are done, proceeding to final validation and next step.");
+          
 
             // Perform final checks that rely on newly calculated data
             const isDuplicate = netSalary?.some(
@@ -561,7 +549,6 @@ const SalaryProcessing = () => {
 
     const handleNext = async () => {
         if (isProcessing) {
-            console.log("Already processing, please wait...");
             return;
         }
 

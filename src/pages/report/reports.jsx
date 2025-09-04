@@ -32,7 +32,7 @@ const ReportsDashboard = () => {
     const employeesData = useSelector((state) => state.employee.employees) || [];
     const pensioners = useSelector((state) => state.pensioner.pensioners) || [];
     const employees = employeesData?.filter(emp => emp?.user?.is_retired === 0);
-    // console.log(employees)
+  
 
     // ⬇️ Separate loading per report type
     const [loading, setLoading] = useState({

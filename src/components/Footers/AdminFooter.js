@@ -1,6 +1,14 @@
-import {  Row, Col, Nav, NavItem, NavLink } from "reactstrap";
+import { useSelector } from "react-redux";
+import { Row, Col, Nav, NavItem, NavLink } from "reactstrap";
 
 const Footer = () => {
+  const { isReleasing } = useSelector((state) => state.netSalary);
+
+  if (isReleasing) {
+    return null;
+  }
+
+
   return (
     <footer className="footer p-4" >
       <Row className="align-items-center justify-content-between">
@@ -13,20 +21,20 @@ const Footer = () => {
               rel="noopener noreferrer"
               target="_blank"
             >
-               ICMR-NIOH/ ICMR-ROHC 
+              ICMR-NIOH/ ICMR-ROHC
             </a>
           </div>
         </Col>
         <Col xl="6">
-            <NavItem>
-              <NavLink
-                href="https://nioh.org"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                About Us
-              </NavLink>
-            </NavItem>
+          <NavItem>
+            <NavLink
+              href="https://nioh.org"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              About Us
+            </NavLink>
+          </NavItem>
         </Col>
       </Row>
     </footer>

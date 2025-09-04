@@ -157,7 +157,6 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
 
     const onSubmit = async (values, { setSubmitting }) => {
         try {
-            console.log("Submitting values:", values.npa_rate_id); // Debugging line
             await onSave(values);
             toggle();
         } catch (error) {

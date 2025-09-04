@@ -138,7 +138,6 @@ function EmployeeQuarterPanel({ empQuarter, isHraEligible }) {
                     }
                 })
                 .catch((err) => {
-                    console.log(err)
                     const apiMsg =
                         err?.response?.data?.message ||
                         err?.message ||

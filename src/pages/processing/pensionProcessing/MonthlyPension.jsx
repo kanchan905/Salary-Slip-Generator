@@ -103,7 +103,7 @@ const MonthlyPension = ({ pensioners, mode }) => {
     const selectedDR = (dearness || []).find(dr => dr.id === formData.dr_id);
     const drPercentage = selectedDR ? selectedDR.dr_percentage : '';
     const calculatedDrAmt = ((basic + additional) * drPercentage) / 100;
-    console.log("Calculated DR Amount:", calculatedDrAmt);
+
 
      if (!isDrAmountManuallySet) {
     if (formData.dr_amount !== calculatedDrAmt) {
