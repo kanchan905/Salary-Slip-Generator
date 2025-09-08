@@ -4,7 +4,8 @@ import {
     IconButton, TextField, TablePagination, Box, Menu, MenuItem, Grid,
     Select, FormControl, InputLabel, Button as MuiButton,
     Chip,
-    Checkbox
+    Checkbox,
+    Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -894,6 +895,7 @@ export default function NetSalary() {
                                         {(loading) ? (
                                             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
                                                 <CircularProgress />
+                                                
                                             </Box>
                                         ) : (
                                             <TableContainer component={Paper} style={{ boxShadow: "none" }}>
@@ -1101,6 +1103,7 @@ export default function NetSalary() {
                     </>
                 )
             }
+            {isReleasing && (<Preloader audience="employees" />)}
 
         </>
     );

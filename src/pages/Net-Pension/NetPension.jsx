@@ -874,7 +874,7 @@ export default function NetPension() {
                     </>
                 )
             }
-
+            {isReleasing && (<Preloader audience="pensioners" />)}
 
         </>
     );

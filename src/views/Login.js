@@ -219,12 +219,12 @@ const Login = () => {
                     </a>
                   </p>
 
-                  <p className="text-center text-sm text-gray-600 help-text mt-2">
+                  {/* <p className="text-center text-sm text-gray-600 help-text mt-2">
                     Pensioner?{' '}
                     <Link to="/pensioner-slip" className="text-sm text-blue-600 hover:underline">
                       Monthly Pension
                     </Link>
-                  </p>
+                  </p> */}
 
                 </Form>
               )}

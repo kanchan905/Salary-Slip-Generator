@@ -821,7 +821,7 @@ export default function AllowanceForm() {
     };
 
     const renderFields = () => {
-        if (!currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role))) {
+        if (!currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role))) {
             return null;
         }
 
@@ -1098,7 +1098,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator"].includes(role)) && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1165,7 +1165,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role)) && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1232,7 +1232,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                      currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role))  && (
+                                                      currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role))  && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1295,7 +1295,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role)) && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1362,7 +1362,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role)) && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1427,7 +1427,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role)) && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1492,7 +1492,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role)) && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1559,7 +1559,7 @@ export default function AllowanceForm() {
                                                 <TableCell>{item.notification_ref || '-'}</TableCell>
                                                 <TableCell>
                                                     {
-                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                                                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role)) && (
                                                             <IconButton color="primary" aria-label="edit" onClick={() => handleEdit(item)}>
                                                                 <EditIcon />
                                                             </IconButton>
@@ -1628,7 +1628,7 @@ export default function AllowanceForm() {
 
                 <Paper sx={{ p: 3, width: '100%', maxWidth: { xs: '80%', sm: '90%' } }}>
                     {
-                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                       currentRoles.some(role => ['IT Admin',"Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Pensioners Operator"].includes(role)) && (
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <form onSubmit={formik.handleSubmit} className="mb-5">
                                     <Grid container spacing={2}>

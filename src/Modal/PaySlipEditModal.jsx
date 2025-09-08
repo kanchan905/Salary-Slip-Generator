@@ -347,7 +347,7 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                 </Col>
                                 <Col md={3}><FormGroup><Label for="da_1">DA 1</Label><Field name="da_1" type="text" className="form-control" /><ErrorMessage name="da_1" component="p" className="text-danger" /></FormGroup></Col>
                                 <Col md={3}><FormGroup><Label for="da_2">DA 2</Label><Field name="da_2" type="text" className="form-control" /><ErrorMessage name="da_2" component="p" className="text-danger" /></FormGroup></Col>
-                                <Col md={3}><FormGroup><Label for="itc_leave_salary">ITC Leave Salary</Label><Field name="itc_leave_salary" type="text" className="form-control" /><ErrorMessage name="itc_leave_salary" component="p" className="text-danger" /></FormGroup></Col>
+                                <Col md={3}><FormGroup><Label for="itc_leave_salary">LTC Leave Salary</Label><Field name="itc_leave_salary" type="text" className="form-control" /><ErrorMessage name="itc_leave_salary" component="p" className="text-danger" /></FormGroup></Col>
                             </Row>
 
                             <hr />

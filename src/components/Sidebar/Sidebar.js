@@ -33,7 +33,7 @@ const NewSidebar = ({ routes }) => {
   };
 
   if(isReleasing){
-    return <Preloader />
+    return null;
   }
 
   return (
