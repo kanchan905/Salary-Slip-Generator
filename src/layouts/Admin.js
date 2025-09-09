@@ -85,14 +85,24 @@ const AdminLayout = (props) => {
 
   const permittedRoutes = useMemo(() => {
     const allRoutes = getAdminRoutes();
+    const isRetired = Boolean(userData?.is_retired === 1 || userData?.is_retired === true);
     if (userRoles.length === 0) {
       const publicRoutes = {};
       Object.keys(allRoutes).forEach(category => {
-        const routes = allRoutes[category].filter(route =>
+        let routes = allRoutes[category].filter(route =>
           !route.roles || route.roles.some(allowedRole => userRoles.includes(allowedRole))
         );
+        // Hide My Pension for non-retired users
+        if (category === 'PaySlip') {
+          routes = routes.filter(route => {
+            if (route.path === '/my-pension') {
+              return isRetired;
+            }
+            return true;
+          });
+        }
         if (routes.length > 0) {
-          filteredRoutes[category] = routes;
+          publicRoutes[category] = routes;
         }
       });
       return publicRoutes;
@@ -100,9 +110,19 @@ const AdminLayout = (props) => {
 
     const filteredRoutes = {};
     Object.keys(allRoutes).forEach(category => {
-      const routes = allRoutes[category].filter(route => {
+      let routes = allRoutes[category].filter(route => {
         return !route.roles || route.roles.some(allowedRole => userRoles.includes(allowedRole));
       });
+
+      // Hide My Pension for non-retired users
+      if (category === 'PaySlip') {
+        routes = routes.filter(route => {
+          if (route.path === '/my-pension') {
+            return isRetired;
+          }
+          return true;
+        });
+      }
 
       if (routes.length > 0) {
         filteredRoutes[category] = routes;

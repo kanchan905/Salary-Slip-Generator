@@ -30,6 +30,7 @@ import { updatePensionDeduction } from '../../redux/slices/pensionDeductionSlice
 import PensionDeductionModal from '../../Modal/PensionDeductionModal';
 import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
 import { setIsReleasing } from '../../redux/slices/netSalarySlice';
+import Preloader from 'include/Preloader';
 
 function NetPensionCard() {
     const dispatch = useDispatch();
@@ -669,6 +670,8 @@ function NetPensionCard() {
                 )
             }
 
+
+          {isReleasing && (<Preloader audience="pensioners" />)}
         </>
     );
 }

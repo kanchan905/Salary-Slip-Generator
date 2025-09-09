@@ -12,20 +12,21 @@ import {
 } from "reactstrap";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchViewSalary } from '../../redux/slices/viewSalarySlice';
+import { fetchViewPension } from '../../redux/slices/viewPensionSlice';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ViewIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { months } from 'utils/helpers';
 
 
-export default function ViewSalary() {
+export default function ViewPension() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // --- State from the NEW viewSalary slice ---
-    const { viewSalary, loading, totalCount } = useSelector((state) => state.viewSalary);
- 
+    // --- State from the NEW viewPension slice ---
+    const { viewPension, loading, totalCount } = useSelector((state) => state.viewPension);
+    console.log("viewPension data:", viewPension);
+
 
     // --- Component State ---
     const [anchorEl, setAnchorEl] = useState(null);
@@ -37,7 +38,6 @@ export default function ViewSalary() {
     const [filters, setFilters] = useState({
         month: '',
         year: '',
-        verification_status: '', 
     });
 
     const statusChipColor = (status) => {
@@ -51,7 +51,6 @@ export default function ViewSalary() {
             limit: rowsPerPage,
             month: currentFilters.month,
             year: currentFilters.year,
-            is_verified: currentFilters.verification_status,
         };
 
         Object.keys(params).forEach(key => {
@@ -60,7 +59,7 @@ export default function ViewSalary() {
             }
         });
         
-        dispatch(fetchViewSalary(params));
+        dispatch(fetchViewPension(params));
     };
 
     // Fetch data on initial load and when pagination changes
@@ -79,7 +78,7 @@ export default function ViewSalary() {
     };
 
     const handleClearFilters = () => {
-        const clearedFilters = {  month: '', year: '', verification_status: '' };
+        const clearedFilters = {  month: '', year: '' };
         setFilters(clearedFilters);
         setPage(0);
         fetchData(clearedFilters, 0);
@@ -104,7 +103,7 @@ export default function ViewSalary() {
 
     const handleView = (id) => {
         handleClose();
-        navigate(`/employee/net-salary/${id}`);
+        navigate(`/net-pension/view/${id}`);
     };
     
 
@@ -130,16 +129,6 @@ export default function ViewSalary() {
                                 <Grid item size={{ xs: 6, md:4 }}>
                                     <TextField fullWidth label="Year" name="year" value={filters.year} onChange={handleFilterChange} variant="outlined" size="small" type="text" />
                                 </Grid>
-                                <Grid item size={{ xs: 6, md:4 }}>
-                                    <FormControl fullWidth size="small">
-                                        <InputLabel>Verification Status</InputLabel>
-                                        <Select name="verification_status" value={filters.verification_status} label="Verification Status" onChange={handleFilterChange}>
-                                            <MenuItem value="All"><em>All</em></MenuItem>
-                                            <MenuItem value="1">Verified</MenuItem>
-                                            <MenuItem value="0">Not Verified</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
                                 <Grid item  container spacing={1} justifyContent="flex-start">
                                     <Grid item><MuiButton variant="contained" onClick={handleSearch}>Search</MuiButton></Grid>                                   
                                 </Grid>
@@ -161,26 +150,26 @@ export default function ViewSalary() {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell style={{ fontWeight: "900" }}>Sr. No.</TableCell>                                               
-                                                <TableCell style={{ fontWeight: "900" }}>Emp Code</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>PPO No.</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Verified</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {viewSalary?.length === 0 ? (
+                                            {viewPension?.length === 0 ? (
                                                 <TableRow>
                                                     <TableCell align="center" colSpan={8}>No data available</TableCell>
                                                 </TableRow>
                                             ) : (
-                                                viewSalary?.map((row,index) => (
+                                                viewPension?.map((row,index) => (
                                                     <TableRow key={row.id}>
                                                         <TableCell>{(page * rowsPerPage) + index + 1}</TableCell>                                                 
-                                                        <TableCell>{row?.employee?.employee_code}</TableCell>
-                                                        <TableCell>{row.employee?.name}</TableCell>
+                                                        <TableCell>{row?.pensioner?.ppo_no}</TableCell>
+                                                        <TableCell>{row.pensioner?.name}</TableCell>
                                                         <TableCell>{months.find((m) => m.value === row.month)?.label || 'NA'}</TableCell>
                                                         <TableCell>{row.year}</TableCell>
                                                         <TableCell>{row.net_amount}</TableCell>
@@ -202,7 +191,7 @@ export default function ViewSalary() {
                             )}
                         </div>
                         <TablePagination
-                            component="div" count={viewSalary?.length === 0 ? 0 : totalCount} page={page} onPageChange={handlePageChange}
+                            component="div" count={viewPension?.length === 0 ? 0 : totalCount} page={page} onPageChange={handlePageChange}
                             rowsPerPage={rowsPerPage} onRowsPerPageChange={handleChangeRowsPerPage}
                         />
                     </CardBody>

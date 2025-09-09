@@ -280,9 +280,10 @@ const SalaryProcessing = () => {
                 if (local_basic_pay >= threshold) local_npa_amount = 0;
             }
         }
-        calculatedPayload.npa_amount = local_npa_amount;
+        const npa_amount_to_use = EditMode ? Number(formData.npa_amount) : local_npa_amount;
+        calculatedPayload.npa_amount = npa_amount_to_use;
 
-        const local_payPlusNpa = local_basic_pay + local_npa_amount;
+        const local_payPlusNpa = local_basic_pay + npa_amount_to_use;
         calculatedPayload.pay_plus_npa = (local_payPlusNpa > 237500 && local_basic_pay < 237500) ? 237500 : local_payPlusNpa;
 
         // Handle DA calculation - use available data or default to 0
@@ -292,7 +293,7 @@ const SalaryProcessing = () => {
             daRate = daItem?.rate_percentage || 0;
         }
         const defaultDa = customRound((calculatedPayload.pay_plus_npa) * daRate / 100);
-        calculatedPayload.da_amount = defaultDa;
+        calculatedPayload.da_amount = EditMode ? Number(formData.da_amount) : defaultDa;
 
         // Handle HRA calculation - use available data or default to 0
         let hraRate = 0;
@@ -300,8 +301,8 @@ const SalaryProcessing = () => {
             const hraItem = hraList.find((hra) => hra.id === formData.hra_rate_id);
             hraRate = hraItem?.rate_percentage || 0;
         }
-        const defaultHra = customRound((calculatedPayload.pay_plus_npa) * hraRate / 100);
-        calculatedPayload.hra_amount = defaultHra;
+        const defaultHra = customRound((calculatedPayload.basic_pay) * hraRate / 100);
+        calculatedPayload.hra_amount = EditMode ? Number(formData.hra_amount) : defaultHra;
 
         // Handle Uniform calculation - use available data or default to 0
         let uniformAmount = 0;
@@ -341,20 +342,27 @@ const SalaryProcessing = () => {
         }
 
         if (EmployeeDetail.pension_scheme === 'NPS') {
-            // Check if NPS rates are available before calculating
-            if (govtContributionRate === null || employeeContributionRate === null || npsContribution?.loading) {
-                calculatedPayload.employee_contribution_10 = 0;
-                calculatedPayload.govt_contribution_14_recovery = 0;
-                calculatedPayload.govt_contribution = 0;
+            // Respect manual edits when EditMode is enabled; otherwise compute defaults
+            if (npsContribution?.loading || govtContributionRate === null || employeeContributionRate === null) {
+                calculatedPayload.employee_contribution_10 = EditMode ? Number(formData.employee_contribution_10) || 0 : 0;
+                calculatedPayload.govt_contribution_14_recovery = EditMode ? Number(formData.govt_contribution_14_recovery) || 0 : 0;
+                calculatedPayload.govt_contribution = EditMode ? Number(formData.govt_contribution) || 0 : 0;
                 calculatedPayload.gpf = 0;
             } else {
-                const npsBase = local_basic_pay + local_npa_amount + calculatedPayload.da_amount;
-                const defaultEmpContr = customRound((employeeContributionRate / 100) * npsBase);
-                calculatedPayload.employee_contribution_10 = defaultEmpContr;
-                const govtContribution = customRound((govtContributionRate / 100) * npsBase);
-                calculatedPayload.govt_contribution_14_recovery = govtContribution;
-                calculatedPayload.govt_contribution = govtContribution;
-                calculatedPayload.gpf = 0;
+                if (EditMode) {
+                    calculatedPayload.employee_contribution_10 = Number(formData.employee_contribution_10) || 0;
+                    calculatedPayload.govt_contribution_14_recovery = Number(formData.govt_contribution_14_recovery) || 0;
+                    calculatedPayload.govt_contribution = Number(formData.govt_contribution) || 0;
+                    calculatedPayload.gpf = 0;
+                } else {
+                    const npsBase = local_basic_pay + npa_amount_to_use + calculatedPayload.da_amount;
+                    const defaultEmpContr = customRound((employeeContributionRate / 100) * npsBase);
+                    calculatedPayload.employee_contribution_10 = defaultEmpContr;
+                    const govtContribution = customRound((govtContributionRate / 100) * npsBase);
+                    calculatedPayload.govt_contribution_14_recovery = govtContribution;
+                    calculatedPayload.govt_contribution = govtContribution;
+                    calculatedPayload.gpf = 0;
+                }
             }
         } else if (EmployeeDetail.pension_scheme === 'GPF') {
             // calculatedPayload.gpf = customRound((formData.gpf / 100) * (calculatedPayload.pay_plus_npa));
@@ -919,16 +927,20 @@ const SalaryProcessing = () => {
                                         <TextField
                                             label={`NPS Employee Contribution`}
                                             fullWidth
+                                            name="employee_contribution_10"
                                             value={npsContribution?.loading ? 'Loading...' : (formData.employee_contribution_10 || 0)}
                                             disabled={npsContribution?.loading}
+                                            onChange={handleChange}
                                         />
                                     </Grid>
                                     <Grid item size={{ xs: 4 }}>
                                         <TextField
                                             label={`NPS Govt Contribution`}
                                             fullWidth
+                                            name="govt_contribution_14_recovery"
                                             value={npsContribution?.loading ? 'Loading...' : (formData.govt_contribution_14_recovery || 0)}
                                             disabled={npsContribution?.loading}
+                                            onChange={handleChange}
                                         />
                                     </Grid>
                                 </>

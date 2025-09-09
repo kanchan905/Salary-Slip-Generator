@@ -118,27 +118,38 @@ export default function NetSalary() {
         const mainDeduction = data?.deduction;
 
         const arrearTypes = [
-            'DA Arrear',
-            'HRA Arrear',
-            'Pay Fixation Arrear',
-            'CEA (Children Education Allowance)',
-            'Honorarium',
-            'NPA Arrear',
-            'Uniform Arrear'
+            'NPA Arrear', 'DA Arrear', 'HRA Arrear', 'TA Arrear', 'DA on TA Arrear',
+            'NPS-Government contribution(14%) Arrear', 'Uniform Arrear', 'LTC Arrear',
+            'PAY FIXATION  Arrear', 'Honorarium Arrear', 'CEA(CHILD EDUCATION ALLOWANCE)',
+            'NPS -Employee contribution(10%) Arrear', 'GPF Arrear', 'Income Tax Arrear',
+            'Professional Tax Arrear', 'License fee Arrear', 'NFCH donation Arrear',
+            'LIC Arrear', 'Credit society Arrear', 'Employee loan Arrear',
         ];
 
         const deductionRecoveryTypes = [
+            'NPA Recovery',
+            'DA recovery',
+            'HRA Recovery',
+            'TA Recovery',
+            'DA on TA Recovery',
+            'NPS-Government contribution(14%) Recovery',
+            'Uniform Recovery',
+            'LTC Recovery',
+            'PAY FIXATION Recovery',
+            'Honorarium Recovery',
+            'CEA(CHILD EDUCATION ALLOWANCE) Recovery',
+            'NPS -Employee contribution(10%) Recovery',
+            'GPF Recovery',
             'Income Tax Recovery',
             'Professional Tax Recovery',
             'License Fee Recovery',
             'NFCH Donation Recovery',
-            'TA Recovery',
-            'HRA Recovery',
-            'Dies Non Recovery',
-            'Pay Recovery',
-            'NPS Recovery',
-            'GIS Recovery',
-            'LIC Recovery'
+            'Credit society Recovery',
+            'Dies non recovery',
+            'HPL (Half Pay Leave) Recovery',
+            'EOL (Extraordinary Leave) Recovery',
+            'CCL (Child Care Leave) Recovery',
+            'Briefcase Recovery',
         ];
 
         const renderArrearCells = (paySlip) => {
@@ -895,7 +906,7 @@ export default function NetSalary() {
                                         {(loading) ? (
                                             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
                                                 <CircularProgress />
-                                                
+
                                             </Box>
                                         ) : (
                                             <TableContainer component={Paper} style={{ boxShadow: "none" }}>

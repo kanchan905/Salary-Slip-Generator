@@ -98,7 +98,7 @@ const paySlipSlice = createSlice({
                 state.loading = false;
                 const index = state.paySlips.findIndex((s) => s.id === action.payload.id);
                 if (index !== -1) {
-                    state.slips[index] = action.payload;
+                    state.paySlips[index] = action.payload;
                 }
             })
             .addCase(updatePaySlip.rejected, (state, action) => {

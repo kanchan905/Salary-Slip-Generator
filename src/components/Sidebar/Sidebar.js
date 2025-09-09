@@ -12,6 +12,7 @@ const NewSidebar = ({ routes }) => {
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { isReleasing } = useSelector((state) => state.netSalary);
+  const { user } = useSelector((state) => state.auth) || {};
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 

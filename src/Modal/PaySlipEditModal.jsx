@@ -53,7 +53,8 @@ const TotalPayCalculator = () => {
         const parseNum = (value) => parseFloat(value) || 0;
 
         // Calculate the sum of all salary arrears
-        const arrearsTotal = salary_arrears.reduce((total, arrear) => {
+        const arrearsArray = Array.isArray(salary_arrears) ? salary_arrears : [];
+        const arrearsTotal = arrearsArray.reduce((total, arrear) => {
             return total + parseNum(arrear.amount);
         }, 0);
 
@@ -90,7 +91,7 @@ const TotalPayCalculator = () => {
         da_2,
         itc_leave_salary,
         // Using JSON.stringify ensures the effect runs if an arrear amount changes
-        JSON.stringify(salary_arrears),
+        JSON.stringify(Array.isArray(salary_arrears) ? salary_arrears : []),
         setFieldValue
     ]);
 
@@ -102,17 +103,17 @@ const TotalPayCalculator = () => {
 const validationSchema = Yup.object({
     // Validation rules can be expanded as needed
     salary_arrears: Yup.array().of(
-            Yup.object().shape({
-                type: Yup.string().required("Type is required"),
-                amount: Yup.number()
-                    .typeError("Amount must be a number")
-                    .required("Amount is required")
-                    .positive("Amount must be a positive number"),
-            })
-        ),
+        Yup.object().shape({
+            type: Yup.string().required("Type is required"),
+            amount: Yup.number()
+                .typeError("Amount must be a number")
+                .required("Amount is required")
+                .positive("Amount must be a positive number"),
+        })
+    ),
 });
 
-export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employee }) {
+export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employee, remarks }) {
     const dispatch = useDispatch();
     const { npaList, hraList, daList, uniformList, transportList } = useSelector((state) => state.salary);
     const { payStructure } = useSelector((state) => state.payStructure);
@@ -130,10 +131,12 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
         }
     }, [isOpen, dispatch]);
 
+    const normalizedSalaryArrears = Array.isArray(data?.salary_arrears) ? data.salary_arrears : [];
+
     const formInitialValues = {
         net_salary_id: data?.net_salary_id || '',
         pay_structure_id: data?.pay_structure_id || '',
-        basic_pay: data.basic_pay || '',
+        basic_pay: data?.basic_pay || 0,
         da_rate_id: data?.da_rate_id || '',
         da_amount: data?.da_amount || 0,
         hra_rate_id: data?.hra_rate_id || '',
@@ -142,17 +145,20 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
         npa_amount: data?.npa_amount || 0,
         uniform_rate_id: data?.uniform_rate_id || '',
         uniform_rate_amount: data?.uniform_rate_amount || 0,
+        transport_rate_id: data?.transport_rate_id || '',
         transport_amount: data?.transport_amount || 0,
         da_on_ta: data?.da_on_ta || 0,
         govt_contribution: data?.govt_contribution || 0,
-        spacial_pay: data?.spacial_pay || data?.spacial_pay || '',
-        da_1: data?.da_1 || '',
-        da_2: data?.da_2 || '',
-        itc_leave_salary: data?.itc_leave_salary || '',
-        salary_arrears: data?.salary_arrears || [],
-        remarks: data.remarks || '',
-        total_pay: data?.total_pay || '',
+        spacial_pay: data?.spacial_pay || 0,
+        da_1: data?.da_1 || 0,
+        da_2: data?.da_2 || 0,
+        itc_leave_salary: data?.itc_leave_salary || 0,
+        salary_arrears: normalizedSalaryArrears,
+        remarks: remarks || '',
+        total_pay: data?.total_pay || 0,
     };
+
+
 
 
     const onSubmit = async (values, { setSubmitting }) => {
@@ -269,7 +275,7 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                                                     {npaList.map((npa) => (<option key={npa.id} value={npa.id}>{npa.rate_percentage}%</option>))}
                                                 </Field> */}
                                         <Field as="select" name="npa_rate_id" className="form-control">
-                                            <option value="">Select NPA Rate</option> 
+                                            <option value="">Select NPA Rate</option>
                                             {npaList.map((npa) => (
                                                 <option key={npa.id} value={npa.id}>
                                                     {npa.rate_percentage}%
@@ -289,6 +295,20 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
 
                                 {/* {data?.transport_amount > 0 && (
                                     <> */}
+                                <Col md={3}>
+                                    <FormGroup>
+                                        <Label for="transport_rate_id">Transport Allowance</Label>
+                                        <Field as="select" name="transport_rate_id" className="form-control">
+                                            <option value="">Select Transport Rate</option>
+                                            {transportList.map((t) => (
+                                                <option key={t.id} value={t.id}>
+                                                    Level {t.pay_matrix_level} - ₹{t.amount}
+                                                </option>
+                                            ))}
+                                        </Field>
+                                    </FormGroup>
+                                </Col>
+                                
                                 <Col md={3}>
                                     <FormGroup>
                                         <Label for="transport_amount">Transport Amount</Label>
@@ -355,7 +375,7 @@ export default function PaySlipEditModal({ isOpen, toggle, data, onSave, employe
                             <FieldArray name="salary_arrears">
                                 {({ push, remove }) => (
                                     <div>
-                                        {values.salary_arrears && values.salary_arrears.map((arrear, index) => {
+                                        {Array.isArray(values.salary_arrears) && values.salary_arrears.map((arrear, index) => {
                                             const isCustomType = arrear.type && !arrearTypes.includes(arrear.type);
                                             return (
                                                 <Row key={index} className="mb-2 align-items-start">

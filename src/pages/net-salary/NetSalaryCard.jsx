@@ -35,6 +35,7 @@ import { getMonthName } from '../../utils/helpers';
 import rohcheader from '../../assets/img/images/rohcheader.png'
 import rohcfooter from '../../assets/img/images/rohc-footer.jpeg'
 import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
+import Preloader from 'include/Preloader';
 
 
 export default function PaySlipPage() {
@@ -412,7 +413,8 @@ export default function PaySlipPage() {
                                         Pay Slip Details
                                     </Typography>
 
-                                    {!netSalaryData?.is_finalize && (
+                                   
+                                    {!netSalaryData?.is_finalize && currentRoles.some(role => ["IT Admin", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
                                         <>
                                             <Button
                                                 variant="outlined"
@@ -890,6 +892,7 @@ export default function PaySlipPage() {
                             isOpen={isPayModalOpen}
                             toggle={() => setPayModalOpen(false)}
                             data={payslipForm || {}}
+                            remarks={netSalaryData?.remarks || ''}
                             employee={netSalaryData?.employee}
                             onSave={handlePaySave}
                         />
@@ -903,7 +906,11 @@ export default function PaySlipPage() {
                         />
                     </>
                 )}
+
+
+            {isReleasing && (<Preloader audience="employees" />)}
         </>
+
     );
 }
 
