@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, FormGroup, Form } from 'react-bootstrap';
 import {
@@ -181,6 +181,8 @@ const ReportsDashboard = () => {
 
     const renderCard = ({ type, title, color, extraFieldKey, icon }) => {
         const isEmployeeFieldDisabled = type === 'employee' && isEndUser;
+        const isPensionerFieldDisabled = type === 'pensioner' && user.is_retired;
+
         return (
             <Box mb={5}>
                 <Card sx={{ backgroundColor: color, borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
@@ -210,33 +212,32 @@ const ReportsDashboard = () => {
                                 ))}
                                 {extraFieldKey && (
                                     <Grid item xs={12} md={4}>
-                                        {extraFieldKey === 'employeeId' ? (
-                                            !isEndUser && (
-                                                <Autocomplete
-                                                    options={employees}
-                                                    getOptionLabel={(option) => `${option.first_name} ${option.middle_name || ''} ${option.last_name} - ${option.employee_code}`}
-                                                    value={employees.find(emp => String(emp.id) === String(filters[type][extraFieldKey])) || null}
-                                                    onChange={(_, newValue) => {
-                                                        handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
-                                                    }}
-                                                    renderInput={(params) => (
-                                                        <TextField
-                                                            {...params}
-                                                            label="Employee"
-                                                            variant="outlined"
-                                                            fullWidth
-                                                            sx={{ width: 400 }}
-                                                            disabled={isEmployeeFieldDisabled}
-                                                        />
-                                                    )}
-                                                    isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
-                                                    sx={{ width: 400 }}
-                                                />
-                                            )
-                                        ) : (
+                                        {extraFieldKey === 'employeeId' && !user.is_retired ? (
                                             <Autocomplete
-                                                options={pensioners}
-                                                getOptionLabel={(option) => `${option.first_name} ${option.middle_name || ''} ${option.last_name} - ${option.ppo_no || option.id}`}
+                                                options={isEmployeeFieldDisabled ? employees.filter(emp => String(emp.user_id) === String(user.id)) : employees}
+                                                getOptionLabel={(option) => `${option.first_name} - ${option.employee_code}`}
+                                                value={employees.find(emp => String(emp.id) === String(filters[type][extraFieldKey])) || null}
+                                                onChange={(_, newValue) => {
+                                                    handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Employee"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        sx={{ width: 400 }}
+                                                        disabled={isEmployeeFieldDisabled}
+                                                    />
+                                                )}
+                                                isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
+                                                sx={{ width: 400 }}
+                                            />
+                                        ) : (
+                                            
+                                            <Autocomplete
+                                                options={isPensionerFieldDisabled ? pensioners.filter(pen => String(pen.user_id) === String(user.id)) : pensioners}
+                                                getOptionLabel={(option) => `${option.name} - ${option.ppo_no || option.id}`}
                                                 value={pensioners.find(pen => String(pen.id) === String(filters[type][extraFieldKey])) || null}
                                                 onChange={(_, newValue) => {
                                                     handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
@@ -248,6 +249,7 @@ const ReportsDashboard = () => {
                                                         variant="outlined"
                                                         fullWidth
                                                         sx={{ width: 400 }}
+                                                        disabled={isPensionerFieldDisabled}
                                                     />
                                                 )}
                                                 isOptionEqualToValue={(option, value) => String(option.id) === String(value.id)}
@@ -346,16 +348,16 @@ const ReportsDashboard = () => {
                     <Typography variant="h4" fontWeight="bold">📊 Reports</Typography>
                 </Box>
 
-                {!currentRoles.some(role => ['End Users', 'Pensioners Operator'].includes(role)) && (
+                {currentRoles.some(role => ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
                     renderCard({ type: 'all', title: 'All Reports', color: '#3498db', icon: <SummarizeIcon /> })
                 )}
-                {!currentRoles.some(role => ['Pensioners Operator'].includes(role)) && (
+                {(currentRoles.some(role => ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "End Users"].includes(role)) && !currentRoles.some(role => role === ["Pensioners Operator"].includes(role))) && !user.is_retired ? (
                     renderCard({ type: 'employee', title: 'Employee Report', color: '#16a085', icon: <SummarizeIcon />, extraFieldKey: 'employeeId' })
-                )}
+                ) : null}
 
-                {!currentRoles.some(role => ['End Users', "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
+                {(currentRoles.some(role => ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator"].includes(role)) && !currentRoles.some(role => ["Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role))) || user.is_retired ? (
                     renderCard({ type: 'pensioner', title: 'Pensioner Report', color: '#e67e22', icon: <SummarizeIcon />, extraFieldKey: 'pensionerId' })
-                )}
+                ) : null}
             </Container>
         </>
     );
