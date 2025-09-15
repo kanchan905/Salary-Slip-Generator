@@ -31,6 +31,7 @@ import PensionDeductionModal from '../../Modal/PensionDeductionModal';
 import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
 import { setIsReleasing } from '../../redux/slices/netSalarySlice';
 import Preloader from 'include/Preloader';
+import { getCookie } from 'cookies-next';
 
 function NetPensionCard() {
     const dispatch = useDispatch();
@@ -46,6 +47,8 @@ function NetPensionCard() {
     );
     const { isReleasing } = useSelector((state) => state.netSalary);
     // const [isReleasing, setIsReleasing] = useState(false);
+    const userData = useSelector((state) => state.auth.user) || getCookie('user');
+     const isRetired = Boolean(userData?.is_retired === 1 || userData?.is_retired === true);
 
     useEffect(() => {
         if (id) {
@@ -328,54 +331,57 @@ function NetPensionCard() {
                     <>
                         <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
 
-                        <Box sx={{ p: 3 }} >
-                            {
-                                <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
-                                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
-                                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
-                                        {[
-                                            { label: "Pensioners Operator", field: "pensioner_operator_status", timestampField: "pensioner_operator_date" },
-                                            { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
-                                            { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
-                                            { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
-                                        ].map(({ label, field, timestampField }) => {
-                                            const isButtonClickable =
-                                                !netPensionData[field] &&      // 1. Must NOT be verified
-                                                field === statusField &&      // 2. Must be the current step's turn
-                                                userHasRoleForStep(field);    // 3. User must have the correct role
+                        {
+                            !isRetired && (
+                                <Box sx={{ p: 3 }} >
+                                    {
+                                        <Paper elevation={3} sx={{ mb: 3, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: 2, background: '#f8fafc' }}>
+                                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#1976d2' }}>Verification Steps</Typography>
+                                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center">
+                                                {[
+                                                    { label: "Pensioners Operator", field: "pensioner_operator_status", timestampField: "pensioner_operator_date" },
+                                                    { label: "Drawing and Disbursing Officer", field: "ddo_status", timestampField: "ddo_date" },
+                                                    { label: "Section Officer (Accounts)", field: "section_officer_status", timestampField: "section_officer_date" },
+                                                    { label: "Accounts Officer", field: "account_officer_status", timestampField: "account_officer_date" },
+                                                ].map(({ label, field, timestampField }) => {
+                                                    const isButtonClickable =
+                                                        !netPensionData[field] &&      // 1. Must NOT be verified
+                                                        field === statusField &&      // 2. Must be the current step's turn
+                                                        userHasRoleForStep(field);    // 3. User must have the correct role
 
-                                            const verificationTime = formatTimestamp(netPensionData[timestampField]);
+                                                    const verificationTime = formatTimestamp(netPensionData[timestampField]);
 
-                                            return (
-                                                <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
-                                                    <Button
-                                                        variant="contained"
-                                                        color={netPensionData[field] ? "success" : "error"}
-                                                        startIcon={netPensionData[field] ? <CheckCircleIcon /> : <CancelIcon />}
-                                                        onClick={isButtonClickable ? () => !netPensionData[field] && handleStepVerification(netPensionData, field) : null}
-                                                        // onClick={() => handleAdminVerify(field)}
-                                                        sx={{
-                                                            minWidth: 240,
-                                                            fontWeight: 500,
-                                                            // Improved cursor logic
-                                                            cursor: isButtonClickable ? 'pointer' : (netPensionData[field] ? 'default' : 'not-allowed')
-                                                        }}
-                                                    >
-                                                        {label} {netPensionData[field] ? "Verified" : "Verify"}
-                                                    </Button>
-                                                    {/* UPDATED: Conditionally render the formatted timestamp */}
-                                                    {verificationTime && (
-                                                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                                            {verificationTime}
-                                                        </Typography>
-                                                    )}
-                                                </Box>
-                                            )
-                                        })}
-                                    </Stack>
-                                </Paper>
-                            }
-                        </Box>
+                                                    return (
+                                                        <Box key={field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                                                            <Button
+                                                                variant="contained"
+                                                                color={netPensionData[field] ? "success" : "error"}
+                                                                startIcon={netPensionData[field] ? <CheckCircleIcon /> : <CancelIcon />}
+                                                                onClick={isButtonClickable ? () => !netPensionData[field] && handleStepVerification(netPensionData, field) : null}
+                                                                // onClick={() => handleAdminVerify(field)}
+                                                                sx={{
+                                                                    minWidth: 240,
+                                                                    fontWeight: 500,
+                                                                    // Improved cursor logic
+                                                                    cursor: isButtonClickable ? 'pointer' : (netPensionData[field] ? 'default' : 'not-allowed')
+                                                                }}
+                                                            >
+                                                                {label} {netPensionData[field] ? "Verified" : "Verify"}
+                                                            </Button>
+                                                            {/* UPDATED: Conditionally render the formatted timestamp */}
+                                                            {verificationTime && (
+                                                                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                                                    {verificationTime}
+                                                                </Typography>
+                                                            )}
+                                                        </Box>
+                                                    )
+                                                })}
+                                            </Stack>
+                                        </Paper>
+                                    }
+                                </Box>
+                            )}
 
                         <Box sx={{ p: 3 }}>
                             {/* --- Action Bar (Adapted from PaySlipPage) --- */}
@@ -465,7 +471,7 @@ function NetPensionCard() {
                                                         color="info"
                                                         startIcon={netPensionData?.is_verified ? <CheckCircleIcon /> : <CancelIcon />}
                                                         onClick={() => handleStepRelease(netPensionData)}
-                                                        disabled={!netPensionData?.is_finalize }
+                                                        disabled={!netPensionData?.is_finalize}
                                                     >
                                                         {netPensionData?.is_verified ? "Released" : "Release"}
                                                     </Button>
@@ -671,7 +677,7 @@ function NetPensionCard() {
             }
 
 
-          {isReleasing && (<Preloader audience="pensioners" />)}
+            {isReleasing && (<Preloader audience="pensioners" />)}
         </>
     );
 }

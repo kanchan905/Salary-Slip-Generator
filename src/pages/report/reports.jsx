@@ -70,9 +70,59 @@ const ReportsDashboard = () => {
 
             if (currentUserEmployee) {
                 handleFilterChange('employee', 'employeeId', currentUserEmployee.id);
+                setFilters(prev => ({
+                    ...prev,
+                    employee: {
+                        ...prev.employee,
+                        startMonth: 1, // Default to current month
+                        startYear: new Date().getFullYear(), // Default to current year
+                        endMonth: new Date().getMonth() + 1, // Default to current month
+                        endYear: new Date().getFullYear() // Default to current year
+                    }
+                }));
             }
         }
-    }, [isEndUser, user, employees, handleFilterChange]);
+    }, [isEndUser, employees, user, handleFilterChange]);
+
+    // New useEffect for setting pensionerId filter for retired users
+    useEffect(() => {
+        if (user.is_retired && pensioners.length > 0) {
+            const currentPensioner = pensioners.find(pen => String(pen.user_id) === String(user.id));
+            if (currentPensioner) {
+                handleFilterChange('pensioner', 'pensionerId', currentPensioner.id);
+                setFilters(prev => ({
+                    ...prev,
+                    pensioner: {
+                        ...prev.pensioner,
+                        startMonth: 1, // Default to current month
+                        startYear: new Date().getFullYear(), // Default to current year
+                        endMonth: new Date().getMonth() + 1, // Default to current month
+                        endYear: new Date().getFullYear() // Default to current year
+                    }
+                }));
+            }
+        }
+    }, [user, pensioners, handleFilterChange]);
+
+    
+    // useEffect(() => {
+    //     if (isEndUser && employees.length > 0) {
+    //         const currentUserEmployee = employees.find(emp => String(emp.user_id) === String(user.id));
+    //         if (currentUserEmployee) {
+    //             handleFilterChange('employee', 'employeeId', currentUserEmployee.id);
+    //             setFilters(prev => ({
+    //                 ...prev,
+    //                 employee: {
+    //                     ...prev.employee,
+    //                     startMonth: 1, // Default to January
+    //                     startYear: new Date().getFullYear(), // Default to current year
+    //                     endMonth: 12, // Default to December
+    //                     endYear: new Date().getFullYear() // Default to current year
+    //                 }
+    //             }));
+    //         }
+    //     }
+    // }, [isEndUser, employees, user, handleFilterChange]);
 
 
     const handleReset = (type) => {
@@ -216,7 +266,9 @@ const ReportsDashboard = () => {
                                             <Autocomplete
                                                 options={isEmployeeFieldDisabled ? employees.filter(emp => String(emp.user_id) === String(user.id)) : employees}
                                                 getOptionLabel={(option) => `${option.first_name} - ${option.employee_code}`}
-                                                value={employees.find(emp => String(emp.id) === String(filters[type][extraFieldKey])) || null}
+                                                value={isEmployeeFieldDisabled
+                                                    ? employees.find(emp => String(emp.user_id) === String(user.id)) || null
+                                                    : employees.find(emp => String(emp.id) === String(filters[type][extraFieldKey])) || null}
                                                 onChange={(_, newValue) => {
                                                     handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
                                                 }}
@@ -236,9 +288,13 @@ const ReportsDashboard = () => {
                                         ) : (
                                             
                                             <Autocomplete
-                                                options={isPensionerFieldDisabled ? pensioners.filter(pen => String(pen.user_id) === String(user.id)) : pensioners}
+                                                options={isPensionerFieldDisabled
+                                                    ? pensioners.filter(pen => String(pen.user_id) === String(user.id))
+                                                    : pensioners}
                                                 getOptionLabel={(option) => `${option.name} - ${option.ppo_no || option.id}`}
-                                                value={pensioners.find(pen => String(pen.id) === String(filters[type][extraFieldKey])) || null}
+                                                value={isPensionerFieldDisabled
+                                                    ? pensioners.find(pen => String(pen.user_id) === String(user.id)) || null
+                                                    : pensioners.find(pen => String(pen.id) === String(filters[type][extraFieldKey])) || null}
                                                 onChange={(_, newValue) => {
                                                     handleFilterChange(type, extraFieldKey, newValue ? newValue.id : '');
                                                 }}
@@ -306,7 +362,11 @@ const ReportsDashboard = () => {
                                     if (type === 'employee') {
                                         const f = filters.employee;
                                         if (!f.employeeId || !f.startMonth || !f.startYear || !f.endMonth || !f.endYear) {
-                                            toast.warning('Please select Employee & Time duration');
+                                            if (!f.employeeId) {
+                                                toast.warning('Employee is not selected.');
+                                            } else {
+                                                toast.warning('Please select Time duration.');
+                                            }
                                             setShowFilters(prev => ({ ...prev, employee: true }));
                                             return;
                                         }
