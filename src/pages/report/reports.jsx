@@ -32,7 +32,7 @@ const ReportsDashboard = () => {
     const employeesData = useSelector((state) => state.employee.employees) || [];
     const pensioners = useSelector((state) => state.pensioner.pensioners) || [];
     const employees = employeesData?.filter(emp => emp?.user?.is_retired === 0);
-  
+
 
     // ⬇️ Separate loading per report type
     const [loading, setLoading] = useState({
@@ -42,7 +42,7 @@ const ReportsDashboard = () => {
     });
 
     const initialFilters = {
-        all: { startMonth: '', startYear: '', endMonth: '', endYear: '' },
+        all: { startMonth: '', startYear: '', endMonth: '', endYear: '', institute: '', is_finalize: '', is_verified: '' },
         employee: { startMonth: '', startYear: '', endMonth: '', endYear: '', employeeId: '' },
         pensioner: { startMonth: '', startYear: '', endMonth: '', endYear: '', pensionerId: '' }
     };
@@ -104,26 +104,6 @@ const ReportsDashboard = () => {
         }
     }, [user, pensioners, handleFilterChange]);
 
-    
-    // useEffect(() => {
-    //     if (isEndUser && employees.length > 0) {
-    //         const currentUserEmployee = employees.find(emp => String(emp.user_id) === String(user.id));
-    //         if (currentUserEmployee) {
-    //             handleFilterChange('employee', 'employeeId', currentUserEmployee.id);
-    //             setFilters(prev => ({
-    //                 ...prev,
-    //                 employee: {
-    //                     ...prev.employee,
-    //                     startMonth: 1, // Default to January
-    //                     startYear: new Date().getFullYear(), // Default to current year
-    //                     endMonth: 12, // Default to December
-    //                     endYear: new Date().getFullYear() // Default to current year
-    //                 }
-    //             }));
-    //         }
-    //     }
-    // }, [isEndUser, employees, user, handleFilterChange]);
-
 
     const handleReset = (type) => {
         const newFiltersForType = { ...initialFilters[type] };
@@ -154,10 +134,10 @@ const ReportsDashboard = () => {
             const result = await dispatch(fetchReports({
                 format,
                 type,
-                startMonth: filterData.startMonth,
-                startYear: filterData.startYear,
-                endMonth: filterData.endMonth,
-                endYear: filterData.endYear,
+                startMonth: filterData.startMonth || '',
+                startYear: filterData.startYear || '',
+                endMonth: filterData.endMonth || '',
+                endYear: filterData.endYear || '',
                 employeeId: filterData.employeeId,
                 pensionerId: filterData.pensionerId,
             })).unwrap();
@@ -171,6 +151,9 @@ const ReportsDashboard = () => {
             let filename = result.filename;
             if (type === 'all') {
                 filename = `All-${result.filename}`;
+                // payload.institute = filterData.institute;
+                // payload.is_finalize = filterData.is_finalize;
+                // payload.is_verified = filterData.is_verified;
             } else if (type === 'employee') {
                 // Get employee name for filename
                 const selectedEmployee = employees.find(emp => String(emp.id) === String(filterData.employeeId));
@@ -207,14 +190,6 @@ const ReportsDashboard = () => {
         { value: 11, label: 'November' }, { value: 12, label: 'December' },
     ];
 
-    // const years = [
-    //     { value: '', label: 'Select Year' },
-    //     ...Array.from({ length: 3 }, (_, i) => ({
-    //         value: currentYear - 3  + i,
-    //         label: (currentYear - 3  + i).toString()
-    //     })),
-    //      { value: currentYear, label: currentYear.toString() },
-    // ];
 
     const minYear = 2025;
     const currentYear = new Date().getFullYear();
@@ -248,6 +223,7 @@ const ReportsDashboard = () => {
                                                     ? key.includes('start') ? 'Start Month' : 'End Month'
                                                     : key.includes('start') ? 'Start Year' : 'End Year'} *
                                             </Form.Label>
+
                                             <Form.Select
                                                 value={filters[type][key]}
                                                 onChange={(e) => handleFilterChange(type, key, parseInt(e.target.value) || '')}
@@ -257,9 +233,11 @@ const ReportsDashboard = () => {
                                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                                 ))}
                                             </Form.Select>
+
                                         </FormGroup>
                                     </Grid>
                                 ))}
+
                                 {extraFieldKey && (
                                     <Grid item xs={12} md={4}>
                                         {extraFieldKey === 'employeeId' && !user.is_retired ? (
@@ -286,7 +264,7 @@ const ReportsDashboard = () => {
                                                 sx={{ width: 400 }}
                                             />
                                         ) : (
-                                            
+
                                             <Autocomplete
                                                 options={isPensionerFieldDisabled
                                                     ? pensioners.filter(pen => String(pen.user_id) === String(user.id))

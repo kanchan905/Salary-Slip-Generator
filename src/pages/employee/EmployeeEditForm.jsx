@@ -346,7 +346,7 @@ function EmployeeEditForm() {
 
                                             <Col md={6}>
                                                 <FormGroup>
-                                                    <Label>Pension Number</Label>
+                                                    <Label>NPS+GPF Number</Label>
                                                     <Field name="pension_number" className="form-control" />
                                                 </FormGroup>
                                             </Col>

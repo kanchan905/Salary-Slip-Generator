@@ -69,7 +69,7 @@ const PensionAndBenefits = forwardRef(({ values, onNext }, ref) => {
                             <TextField
                                 fullWidth
                                 name="pension_number"
-                                label="Pension Number*"
+                                label="NPS+GPF Number*"
                                 value={values.pension_number}
                                 onChange={handleChange}
                                 error={touched.pension_number && Boolean(errors.pension_number)}

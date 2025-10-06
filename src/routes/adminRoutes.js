@@ -30,6 +30,8 @@ import ViewSalary from "pages/view-salary/ViewSalary";
 import ChangePassword from "pages/Users/ChangePassword";
 import Designation from "pages/Designation/Designation";
 import ViewPension from "pages/view-salary/ViewPension";
+import FinalizePension from "pages/Net-Pension/FinalizePension";
+import FinalizeSalary from "pages/net-salary/FinalizeSalary";
 
 const getAdminRoutes = () => (
   {
@@ -52,7 +54,7 @@ const getAdminRoutes = () => (
         showInSidebar: false,
         roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer"]
       },
-      {
+      { 
         path: "/user-management",
         name: "User",
         icon: "ni ni-single-02 text-yellow",
@@ -187,6 +189,13 @@ const getAdminRoutes = () => (
         roles: ["IT Admin", "Pensioners Operator"]
       },
       {
+        path: "/finalize-salary",
+        name: "Finalize Salary",
+        icon: "fa-solid fa-sack-dollar",
+        component: FinalizeSalary,
+        roles: ["Accounts Officer"]
+      },
+      {
         path: "/net-salary",
         name: "Net Salary",
         icon: "fa-solid fa-sack-dollar",
@@ -201,6 +210,13 @@ const getAdminRoutes = () => (
         roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "End Users"]
       },
       {
+        path: "/finalize-pension",
+        name: "Finalize Pension",
+        icon: "fa-solid fa-person-cane",
+        component: FinalizePension,
+        roles: ["Accounts Officer"]
+      },
+      {
         path: "/net-pension",
         name: "Net Pension",
         icon: "fa-solid fa-person-cane",
@@ -212,8 +228,7 @@ const getAdminRoutes = () => (
         name: "Net Pension",
         component: NetPensionCard,
         showInSidebar: false,
-        // roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)",]
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "End Users"]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "End Users", "Pensioners Operator"]
       },
       {
         path: "/employee-loan",

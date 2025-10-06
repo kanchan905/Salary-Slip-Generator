@@ -102,6 +102,7 @@ export default function NetSalary() {
         year: '',
         verification_status: '',
         finalize_status: '',
+        institute: '',
     });
 
     const toggleHistoryModal = () => {
@@ -441,7 +442,7 @@ export default function NetSalary() {
     };
 
     const handleClearFilters = () => {
-        const clearedFilters = { id: '', month: '', year: '', verification_status: '', finalize_status: '' };
+        const clearedFilters = { id: '', month: '', year: '', verification_status: '', finalize_status: '', institute: ''};
         setFilters(clearedFilters);
         setPage(0); // Reset page
 
@@ -810,12 +811,26 @@ export default function NetSalary() {
                                                         type="text"
                                                     />
                                                 </Grid>
-                                                {/* {
-                                        currentRoles.some(role => ["Accounts Officer", "IT Admin"].includes(role)) && (
-                                            <> */}
+
                                                 <Grid item size={{ xs: 6, md: 3 }}>
                                                     <FormControl fullWidth size="small">
-                                                        <InputLabel>Verification Status</InputLabel>
+                                                        <InputLabel>Institute</InputLabel>
+                                                        <Select
+                                                            name="institute"
+                                                            value={filters.institute}
+                                                            label="Institute"
+                                                            onChange={handleFilterChange}
+                                                        >
+                                                            <MenuItem value="All"><em>All</em></MenuItem>
+                                                            <MenuItem value="NIOH">NIOH</MenuItem>
+                                                            <MenuItem value="ROHC">ROHC</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                
+                                                <Grid item size={{ xs: 6, md: 3 }}>
+                                                    <FormControl fullWidth size="small">
+                                                        <InputLabel>Release Status</InputLabel>
                                                         <Select
                                                             name="verification_status"
                                                             value={filters.verification_status}
@@ -823,8 +838,8 @@ export default function NetSalary() {
                                                             onChange={handleFilterChange}
                                                         >
                                                             <MenuItem value="All"><em>All</em></MenuItem>
-                                                            <MenuItem value="1">Verified</MenuItem>
-                                                            <MenuItem value="0">Not Verified</MenuItem>
+                                                            <MenuItem value="1">Release</MenuItem>
+                                                            <MenuItem value="0">Not Release</MenuItem>
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
@@ -843,9 +858,7 @@ export default function NetSalary() {
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
-                                                {/* </>
-                                        )
-                                    } */}
+                                               
 
                                                 <Grid item xs={12} md={3} container spacing={1} justifyContent="flex-start">
                                                     <Grid item>
@@ -857,6 +870,7 @@ export default function NetSalary() {
                                                 </Grid>
                                             </Grid>
                                         </div>
+                                        
                                         {
                                             <div className="d-flex flex-column" style={{ gap: '10px' }}>
                                                 {currentRoles.some(role => ["Drawing and Disbursing Officer (ROHC)", "Drawing and Disbursing Officer (NIOH)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (

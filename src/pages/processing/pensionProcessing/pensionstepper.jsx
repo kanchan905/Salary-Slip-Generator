@@ -15,6 +15,8 @@ import { createBulkPension } from '../../../redux/slices/bulkSlice';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
 import { nextStep, prevStep, reset, validateStep, updatePensionField, bulkUpdateField } from '../../../redux/slices/pensionSlice';
+import { setIsReleasing } from '../../../redux/slices/netSalarySlice';
+import Preloader from 'include/Preloader';
 
 const steps = [
     'Select Mode',
@@ -30,6 +32,8 @@ const PensionStepper = () => {
     const { activeStep, formData, bulkForm } = useSelector((state) => state.pension);
     const pensionersData = useSelector((state) => state.pensioner.pensioners);
     const { netPension } = useSelector((state) => state.netPension);
+    const { isReleasing } = useSelector((state) => state.netSalary);
+
 
     useEffect(() => {
         dispatch(fetchPensioners({ page: 1, limit: 1000, id: '', search: '' }));
@@ -94,19 +98,29 @@ const PensionStepper = () => {
         try {
             if (mode === 'bulk') {
                 const { month, year } = bulkForm;
-                await dispatch(createBulkPension(bulkForm)).unwrap()
-                    .then((response) => {
-                        toast.success('Bulk Pension submitted successfully!');
-                        toast.warn(response?.warnings?.join(', '));
+
+                dispatch(setIsReleasing(true));
+
+
+                setTimeout(async () => {
+                    try {
+                        const response = await dispatch(createBulkPension(bulkForm)).unwrap()
+                        toast.success('Bulk pension processing initiated successfully!');
+                        if (response?.warnings?.length) {
+                            toast.warn(response.warnings.join(', '));
+                        }
                         dispatch(reset());
                         navigate(`/net-pension?month=${month}&year=${year}`)
-                    })
-                    .catch((err) => {
+                    } catch (err) {
                         const apiMsg = err?.data?.message || err?.message || err?.errorMsg || 'Failed to submit bulk pension.';
                         toast.error(apiMsg);
-                    });
-
-            } else {
+                    } finally {
+                        // Hide preloader
+                        dispatch(setIsReleasing(false));
+                    }
+                }, 0); // 0ms delay
+            }
+            else {
                 dispatch(createMonthlyPension(formData)).unwrap()
                     .then((res) => {
                         toast.success('Pension created');
@@ -140,36 +154,45 @@ const PensionStepper = () => {
 
     return (
         <>
-            <div className='header container-fluid bg-gradient-info pb-8 pt-8 pt-md-8 main-head d-flex align-items-center justify-content-between'>
-                <Typography variant='h3' color='white'>Create Pension</Typography>
-            </div>
-            <div className="mt--7 mb-7 container-fluid">
-                <Card className="card-stats  p-4" >
-                    <CardHeader>
-                        <Stepper activeStep={activeStep} alternativeLabel>
-                            {steps.map((label) => (
-                                <Step key={label}><StepLabel>{label}</StepLabel></Step>
-                            ))}
-                        </Stepper>
-                    </CardHeader>
-                    <CardBody>
-                        <Box sx={{ mt: 4 }}>{renderStepContent(activeStep)}</Box>
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-                            <Button disabled={activeStep === 0} onClick={() => dispatch(prevStep())}>
-                                Back
-                            </Button>
-                            <Button
-                                variant="contained"
-                                disabled={activeStep === 0 && !mode}
-                                onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-                            >
-                                {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
-                            </Button>
+            {isReleasing ? (
+                <Preloader audience="pension" />
+            ) : (
+                <>
+                    <div className='header container-fluid bg-gradient-info pb-8 pt-8 pt-md-8 main-head d-flex align-items-center justify-content-between'>
+                        <Typography variant='h3' color='white'>Create Pension</Typography>
+                    </div>
+                    <div className="mt--7 mb-7 container-fluid">
+                        <Card className="card-stats  p-4" >
+                            <CardHeader>
+                                <Stepper activeStep={activeStep} alternativeLabel>
+                                    {steps.map((label) => (
+                                        <Step key={label}><StepLabel>{label}</StepLabel></Step>
+                                    ))}
+                                </Stepper>
+                            </CardHeader>
+                            <CardBody>
+                                <Box sx={{ mt: 4 }}>{renderStepContent(activeStep)}</Box>
+                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                                    <Button disabled={activeStep === 0} onClick={() => dispatch(prevStep())}>
+                                        Back
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        disabled={activeStep === 0 && !mode}
+                                        onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+                                    >
+                                        {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
+                                    </Button>
 
-                        </Box>
-                    </CardBody>
-                </Card >
-            </div>
+                                </Box>
+                            </CardBody>
+                        </Card >
+                    </div>
+                </>
+            )
+            }
+
+            {/* {isReleasing && <Preloader audience="pension" />} */}
         </>
     );
 };

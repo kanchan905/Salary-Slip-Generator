@@ -1,12 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import Header from "components/Headers/Header";
+import { getCookie } from "cookies-next";
 import axiosInstance from "global/AxiosSetting";
+import { useSelector } from "react-redux";
+import ky from "ky";
 
+// const { token } = useSelector((state) => state.auth);
+const token = getCookie("token");
+const authToken = token;
 
 export const fetchNetSalary = createAsyncThunk(
   "salary/fetchNetSalary",
-  async ({ id, page, limit, month, year, verification_status, finalize_status }, { rejectWithValue }) => {
+  async ({ id, page, limit, month, year, verification_status, finalize_status, institute }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/salary?page=${page}&limit=${limit}&month=${month ?? ''}&year=${year ?? ''}&is_verified=${verification_status ?? ''}&employee_id=${id ?? ''}&is_finalize=${finalize_status ?? ''}`);
+      const response = await axiosInstance.get(`/salary?page=${page}&limit=${limit}&month=${month ?? ''}&year=${year ?? ''}&is_verified=${verification_status ?? ''}&employee_id=${id ?? ''}&is_finalize=${finalize_status ?? ''}&institute=${institute}`);
       return {
         data: response.data.data,
         totalCount: response.data.total_count
@@ -105,6 +113,9 @@ export const releaseNetSalary = createAsyncThunk(
   }
 );
 
+
+
+
 const initialState = {
   isReleasing: false,
   netSalary: [],
@@ -191,6 +202,7 @@ const netSalarySlice = createSlice({
       .addCase(releaseNetSalary.fulfilled, (state, action) => {
         state.loading = false;
       })
+      
   }
 })
 

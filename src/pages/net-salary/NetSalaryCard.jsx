@@ -1,7 +1,7 @@
 // This file is for salary slip verification, not pension. No changes needed for pension verification flow.
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import html2pdf from 'html2pdf.js';
 import { months } from 'utils/helpers';
@@ -22,7 +22,7 @@ import {
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
 } from '@mui/icons-material';
-import { finalizeNetSalary, releaseNetSalary, setIsReleasing, verifyNetSalary, verifyNetSalaryAdmin, viewNetSalary } from '../../redux/slices/netSalarySlice';
+import { downloadNetSalaryPdf, finalizeNetSalary, releaseNetSalary, setIsReleasing, verifyNetSalary, verifyNetSalaryAdmin, viewNetSalary } from '../../redux/slices/netSalarySlice';
 import { updatePaySlip } from '../../redux/slices/paySlipSlice';
 import { updateDeduction } from '../../redux/slices/deductionSlice';
 import PaySlipEditModal from '../../Modal/PaySlipEditModal';
@@ -36,6 +36,7 @@ import rohcheader from '../../assets/img/images/rohcheader.png'
 import rohcfooter from '../../assets/img/images/rohc-footer.jpeg'
 import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
 import Preloader from 'include/Preloader';
+import { getCookie } from 'cookies-next';
 
 
 export default function PaySlipPage() {
@@ -49,6 +50,10 @@ export default function PaySlipPage() {
     const currentRoles = useSelector((state) =>
         state.auth.user?.roles?.map(role => role.name) || []
     );
+    // const { token } = useSelector((state) => state.auth);
+    const token = getCookie("token");
+    const authToken = token;
+    
 
     useEffect(() => {
         dispatch(fetchNpsContribution({ type: 'GOVT' }));
@@ -173,18 +178,30 @@ export default function PaySlipPage() {
             });
     };
 
-    const handleDownloadPdf = () => {
-        const element = pdfContainerRef.current;
-        if (!element) return;
-        const opt = {
-            margin: 0,
-            filename: `PaySlip_${netSalaryData?.employee?.employee_code}_${netSalaryData?.month}_${netSalaryData?.year}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, windowWidth: element.scrollWidth, windowHeight: element.scrollHeight },
-            jsPDF: { unit: 'px', format: [element.offsetWidth, element.offsetHeight], orientation: 'portrait', hotfixes: ['px_scaling'] }
-        };
-        html2pdf().from(element).set(opt).save();
+    const handleDownloadPdf = async (id) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/download-salary/${id}`, {
+                headers: {
+                    Accept: 'application/pdf',
+                    Authorization: `Bearer ${authToken}`,
+                }
+            });
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const filename = `PaySlip_${netSalaryData?.employee?.name}_${netSalaryData?.employee?.employee_code}_${netSalaryData.month}_${netSalaryData.year}.pdf`;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error("Download failed:", err);
+        }
     };
+
+
 
     // Map userRole to their status field
     function getUserStatusField(roles) { // Function now accepts an array of roles
@@ -413,7 +430,7 @@ export default function PaySlipPage() {
                                         Pay Slip Details
                                     </Typography>
 
-                                   
+
                                     {!netSalaryData?.is_finalize && currentRoles.some(role => ["IT Admin", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)"].includes(role)) && (
                                         <>
                                             <Button
@@ -492,7 +509,7 @@ export default function PaySlipPage() {
                                         </>
                                     )}
 
-                                    <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
+                                    <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={() => handleDownloadPdf(netSalaryData.id)}>
                                         Download
                                     </Button>
                                 </Stack>

@@ -161,20 +161,20 @@ export default function PensionerForm() {
                     <Col md={4}>
                       <FormGroup>
                         <Label for="first_name">First Name</Label>
-                        <Field name="first_name" className="form-control" />
+                        <Field name="first_name" className="form-control" disabled />
                         <ErrorMessage name="first_name" component="p" className="text-danger" />
                       </FormGroup>
                     </Col>
                     <Col md={4}>
                       <FormGroup>
                         <Label for="last_name">last Name</Label>
-                        <Field name="last_name" className="form-control" />                      
+                        <Field name="last_name" className="form-control" disabled/>                      
                       </FormGroup>
                     </Col>
                     <Col md={4}>
                       <FormGroup>
                         <Label for="middle_name">Middle Name</Label>
-                        <Field name="middle_name" className="form-control" />                      
+                        <Field name="middle_name" className="form-control"  disabled />                      
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -187,8 +187,8 @@ export default function PensionerForm() {
                     <Col md={4}>
                       <FormGroup>
                         <Label for="email">Email</Label>
-                        <Field name="email" className="form-control" />
-                        <ErrorMessage name="email" component="p" className="text-danger" />
+                        <Field name="email" className="form-control" disabled/>
+                        <ErrorMessage name="email" component="p" className="text-danger"/>
                       </FormGroup>
                     </Col>
                      <Col md={4}>

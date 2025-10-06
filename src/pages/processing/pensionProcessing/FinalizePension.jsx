@@ -49,9 +49,10 @@ const PensionSlip = ({ formData, PensionerDetail, drDetails }) => {
   const dateFormat = (dateString) => dateString ? new Date(dateString).toLocaleDateString('en-GB') : 'N/A';
 
   const handleDownloadPdf = () => {
+    console.log(PensionerDetail)
     const element = slipRef.current;
     if (!element) return;
-    const filename = `PensionSlip_${PensionerDetail?.name}_${monthLabel}_${formData.year}.pdf`;
+    const filename = `PensionSlip_${PensionerDetail?.pensioner?.first_name}_${PensionerDetail?.pensioner?.ppo_no}_${monthLabel}_${formData.year}.pdf`;
     const elementWidth = element.offsetWidth;
     const elementHeight = element.offsetHeight;
     const orientation = elementWidth > elementHeight ? 'l' : 'p';

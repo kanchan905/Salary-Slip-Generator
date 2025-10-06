@@ -11,6 +11,9 @@ export const fetchReports = createAsyncThunk(
       startYear,
       endMonth,
       endYear,
+      institute,
+      is_finalize,
+      is_verified,
       employeeId,
       pensionerId,
       type,
@@ -95,8 +98,8 @@ export const fetchReports = createAsyncThunk(
       } else {
         // If no date range, use previous month name and year
         const now = new Date();
-        const prevMonth = now.getMonth() ;
-        const prevYear =  now.getFullYear() ;
+        const prevMonth = now.getMonth();
+        const prevYear = now.getFullYear();
         filename = `${monthNames[prevMonth]}-${prevYear}`;
       }
 

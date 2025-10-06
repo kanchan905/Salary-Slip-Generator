@@ -31,7 +31,7 @@ import { fetchEmployeeQuarterList } from '../../redux/slices/quarterSlice';
 import { toast } from 'react-toastify';
 import { createBulkSalry } from '../../redux/slices/bulkSlice';
 import { salaryMonths as months } from 'utils/helpers';
-import { fetchNetSalary } from '../../redux/slices/netSalarySlice';
+import { fetchNetSalary, setIsReleasing } from '../../redux/slices/netSalarySlice';
 import html2pdf from 'html2pdf.js';
 import logo from '../../assets/img/images/slip-header.png';
 import '../../assets/css/custom.css';
@@ -42,6 +42,7 @@ import { customRound, getMonthName } from 'utils/helpers';
 import rohcheader from '../../assets/img/images/rohcheader.png'
 import rohcfooter from '../../assets/img/images/rohc-footer.jpeg'
 import niohfooter from '../../assets/img/images/nioh-footer.jpeg'
+import Preloader from 'include/Preloader';
 
 const steps = [
     'Select Mode',
@@ -86,9 +87,11 @@ const SalaryProcessing = () => {
     const [isProcessing, setIsProcessing] = useState(false); // Add loading state
     const [calculationComplete, setCalculationComplete] = useState(false); // Track calculation completion
     const [EditMode, SetEditMode] = useState(false);
+    const { isReleasing } = useSelector((state) => state.netSalary);
 
 
- 
+
+
 
     const typeOptions = [
         'NPA Arrear',
@@ -252,10 +255,10 @@ const SalaryProcessing = () => {
     }, [dispatch, EmployeeDetail, payStructure, formData.employee_id, isHraEligible, isUniformEligible, hraList, npaList, daList, uniformList, transportList]);
 
 
-    
+
     useEffect(() => {
         const structure = payStructure.find((s) => s.employee_id === formData.employee_id);
- 
+
 
         // Check for basic required data - only return if absolutely essential data is missing
         if (!structure || !EmployeeDetail) {
@@ -399,7 +402,7 @@ const SalaryProcessing = () => {
             ...deductionDynamicObjects.map((obj) => Number(obj.amount) || 0)
         ].reduce((sum, val) => sum + (Number(val) || 0), 0);
 
-       
+
 
         calculatedPayload.total_deductions = totalDeductions;
 
@@ -415,11 +418,11 @@ const SalaryProcessing = () => {
         // setSelectNext(false)
         setCalculationComplete(true);
 
-    
+
 
         // If this was triggered by selectNext, we can now proceed
         if (selectNext) {
-           
+
         }
     }, [
         // Core data triggers
@@ -488,16 +491,26 @@ const SalaryProcessing = () => {
         e?.preventDefault();
         if (mode === 'bulk') {
             const { month, year } = bulkForm;
-            await dispatch(createBulkSalry(bulkForm)).unwrap()
-                .then((response) => {
+
+            dispatch(setIsReleasing(true));
+
+
+            setTimeout(async () => {
+                try {
+                    const response = await dispatch(createBulkSalry(bulkForm)).unwrap();
                     toast.success('Bulk salary processing initiated successfully!');
-                    toast.warn(response?.warnings?.join(', '));
+                    if (response?.warnings?.length) {
+                        toast.warn(response.warnings.join(', '));
+                    }
                     dispatch(resetBulkState());
-                    navigate(`/net-salary?month=${month}&year=${year}`)
-                })
-                .catch((err) => {
+                    navigate(`/net-salary?month=${month}&year=${year}`);
+                } catch (err) {
                     toast.error(err);
-                })
+                } finally {
+                    // Hide preloader
+                    dispatch(setIsReleasing(false));
+                }
+            }, 0); // 0ms delay
         } else {
             const payload = { ...formData, salary_arrears: dynamicObjects, deduction_recoveries: deductionDynamicObjects }
             await dispatch(addPaySlip(payload)).unwrap()
@@ -514,7 +527,7 @@ const SalaryProcessing = () => {
 
     useEffect(() => {
         if (calculationComplete && selectNext && isProcessing) {
-          
+
 
             // Perform final checks that rely on newly calculated data
             const isDuplicate = netSalary?.some(
@@ -649,9 +662,9 @@ const SalaryProcessing = () => {
                                             label="Month"
                                             value={bulkForm.month || ''}
                                             fullWidth
-                                            onChange={(e) => dispatch(bulkUpdateField({ name: 'month', value: e.target.value })) }
+                                            onChange={(e) => dispatch(bulkUpdateField({ name: 'month', value: e.target.value }))}
                                         >
-                                           
+
                                             {months.map((option) => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
@@ -665,7 +678,7 @@ const SalaryProcessing = () => {
                                             name="year"
                                             value={bulkForm.year || ''}
                                             fullWidth
-                                            onChange={(e) => dispatch(bulkUpdateField({ name: 'year', value: e.target.value })) }
+                                            onChange={(e) => dispatch(bulkUpdateField({ name: 'year', value: e.target.value }))}
                                         />
                                     </Grid>
                                     <Grid item size={{ xs: 6 }}>
@@ -1568,85 +1581,94 @@ const SalaryProcessing = () => {
 
     return (
         <>
-            <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
-            <form onSubmit={handleSubmit}>
-                <Box sx={{ width: '80%', margin: 'auto', mt: 8, mb: 8 }}>
-                    <Typography variant="h5" gutterBottom fontWeight="bold">💼 Salary Processing</Typography>
-                    <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-                        {steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)}
-                    </Stepper>
-                    <Box sx={{ mb: 3 }}>{renderStepContent(activeStep)}</Box>
-                    {/* Show Gross Salary as text above navigation buttons only for Step 1 */}
-                    {activeStep === 1 && (
-                        <Box sx={{ mb: 2, textAlign: 'right' }}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                                Gross Salary: ₹ {formatCurrency([
-                                    basic_pay,
-                                    npa_amount,
-                                    da_amount,
-                                    formData.govt_contribution,
-                                    hra_amount,
-                                    uniform_rate_amount,
-                                    transport_amount,
-                                    formData.spacial_pay,
-                                    formData.da_1,
-                                    formData.da_2,
-                                    formData.itc_leave_salary,
-                                    da_on_ta,
-                                    ...dynamicObjects.map((obj) => Number(obj.amount) || 0),
-                                ].reduce((sum, val) => sum + (Number(val) || 0), 0))}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Total earnings before deductions
-                            </Typography>
+            {isReleasing ? (
+                <Preloader audience="salary" />
+            ) : (
+                <>
+                    <div className='header bg-gradient-info pb-8 pt-8 pt-md-8 main-head'></div>
+                    <form onSubmit={handleSubmit}>
+                        <Box sx={{ width: '80%', margin: 'auto', mt: 8, mb: 8 }}>
+                            <Typography variant="h5" gutterBottom fontWeight="bold">💼 Salary Processing</Typography>
+                            <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+                                {steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)}
+                            </Stepper>
+                            <Box sx={{ mb: 3 }}>{renderStepContent(activeStep)}</Box>
+                            {/* Show Gross Salary as text above navigation buttons only for Step 1 */}
+                            {activeStep === 1 && (
+                                <Box sx={{ mb: 2, textAlign: 'right' }}>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                                        Gross Salary: ₹ {formatCurrency([
+                                            basic_pay,
+                                            npa_amount,
+                                            da_amount,
+                                            formData.govt_contribution,
+                                            hra_amount,
+                                            uniform_rate_amount,
+                                            transport_amount,
+                                            formData.spacial_pay,
+                                            formData.da_1,
+                                            formData.da_2,
+                                            formData.itc_leave_salary,
+                                            da_on_ta,
+                                            ...dynamicObjects.map((obj) => Number(obj.amount) || 0),
+                                        ].reduce((sum, val) => sum + (Number(val) || 0), 0))}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Total earnings before deductions
+                                    </Typography>
+                                </Box>
+                            )}
+                            {/* Show Total Deductions as text above navigation buttons only for Step 2 */}
+                            {activeStep === 2 && (
+                                <Box sx={{ mb: 2, textAlign: 'right' }}>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#d32f2f' }}>
+                                        Total Deductions: ₹ {formatCurrency([
+                                            formData.income_tax,
+                                            formData.professional_tax,
+                                            license_fee,
+                                            formData.nfch_donation,
+                                            formData.gpf,
+                                            formData.employee_contribution_10,
+                                            formData.govt_contribution_14_recovery,
+                                            gis,
+                                            formData.computer_advance_installment,
+                                            formData.lic,
+                                            formData.credit_society_membership,
+                                            ...deductionDynamicObjects.map((obj) => Number(obj.amount) || 0),
+                                        ].reduce((sum, val) => sum + (Number(val) || 0), 0))}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Sum of all deductions before additional deductions
+                                    </Typography>
+                                </Box>
+                            )}
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Button disabled={activeStep === 0 || isProcessing} onClick={() => {
+                                    dispatch(prevStep());
+                                    setSelectNext(false);
+                                }}>Back</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button" // Prevent form submission
+                                    disabled={(activeStep === 0 && !mode) || isProcessing}
+                                    onClick={(e) => {
+                                        e.preventDefault(); // Prevent form submission
+                                        if (activeStep === steps.length - 1) {
+                                            handleSubmit();
+                                        } else {
+                                            handleNext();
+                                        }
+                                    }}>
+                                    {isProcessing ? 'Processing...' : (activeStep === steps.length - 1 ? 'Submit' : 'Next')}
+                                </Button>
+                            </Box>
                         </Box>
-                    )}
-                    {/* Show Total Deductions as text above navigation buttons only for Step 2 */}
-                    {activeStep === 2 && (
-                        <Box sx={{ mb: 2, textAlign: 'right' }}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#d32f2f' }}>
-                                Total Deductions: ₹ {formatCurrency([
-                                    formData.income_tax,
-                                    formData.professional_tax,
-                                    license_fee,
-                                    formData.nfch_donation,
-                                    formData.gpf,
-                                    formData.employee_contribution_10,
-                                    formData.govt_contribution_14_recovery,
-                                    gis,
-                                    formData.computer_advance_installment,
-                                    formData.lic,
-                                    formData.credit_society_membership,
-                                    ...deductionDynamicObjects.map((obj) => Number(obj.amount) || 0),
-                                ].reduce((sum, val) => sum + (Number(val) || 0), 0))}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Sum of all deductions before additional deductions
-                            </Typography>
-                        </Box>
-                    )}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Button disabled={activeStep === 0 || isProcessing} onClick={() => {
-                            dispatch(prevStep());
-                            setSelectNext(false);
-                        }}>Back</Button>
-                        <Button
-                            variant="contained"
-                            type="button" // Prevent form submission
-                            disabled={(activeStep === 0 && !mode) || isProcessing}
-                            onClick={(e) => {
-                                e.preventDefault(); // Prevent form submission
-                                if (activeStep === steps.length - 1) {
-                                    handleSubmit();
-                                } else {
-                                    handleNext();
-                                }
-                            }}>
-                            {isProcessing ? 'Processing...' : (activeStep === steps.length - 1 ? 'Submit' : 'Next')}
-                        </Button>
-                    </Box>
-                </Box>
-            </form>
+                    </form>
+                </>
+            )
+            }
+
+            {/* {isReleasing && <Preloader audience="salary" />} */}
         </>
     );
 

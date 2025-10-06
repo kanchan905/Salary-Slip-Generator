@@ -622,7 +622,7 @@ export default function NetPension() {
                                                 </Grid>
                                                 <Grid item size={{ xs: 6, md: 3 }}>
                                                     <FormControl fullWidth size="small">
-                                                        <InputLabel>Verification Status</InputLabel>
+                                                        <InputLabel>Release Status</InputLabel>
                                                         <Select
                                                             name="is_verified"
                                                             value={filters.is_verified}
@@ -630,8 +630,8 @@ export default function NetPension() {
                                                             onChange={(e) => setFilters({ ...filters, is_verified: e.target.value })}
                                                         >
                                                             <MenuItem value="All"><em>All</em></MenuItem>
-                                                            <MenuItem value="1">Verified</MenuItem>
-                                                            <MenuItem value="0">Not Verified</MenuItem>
+                                                            <MenuItem value="1">Release</MenuItem>
+                                                            <MenuItem value="0">Not Release</MenuItem>
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>

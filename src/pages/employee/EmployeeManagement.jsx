@@ -115,7 +115,7 @@ export default function EmployeeManagement() {
                 "NPA Eligibility",
                 "Uniform Allowance Eligibility",
                 "Pension Scheme",
-                "Pension Number",
+                "NPS/GPF",
                 "PWD Status",
                 "Added By",
                 "Edited By",

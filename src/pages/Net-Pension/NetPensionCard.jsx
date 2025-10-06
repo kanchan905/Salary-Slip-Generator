@@ -48,7 +48,9 @@ function NetPensionCard() {
     const { isReleasing } = useSelector((state) => state.netSalary);
     // const [isReleasing, setIsReleasing] = useState(false);
     const userData = useSelector((state) => state.auth.user) || getCookie('user');
-     const isRetired = Boolean(userData?.is_retired === 1 || userData?.is_retired === true);
+    const isRetired = Boolean(userData?.is_retired === 1 || userData?.is_retired === true);
+    const token = getCookie("token");
+    const authToken = token;
 
     useEffect(() => {
         if (id) {
@@ -67,18 +69,44 @@ function NetPensionCard() {
             });
     };
 
-    const handleDownloadPdf = () => {
-        const element = pdfContainerRef.current;
-        if (!element) return;
-        const opt = {
-            margin: 0,
-            filename: `PensionSlip_${netPensionData?.pensioner?.employee?.employee_code}_${netPensionData?.month}_${netPensionData?.year}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, windowWidth: element.scrollWidth, windowHeight: element.scrollHeight },
-            jsPDF: { unit: 'px', format: [element.offsetWidth, element.offsetHeight], orientation: 'portrait', hotfixes: ['px_scaling'] }
-        };
-        html2pdf().from(element).set(opt).save();
+    // const handleDownloadPdf = () => {
+    //     const element = pdfContainerRef.current;
+    //     if (!element) return;
+    //     const opt = {
+    //         margin: 0,
+    //         filename: `PensionSlip_${netPensionData?.pensioner?.employee?.employee_code}_${netPensionData?.month}_${netPensionData?.year}.pdf`,
+    //         image: { type: 'jpeg', quality: 0.98 },
+    //         html2canvas: { scale: 2, useCORS: true, windowWidth: element.scrollWidth, windowHeight: element.scrollHeight },
+    //         jsPDF: { unit: 'px', format: [element.offsetWidth, element.offsetHeight], orientation: 'portrait', hotfixes: ['px_scaling'] }
+    //     };
+    //     html2pdf().from(element).set(opt).save();
+    // };
+
+
+    const handleDownloadPdf = async (id) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/download-pension/${id}`, {
+                headers: {
+                    Accept: 'application/pdf',
+                    Authorization: `Bearer ${authToken}`,
+                }
+            });
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const filename = `PensionSlip_${netPensionData?.pensioner?.first_name}_${netPensionData?.pensioner?.ppo_no}_${netPensionData?.month}_${netPensionData.year}.pdf`;
+            link.setAttribute('download', filename);
+            
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error("Download failed:", err);
+        }
     };
+
 
     if (loading) {
         return (
@@ -480,7 +508,7 @@ function NetPensionCard() {
                                         </>
                                     )}
 
-                                    <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleDownloadPdf}>
+                                    <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={() => handleDownloadPdf(netPensionData.id)}>
                                         Download
                                     </Button>
                                 </Stack>
