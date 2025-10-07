@@ -115,7 +115,7 @@ const Header = () => {
                 </Col>
               )}
 
-              {currentRoles.some(role => ['IT Admin', 'Salary Processing Coordinator (NIOH)', 'Drawing and Disbursing Officer (NIOH)'].includes(role)) && (
+              {currentRoles.some(role => ['IT Admin', 'Salary Processing Coordinator (NIOH)', 'Drawing and Disbursing Officer (NIOH)',"Section Officer (Accounts)"].includes(role)) && (
                 <Col xs={12} sm={6} md={6} lg={6} xl={3} className="mb-4 mb-xl-0">
                   <Card className="card-stats h-100 custom-card card-custom-bg-purple">
                     <CardBody>
@@ -139,7 +139,7 @@ const Header = () => {
                 </Col>
               )}
 
-              {currentRoles.some(role => ['IT Admin', 'Salary Processing Coordinator (ROHC)', 'Drawing and Disbursing Officer (ROHC)'].includes(role)) && (
+              {currentRoles.some(role => ['IT Admin', 'Salary Processing Coordinator (ROHC)', 'Drawing and Disbursing Officer (ROHC)',"Section Officer (Accounts)"].includes(role)) && (
                 <Col xs={12} sm={6} md={6} lg={6} xl={3} className="mb-4 mb-xl-0">
                   <Card className="card-stats h-100 custom-card card-custom-bg-primary"> {/* Assuming you want a different custom background here */}
                     <CardBody>

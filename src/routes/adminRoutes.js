@@ -300,7 +300,7 @@ const getAdminRoutes = () => (
         name: "Profile",
         component: Profile,
         showInSidebar: false,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator", "End Users"]
+        roles: ["IT Admin", "Director", "Section Officer (Accounts)", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator", "End Users"]
       },
     ],
   });
