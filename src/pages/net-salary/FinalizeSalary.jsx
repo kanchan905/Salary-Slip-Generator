@@ -173,12 +173,12 @@ export default function FinalizeSalary() {
                                                 <TableCell style={{ fontWeight: "900" }}>Name</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Institute</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
+                                                {/* <TableCell style={{ fontWeight: "900" }}>Institute</TableCell> */}
+                                                {/* <TableCell style={{ fontWeight: "900" }}>Processing Date</TableCell> */}
+                                                {/* <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell> */}
                                                 <TableCell style={{ fontWeight: "900" }}>Net Amount</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Basic Pay</TableCell>
+                                                {/* <TableCell style={{ fontWeight: "900" }}>Basic Pay</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>DA Amount</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>HRA Amount</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>NPA Amount</TableCell>
@@ -201,7 +201,7 @@ export default function FinalizeSalary() {
                                                 <TableCell style={{ fontWeight: "900" }}>GIS</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>LIC</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Credit Society</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Total Deduction</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Total Deduction</TableCell> */}
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -220,9 +220,9 @@ export default function FinalizeSalary() {
                                                                 {months.find((m) => m.value === row.month)?.label || 'NA'}
                                                             </TableCell>
                                                             <TableCell>{row.year}</TableCell>
-                                                            <TableCell>{row?.employee?.institute}</TableCell>
-                                                            <TableCell>{dateFormat(row.processing_date)}</TableCell>
-                                                            <TableCell>{dateFormat(row.payment_date)}</TableCell>
+                                                            {/* <TableCell>{row?.employee?.institute}</TableCell> */}
+                                                            {/* <TableCell>{dateFormat(row.processing_date)}</TableCell> */}
+                                                            {/* <TableCell>{dateFormat(row.payment_date)}</TableCell> */}
                                                             <TableCell>{row.net_amount}</TableCell>
                                                             <TableCell>
                                                                 <Box display="flex" gap={1}>
@@ -233,7 +233,7 @@ export default function FinalizeSalary() {
                                                                     />
                                                                 </Box>
                                                             </TableCell>
-                                                            <TableCell>{row?.pay_slip?.basic_pay || 0}</TableCell>
+                                                            {/* <TableCell>{row?.pay_slip?.basic_pay || 0}</TableCell>
                                                             <TableCell>{row?.pay_slip?.da_amount || 0}</TableCell>
                                                             <TableCell>{row?.pay_slip?.hra_amount || 0}</TableCell>
                                                             <TableCell>{row?.pay_slip?.npa_amount || 0}</TableCell>
@@ -256,7 +256,7 @@ export default function FinalizeSalary() {
                                                             <TableCell>{row?.pay_slip?.gis || 0}</TableCell>
                                                             <TableCell>{row?.pay_slip?.lic || 0}</TableCell>
                                                             <TableCell>{row?.pay_slip?.credit_society || 0}</TableCell>
-                                                            <TableCell>{row?.pay_slip?.total_deductions || 0}</TableCell>
+                                                            <TableCell>{row?.pay_slip?.total_deductions || 0}</TableCell> */}
                                                         </TableRow>
                                                     ))}
                                                 </>

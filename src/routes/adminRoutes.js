@@ -54,7 +54,7 @@ const getAdminRoutes = () => (
         showInSidebar: false,
         roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer"]
       },
-      { 
+      {
         path: "/user-management",
         name: "User",
         icon: "ni ni-single-02 text-yellow",
@@ -132,42 +132,42 @@ const getAdminRoutes = () => (
         name: "Pay Commission",
         icon: "fa-solid fa-percent text-orange",
         component: CommissionCreate,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer","Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
       },
       {
         path: "/pay-commission-table",
         name: "Pay Commission Table",
         icon: "fa-solid fa-table-cells text-orange",
         component: PayComission,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer","Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
       },
       {
         path: "/pay-structure",
         name: "Pay Structure",
         icon: "ni ni-settings-gear-65 text-orange",
         component: PaysStructure,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer","Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
       },
       {
         path: "/allowance-rates",
         name: "Allowance Rates",
         icon: "ni ni-money-coins text-orange",
         component: AllowanceForm,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer", "Pensioners Operator","Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
       },
       {
         path: "/quarter",
         name: "Quarter",
         icon: "fa-solid fa-chart-pie text-orange",
         component: Quarter,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer","Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
       },
       {
         path: "/designation",
         name: "Designation",
         icon: "fa-solid fa-user-tag text-orange",
         component: Designation,
-        roles: ["IT Admin", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer","Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
+        roles: ["IT Admin", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)",]
       }
     ],
 
@@ -193,7 +193,7 @@ const getAdminRoutes = () => (
         name: "Finalize Salary",
         icon: "fa-solid fa-sack-dollar",
         component: FinalizeSalary,
-        roles: ["Accounts Officer"]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator"]
       },
       {
         path: "/net-salary",
@@ -214,7 +214,7 @@ const getAdminRoutes = () => (
         name: "Finalize Pension",
         icon: "fa-solid fa-person-cane",
         component: FinalizePension,
-        roles: ["Accounts Officer"]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator"]
       },
       {
         path: "/net-pension",
@@ -235,14 +235,14 @@ const getAdminRoutes = () => (
         name: "Employee Loan",
         icon: "fa-solid fa-money-check",
         component: EmployeeLoan,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer"]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer"]
       },
       {
         path: "/employee-loan/view/:id",
         name: "Net Salary",
         component: ShowEmployee,
         showInSidebar: false,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)","Accounts Officer"]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Accounts Officer"]
       },
     ],
 
@@ -257,7 +257,7 @@ const getAdminRoutes = () => (
       },
     ],
 
-   PaySlip: [
+    PaySlip: [
       {
         path: "/my-salary",
         name: "My Salary",
@@ -267,12 +267,12 @@ const getAdminRoutes = () => (
         roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Section Officer (Accounts)", "Accounts Officer", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "Pensioners Operator", "End Users"]
       },
       {
-        path:"/my-pension",
-        name:"My Pension",
+        path: "/my-pension",
+        name: "My Pension",
         component: ViewPension,
         icon: "fa-solid fa-person-cane",
         showInSidebar: true,
-        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)","Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "End Users"]
+        roles: ["IT Admin", "Director", "Senior AO", "Administrative Officer", "Section Officer (Accounts)", "Accounts Officer", "Pensioners Operator", "Drawing and Disbursing Officer (NIOH)", "Drawing and Disbursing Officer (ROHC)", "Salary Processing Coordinator (NIOH)", "Salary Processing Coordinator (ROHC)", "End Users"]
       }
     ],
 

@@ -157,12 +157,12 @@ const ReportsDashboard = () => {
             } else if (type === 'employee') {
                 // Get employee name for filename
                 const selectedEmployee = employees.find(emp => String(emp.id) === String(filterData.employeeId));
-                const employeeName = selectedEmployee ? `${selectedEmployee.first_name} ${selectedEmployee.middle_name || ''} ${selectedEmployee.last_name}`.trim().replace(/\s+/g, '_') : '';
+                const employeeName = selectedEmployee ? `${selectedEmployee.name} ${selectedEmployee.employee_code}`.trim().replace(/\s+/g, '_') : '';
                 filename = `${employeeName}-${result.filename}`;
             } else if (type === 'pensioner') {
                 // Get pensioner name for filename
                 const selectedPensioner = pensioners.find(pen => String(pen.id) === String(filterData.pensionerId));
-                const pensionerName = selectedPensioner ? `${selectedPensioner.first_name} ${selectedPensioner.middle_name || ''} ${selectedPensioner.last_name}`.trim().replace(/\s+/g, '_') : '';
+                const pensionerName = selectedPensioner ? `${selectedPensioner.name} ${selectedPensioner.ppo_no}`.trim().replace(/\s+/g, '_') : '';
                 filename = `Pensioner-${pensionerName}-${result.filename}`;
             }
 

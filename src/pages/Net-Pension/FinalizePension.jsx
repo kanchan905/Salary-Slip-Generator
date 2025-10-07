@@ -162,16 +162,16 @@ export default function FinalizePension() {
                                                 <TableCell style={{ fontWeight: "900" }}>Month</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Year</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Net Pension</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell>
+                                                {/* <TableCell style={{ fontWeight: "900" }}>Payment Date</TableCell> */}
                                                 <TableCell style={{ fontWeight: "900" }}>Finalized</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Basic Pension</TableCell>
+                                                {/* <TableCell style={{ fontWeight: "900" }}>Basic Pension</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Additional Pension</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>DR Amount</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Medical Allowance</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Total Pension</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Commutation Amount</TableCell>
                                                 <TableCell style={{ fontWeight: "900" }}>Income Tax</TableCell>
-                                                <TableCell style={{ fontWeight: "900" }}>Total Deduction</TableCell>
+                                                <TableCell style={{ fontWeight: "900" }}>Total Deduction</TableCell> */}
                                             </TableRow>
                                         </TableHead>
                                         <TableBody> 
@@ -193,7 +193,7 @@ export default function FinalizePension() {
                                                             </TableCell>
                                                             <TableCell>{row.year}</TableCell>
                                                             <TableCell>{row.net_pension}</TableCell>
-                                                            <TableCell>{dateFormat(row.payment_date)}</TableCell>
+                                                            {/* <TableCell>{dateFormat(row.payment_date)}</TableCell> */}
                                                             <TableCell>
                                                                 <Box display="flex" gap={1}>
                                                                     <CheckCircleIcon
@@ -203,14 +203,14 @@ export default function FinalizePension() {
                                                                     />
                                                                 </Box>
                                                             </TableCell>
-                                                            <TableCell>{row?.monthly_pension?.basic_pension || 0}</TableCell>
+                                                            {/* <TableCell>{row?.monthly_pension?.basic_pension || 0}</TableCell>
                                                             <TableCell>{row?.monthly_pension?.additional_pension || 0}</TableCell>
                                                             <TableCell>{row?.monthly_pension?.dr_amount || 0}</TableCell>
                                                             <TableCell>{row?.monthly_pension?.medical_allowance || 0}</TableCell>
                                                             <TableCell>{row?.monthly_pension?.total_pension || 0}</TableCell>
                                                             <TableCell>{row?.pensioner_deduction?.commutation_amount || 0}</TableCell>
                                                             <TableCell>{row?.pensioner_deduction?.income_tax || 0}</TableCell>
-                                                            <TableCell>{row?.pensioner_deduction?.amount || 0}</TableCell>
+                                                            <TableCell>{row?.pensioner_deduction?.amount || 0}</TableCell> */}
                                                         </TableRow>
                                                     ))}
                                                 </>
