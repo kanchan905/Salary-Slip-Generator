@@ -574,7 +574,7 @@ function EmployeeDetail() {
                       <p><strong>Pension Scheme:</strong> {data.pension_scheme}</p>
                       <p><strong>PAN Number:</strong> {data.pancard}</p>
                       <p><strong>PWD Status:</strong> {data.pwd_status ? 'Yes' : 'No'}</p>
-                      <p><strong>NPS+GPF Number:</strong> {data.pension_number || 'N/A'}</p>
+                      <p><strong>NPS/GPF:</strong> {data.pension_number || 'N/A'}</p>
                       <p><strong>GIS Eligibility:</strong> {data.gis_eligibility ? 'Yes' : 'No'}</p>
                       <p><strong>GIS Number:</strong> {data.gis_no || 'N/A'}</p>
                       <p><strong>Credit Society Member:</strong> {data.credit_society_member ? 'Yes' : 'No'}</p>

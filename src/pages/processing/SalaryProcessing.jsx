@@ -176,12 +176,31 @@ const SalaryProcessing = () => {
         dispatch(bulkUpdateField({ name: 'processing_date', value: today }));
     }, [dispatch]);
 
+    // useEffect(() => {
+    //     if (employees.length > 0) {
+    //         setNonRetired(employees.filter(emp => emp.employee_status?.some(s => s.status !== 'Retired' && s.status !== 'Resigned')));
+
+    //     }
+    // }, [employees]);
+
     useEffect(() => {
-        if (employees.length > 0) {
-            setNonRetired(employees.filter(emp => emp.employee_status?.some(s => s.status !== 'Retired' && s.status !== 'Resigned')));
-        }
+        if (!employees || employees.length === 0) return;
+
+        const filtered = employees.filter(emp => {
+            const statuses = emp.employee_status || [];
+            // if any status is Resigned or Retired -> exclude
+            const hasExited = statuses.some(s => {
+                const st = (s?.status || '').trim().toLowerCase();
+                return st === 'resigned' || st === 'retired';
+            });
+            return !hasExited;
+        });
+
+        setNonRetired(filtered);
     }, [employees]);
 
+
+    // console.log(nonRetired);
 
 
     useEffect(() => {

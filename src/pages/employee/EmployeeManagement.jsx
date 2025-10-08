@@ -30,6 +30,17 @@ import useDebounce from '../../hooks/useDebounce';
 import Chip from '@mui/material/Chip';
 
 
+const getMonthName = (monthNumber) => {
+    if (!monthNumber) return "N/A";
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    // If monthNumber is already a string, parse it to int
+    const index = parseInt(monthNumber, 10) - 1;
+    return monthNames[index] || "N/A";
+  };
+
 export default function EmployeeManagement() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuUserIndex, setMenuUserIndex] = React.useState(null);
@@ -108,6 +119,7 @@ export default function EmployeeManagement() {
                 "Retirement Date",
                 "Joining Date",
                 "Institute",
+                "Increment Month",
                 "Credit Society Member",
                 "GIS Eligibility",
                 "GIS Number",
@@ -134,6 +146,7 @@ export default function EmployeeManagement() {
                     <td>{dateFormat(employeeDetail?.date_of_retirement) ?? "-"}</td>
                     <td>{dateFormat(employeeDetail?.date_of_joining) ?? "-"}</td>
                     <td>{employeeDetail?.institute || '-'}</td>
+                    <td>{getMonthName(employeeDetail?.increment_month) || '-'}</td>
                     <td>{employeeDetail?.credit_society_member ? 'Yes' : 'No'}</td>
                     <td>{employeeDetail?.gis_eligibility ? 'Yes' : 'No'}</td>
                     <td>{employeeDetail?.gis_no}</td>
@@ -165,6 +178,7 @@ export default function EmployeeManagement() {
                     <td>{dateFormat(record?.date_of_retirement) ?? "-"}</td>
                     <td>{dateFormat(record?.date_of_joining) ?? "-"}</td>
                     <td>{record?.institute || '-'}</td>
+                    <td>{getMonthName(record.increment_month)}</td>
                     <td>{record?.credit_society_member ? 'Yes' : 'No'}</td>
                     <td>{record?.gis_eligibility ? 'Yes' : 'No'}</td>
                     <td>{record?.gis_no}</td>
